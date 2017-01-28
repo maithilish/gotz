@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+
+<beans>
+	<bean name="datadef" className="in.m.picks.model.DataDef"
+		fileName="datadef.xml" />
+	<bean name="locator" className="in.m.picks.model.Locator"
+		fileName="locator.xml" />
+	<bean name="afields" className="in.m.picks.model.Afields"
+		fileName="afields.xml" />
+</beans>
+
+

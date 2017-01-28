@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<picks>
+	<writers>
+		<wrtier name="csv" service="in.m.picks.ext.CsvWriter" filename="test.csv" />
+	</writers>
+	<processes>
+		<process name="xml" datadef="bs" processor="in.m.picks.ext.XMLProcessor">
+		</process>
+	</processes>
+</picks>
+

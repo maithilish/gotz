@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+
+<locators>
+	<locator name="ITC" group="quote" url="${quote}/cigarettes/itc/ITC" />
+</locators>
+
+

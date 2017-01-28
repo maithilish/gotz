@@ -1,0 +1,15 @@
+<?xml version='1.0'?>
+
+<locators xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
+	<!-- <locator name="music" group="csv" url="src/main/resources/simple/music.csv"> -->
+	<!-- <afield name="trace" value="true" /> -->
+	<!-- </locator> -->
+	<locator name="book" group="csv"
+		url="src/main/resources/simple/csv/books.csv">
+		<afield name="locator" group="debugstate" value="false" />
+		<afield name="live" value="10-02-2017" />
+	</locator>
+</locators>
+
+

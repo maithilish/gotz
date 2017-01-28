@@ -1,0 +1,25 @@
+<?xml version='1.0'?>
+
+<locators>
+	<afields>
+		<afield name="loader" value="in.m.picks.ext.HtmlLoader" group="quote" />
+		<afield name="datadef" value="finlocators" group="quote" />
+	</afields>
+	<afields>
+		<afield name="loader" value="in.m.picks.ext.HtmlLoader" group="bs" />
+		<afield name="datadef" value="bs" group="bs" />
+		<afield name="live" value="90" group="bs" />
+		<afield name="retry" value="3" group="bs" />
+	</afields>
+	<afields>
+		<afield name="loader" value="in.m.picks.ext.HtmlLoader" group="pl" />
+		<afield name="datadef" value="pl" group="pl" />
+		<afield name="live" value="90" group="pl" />
+		<afield name="retry" value="3" group="pl" />
+	</afields>
+	<afields>
+		<afield name="live" value="90" group="quote" />
+		<afield name="retry" value="3" group="quote" />
+	</afields>
+</locators>
+

@@ -1,0 +1,96 @@
+package in.m.picks.misc;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import in.m.picks.model.Afield;
+import in.m.picks.model.Afields;
+import in.m.picks.model.Locator;
+import in.m.picks.shared.BeanService;
+import in.m.picks.util.Util;
+
+public class Locators implements Iterable<Locator> {
+
+	final static Logger logger = LoggerFactory.getLogger(Locators.class);
+
+	List<Locator> locatorList;
+
+	public Locators() {
+		locatorList = BeanService.INSTANCE.getBeans(Locator.class);
+		List<Afields> afieldsList = BeanService.INSTANCE.getBeans(Afields.class);
+		Afields afields = getLocatorAfields(afieldsList);
+		if (afields != null) {
+			mergeFields(afields);
+		}
+	}
+
+	private Afields getLocatorAfields(List<Afields> afieldsList) {
+		for (Afields afields : afieldsList) {
+			try {
+				Class<?> clz = Class.forName(afields.getClassName());
+				if (clz == Locator.class) {
+					return afields;
+				}
+			} catch (ClassNotFoundException e) {
+
+			}
+		}
+		return null;
+	}
+
+	private void mergeFields(Afields afields) {
+		logger.debug("Merging Afields with Locators");
+		logger.debug("Locator afields size [{}]", afields.size());
+		for (Locator locator : locatorList) {
+			for (Afield afield : afields.getAfields()) {
+				if (locator.getGroup().equals(afield.getGroup())) {
+					locator.addAfield(afield);
+				}
+			}
+		}
+	}
+
+	public void traceLocators() {
+		if (!logger.isTraceEnabled()) {
+			return;
+		}
+		String line = System.lineSeparator();
+		System.out.println(locatorList.size());
+		logger.trace("--- Trace Locators ----");
+		for (Locator locator : locatorList) {
+			String indentedJson = Util.getIndentedJson(locator, true);
+			StringBuilder sb = new StringBuilder();
+			sb.append("Locator [name=");
+			sb.append(locator.getName());
+			sb.append("]");
+			sb.append(line);
+			sb.append(indentedJson);
+			logger.trace("{}", sb);
+		}
+	}
+
+	public int size() {
+		return locatorList.size();
+	}
+
+	@Override
+	public Iterator<Locator> iterator() {
+		return locatorList.iterator();
+	}
+
+	@Override
+	public void forEach(Consumer<? super Locator> action) {
+		throw new UnsupportedOperationException("method not implemented");
+	}
+
+	@Override
+	public Spliterator<Locator> spliterator() {
+		throw new UnsupportedOperationException("method not implemented");
+	}
+
+}

@@ -1,0 +1,17 @@
+<?xml version='1.0'?>
+
+<picks>
+
+	<locators>
+		<afields>
+			<afield name="loader" value="in.m.picks.ext.HtmlLoader" group="search" />
+		</afields>
+		<afields>
+			<afield name="loader" value="in.m.picks.ext.VfsLoader" group="qa" />
+		</afields>
+		<afields>
+			<afield name="loader" value="in.m.picks.ext.HtmlLoader" group="bs" />
+		</afields>
+	</locators>
+
+</picks>

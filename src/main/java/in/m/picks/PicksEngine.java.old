@@ -1,0 +1,88 @@
+package in.m.picks;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import in.m.picks.misc.Locators;
+import in.m.picks.model.Locator;
+import in.m.picks.pool.LoaderPool;
+import in.m.picks.pool.PerserPool;
+import in.m.picks.shared.ConfigService;
+import in.m.picks.shared.DataDefService;
+import in.m.picks.shared.MonitorService;
+
+public class PicksEngineOld {
+
+	final static Logger logger = LoggerFactory.getLogger(PicksEngineOld.class);
+
+	public void start() {
+		logger.info("Starting PicksEngine");
+		logPicksMode();
+		logger.info("Run Date : [{}]", ConfigService.INSTANCE.getRunDate());
+		loadDataDefs();
+		pushLocators();
+		waitForFinish();
+		MonitorService.INSTANCE.logActivities();
+		logger.info("PicksEngine shutdown complete");
+	}
+
+	private void loadDataDefs() {
+		DataDefService dataDefs = DataDefService.INSTANCE;
+		logger.info("DataDefs loaded {}", dataDefs.getCount());
+	}
+
+	private void pushLocators() {
+		logger.info("Queue Locators to loader");
+		Locators locators = new Locators();
+		int count = 0;
+		for (Locator locator : locators) {
+			if (LoaderPool.INSTANCE.submitTask(locator)) {
+				count++;
+			}
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		LoaderPool.INSTANCE.setSeedFinished(true);
+		logger.info("Locators : Total [{}]. Queued to loader [{}].", locators.size(),
+				count);
+	}
+
+	public void waitForFinish() {
+		while (true) {
+			try {
+				Thread.sleep(100);
+				if (tryShutdown()) {
+					break;
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+	}
+
+	private boolean tryShutdown() {
+		if (!LoaderPool.INSTANCE.isSeedFinished()) {
+			return false;
+		}
+		if (LoaderPool.INSTANCE.isDone() && PerserPool.INSTANCE.isDone()) {
+			PerserPool.INSTANCE.stop();
+			LoaderPool.INSTANCE.stop();
+			return true;
+		}
+		return false;
+	}
+
+	private void logPicksMode() {
+		String modeInfo = "Mode : [Production]";
+		if (ConfigService.INSTANCE.isTestMode()) {
+			modeInfo = "Mode : [Test]";
+		}
+		if (ConfigService.INSTANCE.isDevMode()) {
+			modeInfo = "Mode : [Dev]";
+		}
+		logger.info(modeInfo);
+	}
+}

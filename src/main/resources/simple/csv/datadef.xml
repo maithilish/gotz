@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datadefs xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
+	<datadef name="csv" parser="in.m.picks.dev.SimpleCsvParser">
+		<afield name="datadef" group="debugstate" value="false" />
+		<afield name="dataprototype" group="debugstate" value="false" />
+		<axis name="col">
+			<afield name="region" group="query" value="q1" />
+			<afield name="field" group="query" value="q2" />
+			<member name="c">
+				<afield name="indexRange" value="1-2" />
+			</member>
+		</axis>
+		<axis name="row">
+			<member name="r" />
+		</axis>
+		<axis name="fact">
+			<afield name="script" group="script" value="record.get({col.index})" />
+		</axis>
+	</datadef>
+</datadefs>

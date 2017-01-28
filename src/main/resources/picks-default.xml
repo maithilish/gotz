@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+	<picks>
+		<propertyPattern>picks/properties/property</propertyPattern>
+		<beanFile>/bean.xml</beanFile>
+		<schemaFile>/schema/picks1.xsd</schemaFile>
+		<seederClass>in.m.picks.ext.LocatorSeeder</seederClass>
+		<loaderThreads>2</loaderThreads>
+		<parserThreads>4</parserThreads>
+		<processThreads>4</processThreads>
+		<webClientTimeout>120000</webClientTimeout>
+		<highDate>31-12-2099 23:59:59.999</highDate>
+		<dateParsePattern>dd-MM-yyyy ; dd/MM/yyyy</dateParsePattern>
+		<dateTimeParsePattern>
+			dd-MM-yyyy HH:mm:ss.SSS ; dd/MM/yyyy
+			HH:mm:ss.SSS
+		</dateTimeParsePattern>
+		<orm>jdo</orm>
+		<datastore>datastore</datastore>
+	</picks>
+</configuration>
+

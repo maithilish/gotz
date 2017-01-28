@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+	<picks>
+		<propertyPattern>picks/properties/property</propertyPattern>
+		<digesterFileName>digester.xml</digesterFileName>
+		<locatorFileName>locator-test.xml</locatorFileName>
+		<afieldsFileName>afields-test.xml</afieldsFileName>
+		<dataDefFileName>datadef-test.xml</dataDefFileName>
+		<loaderThreads>2</loaderThreads>
+		<parserThreads>4</parserThreads>
+		<processThreads>4</processThreads>
+		<webClientTimeout>120000</webClientTimeout>
+		<highDate>31-12-2099 23:59:59.999</highDate>
+		<dateParsePattern>dd-MM-yyyy HH:mm:ss.SSS</dateParsePattern>
+		<orm>jdo</orm>
+		<datastore>testdatastore</datastore>
+	</picks>
+</configuration>
+

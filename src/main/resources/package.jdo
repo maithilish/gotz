@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE jdo PUBLIC
+    "-//Sun Microsystems, Inc.//DTD Java Data Objects Metadata 2.0//EN"
+    "http://java.sun.com/dtd/jdo_2_0.dtd">
+
+<!-- Afields are not persisted so we need to copy them from beans -->
+<jdo>
+	<package name="in.m.picks.model">
+		<class name="Locator" detachable="true">
+			<field name="id" primary-key="true" value-strategy="identity" />
+			<unique name="UNIQUE_NAMEGROUP">
+				<field name="name" />
+				<field name="group" />
+			</unique>
+			<field name="url" persistence-modifier="none" />
+			<field name="documents">
+				<collection element-type="in.m.picks.model.Document" />
+				<element column="LOCATOR_ID" />
+			</field>
+			<fetch-group name="detachDocuments">
+				<field name="documents" />
+			</fetch-group>
+		</class>
+		<class name="Document">
+			<field name="id" primary-key="true" value-strategy="identity" />
+			<field name="fromDate" />
+			<field name="toDate" />
+			<field name="documentObject" persistence-modifier="persistent"
+				serialized="true" />
+			<fetch-group name="detachDocumentObject">
+				<field name="documentObject" />
+			</fetch-group>
+		</class>
+		<class name="DataDef" detachable="true">
+			<field name="id" primary-key="true" value-strategy="identity" />
+			<unique name="UNIQUE_NAME_DATE">
+				<field name="name" />
+				<field name="fromDate" />
+				<field name="toDate" />
+			</unique>			 
+			<field name="axes" serialized="true" />
+			<field name="memberSets" persistence-modifier="none" />
+			<fetch-group name="detachAxes">
+				<field name="axes" />
+			</fetch-group>
+		</class>
+		<class name="Data">
+			<field name="id" primary-key="true" value-strategy="identity" />
+			<field name="name" />
+			<field name="dataDefId" />
+			<field name="documentId" />
+			<field name="members" persistence-modifier="persistent"
+				serialized="true" />
+			<fetch-group name="detachMembers">
+				<field name="members" />
+			</fetch-group>
+		</class>
+	</package>
+</jdo>

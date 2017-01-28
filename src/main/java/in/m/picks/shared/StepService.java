@@ -1,0 +1,26 @@
+package in.m.picks.shared;
+
+import in.m.picks.step.IStep;
+
+public enum StepService {
+
+	INSTANCE;
+
+	private StepService() {
+	}
+
+	public IStep getStep(String clzName) throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException {
+		IStep step = null;
+		Class<?> stepClass = Class.forName(clzName);
+		Object obj = stepClass.newInstance();
+		if (obj instanceof IStep) {
+			step = (IStep) obj;
+		} else {
+			throw new ClassCastException(
+					"Class " + clzName + " is not of type IStep");
+		}
+		return step;
+	}
+
+}

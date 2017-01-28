@@ -1,0 +1,22 @@
+<?xml version='1.0'?>
+
+<picks>
+
+	<properties>
+		<property name="prefix1" value="https://" />
+		<property name="prefix2" value="http://" />
+	</properties>
+
+	<locators>
+		<afields>
+			<afield name="live" value="0" group="search" />
+			<afield name="retry" value="1" group="search" />
+		</afields>
+		<afields>
+			<afield name="live" value="5" group="qa" />
+		</afields>
+		<locator name="Google" group="search" url="${prefix1}google.co.in" />
+		<locator name="Stack" group="qa" url="${prefix2}stackoverflow.com" />
+	</locators>
+
+</picks>

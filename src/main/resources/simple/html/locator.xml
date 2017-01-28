@@ -1,0 +1,10 @@
+<?xml version='1.0'?>
+
+<locators xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
+	<locator name="taxes" group="html"
+		url="file://orange/data/workspace/npicks/src/main/resources/simple/html/taxes.html">
+		<afield name="locator" group="debugstate" value="true" />
+		<afield name="live" value="PT2M" />
+	</locator>
+</locators>
