@@ -95,6 +95,19 @@ run src/main/scripts/schemagen.sh from project base dir and it will generates sc
 and places it in src/main/resources/schema dir. Beans are validated against the schema.
 Before packaging run the script
   
+Generate Model classes from schema
+----------------------------------
+
+xjc -Xinject-code -extension                \
+    -p in.m.picks.model                     \
+    -b src/main/resources/schema/picks.xjb  \
+    -d src/main/java                        \
+    src/main/resources/schema/picks.xsd
+
+
+
+ 
+  
 
 
 

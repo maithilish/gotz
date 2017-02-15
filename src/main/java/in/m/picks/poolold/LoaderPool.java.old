@@ -3,7 +3,7 @@ package in.m.picks.poolold;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import in.m.picks.exception.AfieldNotFoundException;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
 import in.m.picks.model.Locator;
 import in.m.picks.shared.MonitorService;
@@ -32,7 +32,7 @@ public class LoaderPool extends Pool {
 			submit(task);
 			logger.trace("> [Loader] {}", locator);
 			return true;
-		} catch (AfieldNotFoundException e) {
+		} catch (FieldNotFoundException e) {
 			logger.warn("No loader afield found. Unable to create task {}", locator);
 			logger.debug("{}", e);
 			givenupTask(locator, e);

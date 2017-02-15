@@ -1,0 +1,48 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.0"
+	xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector">
+
+	<jaxb:bindings schemaLocation="picks.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="in.m.picks.model" />
+		</jaxb:schemaBindings>
+		<jaxb:globalBindings>
+			<jaxb:serializable uid="1" />
+			<jaxb:javaType name="java.util.Date" xmlType="xs:dateTime"
+				parseMethod="in.m.picks.model.DateAdapter.parseDate" printMethod="in.m.picks.model.DateAdapter.printDate" />
+		</jaxb:globalBindings>
+		<jaxb:bindings node="//xs:group[@name='fields']/xs:sequence/xs:choice">
+			<jaxb:property name="fields" />
+		</jaxb:bindings>
+		<jaxb:bindings
+			node="//xs:complexType[@name='dAxis']//xs:sequence/xs:element[@ref='tns:member']">
+			<jaxb:property collectionType="java.util.HashSet" />
+		</jaxb:bindings>
+		<jaxb:bindings node="//xs:complexType" multiple="true">
+			<ci:code>
+				<!-- !!! don't change the first line i.e. equals line, it used for code 
+					insertion point by modelgen.sh so that equal,hash and toString methods comes 
+					at last -->
+			    <![CDATA[
+				@Override public boolean equals(Object obj) {
+				    String[] excludes = {"id", "fields","dnDetachedState", "dnFlags", "dnStateManager"};
+					return EqualsBuilder.reflectionEquals(this, obj,excludes);
+				}
+
+				@Override
+				public int hashCode() {
+				    String[] excludes = {"id", "fields","dnDetachedState", "dnFlags", "dnStateManager"};
+					return HashCodeBuilder.reflectionHashCode(this,excludes);
+				}
+
+				@Override
+				public String toString() {				    
+					return ToStringBuilder.reflectionToString(this,
+							ToStringStyle.MULTI_LINE_STYLE);
+				}
+				]]>
+			</ci:code>
+		</jaxb:bindings>
+	</jaxb:bindings>
+</jaxb:bindings>

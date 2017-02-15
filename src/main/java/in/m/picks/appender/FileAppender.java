@@ -20,7 +20,7 @@ public class FileAppender extends Appender {
 		try {
 			writer = new PrintWriter(new File("output.txt"));
 			for (;;) {
-				Object item = queue.take();				
+				Object item = queue.take();
 				if (item == Marker.EOF) {
 					break;
 				}

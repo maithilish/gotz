@@ -1,6 +1,14 @@
 package in.m.picks.model;
 
-public class Axis extends Afields implements Comparable<Axis> {
+import java.io.Serializable;
+import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class Axis implements Comparable<Axis>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -9,17 +17,9 @@ public class Axis extends Afields implements Comparable<Axis> {
 	private String match;
 	private Integer index;
 	private Integer order;
+	private List<FieldsBase> fields;
 
 	public Axis() {
-	}
-
-	// make deep copy
-	public Axis(Axis axis) {
-		this.name = axis.getName();
-		this.value = axis.getValue();
-		this.match = axis.getMatch();
-		this.index = axis.getIndex();
-		this.order = axis.getOrder();
 	}
 
 	public final String getName() {
@@ -62,10 +62,12 @@ public class Axis extends Afields implements Comparable<Axis> {
 		this.order = order;
 	}
 
-	@Override
-	public String toString() {
-		return "Axis [name=" + name + ", value=" + value + ", match=" + match
-				+ ", index=" + index + ", order=" + order + "]";
+	public List<FieldsBase> getFields() {
+		return fields;
+	}
+
+	public void setFields(List<FieldsBase> fields) {
+		this.fields = fields;
 	}
 
 	public int compareTo(Axis other) {
@@ -76,55 +78,17 @@ public class Axis extends Afields implements Comparable<Axis> {
 		return a1.compareTo(a2);
 	}
 
-	// TODO write test for hash and equal as axis is added to a Set
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((index == null) ? 0 : index.hashCode());
-		result = prime * result + ((match == null) ? 0 : match.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((order == null) ? 0 : order.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Axis other = (Axis) obj;
-		if (index == null) {
-			if (other.index != null)
-				return false;
-		} else if (!index.equals(other.index))
-			return false;
-		if (match == null) {
-			if (other.match != null)
-				return false;
-		} else if (!match.equals(other.match))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (order == null) {
-			if (other.order != null)
-				return false;
-		} else if (!order.equals(other.order))
-			return false;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
-		return true;
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this,
+				ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

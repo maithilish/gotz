@@ -19,6 +19,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.Gson;
@@ -150,13 +151,11 @@ public class Util {
 	 * cumbersome to create multiple wrapper objects and to avoid this generic
 	 * list wrapper is useful. See - blog.bdoughan.com jaxb list wrapper
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> List<T> unmarshal(Unmarshaller unmarshaller, Class<T> clazz,
-			String xmlFile) throws JAXBException, FileNotFoundException {
+	public static List<Object> unmarshal(Unmarshaller um, String xmlFile)
+			throws JAXBException, FileNotFoundException {
 		StreamSource xmlSource = new StreamSource(Util.getResourceAsStream(xmlFile));
-		Wrapper<T> wrapper = (Wrapper<T>) unmarshaller
-				.unmarshal(xmlSource, Wrapper.class).getValue();
-		return wrapper.getItems();
+		Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
+		return wrapper.getAny();
 	}
 
 	public static InputStream getResourceAsStream(String resource)
@@ -186,5 +185,10 @@ public class Util {
 		}
 		return ta;
 	}
-	
+
+	public static String[] excludes(String... excludes) {
+		String[] jdoExcludes = { "dnDetachedState", "dnFlags", "dnStateManager" };
+		return ArrayUtils.addAll(jdoExcludes, excludes);
+	}
+
 }

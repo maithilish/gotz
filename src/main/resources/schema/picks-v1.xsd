@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0"
+	targetNamespace="http://codetab.org/picks" xmlns:tns="http://codetab.org/picks"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.0">
+
+	<xs:annotation>
+		<xs:appinfo>
+			<jaxb:schemaBindings>
+				<jaxb:package name="in.m.picks.model" />
+			</jaxb:schemaBindings>
+			<jaxb:globalBindings>
+				<jaxb:serializable uid="1" />
+				<jaxb:javaType name="java.util.Date" xmlType="xs:dateTime"
+					parseMethod="in.m.picks.model.DateAdapter.parseDate" printMethod="in.m.picks.model.DateAdapter.printDate" />
+			</jaxb:globalBindings>
+		</xs:appinfo>
+	</xs:annotation>
+
+	<xs:element name="wrapper" type="tns:wrapper" />
+
+	<xs:element name="fields" type="tns:fields" />
+
+	<xs:element name="locator" type="tns:locator" />
+
+	<xs:element name="locators" type="tns:locators" />
+
+	<xs:element name="bean" type="tns:bean" />
+
+	<xs:element name="beans" type="tns:beans" />
+
+	<xs:element name="datadefs" type="tns:dataDefs" />
+
+	<xs:element name="datadef" type="tns:dataDef" />
+
+	<xs:element name="axis" type="tns:dAxis" />
+
+	<xs:element name="member" type="tns:dMember" />
+
+	<xs:element name="filter" type="tns:dFilter" />
+
+	<xs:complexType name="wrapper">
+		<xs:sequence>
+			<xs:any processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="fields">
+		<xs:sequence>
+			<xs:element name="field" minOccurs="0" maxOccurs="unbounded"
+				type="tns:Field" />
+			<xs:element ref="tns:fields" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="group" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="Field">
+		<xs:attribute name="name" type="xs:string" />
+		<xs:attribute name="value" type="xs:string" />
+	</xs:complexType>
+
+	<xs:complexType name="locators">
+		<xs:sequence>
+			<xs:element name="locator" minOccurs="0" maxOccurs="unbounded"
+				type="tns:locator" />
+			<xs:element ref="tns:locators" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+		<xs:attribute name="group" type="xs:string" />
+	</xs:complexType>
+
+
+	<xs:complexType name="locator" final="extension restriction">
+		<xs:complexContent>
+			<xs:extension base="tns:fields">
+				<xs:sequence />
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="url" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="beans">
+		<xs:sequence>
+			<xs:element ref="tns:bean" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="bean">
+		<xs:sequence />
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="className" type="xs:string" use="required" />
+		<xs:attribute name="xmlFile" type="xs:string" use="required" />
+		<xs:attribute name="schemaFile" type="xs:string" use="optional" />
+	</xs:complexType>
+
+	<xs:complexType name="dataDefs">
+		<xs:sequence>
+			<xs:element ref="tns:datadef" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="dataDef">
+		<xs:complexContent>
+			<xs:extension base="tns:fields">
+				<xs:sequence>
+					<xs:element ref="tns:axis" minOccurs="0" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="id" type="xs:long" use="optional" />
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="fromDate" type="xs:dateTime" />
+				<xs:attribute name="toDate" type="xs:dateTime" />
+				<xs:attribute name="parser" type="xs:string" />
+				<xs:attribute name="type" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="dAxis">
+		<xs:complexContent>
+			<xs:extension base="tns:fields">
+				<xs:sequence>
+					<xs:element ref="tns:member" minOccurs="0" maxOccurs="unbounded" />
+					<xs:element ref="tns:filter" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="name" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="dMember">
+		<xs:complexContent>
+			<xs:extension base="tns:fields">
+				<xs:sequence />
+				<xs:attribute name="name" type="xs:string" />
+				<xs:attribute name="axis" type="xs:string" />
+				<xs:attribute name="index" type="xs:int" />
+				<xs:attribute name="match" type="xs:string" />
+				<xs:attribute name="order" type="xs:int" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="dFilter">
+		<xs:complexContent>
+			<xs:extension base="tns:fields">
+				<xs:sequence />
+				<xs:attribute name="axis" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>
+

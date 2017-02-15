@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import in.m.picks.exception.DataDefNotFoundException;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Axis;
 import in.m.picks.model.AxisName;
 import in.m.picks.model.DataDef;
@@ -30,25 +31,27 @@ public class HtmlDataParser extends HtmlParser {
 			parseData();
 			System.out.println(data.toStringIds());
 			System.out.println(document.getDocumentObject());
-			for(Member member : data.getMembers()){
+			for (Member member : data.getMembers()) {
 				System.out.println(member.traceMember());
 			}
-		} catch (DataDefNotFoundException | ScriptException e) {
+		} catch (DataDefNotFoundException | ScriptException
+				| FieldNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();			
+			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public void parseData() throws DataDefNotFoundException, ScriptException {
+	public void parseData() throws DataDefNotFoundException, ScriptException,
+			FieldNotFoundException {
 		DataDef dataDef = DataDefService.INSTANCE.getDataDef(dataDefName);
 		for (Member member : data.getMembers()) {
 			// collections.sort not possible as axes is set so implied sort
 			// as value field of an axis may be referred by later axis
 			for (AxisName axisName : AxisName.values()) {
 				Axis axis = member.getAxis(axisName.toString());
-				if (axis != null) {					
-					if (getDocument().isDocumentLoaded()) {
+				if (axis != null) {
+					if (isDocumentLoaded()) {
 						HtmlPage page = (HtmlPage) getDocument().getDocumentObject();
 						String value = getValue(page, dataDef, member, axis);
 						axis.setValue(value);

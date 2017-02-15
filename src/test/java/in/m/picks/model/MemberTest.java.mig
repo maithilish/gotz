@@ -82,7 +82,7 @@ public class MemberTest {
 		axis.setOrder(4);
 		axis.setValue("tvalue");
 
-		Afield afield = new Afield("tname", "tvalue");
+		Field afield = new Field("tname", "tvalue");
 		axis.addAfield(afield);
 
 		Member member = new Member();

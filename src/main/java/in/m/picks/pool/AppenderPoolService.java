@@ -6,7 +6,7 @@ public class AppenderPoolService extends Pool {
 
 	private AppenderPoolService() {
 	}
-	
+
 	public static AppenderPoolService getInstance() {
 		return INSTANCE;
 	}

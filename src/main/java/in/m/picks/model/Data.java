@@ -3,10 +3,10 @@ package in.m.picks.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Data {
+public class Data extends Base {
 
-	private long id;
-	private String name;
+	private static final long serialVersionUID = 1L;
+
 	private String dataDef;
 	private long dataDefId;
 	private long documentId;
@@ -14,22 +14,6 @@ public class Data {
 
 	public Data() {
 		members = new ArrayList<Member>();
-	}
-
-	public final long getId() {
-		return id;
-	}
-
-	public final void setId(long id) {
-		this.id = id;
-	}
-
-	public final String getName() {
-		return name;
-	}
-
-	public final void setName(String name) {
-		this.name = name;
 	}
 
 	public final String getDataDef() {

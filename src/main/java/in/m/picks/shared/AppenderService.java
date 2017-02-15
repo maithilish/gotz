@@ -52,11 +52,11 @@ public enum AppenderService {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}	
+		}
 	}
 
 	public void close(String appenderName) throws InterruptedException {
-		Appender appender = getAppender(appenderName);		
-		appender.append(Marker.EOF);		
+		Appender appender = getAppender(appenderName);
+		appender.append(Marker.EOF);
 	}
 }

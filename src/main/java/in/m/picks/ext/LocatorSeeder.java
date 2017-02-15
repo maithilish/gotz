@@ -1,28 +1,30 @@
 package in.m.picks.ext;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import in.m.picks.exception.AfieldNotFoundException;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
-import in.m.picks.model.Afield;
-import in.m.picks.model.Afields;
+import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Locator;
+import in.m.picks.model.Locators;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.BeanService;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.shared.StepService;
 import in.m.picks.step.IStep;
 import in.m.picks.step.Seeder;
+import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
 public class LocatorSeeder extends Seeder {
 
 	final static Logger logger = LoggerFactory.getLogger(LocatorSeeder.class);
 
-	List<Locator> locators;
+	List<Locator> locators = new ArrayList<>();
 
 	@Override
 	public IStep instance() {
@@ -31,11 +33,45 @@ public class LocatorSeeder extends Seeder {
 
 	@Override
 	public void load() throws Exception {
-		locators = BeanService.INSTANCE.getBeans(Locator.class);
-		List<Afields> afieldsList = BeanService.INSTANCE.getBeans(Afields.class);
-		Afields afields = getLocatorAfields(afieldsList);
-		if (afields != null) {
-			mergeFields(afields);
+		initLocators();
+		List<FieldsBase> fields = BeanService.INSTANCE.getBeans(FieldsBase.class);
+		try {
+			FieldsBase classFields = FieldsUtil.getFieldsByValue(fields, "class",
+					Locator.class.getName());
+			if (classFields != null) {
+				mergeFields(classFields);
+			}
+		} catch (FieldNotFoundException e) {
+		}
+	}
+
+	private void initLocators() {
+		List<Locators> list = BeanService.INSTANCE.getBeans(Locators.class);
+		for (Locators locators : list) {
+			trikleGroup(locators);
+		}
+		for (Locators locators : list) {
+			extractLocator(locators);
+		}
+	}
+
+	private void extractLocator(Locators locators) {
+		for (Locators locs : locators.getLocators()) {
+			extractLocator(locs);
+		}
+		for (Locator locator : locators.getLocator()) {
+			this.locators.add(locator);
+		}
+	}
+
+	private void trikleGroup(Locators locators) {
+		for (Locators locs : locators.getLocators()) {
+			trikleGroup(locs);
+		}
+		for (Locator locator : locators.getLocator()) {
+			if (locator.getGroup() == null) {
+				locator.setGroup(locators.getGroup());
+			}
 		}
 	}
 
@@ -47,13 +83,13 @@ public class LocatorSeeder extends Seeder {
 				String givenUpMessage = Util.buildString(
 						"Create loader for locator [", locator.getName(),
 						"] failed.");
-				List<Afield> afieldList = locator.getAfieldsByGroup("loader")
-						.getAfields();
-				if (afieldList.size() == 0) {
+				List<FieldsBase> loaders = FieldsUtil
+						.getFieldList(locator.getFields(), "loader");
+				if (loaders.size() == 0) {
 					logger.warn("{} {}", givenUpMessage, " No loader afield found.");
 				}
-				for (Afield afield : afieldList) {
-					IStep task = createTask(afield.getValue(), locator);
+				for (FieldsBase loader : loaders) {
+					IStep task = createTask(loader.getValue(), locator);
 					TaskPoolService.getInstance().submit("loader", task);
 					count++;
 					try {
@@ -62,7 +98,7 @@ public class LocatorSeeder extends Seeder {
 					}
 				}
 			} catch (ClassNotFoundException | InstantiationException
-					| IllegalAccessException | AfieldNotFoundException e) {
+					| IllegalAccessException | FieldNotFoundException e) {
 				MonitorService.INSTANCE.addActivity(Type.GIVENUP, locator.toString(),
 						e);
 			}
@@ -73,46 +109,23 @@ public class LocatorSeeder extends Seeder {
 
 	private IStep createTask(String loaderClassName, Locator locator)
 			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, AfieldNotFoundException {
+			IllegalAccessException, FieldNotFoundException {
 		IStep task = StepService.INSTANCE.getStep(loaderClassName);
 		task.setInput(locator);
+		task.setFields(locator.getFields());
 		logger.trace("> [Loader] {}", locator);
 		return task;
 	}
 
-	private Afields getLocatorAfields(List<Afields> afieldsList) {
-		for (Afields afields : afieldsList) {
-			try {
-				Class<?> clz = Class.forName(afields.getClassName());
-				if (clz == Locator.class) {
-					return afields;
-				}
-			} catch (ClassNotFoundException e) {
-
-			}
-		}
-		return null;
-	}
-
-	private void mergeFields(Afields afields) {
-		logger.debug("Merging Afields with Locators");
-		logger.debug("Locator afields size [{}]", afields.size());
+	private void mergeFields(FieldsBase classFields) throws FieldNotFoundException {
+		logger.debug("Merging Fields with Locators");
 		for (Locator locator : locators) {
-			for (Afield afield : afields.getAfields()) {				
-					locator.addAfield(afield);
-			}
+			// FieldsBase fields = FieldsUtil.getFieldsByGroup(classFields,
+			// locator.getGroup());
+			List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
+					locator.getGroup());
+			locator.getFields().addAll(fields);
 		}
 	}
-	
-//	private void mergeFields(Afields afields) {
-//		logger.debug("Merging Afields with Locators");
-//		logger.debug("Locator afields size [{}]", afields.size());
-//		for (Locator locator : locators) {
-//			for (Afield afield : afields.getAfields()) {
-//				if (locator.getGroup().equals(afield.getGroup())) {
-//					locator.addAfield(afield);
-//				}
-//			}
-//		}
-//	}
+
 }

@@ -1,6 +1,8 @@
 package in.m.picks.step;
 
-import in.m.picks.model.Afields;
+import java.util.List;
+
+import in.m.picks.model.FieldsBase;
 
 public interface IStep extends Runnable {
 
@@ -14,6 +16,6 @@ public interface IStep extends Runnable {
 
 	void setInput(Object input);
 
-	void setAfields(Afields afields);
+	void setFields(List<FieldsBase> fields);
 
 }

@@ -4,7 +4,7 @@
 	<picks>
 		<propertyPattern>picks/properties/property</propertyPattern>
 		<beanFile>/bean.xml</beanFile>
-		<schemaFile>/schema/picks1.xsd</schemaFile>
+		<schemaFile>/schema/picks.xsd</schemaFile>
 		<seederClass>in.m.picks.ext.LocatorSeeder</seederClass>
 		<loaderThreads>2</loaderThreads>
 		<parserThreads>4</parserThreads>

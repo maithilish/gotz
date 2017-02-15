@@ -2,6 +2,7 @@ package in.m.picks.ext;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,14 +10,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import in.m.picks.appender.Appender;
-import in.m.picks.model.Afield;
-import in.m.picks.model.Afields;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.ColComparator;
+import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
 import in.m.picks.model.RowComparator;
 import in.m.picks.shared.AppenderService;
 import in.m.picks.step.IStep;
 import in.m.picks.step.Transformer;
+import in.m.picks.util.FieldsUtil;
 
 public class CsvTransformer extends Transformer {
 
@@ -93,17 +95,22 @@ public class CsvTransformer extends Transformer {
 	@Override
 	public void handover() throws ClassNotFoundException, InstantiationException,
 			IllegalAccessException, InterruptedException {
-		Afields appenders = afields.getAfieldsByGroup("appender");
-		for (Afield afield : appenders.getAfields()) {
-			AppenderService.INSTANCE.createAppender(afield.getName(),
-					afield.getValue());
-			Appender appender = AppenderService.INSTANCE.getAppender(afield.getName());			
-			appender.append(sb);
+		try {
+			List<FieldsBase> appenders = FieldsUtil.getFieldList(fields, "appender");
+			for (FieldsBase field : appenders) {
+				AppenderService.INSTANCE.createAppender(field.getName(),
+						field.getValue());
+				Appender appender = AppenderService.INSTANCE
+						.getAppender(field.getName());
+				appender.append(sb);
+			}
+		} catch (FieldNotFoundException e) {
+
 		}
-//		FileAppender fa = new FileAppender();
-//		Thread t = new Thread(fa);
-//		t.start();
-//		fa.append(sb.toString());
-//		fa.append("EOF");
+		// FileAppender fa = new FileAppender();
+		// Thread t = new Thread(fa);
+		// t.start();
+		// fa.append(sb.toString());
+		// fa.append("EOF");
 	}
 }

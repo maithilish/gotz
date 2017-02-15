@@ -1,50 +1,26 @@
 package in.m.picks.model;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-public class Member extends Afields {
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class Member extends Base {
 
 	private static final long serialVersionUID = 1L;
 
-	private long id;
-	private String name;
 	private String group;
 	private Set<Axis> axes;
+	private List<FieldsBase> fields;
 
 	public Member() {
 		axes = new HashSet<Axis>();
-	}
-
-	// make deep copy
-	public Member(Member member) {
-		this.id = member.getId();
-		this.name = member.getName();
-		this.group = member.getGroup();
-
-		axes = new HashSet<Axis>();
-		for (Axis axis : member.getAxes()) {
-			addAxis(new Axis(axis));
-		}
-		for (Afield afield : member.getAfields()) {
-			addAfield(new Afield(afield));
-		}
-	}
-
-	public final long getId() {
-		return id;
-	}
-
-	public final void setId(long id) {
-		this.id = id;
-	}
-
-	public final String getName() {
-		return name;
-	}
-
-	public final void setName(String name) {
-		this.name = name;
 	}
 
 	public final String getGroup() {
@@ -63,6 +39,14 @@ public class Member extends Afields {
 		this.axes = axes;
 	}
 
+	public List<FieldsBase> getFields() {
+		return fields;
+	}
+
+	public void setFields(List<FieldsBase> fields) {
+		this.fields = fields;
+	}
+
 	public final Axis getAxis(String axisName) {
 		for (Axis axis : axes) {
 			if (axis.getName().equalsIgnoreCase(axisName)) {
@@ -70,6 +54,14 @@ public class Member extends Afields {
 			}
 		}
 		return null;
+	}
+
+	public final Map<String, Axis> getAxisMap() {
+		Map<String, Axis> axisMap = new HashMap<>();
+		for (Axis axis : axes) {
+			axisMap.put(axis.getName(), axis);
+		}
+		return axisMap;
 	}
 
 	public void addAxis(Axis axis) {
@@ -81,11 +73,6 @@ public class Member extends Afields {
 		return axis.getValue();
 	}
 
-	@Override
-	public String toString() {
-		return "Member [id=" + id + ", name=" + name + "] " + super.toString();
-	}
-
 	public StringBuilder traceMember() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(toString());
@@ -95,44 +82,17 @@ public class Member extends Afields {
 		return sb;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((axes == null) ? 0 : axes.hashCode());
-		result = prime * result + ((group == null) ? 0 : group.hashCode());
-		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
+	public boolean equals(Object obj) {
+		return EqualsBuilder.reflectionEquals(this, obj);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (!super.equals(obj))
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Member other = (Member) obj;
-		if (axes == null) {
-			if (other.axes != null)
-				return false;
-		} else if (!axes.equals(other.axes))
-			return false;
-		if (group == null) {
-			if (other.group != null)
-				return false;
-		} else if (!group.equals(other.group))
-			return false;
-		if (id != other.id)
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		return true;
+	public int hashCode() {
+		return HashCodeBuilder.reflectionHashCode(this);
+	}
+
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this,
+				ToStringStyle.MULTI_LINE_STYLE);
 	}
 
 }

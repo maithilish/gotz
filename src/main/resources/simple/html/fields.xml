@@ -1,0 +1,17 @@
+<?xml version='1.0'?>
+
+<fields xmlns="http://codetab.org/picks">
+	<fields name="class" value="in.m.picks.model.Locator">
+		<fields name="group" value="html">
+			<field name="loader" value="in.m.picks.ext.HtmlLoader" />
+			<fields name="group" value="datadef">
+				<field name="datadef" value="taxestable" />
+				<field name="parser" value="in.m.picks.ext.HtmlDataParser" />
+				<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
+				<field name="fileappender" value="in.m.picks.appender.FileAppender" />
+			</fields>
+			<field name="persist" value="true" />
+			<field name="persistdata" value="true" />
+		</fields>
+	</fields>
+</fields>

@@ -47,7 +47,7 @@ public class DMemberTest {
 		member.setOrder(4);
 		member.setMatch("tmatch");
 
-		Afield af = new Afield();
+		Field af = new Field();
 		af.setName("tname");
 		af.setGroup("tgroup");
 		af.setValue("tvalue");

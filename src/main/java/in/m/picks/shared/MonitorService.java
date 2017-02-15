@@ -21,13 +21,13 @@ public enum MonitorService {
 		activitesList = new ArrayList<Activity>();
 	}
 
-	public void triggerFatal(String message){
+	public void triggerFatal(String message) {
 		activitesList.add(new Activity(Type.FATAL, message));
 		logActivities();
 		logger.info("Picks Terminated");
 		System.exit(1);
 	}
-	
+
 	public void addActivity(Type type, String message) {
 		activitesList.add(new Activity(type, message));
 	}

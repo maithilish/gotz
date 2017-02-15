@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -22,17 +23,18 @@ import in.m.picks.dao.DaoFactory;
 import in.m.picks.dao.DaoFactory.ORM;
 import in.m.picks.dao.IDocumentDao;
 import in.m.picks.dao.ILocatorDao;
-import in.m.picks.exception.AfieldNotFoundException;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
-import in.m.picks.model.Afield;
-import in.m.picks.model.Afields;
 import in.m.picks.model.Document;
+import in.m.picks.model.Field;
+import in.m.picks.model.Fields;
+import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Locator;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.shared.StepService;
-import in.m.picks.util.AccessUtil;
+import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
 public abstract class Loader implements IStep {
@@ -40,9 +42,9 @@ public abstract class Loader implements IStep {
 	final static Logger logger = LoggerFactory.getLogger(Loader.class);
 
 	private Locator locator;
-	private Document document;	
+	private Document document;
 	@SuppressWarnings("unused")
-	private Afields afields;
+	private List<FieldsBase> fields;
 
 	@Override
 	public void run() {
@@ -66,7 +68,7 @@ public abstract class Loader implements IStep {
 				locator.getGroup());
 		if (savedLocator != null) {
 			// update existing locator with new values
-			savedLocator.setAfields(locator.getAfields());
+			savedLocator.getFields().addAll(locator.getFields());
 			savedLocator.setUrl(locator.getUrl());
 			// switch locator with existing locator (detached locator)
 			locator = savedLocator;
@@ -81,11 +83,12 @@ public abstract class Loader implements IStep {
 			try {
 				Object object = fetchDocument(locator.getUrl());
 				document = new Document();
+				document.setName(locator.getName());
 				document.setDocumentObject(object);
 				document.setFromDate(ConfigService.INSTANCE.getRunDateTime());
 				document.setToDate(getToDate());
 				document.setUrl(locator.getUrl());
-				locator.addDocument(document);
+				locator.getDocuments().add(document);
 				logger.trace("created new document {}", document);
 			} catch (Exception e) {
 				logger.warn("{}", e);
@@ -100,26 +103,27 @@ public abstract class Loader implements IStep {
 	public void store() throws Exception {
 		boolean persist = true;
 		try {
-			persist = AccessUtil.isAfieldTrue(locator, "persist");
-		} catch (AfieldNotFoundException e) {
+			persist = FieldsUtil.isFieldTrue(locator.getFields(), "persist");
+		} catch (FieldNotFoundException e) {
 		}
 
 		if (persist) {
 			try {
 				/*
-				 * afields are not persistable, so need to set them from the
-				 * afields.xml every time
+				 * fields are not persistable, so need to set them from the
+				 * fields.xml every time
 				 */
-				List<Afield> afields = locator.getAfields();
+				List<FieldsBase> fields = locator.getFields();
 				ORM orm = DaoFactory
 						.getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));
 				ILocatorDao dao = DaoFactory.getDaoFactory(orm).getLocatorDao();
 				dao.storeLocator(locator);
 				// reload locator and document
 				locator = dao.getLocator(locator.getId());
-				locator.setAfields(afields);
+				locator.getFields().addAll(fields);
 				document = getDocument(document.getId());
 			} catch (Exception e) {
+				e.printStackTrace();
 				logger.debug("{}", e.getMessage());
 				throw e;
 			}
@@ -138,28 +142,29 @@ public abstract class Loader implements IStep {
 
 		String givenUpMessage = Util.buildString("Create parser for locator [",
 				locator.getName(), "] failed.");
-		List<Afield> afieldList = locator.getAfieldsByGroup("datadef").getAfields();
-		if (afieldList.size() == 0) {
-			logger.warn("{} {}", givenUpMessage, " No datadef afield found.");
+		List<FieldsBase> dataDefFields = FieldsUtil
+				.getGroupFields(locator.getFields(), "datadef");
+		if (dataDefFields.size() == 0) {
+			logger.warn("{} {}", givenUpMessage, " No datadef field found.");
 		}
-		for (Afield afield : afieldList) {
-			if (isDocumentLoaded()) {
-				String parserClassName = AccessUtil.getStringValue(locator,
-						"parser");
-				String dataDefName = afield.getValue();
-				pushParserTask(parserClassName, dataDefName);
-			} else {
-				logger.warn("Document not loaded - Locator [{}]", locator);
-				MonitorService.INSTANCE.addActivity(Type.GIVENUP,
-						"Document not loaded. " + givenUpMessage);
+		for (FieldsBase dataDefField : dataDefFields) {
+			if (dataDefField instanceof Fields) {
+				Fields fields = (Fields) dataDefField;
+				if (isDocumentLoaded()) {
+					pushParserTask(fields);
+				} else {
+					logger.warn("Document not loaded - Locator [{}]", locator);
+					MonitorService.INSTANCE.addActivity(Type.GIVENUP,
+							"Document not loaded. " + givenUpMessage);
+				}
 			}
 		}
 	}
 
-	private void pushParserTask(String parserClassName, String dataDefName) {
+	private void pushParserTask(Fields fields) {
 		try {
-			IStep task = createParser(parserClassName, dataDefName, document);
-			//PerserPool.INSTANCE.submit(parser);
+			IStep task = createParser(fields, document);
+			// PerserPool.INSTANCE.submit(parser);
 			TaskPoolService.getInstance().submit("parser", task);
 			logger.debug("Parser instance [{}] pushed to pool. Locator [{}]",
 					task.getClass(), locator.getName());
@@ -172,16 +177,23 @@ public abstract class Loader implements IStep {
 		}
 	}
 
-	private IStep createParser(String parserClassName, String dataDefName,
-			Document input) throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
+	private IStep createParser(Fields fields, Document input)
+			throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException, FieldNotFoundException {
+		String parserClassName = FieldsUtil.getValue(fields, "parser");
 		IStep parserStep = StepService.INSTANCE.getStep(parserClassName).instance();
 		parserStep.setInput(input);
-		System.out.println(input.getDocumentObject());
-		Afields afields = locator;
-		afields.addAfield(new Afield("locatorName", locator.getName()));
-		afields.addAfield(new Afield("datadefName", dataDefName));
-		parserStep.setAfields(afields);
+
+		Field field = new Field();
+		field.setName("locatorName");
+		field.setValue(locator.getName());
+
+		fields.getFields().add(field);
+		List<FieldsBase> handoverFields = new ArrayList<>();
+		handoverFields.add(fields);
+
+		parserStep.setFields(handoverFields);
+
 		return parserStep;
 	}
 
@@ -196,8 +208,8 @@ public abstract class Loader implements IStep {
 	}
 
 	@Override
-	public void setAfields(Afields afields) {
-		this.afields = afields;
+	public void setFields(List<FieldsBase> fields) {
+		this.fields = fields;
 	}
 
 	protected Locator getLocatorFromStore(String locName, String locGroup) {
@@ -238,8 +250,8 @@ public abstract class Loader implements IStep {
 		ZonedDateTime toDate = null;
 		String live = null;
 		try {
-			live = AccessUtil.getStringValue(locator, "live");
-		} catch (AfieldNotFoundException e) {
+			live = FieldsUtil.getValue(locator.getFields(), "live");
+		} catch (FieldNotFoundException e) {
 			logger.warn("{} - defaults to 0 day. {}", e, locator);
 		}
 		if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
@@ -288,7 +300,7 @@ public abstract class Loader implements IStep {
 
 	public void debugState(Locator locator, String heading, boolean full) {
 		try {
-			if (AccessUtil.isAfieldTrue(locator, "debugstate", "locator")) {
+			if (FieldsUtil.isFieldTrue(locator.getFields(), "debugstate")) {
 				MDC.put("entitytype", "locator");
 				logger.debug(heading);
 				if (full) {
@@ -296,7 +308,7 @@ public abstract class Loader implements IStep {
 				}
 				MDC.remove("entitytype");
 			}
-		} catch (AfieldNotFoundException e) {
+		} catch (FieldNotFoundException e) {
 		}
 	}
 

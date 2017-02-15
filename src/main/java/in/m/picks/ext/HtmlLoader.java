@@ -32,7 +32,7 @@ public class HtmlLoader extends Loader {
 		logger.debug("fetch web resource {}", url);
 		try {
 			HtmlPage htmlPage = webClient.getPage(url);
-			logger.debug("fetched web resource {}", url);			
+			logger.debug("fetched web resource {}", url);
 			return htmlPage;
 		} finally {
 			webClient.setRefreshHandler(new ImmediateRefreshHandler());

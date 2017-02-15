@@ -3,9 +3,9 @@ package in.m.picks.poolold;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import in.m.picks.exception.AfieldNotFoundException;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
-import in.m.picks.model.Afields;
+import in.m.picks.model.Fields;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.shared.StepService;
 import in.m.picks.step.IStep;
@@ -21,7 +21,7 @@ public class PerserPool extends Pool {
 		super("picks.parserThreads");
 	}
 
-	public boolean submitTask(String stepClzName, Object input, Afields afields) {
+	public boolean submitTask(String stepClzName, Object input, Fields afields) {
 		String locatorName = null;
 		try {
 			locatorName = AccessUtil.getStringValue(afields, "locatorName");
@@ -31,7 +31,7 @@ public class PerserPool extends Pool {
 			submit(task);
 			log.trace(">> [{}] {}", stepClzName, input);
 			return true;
-		} catch (AfieldNotFoundException e) {
+		} catch (FieldNotFoundException e) {
 			logger.debug("{}", e);
 			givenupTask(locatorName, e);
 		} catch (ClassNotFoundException e) {

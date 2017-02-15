@@ -1,36 +1,59 @@
 package in.m.picks.validation;
 
-import in.m.picks.exception.AfieldNotFoundException;
-import in.m.picks.model.Afields;
+import java.util.ArrayList;
+import java.util.List;
+
+import in.m.picks.exception.FieldNotFoundException;
+import in.m.picks.model.DAxis;
+import in.m.picks.model.DFilter;
+import in.m.picks.model.DMember;
 import in.m.picks.model.DataDef;
-import in.m.picks.util.AccessUtil;
+import in.m.picks.model.FieldsBase;
+import in.m.picks.util.FieldsUtil;
 
 public class DataDefValidator {
 
 	private DataDef dataDef;
 
-	
 	public void setDataDef(DataDef dataDef) {
 		this.dataDef = dataDef;
 	}
 
-
-	public boolean validate(){
+	public boolean validate() {
 		boolean valid = true;
 		valid = validateIndexRange();
 		return valid;
 	}
-	
+
 	private boolean validateIndexRange() {
 		boolean valid = true;
-		for(Afields afields : dataDef.getAllAfields()){
+		for (List<FieldsBase> fc : getAllFields()) {
 			try {
-				AccessUtil.getRange(afields, "indexRange");
-			} catch (NumberFormatException e) {				
+				FieldsUtil.getRange(fc, "indexRange");
+			} catch (NumberFormatException e) {
 				valid = false;
-			} catch (AfieldNotFoundException e) {				
-			}	
+			} catch (FieldNotFoundException e) {
+			}
 		}
 		return valid;
+	}
+
+	private List<List<FieldsBase>> getAllFields() {
+		List<List<FieldsBase>> lists = new ArrayList<>();
+
+		lists.add(dataDef.getFields());
+		for (DAxis axis : dataDef.getAxis()) {
+			lists.add(axis.getFields());
+			for (DMember member : axis.getMember()) {
+				if (member != null) {
+					lists.add(member.getFields());
+				}
+			}
+			DFilter filter = axis.getFilter();
+			if (filter != null) {
+				lists.add(filter.getFields());
+			}
+		}
+		return lists;
 	}
 }

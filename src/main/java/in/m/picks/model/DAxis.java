@@ -9,17 +9,15 @@ package in.m.picks.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -28,22 +26,21 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * <p>
- * Java class for dataDef complex type.
+ * Java class for dAxis complex type.
  * 
  * <p>
  * The following schema fragment specifies the expected content contained within
  * this class.
  * 
  * <pre>
- * &lt;complexType name="dataDef">
+ * &lt;complexType name="dAxis">
  *   &lt;complexContent>
  *     &lt;extension base="{http://codetab.org/picks}base">
  *       &lt;sequence>
  *         &lt;group ref="{http://codetab.org/picks}fields"/>
- *         &lt;element ref="{http://codetab.org/picks}axis" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://codetab.org/picks}member" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://codetab.org/picks}filter" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="fromDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" />
- *       &lt;attribute name="toDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -52,23 +49,17 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * 
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dataDef", propOrder = { "fields", "axis" })
-public class DataDef extends Base implements Serializable {
+@XmlType(name = "dAxis", propOrder = { "fields", "member", "filter" })
+public class DAxis extends Base implements Serializable {
 
 	private final static long serialVersionUID = 1L;
 	@XmlElements({ @XmlElement(name = "field", type = Field.class),
 			@XmlElement(type = Fields.class) })
 	protected List<FieldsBase> fields;
 	@XmlElement
-	protected List<DAxis> axis;
-	@XmlAttribute(name = "fromDate")
-	@XmlJavaTypeAdapter(Adapter1.class)
-	@XmlSchemaType(name = "dateTime")
-	protected Date fromDate;
-	@XmlAttribute(name = "toDate")
-	@XmlJavaTypeAdapter(Adapter1.class)
-	@XmlSchemaType(name = "dateTime")
-	protected Date toDate;
+	protected Set<DMember> member = new HashSet<DMember>();
+	@XmlElement
+	protected DFilter filter;
 
 	/**
 	 * Gets the value of the fields property.
@@ -101,87 +92,66 @@ public class DataDef extends Base implements Serializable {
 	}
 
 	/**
-	 * Gets the value of the axis property.
+	 * Gets the value of the member property.
 	 * 
 	 * <p>
 	 * This accessor method returns a reference to the live list, not a
 	 * snapshot. Therefore any modification you make to the returned list will
 	 * be present inside the JAXB object. This is why there is not a
-	 * <CODE>set</CODE> method for the axis property.
+	 * <CODE>set</CODE> method for the member property.
 	 * 
 	 * <p>
 	 * For example, to add a new item, do as follows:
 	 * 
 	 * <pre>
-	 * getAxis().add(newItem);
+	 * getMember().add(newItem);
 	 * </pre>
 	 * 
 	 * 
 	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link DAxis }
+	 * Objects of the following type(s) are allowed in the list {@link DMember }
 	 * 
 	 * 
 	 */
-	public List<DAxis> getAxis() {
-		if (axis == null) {
-			axis = new ArrayList<DAxis>();
+	public Set<DMember> getMember() {
+		if (member == null) {
+			member = new HashSet<DMember>();
 		}
-		return this.axis;
+		return this.member;
 	}
 
 	/**
-	 * Gets the value of the fromDate property.
+	 * Gets the value of the filter property.
 	 * 
-	 * @return possible object is {@link String }
+	 * @return possible object is {@link DFilter }
 	 * 
 	 */
-	public Date getFromDate() {
-		return fromDate;
+	public DFilter getFilter() {
+		return filter;
 	}
 
 	/**
-	 * Sets the value of the fromDate property.
+	 * Sets the value of the filter property.
 	 * 
 	 * @param value
-	 *            allowed object is {@link String }
+	 *            allowed object is {@link DFilter }
 	 * 
 	 */
-	public void setFromDate(Date value) {
-		this.fromDate = value;
-	}
-
-	/**
-	 * Gets the value of the toDate property.
-	 * 
-	 * @return possible object is {@link String }
-	 * 
-	 */
-	public Date getToDate() {
-		return toDate;
-	}
-
-	/**
-	 * Sets the value of the toDate property.
-	 * 
-	 * @param value
-	 *            allowed object is {@link String }
-	 * 
-	 */
-	public void setToDate(Date value) {
-		this.toDate = value;
+	public void setFilter(DFilter value) {
+		this.filter = value;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		String[] excludes = { "id", "fields", "fromDate", "toDate", "memberSets",
-				"dnDetachedState", "dnFlags", "dnStateManager" };
+		String[] excludes = { "id", "fields", "dnDetachedState", "dnFlags",
+				"dnStateManager" };
 		return EqualsBuilder.reflectionEquals(this, obj, excludes);
 	}
 
 	@Override
 	public int hashCode() {
-		String[] excludes = { "id", "fields", "fromDate", "toDate", "memberSets",
-				"dnDetachedState", "dnFlags", "dnStateManager" };
+		String[] excludes = { "id", "fields", "dnDetachedState", "dnFlags",
+				"dnStateManager" };
 		return HashCodeBuilder.reflectionHashCode(this, excludes);
 	}
 

@@ -1,8 +1,8 @@
 package in.m.picks.shared;
 
 import static org.junit.Assert.assertEquals;
-import in.m.picks.exception.AfieldNotFoundException;
-import in.m.picks.model.Afield;
+import in.m.picks.exception.FieldNotFoundException;
+import in.m.picks.model.Field;
 import in.m.picks.model.Locator;
 import in.m.picks.util.AccessUtil;
 
@@ -12,30 +12,30 @@ import org.junit.Test;
 public class AccessUtilTest {
 
 	private Locator locator;
-	private Afield afield;
+	private Field afield;
 
 	@Before
 	public void setup() {
 		locator = new Locator();
-		afield = new Afield();
+		afield = new Field();
 		afield.setName("testkey");
 	}
 
 	@Test
-	public void testGetStringValue() throws AfieldNotFoundException {
+	public void testGetStringValue() throws FieldNotFoundException {
 		afield.setValue("testvalue");
 		locator.addAfield(afield);
 		String value = AccessUtil.getStringValue(locator, "testkey");
 		assertEquals("testvalue", value);
 	}
 
-	@Test(expected = AfieldNotFoundException.class)
-	public void testGetStringValueNotFoundException() throws AfieldNotFoundException {
+	@Test(expected = FieldNotFoundException.class)
+	public void testGetStringValueNotFoundException() throws FieldNotFoundException {
 		AccessUtil.getStringValue(locator, "testkey");
 	}
 
 	@Test
-	public void testGetIntValue() throws AfieldNotFoundException {
+	public void testGetIntValue() throws FieldNotFoundException {
 		afield.setValue("1");
 		locator.addAfield(afield);
 		int value = AccessUtil.getIntValue(locator, "testkey");
@@ -43,19 +43,19 @@ public class AccessUtilTest {
 	}
 
 	@Test(expected = NumberFormatException.class)
-	public void testGetIntValueFormatException() throws AfieldNotFoundException {
+	public void testGetIntValueFormatException() throws FieldNotFoundException {
 		afield.setValue("one");
 		locator.addAfield(afield);
 		AccessUtil.getIntValue(locator, "testkey");
 	}
 
-	@Test(expected = AfieldNotFoundException.class)
-	public void testGetIntValueNotFoundException() throws AfieldNotFoundException {
+	@Test(expected = FieldNotFoundException.class)
+	public void testGetIntValueNotFoundException() throws FieldNotFoundException {
 		AccessUtil.getIntValue(locator, "testkey");
 	}
 
 	@Test
-	public void testUpdateField() throws AfieldNotFoundException {
+	public void testUpdateField() throws FieldNotFoundException {
 		afield.setValue("before value");
 		locator.addAfield(afield);
 
@@ -67,8 +67,8 @@ public class AccessUtilTest {
 		assertEquals("after value", value);
 	}
 
-	@Test(expected = AfieldNotFoundException.class)
-	public void testUpdateFieldNotFoundException() throws AfieldNotFoundException {
+	@Test(expected = FieldNotFoundException.class)
+	public void testUpdateFieldNotFoundException() throws FieldNotFoundException {
 		AccessUtil.updateAfield(locator, "testkey", "after value");
 	}
 

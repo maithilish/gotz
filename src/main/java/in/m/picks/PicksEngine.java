@@ -3,36 +3,38 @@ package in.m.picks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import in.m.picks.model.Locator;
 import in.m.picks.pool.AppenderPoolService;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.AppenderService;
+import in.m.picks.shared.BeanService;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.shared.DataDefService;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.shared.StepService;
 import in.m.picks.step.IStep;
-import in.m.picks.util.Util;
 
 public class PicksEngine {
 
 	final static Logger logger = LoggerFactory.getLogger(PicksEngine.class);
 
 	public void start() {
-		
+
 		logger.info("Starting PicksEngine");
-		logPicksMode();		
+		logPicksMode();
 		logger.info("Run Date : [{}]", ConfigService.INSTANCE.getRunDate());
+		BeanService.INSTANCE.getBeans(Locator.class);
 		loadDataDefs();
-		
+
 		seed();
 		TaskPoolService.getInstance().waitForFinish();
-		
+
 		AppenderService.INSTANCE.closeAll();
 		AppenderPoolService.getInstance().waitForFinish();
 		MonitorService.INSTANCE.logActivities();
-		
+
 		logger.info("PicksEngine shutdown complete");
-		
+
 	}
 
 	private void loadDataDefs() {

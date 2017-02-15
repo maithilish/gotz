@@ -1,5 +1,6 @@
 package in.m.picks.step;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -8,19 +9,18 @@ import org.slf4j.LoggerFactory;
 import in.m.picks.dao.DaoFactory;
 import in.m.picks.dao.DaoFactory.ORM;
 import in.m.picks.dao.IDataDao;
-import in.m.picks.exception.AfieldNotFoundException;
 import in.m.picks.exception.DataDefNotFoundException;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
-import in.m.picks.model.Afield;
-import in.m.picks.model.Afields;
 import in.m.picks.model.Data;
 import in.m.picks.model.Document;
+import in.m.picks.model.FieldsBase;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.shared.DataDefService;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.shared.StepService;
-import in.m.picks.util.AccessUtil;
+import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
 public abstract class Parser implements IStep {
@@ -30,7 +30,7 @@ public abstract class Parser implements IStep {
 	protected String dataDefName;
 	protected String locatorName;
 	protected Document document;
-	protected Afields afields;
+	private List<FieldsBase> fields;
 
 	protected Data data;
 
@@ -47,7 +47,7 @@ public abstract class Parser implements IStep {
 			if (data == null) {
 				prepareData();
 				parse();
-				store();				
+				store();
 			}
 			handover();
 		} catch (Exception e) {
@@ -56,13 +56,14 @@ public abstract class Parser implements IStep {
 	}
 
 	private void initialize()
-			throws AfieldNotFoundException, DataDefNotFoundException {
-		dataDefName = AccessUtil.getStringValue(getAfields(), "datadefName");
-		locatorName = AccessUtil.getStringValue(getAfields(), "locatorName");
+			throws FieldNotFoundException, DataDefNotFoundException {
+		dataDefName = FieldsUtil.getValue(fields, "datadef");
+		locatorName = FieldsUtil.getValue(fields, "locatorName");
 
 	}
 
-	private void prepareData() throws DataDefNotFoundException {
+	private void prepareData()
+			throws DataDefNotFoundException, ClassNotFoundException, IOException {
 		data = DataDefService.INSTANCE.getDataTemplate(dataDefName);
 		data.setDataDefId(DataDefService.INSTANCE.getDataDef(dataDefName).getId());
 		data.setDocumentId(getDocument().getId());
@@ -82,8 +83,8 @@ public abstract class Parser implements IStep {
 	public void store() throws Exception {
 		boolean persist = true;
 		try {
-			persist = AccessUtil.isAfieldTrue(afields, "persistdata");
-		} catch (AfieldNotFoundException e) {
+			persist = FieldsUtil.isFieldTrue(fields, "persistdata");
+		} catch (FieldNotFoundException e) {
 		}
 		if (persist) {
 			try {
@@ -106,14 +107,14 @@ public abstract class Parser implements IStep {
 	public void handover() throws Exception {
 		String givenUpMessage = Util.buildString("Create transformer for locator [",
 				locatorName, "] failed.");
-		List<Afield> afieldList = afields.getAfieldsByGroup("transformer")
-				.getAfields();
-		if (afieldList.size() == 0) {
+		List<FieldsBase> transformers = FieldsUtil.getFieldList(fields,
+				"transformer");
+		if (transformers.size() == 0) {
 			logger.warn("{} {}", givenUpMessage, " No transformer afield found.");
 		}
-		for (Afield afield : afieldList) {
+		for (FieldsBase transformer : transformers) {
 			if (data != null) {
-				String transformerClassName = afield.getValue();
+				String transformerClassName = transformer.getValue();
 				pushTransformerTask(transformerClassName);
 			} else {
 				logger.warn("Data not loaded - Locator [{}]", locatorName);
@@ -144,7 +145,7 @@ public abstract class Parser implements IStep {
 		IStep transformerStep = StepService.INSTANCE.getStep(transformerClassName)
 				.instance();
 		transformerStep.setInput(input);
-		transformerStep.setAfields(afields);
+		transformerStep.setFields(fields);
 		return transformerStep;
 	}
 
@@ -159,16 +160,23 @@ public abstract class Parser implements IStep {
 	}
 
 	@Override
-	public void setAfields(Afields afields) {
-		this.afields = afields;
+	public void setFields(List<FieldsBase> fields) {
+		this.fields = fields;
 	}
 
-	public Afields getAfields() {
-		return afields;
+	public List<FieldsBase> getFields() {
+		return fields;
 	}
 
 	public Document getDocument() {
 		return document;
+	}
+
+	protected boolean isDocumentLoaded() {
+		if (document.getDocumentObject() == null) {
+			return false;
+		}
+		return true;
 	}
 
 	private Data getDataFromStore(Long dataDefId, Long documentId) {

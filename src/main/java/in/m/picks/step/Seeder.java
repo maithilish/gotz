@@ -1,6 +1,8 @@
 package in.m.picks.step;
 
-import in.m.picks.model.Afields;
+import java.util.List;
+
+import in.m.picks.model.FieldsBase;
 
 public abstract class Seeder implements IStep {
 
@@ -29,7 +31,9 @@ public abstract class Seeder implements IStep {
 	}
 
 	@Override
-	public void setAfields(Afields afields) {
+	public void setFields(List<FieldsBase> fields) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

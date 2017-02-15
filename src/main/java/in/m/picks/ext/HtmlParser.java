@@ -15,20 +15,22 @@ import org.slf4j.LoggerFactory;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-import in.m.picks.model.Afield;
-import in.m.picks.model.Afields;
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Axis;
 import in.m.picks.model.DataDef;
+import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.step.Parser;
 import in.m.picks.util.AccessUtil;
+import in.m.picks.util.DataDefUtil;
+import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
 public abstract class HtmlParser extends Parser {
 
 	final static Logger logger = LoggerFactory.getLogger(HtmlParser.class);
-	
+
 	private Map<Integer, List<?>> nodeMap;
 	private ScriptEngine jsEngine;
 
@@ -40,42 +42,53 @@ public abstract class HtmlParser extends Parser {
 			Axis axis) throws ScriptException {
 		StringBuilder sb = new StringBuilder(); // to trace query strings
 		String value = null;
-		Afields scripts = dataDef.getAxisAfieldsByGroup(axis.getName(), "script");
-		Afields queries = dataDef.getAxisAfieldsByGroup(axis.getName(), "query");
-		Afields prefixes = dataDef.getAxisAfieldsByGroup(axis.getName(), "prefix");
-		if (scripts.size() > 0) {
+		List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName())
+				.getFields();
+		try {
+			List<FieldsBase> scripts = FieldsUtil.getGroupFields(list, "script");
 			setTraceString(sb, scripts, "--- Script ---");
-			AccessUtil.replaceVariables(scripts, member);
+			AccessUtil.replaceVariables(scripts, member.getAxisMap());
 			setTraceString(sb, scripts, "-- Patched --");
 			logger.trace("{}", sb);
 			value = queryByScript(scripts);
+		} catch (FieldNotFoundException e) {
 		}
-		if (queries.size() > 0) {
+
+		try {
+			List<FieldsBase> queries = FieldsUtil.getGroupFields(list, "query");
 			setTraceString(sb, queries, "--- Query ---");
-			AccessUtil.replaceVariables(queries, member);
+			AccessUtil.replaceVariables(queries, member.getAxisMap());
 			setTraceString(sb, queries, "-- Patched --");
 			logger.trace("{}", sb);
 			value = queryByXPath(page, queries);
+		} catch (FieldNotFoundException e) {
 		}
-		value = AccessUtil.prefix(prefixes, value);
+
+		try {
+			List<FieldsBase> prefix = FieldsUtil.getGroupFields(list, "prefix");
+			value = FieldsUtil.prefixFieldValue(prefix, value);
+		} catch (FieldNotFoundException e) {
+		}
+
 		return value;
 	}
 
-	private String queryByScript(Afields scripts) throws ScriptException {
+	private String queryByScript(List<FieldsBase> scripts)
+			throws ScriptException, FieldNotFoundException {
 		// TODO - check whether thread safety is involved
-		if(jsEngine == null){
+		if (jsEngine == null) {
 			initializeScriptEngine();
 		}
 		logger.trace("------Query Data------");
 		logger.trace("Scripts {} ", scripts);
 		jsEngine.put("configs", ConfigService.INSTANCE);
-		Afield script = scripts.getAfield("script");
-		Object value = jsEngine.eval(script.getValue());
+		String scriptStr = FieldsUtil.getValue(scripts, "script");
+		Object value = jsEngine.eval(scriptStr);
 		return ConvertUtils.convert(value);
 	}
 
 	private void initializeScriptEngine() {
-		logger.debug("{}","Initializing script engine");		
+		logger.debug("{}", "Initializing script engine");
 		ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
 		jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
 		if (jsEngine == null) {
@@ -83,15 +96,16 @@ public abstract class HtmlParser extends Parser {
 		}
 	}
 
-	private String queryByXPath(HtmlPage page, Afields queries) {
-		if (queries.getAfields().size() < 2) {
+	private String queryByXPath(HtmlPage page, List<FieldsBase> queries)
+			throws FieldNotFoundException {
+		if (queries.size() < 2) {
 			logger.warn("Insufficient queries in DataDef [{}]", dataDefName);
 			return null;
 		}
 		logger.trace("------Query Data------");
 		logger.trace("Queries {} ", queries);
-		String regionXpathExpr = queries.getAfield("region").getValue();
-		String xpathExpr = queries.getAfield("field").getValue();
+		String regionXpathExpr = FieldsUtil.getValue(queries, "region");
+		String xpathExpr = FieldsUtil.getValue(queries, "field");
 		String value = getByXPath(page, regionXpathExpr, xpathExpr);
 		return value;
 	}
@@ -143,7 +157,8 @@ public abstract class HtmlParser extends Parser {
 		return value;
 	}
 
-	private void setTraceString(StringBuilder sb, Afields afields, String header) {
+	private void setTraceString(StringBuilder sb, List<FieldsBase> fields,
+			String header) {
 		if (!logger.isTraceEnabled()) {
 			return;
 		}
@@ -151,10 +166,8 @@ public abstract class HtmlParser extends Parser {
 		sb.append(line);
 		sb.append(header);
 		sb.append(line);
-		for (Afield afield : afields.getAfields()) {
-			sb.append(afield.getName());
-			sb.append("=");
-			sb.append(afield.getValue());
+		for (FieldsBase field : fields) {
+			sb.append(field);
 			sb.append(line);
 		}
 	}

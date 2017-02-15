@@ -1,30 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datadefs xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
-	<datadef name="taxestable" parser="in.m.picks.ext.HtmlDataParser">
-		<afield name="datadef" group="debugstate" value="false" />
-		<afield name="dataprototype" group="debugstate" value="false" />
+	<datadef name="taxestable">
+		<fields name="group" value="debugstate">
+			<field name="datadef" value="false" />
+			<field name="dataprototype" value="false" />
+		</fields>
 		<axis name="col">
-			<afield name="region" group="query" value="//table" />
-			<afield name="field" group="query" value="*//tr[1]/th[%{col.index}+1]" />
+			<fields name="group" value="query">
+				<field name="region" value="//table" />
+				<field name="field" value="*//tr[1]/th[%{col.index}+1]" />
+			</fields>
 			<member name="year">
-				<afield name="indexRange" value="1-3" />
+				<field name="indexRange" value="1-1" />
 			</member>
 		</axis>
 		<axis name="row">
-			<afield name="region" group="query" value="//table" />
-			<afield name="field" group="query" value="*//tr[%{row.index}+1]/td[1]" />
+			<fields name="group" value="query">
+				<field name="region" value="//table" />
+				<field name="field" value="*//tr[%{row.index}+1]/td[1]" />
+			</fields>
 			<member name="item">
-				<afield name="indexRange" value="1-2" />
+				<field name="indexRange" value="1-2" />
 			</member>
 			<filter axis="row">
-				<afield name="blank" value="" group="value" />
+				<fields name="group" value="value">
+					<field name="blank" value="" />
+				</fields>
 			</filter>
 		</axis>
 		<axis name="fact">
-			<afield name="region" group="query" value="//table" />
-			<afield name="field" group="query"
-				value="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
+			<fields name="group" value="query">
+				<field name="region" value="//table" />
+				<field name="field"
+					value="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
+			</fields>
 		</axis>
 	</datadef>
 </datadefs>

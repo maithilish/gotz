@@ -11,11 +11,11 @@ import org.junit.Test;
 
 public class AfieldTest {
 
-	private Afield af;
+	private Field af;
 
 	@Before
 	public void setUp() throws Exception {
-		af = new Afield();
+		af = new Field();
 		af.setName("testName");
 		af.setValue("testValue");
 		af.setGroup("testGroup");
@@ -29,7 +29,7 @@ public class AfieldTest {
 
 	@Test
 	public void testAfieldAfield() {
-		Afield afCopy = new Afield(af);
+		Field afCopy = new Field(af);
 		assertEquals(af, afCopy);
 		assertEquals(af.hashCode(), afCopy.hashCode());
 		assertNotSame(af, afCopy);
@@ -37,7 +37,7 @@ public class AfieldTest {
 
 	@Test
 	public void testAfieldStringString() {
-		Afield af1 = new Afield("testname", "testvalue");
+		Field af1 = new Field("testname", "testvalue");
 		assertEquals(af1.getName(), "testname");
 		assertEquals(af1.getValue(), "testvalue");
 		assertNull(af1.getGroup());
@@ -46,7 +46,7 @@ public class AfieldTest {
 
 	@Test
 	public void testEqualsObject() {
-		Afield afCopy = new Afield();
+		Field afCopy = new Field();
 		afCopy.setName("testName");
 		afCopy.setValue("testValue");
 		afCopy.setGroup("testGroup");

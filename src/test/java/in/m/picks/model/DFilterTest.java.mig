@@ -25,8 +25,8 @@ public class DFilterTest {
 	}
 
 	private DFilter getFilter() {
-		Afield af1 = new Afield("tname1", "tvalue1");
-		Afield af2 = new Afield("tname2", "tvalue2");
+		Field af1 = new Field("tname1", "tvalue1");
+		Field af2 = new Field("tname2", "tvalue2");
 
 		DFilter df = new DFilter();
 		df.setAxis("col");

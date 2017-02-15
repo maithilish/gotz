@@ -43,9 +43,9 @@ public class DataDefTest {
 
 	@Test
 	public void testGetAxisAfieldsByGroup() {
-		Afield query1 = new Afield("tname1", "tvalue1");
+		Field query1 = new Field("tname1", "tvalue1");
 		query1.setGroup("query");
-		Afield query2 = new Afield("tname2", "tvalue2");
+		Field query2 = new Field("tname2", "tvalue2");
 		query2.setGroup("query");
 
 		DAxis col = new DAxis();
@@ -55,7 +55,7 @@ public class DataDefTest {
 
 		dataDef.addAxis(col);
 
-		Afields afields = dataDef.getAxisAfieldsByGroup("col", "query");
+		Fields afields = dataDef.getAxisAfieldsByGroup("col", "query");
 		assertEquals(2, afields.getAfields().size());
 		assertTrue(afields.getAfields().contains(query1));
 		assertTrue(afields.getAfields().contains(query2));
@@ -73,9 +73,9 @@ public class DataDefTest {
 
 	@Test
 	public void testGetAxisAfieldsByName() {
-		Afield query1 = new Afield("tname1", "tvalue1");
+		Field query1 = new Field("tname1", "tvalue1");
 		query1.setGroup("query");
-		Afield query2 = new Afield("tname2", "tvalue2");
+		Field query2 = new Field("tname2", "tvalue2");
 		query2.setGroup("query");
 
 		DAxis col = new DAxis();
@@ -85,7 +85,7 @@ public class DataDefTest {
 
 		dataDef.addAxis(col);
 
-		Afields afields = dataDef.getAxisAfieldsByName("col", "tname1");
+		Fields afields = dataDef.getAxisAfieldsByName("col", "tname1");
 		assertEquals(1, afields.getAfields().size());
 		assertTrue(afields.getAfields().contains(query1));
 
@@ -126,9 +126,9 @@ public class DataDefTest {
 	}
 
 	private DataDef createDataDef() {
-		Afield query1 = new Afield("tname1", "tvalue1");
+		Field query1 = new Field("tname1", "tvalue1");
 		query1.setGroup("query");
-		Afield query2 = new Afield("tname2", "tvalue2");
+		Field query2 = new Field("tname2", "tvalue2");
 		query2.setGroup("query");
 
 		DAxis col = new DAxis();

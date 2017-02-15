@@ -1,12 +1,12 @@
 package in.m.picks.exception;
 
-public class AfieldNotFoundException extends Exception {
+public class FieldNotFoundException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
 	private String name;
 
-	public AfieldNotFoundException(String name) {
+	public FieldNotFoundException(String name) {
 		this.name = name;
 	}
 

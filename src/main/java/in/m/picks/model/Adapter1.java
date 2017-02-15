@@ -5,6 +5,20 @@
 // Generated on: 2017.02.15 at 12:30:34 PM IST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://codetab.org/picks",
-		elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package in.m.picks.model;
+
+import java.util.Date;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+public class Adapter1 extends XmlAdapter<String, Date> {
+
+	public Date unmarshal(String value) {
+		return (in.m.picks.model.DateAdapter.parseDate(value));
+	}
+
+	public String marshal(Date value) {
+		return (in.m.picks.model.DateAdapter.printDate(value));
+	}
+
+}

@@ -8,12 +8,11 @@
 package in.m.picks.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -21,22 +20,25 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import in.m.picks.misc.NullIterator;
+
 /**
  * <p>
- * Java class for beans complex type.
+ * Java class for field complex type.
  * 
  * <p>
  * The following schema fragment specifies the expected content contained within
  * this class.
  * 
  * <pre>
- * &lt;complexType name="beans">
+ * &lt;complexType name="field">
  *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *     &lt;extension base="{http://codetab.org/picks}fieldsBase">
  *       &lt;sequence>
- *         &lt;element ref="{http://codetab.org/picks}bean" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
- *     &lt;/restriction>
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -44,40 +46,60 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * 
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "beans", propOrder = { "bean" })
-public class Beans implements Serializable {
+@XmlType(name = "field")
+public class Field extends FieldsBase implements Serializable {
 
 	private final static long serialVersionUID = 1L;
-	@XmlElement
-	protected List<Bean> bean;
+	@XmlAttribute(name = "name")
+	protected String name;
+	@XmlAttribute(name = "value")
+	protected String value;
 
 	/**
-	 * Gets the value of the bean property.
+	 * Gets the value of the name property.
 	 * 
-	 * <p>
-	 * This accessor method returns a reference to the live list, not a
-	 * snapshot. Therefore any modification you make to the returned list will
-	 * be present inside the JAXB object. This is why there is not a
-	 * <CODE>set</CODE> method for the bean property.
-	 * 
-	 * <p>
-	 * For example, to add a new item, do as follows:
-	 * 
-	 * <pre>
-	 * getBean().add(newItem);
-	 * </pre>
-	 * 
-	 * 
-	 * <p>
-	 * Objects of the following type(s) are allowed in the list {@link Bean }
-	 * 
+	 * @return possible object is {@link String }
 	 * 
 	 */
-	public List<Bean> getBean() {
-		if (bean == null) {
-			bean = new ArrayList<Bean>();
-		}
-		return this.bean;
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Sets the value of the name property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setName(String value) {
+		this.name = value;
+	}
+
+	/**
+	 * Gets the value of the value property.
+	 * 
+	 * @return possible object is {@link String }
+	 * 
+	 */
+	public String getValue() {
+		return value;
+	}
+
+	/**
+	 * Sets the value of the value property.
+	 * 
+	 * @param value
+	 *            allowed object is {@link String }
+	 * 
+	 */
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	@Override
+	public Iterator<FieldsBase> iterator() {
+		return new NullIterator();
 	}
 
 	@Override
