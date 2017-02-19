@@ -53,6 +53,10 @@ public class LocatorSeeder extends Seeder {
 		for (Locators locators : list) {
 			extractLocator(locators);
 		}
+		for (Locator locator : locators) {
+			Util.logState(logger, "locator", "initialized locator",
+					locator.getFields(), locator);
+		}
 	}
 
 	private void extractLocator(Locators locators) {
@@ -76,17 +80,14 @@ public class LocatorSeeder extends Seeder {
 	}
 
 	@Override
-	public void handover() throws Exception {
+	public void handover() {
 		int count = 0;
 		for (Locator locator : locators) {
 			try {
-				String givenUpMessage = Util.buildString(
-						"Create loader for locator [", locator.getName(),
-						"] failed.");
 				List<FieldsBase> loaders = FieldsUtil
 						.getFieldList(locator.getFields(), "loader");
 				if (loaders.size() == 0) {
-					logger.warn("{} {}", givenUpMessage, " No loader afield found.");
+					throw new FieldNotFoundException("no loader field defined");
 				}
 				for (FieldsBase loader : loaders) {
 					IStep task = createTask(loader.getValue(), locator);
@@ -120,11 +121,13 @@ public class LocatorSeeder extends Seeder {
 	private void mergeFields(FieldsBase classFields) throws FieldNotFoundException {
 		logger.debug("Merging Fields with Locators");
 		for (Locator locator : locators) {
-			// FieldsBase fields = FieldsUtil.getFieldsByGroup(classFields,
-			// locator.getGroup());
 			List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
 					locator.getGroup());
 			locator.getFields().addAll(fields);
+		}
+		for (Locator locator : locators) {
+			Util.logState(logger, "locator", "after merging fields",
+					locator.getFields(), locator);
 		}
 	}
 

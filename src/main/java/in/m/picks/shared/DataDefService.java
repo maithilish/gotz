@@ -12,7 +12,6 @@ import java.util.Set;
 import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import in.m.picks.dao.DaoFactory.ORM;
 import in.m.picks.dao.IDataDefDao;
@@ -136,14 +135,15 @@ public enum DataDefService {
 			dataDefsMap.put(dataDef.getName(), dataDef);
 		}
 
-		// debug state - when afield group="debugstate" name="datadef"
-		// value="true"
-		for (DataDef dataDef : newDataDefs) {
-			debugState(dataDef, "--- DataDef read from file ----");
-		}
-		for (DataDef dataDef : storedDataDefs) {
-			debugState(dataDef, "--- DataDef loaded from store ----");
-		}
+		// log state - when field logstate is true
+//		for (DataDef dataDef : newDataDefs) {
+//			Util.logState(logger, "--- DataDef read from file ----",
+//					dataDef.getFields(), dataDef);
+//		}
+//		for (DataDef dataDef : storedDataDefs) {
+//			Util.logState(logger, "--- DataDef loaded from store ----",
+//					dataDef.getFields(), dataDef);
+//		}
 	}
 
 	private List<DataDef> getDataDefsFromBeans() {
@@ -327,19 +327,6 @@ public enum DataDefService {
 		return dataDefsMap.size();
 	}
 
-	public void debugState(DataDef dataDef, String heading) {
-		try {
-			if (FieldsUtil.isFieldTrue(dataDef.getFields(), "debugstate",
-					"datadef")) {
-				MDC.put("entitytype", "datadef");
-				logger.debug(heading);
-				debugDataDef(dataDef);
-				MDC.remove("entitytype");
-			}
-		} catch (FieldNotFoundException e) {
-		}
-	}
-
 	private void traceDataStructure() throws ClassNotFoundException, IOException {
 		if (!logger.isTraceEnabled()) {
 			return;
@@ -385,11 +372,6 @@ public enum DataDefService {
 			StringBuilder sb = formattedDataDef(dataDef);
 			logger.trace("{}", sb);
 		}
-	}
-
-	private void debugDataDef(DataDef dataDef) {
-		StringBuilder sb = formattedDataDef(dataDef);
-		logger.debug("{}", sb);
 	}
 
 	private StringBuilder formattedDataDef(DataDef dataDef) {

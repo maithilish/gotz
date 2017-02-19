@@ -195,4 +195,15 @@ public class FieldsUtil {
 		return prefixedValue;
 	}
 
+	public static int fieldCount(List<FieldsBase> fields) {
+		int count = 0;
+		FieldsIterator ite = new FieldsIterator(fields);
+		while (ite.hasNext()) {
+			FieldsBase f = ite.next();
+			if (f instanceof Field) {
+				count++;
+			}
+		}
+		return count;
+	}
 }

@@ -5,9 +5,7 @@
 		<locator name="taxes"
 			url="file://orange/data/workspace/npicks/src/main/resources/simple/html/taxes.html">
 			<field name="live" value="PT2M" />
-			<fields name="group" value="debugstate">
-				<field name="locator" value="true" />
-			</fields>
+			<field name="logstate" value="true" />
 		</locator>
 	</locators>
 </locators>

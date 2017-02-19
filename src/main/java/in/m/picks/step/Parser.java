@@ -67,6 +67,7 @@ public abstract class Parser implements IStep {
 		data = DataDefService.INSTANCE.getDataTemplate(dataDefName);
 		data.setDataDefId(DataDefService.INSTANCE.getDataDef(dataDefName).getId());
 		data.setDocumentId(getDocument().getId());
+		Util.logState(logger,"parser-" + dataDefName, "Data Template", fields, data);
 	}
 
 	// implementation delegated to concrete implementation

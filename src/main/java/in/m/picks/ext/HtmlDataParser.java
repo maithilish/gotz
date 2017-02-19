@@ -15,6 +15,7 @@ import in.m.picks.model.DataDef;
 import in.m.picks.model.Member;
 import in.m.picks.shared.DataDefService;
 import in.m.picks.step.IStep;
+import in.m.picks.util.Util;
 
 public class HtmlDataParser extends HtmlParser {
 
@@ -29,14 +30,8 @@ public class HtmlDataParser extends HtmlParser {
 	public Object parse() {
 		try {
 			parseData();
-			System.out.println(data.toStringIds());
-			System.out.println(document.getDocumentObject());
-			for (Member member : data.getMembers()) {
-				System.out.println(member.traceMember());
-			}
 		} catch (DataDefNotFoundException | ScriptException
 				| FieldNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -59,6 +54,8 @@ public class HtmlDataParser extends HtmlParser {
 				}
 			}
 		}
+		Util.logState(logger, "parser-" + dataDefName, "Data after parse",
+				getFields(), data);
 	}
 
 }

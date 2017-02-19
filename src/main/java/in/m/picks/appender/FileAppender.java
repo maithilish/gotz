@@ -18,17 +18,14 @@ public class FileAppender extends Appender {
 	public void run() {
 		PrintWriter writer = null;
 		try {
-			writer = new PrintWriter(new File("output.txt"));
+			writer = new PrintWriter(new File("target/output.txt"));
 			for (;;) {
 				Object item = queue.take();
 				if (item == Marker.EOF) {
 					break;
 				}
-				System.out.println(item);
-				if (item instanceof String) {
-					String str = (String) item;
-					writer.println(str);
-				}
+				String str = item.toString();
+				writer.println(str);
 			}
 		} catch (FileNotFoundException | InterruptedException e) {
 			e.printStackTrace();

@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import in.m.picks.dao.DaoFactory;
 import in.m.picks.dao.DaoFactory.ORM;
@@ -63,7 +62,6 @@ public abstract class Loader implements IStep {
 
 	@Override
 	public void load() throws Exception {
-		debugState(locator, "--- Locator read from file ---", true);
 		Locator savedLocator = getLocatorFromStore(locator.getName(),
 				locator.getGroup());
 		if (savedLocator != null) {
@@ -72,10 +70,10 @@ public abstract class Loader implements IStep {
 			savedLocator.setUrl(locator.getUrl());
 			// switch locator with existing locator (detached locator)
 			locator = savedLocator;
-			debugState(locator, "--- Locator loaded from store ---", true);
+			Util.logState(logger,"locator", "--- Locator loaded from store ---",
+					locator.getFields(), locator);
 		} else {
-			debugState(locator, "Locator from file is used as it is not yet stored",
-					false);
+			logger.debug("{}", "Locator from file is used as it is not yet stored");
 		}
 
 		Long liveDocumentId = getLiveDocumentId();
@@ -128,10 +126,10 @@ public abstract class Loader implements IStep {
 				throw e;
 			}
 			logger.debug("Stored {}", locator);
-			debugState(locator, "--- Locator now stored ---", true);
+			Util.logState(logger,"locator", "--- Locator now stored ---", locator.getFields(),
+					locator);
 		} else {
 			logger.debug("Persist [false]. Not Stored {}", locator);
-			debugState(locator, "Persist [false], Locator not stored", false);
 		}
 	}
 
@@ -296,31 +294,6 @@ public abstract class Loader implements IStep {
 
 	public boolean isDocumentLoaded() {
 		return Objects.nonNull(document);
-	}
-
-	public void debugState(Locator locator, String heading, boolean full) {
-		try {
-			if (FieldsUtil.isFieldTrue(locator.getFields(), "debugstate")) {
-				MDC.put("entitytype", "locator");
-				logger.debug(heading);
-				if (full) {
-					debugLocator(locator);
-				}
-				MDC.remove("entitytype");
-			}
-		} catch (FieldNotFoundException e) {
-		}
-	}
-
-	private void debugLocator(Locator locator) {
-		String line = System.lineSeparator();
-		String json = Util.getIndentedJson(locator, true);
-		String className = locator.getClass().getName();
-		StringBuilder sb = new StringBuilder();
-		sb.append(className);
-		sb.append(line);
-		sb.append(json);
-		logger.debug("{}", sb);
 	}
 
 	// template method to be implemented by subclass

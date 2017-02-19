@@ -2,17 +2,14 @@
 <datadefs xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
 	<datadef name="taxestable">
-		<fields name="group" value="debugstate">
-			<field name="datadef" value="false" />
-			<field name="dataprototype" value="false" />
-		</fields>
+		<field name="logstate" value="true" />
 		<axis name="col">
 			<fields name="group" value="query">
 				<field name="region" value="//table" />
 				<field name="field" value="*//tr[1]/th[%{col.index}+1]" />
 			</fields>
 			<member name="year">
-				<field name="indexRange" value="1-1" />
+				<field name="indexRange" value="1-3" />
 			</member>
 		</axis>
 		<axis name="row">

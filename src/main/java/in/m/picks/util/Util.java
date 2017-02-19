@@ -21,10 +21,14 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import in.m.picks.exception.FieldNotFoundException;
+import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Wrapper;
 
 public class Util {
@@ -189,6 +193,35 @@ public class Util {
 	public static String[] excludes(String... excludes) {
 		String[] jdoExcludes = { "dnDetachedState", "dnFlags", "dnStateManager" };
 		return ArrayUtils.addAll(jdoExcludes, excludes);
+	}
+
+	public static void logState(Logger logger, String entity, String label,
+			List<FieldsBase> fields, Object object) {
+		try {
+			if (FieldsUtil.isFieldTrue(fields, "logstate")) {				
+				MDC.put("entitytype", entity);
+				logger.debug("{}", label);
+				if(object instanceof String || object instanceof StringBuilder){
+					logger.debug("{}", object);
+				}else{
+					logger.debug("{}", getState(object));	
+				}
+				
+				MDC.remove("entitytype");
+			}
+		} catch (FieldNotFoundException e) {
+		}
+	}
+
+	private static StringBuilder getState(Object object) {
+		String line = System.lineSeparator();
+		String json = Util.getIndentedJson(object, true);
+		String className = object.getClass().getName();
+		StringBuilder sb = new StringBuilder();
+		sb.append(className);
+		sb.append(line);
+		sb.append(json);
+		return sb;
 	}
 
 }
