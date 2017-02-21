@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<locators xmlns="http://codetab.org/picks">
+	<locators group="quote">
+		<locator name="ITC"
+			url="http://www.moneycontrol.com/india/stockpricequote/cigarettes/itc/ITC">
+			<field name="live" value="P1D" />
+			<field name="logstate" value="true" />
+		</locator>
+	</locators>
+	<!-- <locators group="bs"> -->
+	<!-- <locator name="AsianPaints" -->
+	<!-- url="http://www.moneycontrol.com/financials/asianpaints/balance-sheet/AP31"> -->
+	<!-- <field name="live" value="P1D" /> -->
+	<!-- <field name="logstate" value="true" /> -->
+	<!-- </locator> -->
+	<!-- </locators> -->
+</locators>

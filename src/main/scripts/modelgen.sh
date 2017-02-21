@@ -59,7 +59,7 @@ sed -i "s/$code_point/$code $code_point/g" $GENERATED_DIR/$MODEL_DIR/$java_file
 ## add excludes to hash and equals methods
 
 code_point='{"id", "fields",'
-code='{"id", "fields", "fromDate", "toDate", "memberSets",'
+code='{"id", "fromDate", "toDate", "memberSets",'
 java_file=DataDef.java
 replace "s/$code_point/$code/g" $java_file 
 

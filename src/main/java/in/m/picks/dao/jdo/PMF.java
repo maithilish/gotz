@@ -25,9 +25,9 @@ public enum PMF {
 	private PersistenceManagerFactory factory;
 
 	private PMF() {
-		logger.info("Initializing JDO PMF");
+		logger.info("initialize JDO PMF");
 		createFactory();
-		logger.debug("Initialized JDO PMF");
+		logger.debug("initialized JDO PMF");
 	}
 
 	private void createFactory() {

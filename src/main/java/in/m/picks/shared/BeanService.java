@@ -38,7 +38,7 @@ public enum BeanService {
 
 	private BeanService() {
 		String className = this.getClass().getName();
-		logger.info("initializing singleton {}", className);
+		logger.info("initialize singleton {}", className);
 		beans = new ArrayList<Object>();
 		try {
 			validateBeanFile();
@@ -47,11 +47,10 @@ public enum BeanService {
 			unmarshallBeanFiles();
 		} catch (JAXBException | ClassNotFoundException | SAXException
 				| IOException e) {
-			e.printStackTrace();
-			logger.trace("Stacktrace ", e);
-			logger.error("{}. Picks terminated.", e.getLocalizedMessage());
+			logger.trace("{}", e);
+			logger.error("{}", e.getLocalizedMessage());
 			MonitorService.INSTANCE
-					.triggerFatal("Initialization failure " + className);
+					.triggerFatal("initialization failure " + className);
 		}
 		logger.debug("initialized singleton {}", className);
 	}
@@ -97,24 +96,24 @@ public enum BeanService {
 		String schemaFile = ConfigService.INSTANCE.getConfig("picks.schemaFile");
 		String baseName = FilenameUtils.getFullPath(beanFile);
 
-		logger.info("initializing Bean file");
+		logger.info("initialize Bean file");
 		logger.info("using Bean configuartion file [{}]", beanFile);
 
 		beanFiles = unmarshall(beanFile, Bean.class);
-		logger.info("Configuring Bean files...");
+		logger.info("configure Bean files...");
 		for (Bean bean : beanFiles) {
 			String fileName = baseName.concat(bean.getXmlFile());
 			bean.setXmlFile(fileName);
 			if (StringUtils.isEmpty(bean.getSchemaFile())) {
 				bean.setSchemaFile(schemaFile);
 			}
-			logger.info("{}", bean.toString());
+			logger.debug("{}", bean.toString());
 		}
 	}
 
 	private void validateBeanFiles()
 			throws JAXBException, SAXException, IOException {
-		logger.info("validating Bean files...");
+		logger.info("validate Bean files...");
 		for (Bean bean : beanFiles) {
 			validateSchema(bean.getXmlFile(), bean.getSchemaFile());
 		}
@@ -130,6 +129,7 @@ public enum BeanService {
 
 	private void unmarshallBeanFiles()
 			throws ClassNotFoundException, JAXBException, FileNotFoundException {
+		logger.info("unmarshall bean files...");
 		for (Bean bean : beanFiles) {
 			Class<?> ofClass = Class.forName(bean.getClassName());
 			List<?> list = unmarshall(bean.getXmlFile(), ofClass);
@@ -142,7 +142,7 @@ public enum BeanService {
 		String packageName = ofClass.getPackage().getName();
 		JAXBContext jc = JAXBContext.newInstance(packageName);
 		Unmarshaller um = jc.createUnmarshaller();
-		logger.info("unmarshall : [{}] to type [{}]", fileName, ofClass);
+		logger.debug("unmarshall : [{}] to type [{}]", fileName, ofClass);
 		StreamSource xmlSource = new StreamSource(
 				Util.getResourceAsStream(fileName));
 		Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
@@ -153,14 +153,14 @@ public enum BeanService {
 			T t = (T) JAXBIntrospector.getValue(e);
 			list.add(t);
 		}
-		logger.info("objects created [{}]", list.size());
+		logger.debug("model objects created [{}]", list.size());
 		return list;
 	}
 
 	private void debugState(Wrapper wrapper) throws JAXBException {
 		ObjectFactory of = new ObjectFactory();
 		JAXBElement<Wrapper> we = of.createWrapper(wrapper);
-		MDC.put("entitytype", "xml");
+		MDC.put("entitytype", "defs");
 		marshall(we, wrapper);
 		MDC.remove("entitytype");
 	}

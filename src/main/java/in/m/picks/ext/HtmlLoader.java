@@ -29,19 +29,19 @@ public class HtmlLoader extends Loader {
 	public Object fetchDocument(String url)
 			throws Exception, MalformedURLException, IOException {
 		WebClient webClient = getWebClient();
-		logger.debug("fetch web resource {}", url);
+		logger.info("fetch web resource {}", url);
 		try {
 			HtmlPage htmlPage = webClient.getPage(url);
 			logger.debug("fetched web resource {}", url);
 			return htmlPage;
 		} finally {
 			webClient.setRefreshHandler(new ImmediateRefreshHandler());
-			webClient.close();
+			webClient.close();			
 		}
 	}
 
 	private WebClient getWebClient() {
-		int timeout = 120000;
+		int timeout = 120000;  // millis
 		String key = "picks.webClientTimeout";
 		try {
 			timeout = Integer.parseInt(ConfigService.INSTANCE.getConfig(key));

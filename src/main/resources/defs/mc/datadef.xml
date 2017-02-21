@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datadefs xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
+	<datadef name="finlocators">
+		<field name="type" value="locator" />
+		<axis name="col">
+			<fields name="group" value="script">
+				<field name="script" value="configs.getRunDate()" />
+			</fields>
+			<member name="date" />
+		</axis>
+		<axis name="row">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//ul//*[count(*)=0 and contains(.,'Balance Sheet')]/ancestor::ul[1]" />
+				<field name="field" value="li/a[contains(.,'%{row.match}')]" />
+			</fields>
+			<member name="bs" match="Balance Sheet">
+				<field name="group" value="bs" />
+				<field name="live" value="P3D" />
+			</member>
+			<!-- <member name="pl" match="Profit &amp; Loss" group="pl" /> -->
+		</axis>
+		<axis name="fact">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//ul//*[count(*)=0 and contains(.,'Balance Sheet')]/ancestor::ul[1]" />
+				<field name="field" value="*//a[contains(.,'%{row.match}')]/@href" />
+			</fields>
+			<fields name="group" value="prefix">
+				<field name="prefix" value="http://www.moneycontrol.com/" />
+			</fields>
+		</axis>
+	</datadef>
+	<datadef name="bs">
+		<axis name="col">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]" />
+				<field name="field" value="*//tr[1]/td[%{col.index}+1]" />
+			</fields>
+			<member name="year">
+				<field name="indexRange" value="1-5" />
+			</member>
+		</axis>
+		<axis name="row">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]" />
+				<field name="field" value="*//tr[%{row.index}+4]/td[1]" />
+			</fields>
+			<member name="item">
+				<field name="indexRange" value="1-33" />
+			</member>
+			<filter axis="row">
+				<fields name="group" value="value">
+					<field name="blank" value="" />
+					<field name="f1" value="Sources Of Funds" />
+					<field name="f2" value="Application Of Funds" />
+				</fields>
+			</filter>
+		</axis>
+		<axis name="fact">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]" />
+				<field name="field"
+					value="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
+			</fields>
+		</axis>
+	</datadef>
+</datadefs>
+
+

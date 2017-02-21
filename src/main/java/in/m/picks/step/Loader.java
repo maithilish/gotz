@@ -48,14 +48,18 @@ public abstract class Loader implements IStep {
 	@Override
 	public void run() {
 		if (locator == null) {
-			logger.warn("{}", "Unable to run loader as input [Locator] is not set");
+			logger.warn("{}", "unable to run loader as Locator is not set");
 		} else {
 			try {
 				load();
 				store();
 				handover();
 			} catch (Exception e) {
-				e.printStackTrace();
+				String message = Util.buildString("load Locator[name=",
+						locator.getName(), " group=", locator.getGroup(), "]");
+				logger.error("{} {}", message, Util.getMessage(e));
+				logger.trace("{}", e);
+				MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
 			}
 		}
 	}
@@ -70,7 +74,7 @@ public abstract class Loader implements IStep {
 			savedLocator.setUrl(locator.getUrl());
 			// switch locator with existing locator (detached locator)
 			locator = savedLocator;
-			Util.logState(logger,"locator", "--- Locator loaded from store ---",
+			Util.logState(logger, "locator", "--- Locator loaded from store ---",
 					locator.getFields(), locator);
 		} else {
 			logger.debug("{}", "Locator from file is used as it is not yet stored");
@@ -78,22 +82,22 @@ public abstract class Loader implements IStep {
 
 		Long liveDocumentId = getLiveDocumentId();
 		if (liveDocumentId == null) {
-			try {
-				Object object = fetchDocument(locator.getUrl());
-				document = new Document();
-				document.setName(locator.getName());
-				document.setDocumentObject(object);
-				document.setFromDate(ConfigService.INSTANCE.getRunDateTime());
-				document.setToDate(getToDate());
-				document.setUrl(locator.getUrl());
-				locator.getDocuments().add(document);
-				logger.trace("created new document {}", document);
-			} catch (Exception e) {
-				logger.warn("{}", e);
-			}
+			Object object = fetchDocument(locator.getUrl());
+			document = new Document();
+			document.setName(locator.getName());
+			document.setDocumentObject(object);
+			document.setFromDate(ConfigService.INSTANCE.getRunDateTime());
+			document.setToDate(getToDate());
+			document.setUrl(locator.getUrl());
+			locator.getDocuments().add(document);
+			logger.info("create new document. Locator[name={} group={} toDate={}]",
+					locator.getName(), locator.getGroup(), document.getToDate());
+			logger.trace("create new document {}", document);
 		} else {
 			document = getDocument(liveDocumentId);
-			logger.trace("found live document {}", document);
+			logger.info("use stored document. Locator[name={} group={} toDate={}]",
+					locator.getName(), locator.getGroup(), document.getToDate());
+			logger.trace("found document {}", document);
 		}
 	}
 
@@ -106,11 +110,11 @@ public abstract class Loader implements IStep {
 		}
 
 		if (persist) {
+			/*
+			 * fields are not persistable, so need to set them from the
+			 * fields.xml every time
+			 */
 			try {
-				/*
-				 * fields are not persistable, so need to set them from the
-				 * fields.xml every time
-				 */
 				List<FieldsBase> fields = locator.getFields();
 				ORM orm = DaoFactory
 						.getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));
@@ -120,14 +124,14 @@ public abstract class Loader implements IStep {
 				locator = dao.getLocator(locator.getId());
 				locator.getFields().addAll(fields);
 				document = getDocument(document.getId());
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.debug("{}", e.getMessage());
+				logger.debug("Stored {}", locator);
+				Util.logState(logger, "locator", "--- Locator now stored ---",
+						locator.getFields(), locator);
+			} catch (RuntimeException e) {
+				logger.error("{}", e.getLocalizedMessage());
+				logger.trace("", e);
 				throw e;
 			}
-			logger.debug("Stored {}", locator);
-			Util.logState(logger,"locator", "--- Locator now stored ---", locator.getFields(),
-					locator);
 		} else {
 			logger.debug("Persist [false]. Not Stored {}", locator);
 		}
@@ -167,10 +171,9 @@ public abstract class Loader implements IStep {
 			logger.debug("Parser instance [{}] pushed to pool. Locator [{}]",
 					task.getClass(), locator.getName());
 		} catch (Exception e) {
-			logger.warn("Unable to create parser [{}] for locator [{}]", e,
-					locator.getName());
-			String givenUpMessage = Util.buildString("Create parser for locator [",
-					locator.getName(), "] failed.");
+			String givenUpMessage = Util.buildString("create parser for locator [",
+					locator.getName(), "] failed");
+			logger.error("{}. {}", givenUpMessage, Util.getMessage(e));
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
 		}
 	}
@@ -185,8 +188,18 @@ public abstract class Loader implements IStep {
 		Field field = new Field();
 		field.setName("locatorName");
 		field.setValue(locator.getName());
-
 		fields.getFields().add(field);
+
+		field = new Field();
+		field.setName("locatorGroup");
+		field.setValue(locator.getGroup());
+		fields.getFields().add(field);
+
+		field = new Field();
+		field.setName("locatorUrl");
+		field.setValue(locator.getUrl());
+		fields.getFields().add(field);
+
 		List<FieldsBase> handoverFields = new ArrayList<>();
 		handoverFields.add(fields);
 
@@ -250,7 +263,7 @@ public abstract class Loader implements IStep {
 		try {
 			live = FieldsUtil.getValue(locator.getFields(), "live");
 		} catch (FieldNotFoundException e) {
-			logger.warn("{} - defaults to 0 day. {}", e, locator);
+			logger.warn("{} - defaults to 0 day. {}", e, locator.getName());
 		}
 		if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
 			live = "PT0S"; // zero second
@@ -267,7 +280,7 @@ public abstract class Loader implements IStep {
 				toDate = ZonedDateTime.ofInstant(td.toInstant(),
 						ZoneId.systemDefault());
 			} catch (ParseException pe) {
-				logger.warn("{} afield [live] {} {}. Defaults to 0 days", locator,
+				logger.warn("{} field [live] {} {}. Defaults to 0 days", locator,
 						live, e);
 				TemporalAmount ta = Util.praseTemporalAmount("PT0S");
 				toDate = fromDate.plus(ta);
@@ -279,7 +292,7 @@ public abstract class Loader implements IStep {
 	}
 
 	protected Document getDocument(Long id) {
-		// get fully loaded Document
+		// get Document with documentObject
 		try {
 			ORM orm = DaoFactory
 					.getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));

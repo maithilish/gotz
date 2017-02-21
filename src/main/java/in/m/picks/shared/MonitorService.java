@@ -37,8 +37,14 @@ public enum MonitorService {
 	}
 
 	public void logActivities() {
+		logger.info("{}", "Picks run completed");
+		logger.info("{}", "--- Summary ---");
 		for (Activity activity : activitesList) {
-			logger.info("{}", activity);
+			logger.info("Activity type={}", activity.getType());
+			logger.info("         message={}", activity.getMessage());
+			logger.info("         {}={}",
+					activity.getThrowable().getClass().getSimpleName(),
+					activity.getThrowable().getLocalizedMessage());
 		}
 	}
 

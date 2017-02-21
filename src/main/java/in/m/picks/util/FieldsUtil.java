@@ -190,7 +190,9 @@ public class FieldsUtil {
 		Iterator<FieldsBase> ite = new FieldsIterator(prefixes);
 		while (ite.hasNext()) {
 			FieldsBase prefix = ite.next();
-			prefixedValue = prefix.getValue() + prefixedValue;
+			if (prefix instanceof Field) {
+				prefixedValue = prefix.getValue() + prefixedValue;
+			}
 		}
 		return prefixedValue;
 	}

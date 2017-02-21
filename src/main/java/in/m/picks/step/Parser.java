@@ -43,15 +43,22 @@ public abstract class Parser implements IStep {
 	private void processStep() {
 		try {
 			initialize();
-			load();
+			load();			
 			if (data == null) {
+				logger.info("parse data {}",Util.getLocatorLabel(fields));
 				prepareData();
 				parse();
+				filter();
 				store();
+			}else{
+				logger.info("found parsed data {}",Util.getLocatorLabel(fields));
 			}
 			handover();
 		} catch (Exception e) {
-			e.printStackTrace();
+			String message = "parse data " + Util.getLocatorLabel(fields);
+			logger.error("{} {}", message, Util.getMessage(e));
+			logger.trace("{}", e);
+			MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
 		}
 	}
 
@@ -67,11 +74,14 @@ public abstract class Parser implements IStep {
 		data = DataDefService.INSTANCE.getDataTemplate(dataDefName);
 		data.setDataDefId(DataDefService.INSTANCE.getDataDef(dataDefName).getId());
 		data.setDocumentId(getDocument().getId());
-		Util.logState(logger,"parser-" + dataDefName, "Data Template", fields, data);
+		Util.logState(logger, "parser-" + dataDefName, "Data Template", fields,
+				data);
 	}
 
 	// implementation delegated to concrete implementation
-	protected abstract Object parse() throws Exception;
+	protected abstract void parse() throws Exception;
+
+	protected abstract void filter() throws Exception;
 
 	@Override
 	public void load() throws Exception {

@@ -2,10 +2,17 @@ package in.m.picks.step;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import in.m.picks.model.Activity.Type;
 import in.m.picks.model.FieldsBase;
+import in.m.picks.shared.MonitorService;
 
 public abstract class Seeder implements IStep {
 
+	final static Logger logger = LoggerFactory.getLogger(Seeder.class);
+	
 	@Override
 	public void run() {
 		processStep();
@@ -17,7 +24,10 @@ public abstract class Seeder implements IStep {
 			load();
 			handover();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.warn("{}", e.getLocalizedMessage());
+			logger.trace("{}", e);			
+			MonitorService.INSTANCE.addActivity(Type.GIVENUP, "unable to seed", e);
+					
 		}
 	}
 
@@ -31,9 +41,6 @@ public abstract class Seeder implements IStep {
 	}
 
 	@Override
-	public void setFields(List<FieldsBase> fields) {
-		// TODO Auto-generated method stub
-
+	public void setFields(List<FieldsBase> fields) {		
 	}
-
 }

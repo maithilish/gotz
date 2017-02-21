@@ -44,9 +44,12 @@
 			</unique>
 			<field name="axis" serialized="true" />
 			<!-- <field name="memberSets" persistence-modifier="none" /> -->
-			<field name="fields" persistence-modifier="none" />
-			<fetch-group name="detachAxes">
+			<field name="fields" serialized="true" />
+			<fetch-group name="detachAxis">
 				<field name="axis" />
+			</fetch-group>
+			<fetch-group name="detachFields">
+				<field name="fields" />
 			</fetch-group>
 		</class>
 		<class name="Data">

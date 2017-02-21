@@ -2,13 +2,16 @@
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
 		<file>logs/picks.log</file>
 		<encoder>
-			<pattern>%-15(%logger{0}:%line) %-8([%level]) %msg%n</pattern>
+			<pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n</pattern>
 		</encoder>
 	</appender>
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
 		<encoder>
-			<pattern>%-15(%logger{0}:%line) %-8([%level]) %msg%n</pattern>
+			<pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n</pattern>
 		</encoder>
 	</appender>
 
@@ -30,7 +33,7 @@
 
 	<logger name="DataNucleus.JDO" level="OFF" />
 
-	<root level="trace">
+	<root level="debug">
 		<!-- <appender-ref ref="FILE" /> -->
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="SIFT" />

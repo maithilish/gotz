@@ -32,7 +32,7 @@ public class LocatorSeeder extends Seeder {
 	}
 
 	@Override
-	public void load() throws Exception {
+	public void load(){
 		initLocators();
 		List<FieldsBase> fields = BeanService.INSTANCE.getBeans(FieldsBase.class);
 		try {
@@ -46,6 +46,7 @@ public class LocatorSeeder extends Seeder {
 	}
 
 	private void initLocators() {
+		logger.info("initialize locators");
 		List<Locators> list = BeanService.INSTANCE.getBeans(Locators.class);
 		for (Locators locators : list) {
 			trikleGroup(locators);
@@ -69,6 +70,7 @@ public class LocatorSeeder extends Seeder {
 	}
 
 	private void trikleGroup(Locators locators) {
+		logger.info("cascade locators group to all locator");
 		for (Locators locs : locators.getLocators()) {
 			trikleGroup(locs);
 		}
@@ -81,6 +83,7 @@ public class LocatorSeeder extends Seeder {
 
 	@Override
 	public void handover() {
+		logger.info("push locators to loader taskpool");
 		int count = 0;
 		for (Locator locator : locators) {
 			try {
@@ -100,11 +103,12 @@ public class LocatorSeeder extends Seeder {
 				}
 			} catch (ClassNotFoundException | InstantiationException
 					| IllegalAccessException | FieldNotFoundException e) {
-				MonitorService.INSTANCE.addActivity(Type.GIVENUP, locator.toString(),
-						e);
+				String message = "unable to queue to loader Locator[name="
+						+ locator.getName() + " url=" + locator.getUrl() + "]";
+				MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
 			}
 		}
-		logger.info("Locators : Total [{}]. Queued to loader [{}].", locators.size(),
+		logger.info("locators count [{}], queued to loader [{}].", locators.size(),
 				count);
 	}
 
@@ -114,16 +118,19 @@ public class LocatorSeeder extends Seeder {
 		IStep task = StepService.INSTANCE.getStep(loaderClassName);
 		task.setInput(locator);
 		task.setFields(locator.getFields());
-		logger.trace("> [Loader] {}", locator);
+		logger.trace("[Loader] {}", locator);
 		return task;
 	}
 
-	private void mergeFields(FieldsBase classFields) throws FieldNotFoundException {
-		logger.debug("Merging Fields with Locators");
+	private void mergeFields(FieldsBase classFields) {
+		logger.info("merge fields with locators");		
 		for (Locator locator : locators) {
-			List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
-					locator.getGroup());
-			locator.getFields().addAll(fields);
+			List<FieldsBase> fields;
+			try {
+				fields = FieldsUtil.getGroupFields(classFields, locator.getGroup());
+				locator.getFields().addAll(fields);
+			} catch (FieldNotFoundException e) {
+			}
 		}
 		for (Locator locator : locators) {
 			Util.logState(logger, "locator", "after merging fields",

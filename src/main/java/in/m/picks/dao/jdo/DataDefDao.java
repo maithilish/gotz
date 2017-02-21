@@ -77,7 +77,8 @@ public class DataDefDao implements IDataDefDao {
 
 			@SuppressWarnings("unchecked")
 			List<DataDef> dataDefs = (List<DataDef>) query.execute(date);
-			pm.getFetchPlan().addGroup("detachAxes");
+			pm.getFetchPlan().addGroup("detachFields");
+			pm.getFetchPlan().addGroup("detachAxis");
 			pm.getFetchPlan().addGroup("detachMembers");
 			pm.getFetchPlan().addGroup("detachFilters");
 			return (List<DataDef>) pm.detachCopyAll(dataDefs);

@@ -45,7 +45,7 @@ public class XMLValidator {
 		InputStream xmlStream = Util.getResourceAsStream(xmlFile);
 		InputStream schemaStream = Util.getResourceAsStream(schemaFile);
 
-		logger.info("Validate : [{}] with [{}]", xmlFile, schemaFile);
+		logger.debug("validate : [{}] with [{}]", xmlFile, schemaFile);
 
 		boolean validXML = true;
 		try {
@@ -59,9 +59,10 @@ public class XMLValidator {
 			validXML = false;
 		}
 		if (!validXML) {
-			throw new SAXException("XML Validation failed");
+			throw new SAXException(
+					"XML validation failed [" + xmlFile + "] [" + schemaFile + "]");
 		}
-		logger.debug("Validated Bean file [{}] with [{}]", xmlFile, schemaFile);
+		logger.debug("validated Bean file [{}] with [{}]", xmlFile, schemaFile);
 		return false;
 	}
 
@@ -73,8 +74,8 @@ public class XMLValidator {
 			String message = exception.getLocalizedMessage();
 			logger.error("{}", message);
 			if (StringUtils.startsWith(message, "cvc-elt.1.a")) {
-				logger.info(
-						"Possible cause : Validated file does not have namespace (xmlns) defined even though schema has targetNamespace");
+				logger.warn(
+						"possible cause : validated file does not have namespace (xmlns) defined even though schema has targetNamespace");
 			}
 
 			throw exception;

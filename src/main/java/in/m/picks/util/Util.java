@@ -198,15 +198,15 @@ public class Util {
 	public static void logState(Logger logger, String entity, String label,
 			List<FieldsBase> fields, Object object) {
 		try {
-			if (FieldsUtil.isFieldTrue(fields, "logstate")) {				
+			if (FieldsUtil.isFieldTrue(fields, "logstate")) {
 				MDC.put("entitytype", entity);
 				logger.debug("{}", label);
-				if(object instanceof String || object instanceof StringBuilder){
+				if (object instanceof String || object instanceof StringBuilder) {
 					logger.debug("{}", object);
-				}else{
-					logger.debug("{}", getState(object));	
+				} else {
+					logger.debug("{}", getState(object));
 				}
-				
+
 				MDC.remove("entitytype");
 			}
 		} catch (FieldNotFoundException e) {
@@ -222,6 +222,22 @@ public class Util {
 		sb.append(line);
 		sb.append(json);
 		return sb;
+	}
+
+	public static String getMessage(Exception e) {
+		return e.getClass().getSimpleName() + ": " + e.getLocalizedMessage();
+	}
+
+	public static String getLocatorLabel(List<FieldsBase> fields) {
+		String name = "field not found";
+		String group = "field not found";
+		try {
+			name = FieldsUtil.getValue(fields, "locatorName");
+			group = FieldsUtil.getValue(fields, "locatorGroup");
+			return buildString("Locator[name=", name, " group=", group, "]");
+		} catch (FieldNotFoundException e) {
+			return buildString("Locator[name=", name, " group=", group, "]");
+		}
 	}
 
 }

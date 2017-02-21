@@ -36,11 +36,11 @@ public class CsvTransformer extends Transformer {
 	}
 
 	@Override
-	protected void transform() throws Exception {
+	protected void transform() {
 		processStep();
 	}
 
-	public void processStep() throws Exception {
+	public void processStep() {
 		sb = new StringBuilder();
 
 		ColComparator cc = new ColComparator();
@@ -94,23 +94,14 @@ public class CsvTransformer extends Transformer {
 
 	@Override
 	public void handover() throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, InterruptedException {
-		try {
-			List<FieldsBase> appenders = FieldsUtil.getFieldList(fields, "appender");
-			for (FieldsBase field : appenders) {
-				AppenderService.INSTANCE.createAppender(field.getName(),
-						field.getValue());
-				Appender appender = AppenderService.INSTANCE
-						.getAppender(field.getName());
-				appender.append(sb);
-			}
-		} catch (FieldNotFoundException e) {
-
+			IllegalAccessException, InterruptedException, FieldNotFoundException {
+		List<FieldsBase> appenders = FieldsUtil.getFieldList(fields, "appender");
+		for (FieldsBase field : appenders) {
+			AppenderService.INSTANCE.createAppender(field.getName(),
+					field.getValue());
+			Appender appender = AppenderService.INSTANCE
+					.getAppender(field.getName());
+			appender.append(sb);
 		}
-		// FileAppender fa = new FileAppender();
-		// Thread t = new Thread(fa);
-		// t.start();
-		// fa.append(sb.toString());
-		// fa.append("EOF");
 	}
 }

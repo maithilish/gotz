@@ -3,14 +3,20 @@ package in.m.picks.shared;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import in.m.picks.appender.Appender;
 import in.m.picks.appender.Appender.Marker;
 import in.m.picks.pool.AppenderPoolService;
+import in.m.picks.util.Util;
 
 public enum AppenderService {
 
 	INSTANCE;
 
+	final Logger logger = LoggerFactory.getLogger(AppenderService.class);
+	
 	final private Map<String, Appender> appenders;
 
 	private AppenderService() {
@@ -50,7 +56,7 @@ public enum AppenderService {
 			try {
 				close(name);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				logger.warn("{}",Util.getMessage(e));
 			}
 		}
 	}

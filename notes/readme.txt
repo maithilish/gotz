@@ -69,7 +69,7 @@ maven build
 Add new run configuration
 
    Main->Base directory - ${project_loc:npicks}
-   Goals - compile datanucleus:enhance exec:java -Dexec.mainClass="in.m.picks.Picks" -Dpicks.mode=dev
+   Goals - process-classes exec:java -Dexec.mainClass="in.m.picks.Picks" -Dexec.cleanupDaemonThreads=false -Dpicks.mode=dev 
    
 test run 
    mvn test  # enhance and test

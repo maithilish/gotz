@@ -21,9 +21,11 @@ import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Axis;
 import in.m.picks.model.ColComparator;
 import in.m.picks.model.DAxis;
+import in.m.picks.model.DFilter;
 import in.m.picks.model.DMember;
 import in.m.picks.model.Data;
 import in.m.picks.model.DataDef;
+import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
 import in.m.picks.model.RowComparator;
 import in.m.picks.util.FieldsUtil;
@@ -41,7 +43,7 @@ public enum DataDefService {
 	private Map<String, Set<Set<DMember>>> memberSetsMap = new HashMap<>();
 
 	private DataDefService() {
-		logger.info("Initializing DataDefs Singleton");
+		logger.info("initialize DataDefs singleton");
 		validateDataDefs();
 		storeDataDefs();
 		setDataDefsMap();
@@ -49,9 +51,9 @@ public enum DataDefService {
 		try {
 			traceDataStructure();
 		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
+			logger.warn("{}",Util.getMessage(e));
 		}
-		logger.debug("Initialized DataDefs Singleton");
+		logger.debug("initialized DataDefs singleton");
 	}
 
 	private void validateDataDefs() {
@@ -65,7 +67,7 @@ public enum DataDefService {
 			}
 		}
 		if (!valid) {
-			MonitorService.INSTANCE.triggerFatal("Invalid Datadefs");
+			MonitorService.INSTANCE.triggerFatal("invalid Datadefs");
 		}
 	}
 
@@ -93,7 +95,7 @@ public enum DataDefService {
 				debugMessage = "no changes";
 				break;
 			}
-			logger.debug("DataDef [{}] {}", name, debugMessage);
+			logger.info("DataDef [{}] {}", name, debugMessage);
 		}
 
 	}
@@ -133,17 +135,7 @@ public enum DataDefService {
 		dataDefsMap = new HashMap<String, DataDef>();
 		for (DataDef dataDef : storedDataDefs) {
 			dataDefsMap.put(dataDef.getName(), dataDef);
-		}
-
-		// log state - when field logstate is true
-//		for (DataDef dataDef : newDataDefs) {
-//			Util.logState(logger, "--- DataDef read from file ----",
-//					dataDef.getFields(), dataDef);
-//		}
-//		for (DataDef dataDef : storedDataDefs) {
-//			Util.logState(logger, "--- DataDef loaded from store ----",
-//					dataDef.getFields(), dataDef);
-//		}
+		}		
 	}
 
 	private List<DataDef> getDataDefsFromBeans() {
@@ -205,10 +197,10 @@ public enum DataDefService {
 					.getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));
 			IDataDefDao dao = DaoFactory.getDaoFactory(orm).getDataDefDao();
 			String name = dataDef.getName();
-			logger.debug("Store DataDef");
+			logger.debug("store DataDef");
 			dao.storeDataDef(dataDef);
 			if (dataDef.getId() != null) {
-				logger.debug("Stored DataDef : {}", name);
+				logger.info("stored DataDef : {}", name);
 			}
 		} catch (RuntimeException e) {
 			logger.error("{}", e.getMessage());
@@ -268,6 +260,12 @@ public enum DataDefService {
 				// if (member.getGroup() != null) {
 				// dataMember.setGroup(member.getGroup());
 				// }
+				try {
+					dataMember.setFields(member.getFields());
+					String group = FieldsUtil.getValue(member.getFields(),"group");
+					dataMember.setGroup(group);					
+				} catch (FieldNotFoundException e) {					
+				}
 				dataMember.addAxis(axis);
 			}
 			data.addMember(dataMember);
@@ -321,6 +319,19 @@ public enum DataDefService {
 			}
 		}
 		return exMembers;
+	}
+
+	public Map<String, List<FieldsBase>> getFilterMap(String dataDef)
+			throws DataDefNotFoundException {
+		Map<String, List<FieldsBase>> filterMap = new HashMap<>();
+		List<DAxis> axes = getDataDef(dataDef).getAxis();
+		for (DAxis axis : axes) {
+			DFilter filter = axis.getFilter();
+			if (filter != null) {
+				filterMap.put(axis.getName(), filter.getFields());
+			}
+		}
+		return filterMap;
 	}
 
 	public int getCount() {

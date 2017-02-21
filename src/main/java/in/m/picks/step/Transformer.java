@@ -7,8 +7,11 @@ import javax.naming.OperationNotSupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import in.m.picks.model.Activity.Type;
 import in.m.picks.model.Data;
 import in.m.picks.model.FieldsBase;
+import in.m.picks.shared.MonitorService;
+import in.m.picks.util.Util;
 
 public abstract class Transformer implements IStep {
 
@@ -28,7 +31,10 @@ public abstract class Transformer implements IStep {
 			transform();
 			handover();
 		} catch (Exception e) {
-			e.printStackTrace();
+			String message = "transform data " + Util.getLocatorLabel(fields);
+			logger.error("{} {}", message, Util.getMessage(e));
+			logger.trace("{}", e);
+			MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
 		}
 	}
 
@@ -36,12 +42,12 @@ public abstract class Transformer implements IStep {
 
 	@Override
 	public void load() throws Exception {
-		throw new OperationNotSupportedException("Nothing to load");
+		throw new OperationNotSupportedException("nothing to load");
 	}
 
 	@Override
 	public void store() throws Exception {
-		throw new OperationNotSupportedException("Nothing to store");
+		throw new OperationNotSupportedException("nothing to store");
 	}
 
 	@Override
@@ -49,7 +55,7 @@ public abstract class Transformer implements IStep {
 		if (input instanceof Data) {
 			data = (Data) input;
 		} else {
-			logger.warn("Input is not instance of Data type. {}",
+			logger.error("input is not instance of Data type. {}",
 					input.getClass().toString());
 		}
 	}
