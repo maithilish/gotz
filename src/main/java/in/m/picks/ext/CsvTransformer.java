@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import in.m.picks.appender.Appender;
 import in.m.picks.exception.FieldNotFoundException;
+import in.m.picks.model.AxisName;
 import in.m.picks.model.ColComparator;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
@@ -51,8 +52,8 @@ public class CsvTransformer extends Transformer {
 
 		sb.append(getHeader());
 		for (Member member : data.getMembers()) {
-			String row = member.getValue("row");
-			String fact = member.getValue("fact");
+			String row = member.getValue(AxisName.ROW);
+			String fact = member.getValue(AxisName.FACT);
 
 			if (prevRow == null) {
 				sb.append(StringUtils.rightPad(row, itemColSize));
@@ -75,7 +76,7 @@ public class CsvTransformer extends Transformer {
 	private int getColCount() {
 		Set<String> cols = new HashSet<String>();
 		for (Member member : data.getMembers()) {
-			cols.add(member.getValue("col"));
+			cols.add(member.getValue(AxisName.COL));
 		}
 		return cols.size();
 	}
@@ -85,7 +86,7 @@ public class CsvTransformer extends Transformer {
 		int colCount = getColCount();
 		for (int c = 0; c < colCount; c++) {
 			header += " |";
-			String col = data.getMembers().get(c).getValue("col");
+			String col = data.getMembers().get(c).getValue(AxisName.COL);
 			header += StringUtils.leftPad(col, factColSize);
 		}
 		header += lineBreak;

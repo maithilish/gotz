@@ -46,7 +46,7 @@ public abstract class HtmlParser extends Parser {
 				.getFields();
 		try {
 			List<FieldsBase> scripts = FieldsUtil.getGroupFields(list, "script");
-			setTraceString(sb, scripts, "--- Script ---");			
+			setTraceString(sb, scripts, "--- Script ---");
 			scripts = AccessUtil.replaceVariables(scripts, member.getAxisMap());
 			setTraceString(sb, scripts, "-- Patched --");
 			logger.trace("{}", sb);

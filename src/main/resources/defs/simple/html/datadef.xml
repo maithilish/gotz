@@ -9,7 +9,8 @@
 				<field name="field" value="*//tr[1]/th[%{col.index}+1]" />
 			</fields>
 			<member name="year">
-				<field name="indexRange" value="1-3" />
+				<!-- <field name="indexRange" value="1-1" /> -->
+				<field name="breakAfter" value="2017" />
 			</member>
 		</axis>
 		<axis name="row">
@@ -18,7 +19,8 @@
 				<field name="field" value="*//tr[%{row.index}+1]/td[1]" />
 			</fields>
 			<member name="item">
-				<field name="indexRange" value="1-2" />
+				<!-- <field name="indexRange" value="1-1" /> -->
+				<field name="breakAfter" value="GF" />
 			</member>
 			<filter axis="row">
 				<fields name="group" value="value">

@@ -3,6 +3,7 @@ package in.m.picks.step;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,21 +44,21 @@ public abstract class Parser implements IStep {
 	private void processStep() {
 		try {
 			initialize();
-			load();			
+			load();
 			if (data == null) {
-				logger.info("parse data {}",Util.getLocatorLabel(fields));
+				logger.info("parse data {}", Util.getLocatorLabel(fields));
 				prepareData();
 				parse();
 				filter();
 				store();
-			}else{
-				logger.info("found parsed data {}",Util.getLocatorLabel(fields));
+			} else {
+				logger.info("found parsed data {}", Util.getLocatorLabel(fields));
 			}
 			handover();
 		} catch (Exception e) {
 			String message = "parse data " + Util.getLocatorLabel(fields);
 			logger.error("{} {}", message, Util.getMessage(e));
-			logger.trace("{}", e);
+			logger.debug("{}", e);
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
 		}
 	}
@@ -202,6 +203,18 @@ public abstract class Parser implements IStep {
 			logger.trace("", e);
 			throw e;
 		}
+	}
+
+	protected Integer getStartIndex(List<FieldsBase> fields)
+			throws NumberFormatException, FieldNotFoundException {
+		Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
+		return indexRange.getMinimum();
+	}
+
+	protected Integer getEndIndex(List<FieldsBase> fields)
+			throws NumberFormatException, FieldNotFoundException {
+		Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
+		return indexRange.getMaximum();
 	}
 
 }

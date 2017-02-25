@@ -40,7 +40,8 @@
 				<field name="field" value="*//tr[1]/td[%{col.index}+1]" />
 			</fields>
 			<member name="year">
-				<field name="indexRange" value="1-5" />
+				<!-- <field name="indexRange" value="1-5" /> -->
+				<field name="breakAfter" value="Mar '16" />
 			</member>
 		</axis>
 		<axis name="row">
@@ -50,12 +51,12 @@
 				<field name="field" value="*//tr[%{row.index}+4]/td[1]" />
 			</fields>
 			<member name="item">
-				<field name="indexRange" value="1-33" />
+				<field name="breakAfter" value="Total Share Capital" />
 			</member>
 			<filter axis="row">
 				<fields name="group" value="value">
 					<field name="blank" value="" />
-					<field name="f1" value="Sources Of Funds" />
+					<!-- <field name="f1" value="Sources Of Funds" /> -->
 					<field name="f2" value="Application Of Funds" />
 				</fields>
 			</filter>

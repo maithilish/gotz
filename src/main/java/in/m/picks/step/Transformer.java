@@ -33,7 +33,7 @@ public abstract class Transformer implements IStep {
 		} catch (Exception e) {
 			String message = "transform data " + Util.getLocatorLabel(fields);
 			logger.error("{} {}", message, Util.getMessage(e));
-			logger.trace("{}", e);
+			logger.debug("{}", e);
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
 		}
 	}

@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +18,7 @@ import in.m.picks.dao.jdo.DaoFactory;
 import in.m.picks.exception.DataDefNotFoundException;
 import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Axis;
+import in.m.picks.model.AxisName;
 import in.m.picks.model.ColComparator;
 import in.m.picks.model.DAxis;
 import in.m.picks.model.DFilter;
@@ -51,7 +51,7 @@ public enum DataDefService {
 		try {
 			traceDataStructure();
 		} catch (ClassNotFoundException | IOException e) {
-			logger.warn("{}",Util.getMessage(e));
+			logger.warn("{}", Util.getMessage(e));
 		}
 		logger.debug("initialized DataDefs singleton");
 	}
@@ -76,26 +76,26 @@ public enum DataDefService {
 		List<DataDef> oldDataDefs = loadDataDefsFromStore();
 
 		for (DataDef newDataDef : newDataDefs) {
-			String debugMessage;
+			String message;
 			String name = newDataDef.getName();
 			DataDef oldDataDef = getDataDef(oldDataDefs, name);
 			String saveMode = getSaveMode(oldDataDef, newDataDef);
 			switch (saveMode) {
 			case "insert":
-				debugMessage = "not in store and will persist";
+				message = "not in store, insert";
 				storeDataDef(newDataDef);
 				break;
 			case "update":
-				debugMessage = "changed and will update stores";
+				message = "changed, insert new version";
 				resetHighDate(oldDataDef); // reset to run date
 				storeDataDef(oldDataDef); // and update
 				storeDataDef(newDataDef); // insert new changes
 				break;
 			default:
-				debugMessage = "no changes";
+				message = "no changes";
 				break;
 			}
-			logger.info("DataDef [{}] {}", name, debugMessage);
+			logger.info("DataDef [{}] {}", name, message);
 		}
 
 	}
@@ -135,7 +135,7 @@ public enum DataDefService {
 		dataDefsMap = new HashMap<String, DataDef>();
 		for (DataDef dataDef : storedDataDefs) {
 			dataDefsMap.put(dataDef.getName(), dataDef);
-		}		
+		}
 	}
 
 	private List<DataDef> getDataDefsFromBeans() {
@@ -200,7 +200,7 @@ public enum DataDefService {
 			logger.debug("store DataDef");
 			dao.storeDataDef(dataDef);
 			if (dataDef.getId() != null) {
-				logger.info("stored DataDef : {}", name);
+				logger.debug("stored DataDef [{}] [{}]", dataDef.getId(), name);
 			}
 		} catch (RuntimeException e) {
 			logger.error("{}", e.getMessage());
@@ -240,7 +240,7 @@ public enum DataDefService {
 	}
 
 	public Data getDataTemplate(DataDef dataDef)
-			throws ClassNotFoundException, IOException {
+			throws ClassNotFoundException, IOException, IllegalArgumentException {
 		if (memberSetsMap == null || memberSetsMap.get(dataDef.getName()) == null) {
 			synchronized (this) {
 				generateMemberSets(dataDef);
@@ -252,19 +252,20 @@ public enum DataDefService {
 			Member dataMember = new Member();
 			for (DMember member : members) {
 				Axis axis = new Axis();
-				axis.setName(member.getAxis());
+				AxisName axisName = AxisName.valueOf(member.getAxis().toUpperCase());
+				axis.setName(axisName);
 				axis.setOrder(member.getOrder());
 				axis.setIndex(member.getIndex());
 				axis.setMatch(member.getMatch());
+				axis.setFields(member.getFields());
 				// TODO refactor group handling and test
 				// if (member.getGroup() != null) {
 				// dataMember.setGroup(member.getGroup());
 				// }
 				try {
-					dataMember.setFields(member.getFields());
-					String group = FieldsUtil.getValue(member.getFields(),"group");
-					dataMember.setGroup(group);					
-				} catch (FieldNotFoundException e) {					
+					String group = FieldsUtil.getValue(member.getFields(), "group");
+					dataMember.setGroup(group);
+				} catch (FieldNotFoundException e) {
 				}
 				dataMember.addAxis(axis);
 			}
@@ -279,8 +280,7 @@ public enum DataDefService {
 		Set<?>[] memberSets = new HashSet<?>[axesSize];
 		for (int i = 0; i < axesSize; i++) {
 			Set<DMember> members = dataDef.getAxis().get(i).getMember();
-			Set<DMember> exMembers = expandMembers(members);
-			memberSets[i] = exMembers;
+			memberSets[i] = members;
 		}
 		Set<Set<Object>> cartesianSet = Util.cartesianProduct(memberSets);
 		Set<Set<DMember>> dataDefMemberSets = new HashSet<Set<DMember>>();
@@ -294,31 +294,6 @@ public enum DataDefService {
 			dataDefMemberSets.add(memberSet);
 		}
 		memberSetsMap.put(dataDef.getName(), dataDefMemberSets);
-	}
-
-	private Set<DMember> expandMembers(Set<DMember> members)
-			throws ClassNotFoundException, IOException {
-		Set<DMember> exMembers = new HashSet<DMember>();
-		for (DMember member : members) {
-			// expand index based members
-			try {
-				Range<Integer> indexRange = FieldsUtil.getRange(member.getFields(),
-						"indexRange");
-				Set<DMember> newSet = new HashSet<DMember>();
-				for (int index = indexRange.getMinimum(); index <= indexRange
-						.getMaximum(); index++) {
-					DMember newMember = Util.deepClone(DMember.class, member);
-					newMember.setIndex(index);
-					newMember.setOrder(member.getOrder() + index - 1);
-					newSet.add(newMember);
-				}
-				exMembers.addAll(newSet);
-			} catch (FieldNotFoundException e) {
-				exMembers.add(member);
-			} catch (NumberFormatException e) {
-			}
-		}
-		return exMembers;
 	}
 
 	public Map<String, List<FieldsBase>> getFilterMap(String dataDef)

@@ -32,7 +32,7 @@ public class LocatorSeeder extends Seeder {
 	}
 
 	@Override
-	public void load(){
+	public void load() {
 		initLocators();
 		List<FieldsBase> fields = BeanService.INSTANCE.getBeans(FieldsBase.class);
 		try {
@@ -123,7 +123,7 @@ public class LocatorSeeder extends Seeder {
 	}
 
 	private void mergeFields(FieldsBase classFields) {
-		logger.info("merge fields with locators");		
+		logger.info("merge fields with locators");
 		for (Locator locator : locators) {
 			List<FieldsBase> fields;
 			try {

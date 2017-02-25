@@ -24,6 +24,9 @@ public class FieldsUtil {
 	// return first matching field value
 	public static String getValue(List<FieldsBase> fields, String name)
 			throws FieldNotFoundException {
+		if (fields == null) {
+			throw new FieldNotFoundException(name);
+		}
 		FieldsIterator ite = new FieldsIterator(fields);
 		while (ite.hasNext()) {
 			FieldsBase f = ite.next();

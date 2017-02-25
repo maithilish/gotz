@@ -48,7 +48,7 @@ public class HtmlLocatorParser extends HtmlParser {
 			// collections.sort not possible as axes is set so implied sort
 			// as value field of an axis may be referred by later axis
 			for (AxisName axisName : AxisName.values()) {
-				Axis axis = member.getAxis(axisName.toString());
+				Axis axis = member.getAxis(axisName);
 				if (axis != null) {
 					if (isDocumentLoaded()) {
 						HtmlPage page = (HtmlPage) document.getDocumentObject();
@@ -103,7 +103,7 @@ public class HtmlLocatorParser extends HtmlParser {
 	private Locator createLocator(Member member) throws FieldNotFoundException {
 		Locator locator = new Locator();
 		locator.setName(FieldsUtil.getValue(getFields(), "locatorName"));
-		locator.setUrl(member.getValue("fact"));
+		locator.setUrl(member.getValue(AxisName.FACT));
 		if (member.getGroup() == null) {
 			throw new FieldNotFoundException(
 					"unable to create new locator. define group for member in datadef of locator type "

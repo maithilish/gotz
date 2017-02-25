@@ -26,13 +26,13 @@
 					at last -->
 			    <![CDATA[
 				@Override public boolean equals(Object obj) {
-				    String[] excludes = {"id", "fields","dnDetachedState", "dnFlags", "dnStateManager"};
+				    String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
 					return EqualsBuilder.reflectionEquals(this, obj,excludes);
 				}
 
 				@Override
 				public int hashCode() {
-				    String[] excludes = {"id", "fields","dnDetachedState", "dnFlags", "dnStateManager"};
+				    String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
 					return HashCodeBuilder.reflectionHashCode(this,excludes);
 				}
 

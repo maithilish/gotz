@@ -36,12 +36,12 @@ public class HtmlLoader extends Loader {
 			return htmlPage;
 		} finally {
 			webClient.setRefreshHandler(new ImmediateRefreshHandler());
-			webClient.close();			
+			webClient.close();
 		}
 	}
 
 	private WebClient getWebClient() {
-		int timeout = 120000;  // millis
+		int timeout = 120000; // millis
 		String key = "picks.webClientTimeout";
 		try {
 			timeout = Integer.parseInt(ConfigService.INSTANCE.getConfig(key));

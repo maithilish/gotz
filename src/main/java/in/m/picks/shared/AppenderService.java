@@ -16,7 +16,7 @@ public enum AppenderService {
 	INSTANCE;
 
 	final Logger logger = LoggerFactory.getLogger(AppenderService.class);
-	
+
 	final private Map<String, Appender> appenders;
 
 	private AppenderService() {
@@ -56,7 +56,7 @@ public enum AppenderService {
 			try {
 				close(name);
 			} catch (InterruptedException e) {
-				logger.warn("{}",Util.getMessage(e));
+				logger.warn("{}", Util.getMessage(e));
 			}
 		}
 	}

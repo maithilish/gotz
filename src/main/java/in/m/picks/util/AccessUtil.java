@@ -27,7 +27,7 @@ public final class AccessUtil {
 		List<FieldsBase> patchedFields = new ArrayList<>();
 		while (ite.hasNext()) {
 			FieldsBase field = ite.next();
-			if (field instanceof Field) {				
+			if (field instanceof Field) {
 				String str = field.getValue();
 				Map<String, String> valueMap = getValueMap(str, map);
 				String patchedStr = StrSubstitutor.replace(str, valueMap, "%{", "}");
@@ -45,12 +45,12 @@ public final class AccessUtil {
 		if (keys == null) {
 			return null;
 		}
-		Map<String, String> valueMap = new HashMap<String, String>();
+		Map<String, String> valueMap = new HashMap<>();
 		for (String key : keys) {
 			String[] parts = key.split("\\.");
 			String axisName = parts[0];
 			String property = parts[1];
-			Object axis = map.get(axisName);
+			Object axis = map.get(axisName.toUpperCase());
 			try {
 				// call getter and type convert to String
 				Object o = PropertyUtils.getProperty(axis, property);

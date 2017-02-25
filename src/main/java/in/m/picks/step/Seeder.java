@@ -12,7 +12,7 @@ import in.m.picks.shared.MonitorService;
 public abstract class Seeder implements IStep {
 
 	final static Logger logger = LoggerFactory.getLogger(Seeder.class);
-	
+
 	@Override
 	public void run() {
 		processStep();
@@ -25,9 +25,9 @@ public abstract class Seeder implements IStep {
 			handover();
 		} catch (Exception e) {
 			logger.warn("{}", e.getLocalizedMessage());
-			logger.trace("{}", e);			
+			logger.debug("{}", e);
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, "unable to seed", e);
-					
+
 		}
 	}
 
@@ -41,6 +41,6 @@ public abstract class Seeder implements IStep {
 	}
 
 	@Override
-	public void setFields(List<FieldsBase> fields) {		
+	public void setFields(List<FieldsBase> fields) {
 	}
 }

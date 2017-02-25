@@ -58,7 +58,7 @@ public abstract class Loader implements IStep {
 				String message = Util.buildString("load Locator[name=",
 						locator.getName(), " group=", locator.getGroup(), "]");
 				logger.error("{} {}", message, Util.getMessage(e));
-				logger.trace("{}", e);
+				logger.debug("{}", e);
 				MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
 			}
 		}
