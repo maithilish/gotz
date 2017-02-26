@@ -123,14 +123,10 @@ public enum DataDefService {
 		return null;
 	}
 
-	private void setDataDefsMap() {
-		/*
-		 * fields are not persisted, so we need to copy them. As fields are
-		 * nulled by persistence we need a fresh list of datadefs from Beans
-		 */
-		List<DataDef> newDataDefs = getDataDefsFromBeans();
+	private void setDataDefsMap() {		
+		//List<DataDef> newDataDefs = getDataDefsFromBeans();
 		List<DataDef> storedDataDefs = loadDataDefsFromStore();
-		copyFields(newDataDefs, storedDataDefs);
+		//copyFields(newDataDefs, storedDataDefs);
 
 		dataDefsMap = new HashMap<String, DataDef>();
 		for (DataDef dataDef : storedDataDefs) {
@@ -145,16 +141,16 @@ public enum DataDefService {
 		return newDataDefs;
 	}
 
-	private void copyFields(List<DataDef> srcDataDefs, List<DataDef> destDataDefs) {
-
-		for (DataDef sDataDef : srcDataDefs) {
-			for (DataDef dDataDef : destDataDefs) {
-				if (sDataDef.getName().equals(dDataDef.getName())) {
-					dDataDef.getFields().addAll(sDataDef.getFields());
-				}
-			}
-		}
-	}
+//	private void copyFields(List<DataDef> srcDataDefs, List<DataDef> destDataDefs) {
+//
+//		for (DataDef sDataDef : srcDataDefs) {
+//			for (DataDef dDataDef : destDataDefs) {
+//				if (sDataDef.getName().equals(dDataDef.getName())) {
+//					dDataDef.getFields().addAll(sDataDef.getFields());
+//				}
+//			}
+//		}
+//	}
 
 	private void setDefaults(List<DataDef> dataDefs) {
 		for (DataDef dataDef : dataDefs) {
@@ -250,6 +246,16 @@ public enum DataDefService {
 		data.setDataDef(dataDef.getName());
 		for (Set<DMember> members : memberSetsMap.get(dataDef.getName())) {
 			Member dataMember = new Member();
+			// add member fields
+			try {
+				List<FieldsBase> memberFields = FieldsUtil
+						.getGroupFields(dataDef.getFields(), "member");
+				dataMember.setFields(memberFields);
+				String group = FieldsUtil.getValue(memberFields, "group");
+				dataMember.setGroup(group);
+			} catch (FieldNotFoundException e) {
+			}
+			// add axis and its fields
 			for (DMember member : members) {
 				Axis axis = new Axis();
 				AxisName axisName = AxisName.valueOf(member.getAxis().toUpperCase());
@@ -257,16 +263,11 @@ public enum DataDefService {
 				axis.setOrder(member.getOrder());
 				axis.setIndex(member.getIndex());
 				axis.setMatch(member.getMatch());
-				axis.setFields(member.getFields());
+				axis.getFields().addAll(member.getFields());
 				// TODO refactor group handling and test
 				// if (member.getGroup() != null) {
 				// dataMember.setGroup(member.getGroup());
 				// }
-				try {
-					String group = FieldsUtil.getValue(member.getFields(), "group");
-					dataMember.setGroup(group);
-				} catch (FieldNotFoundException e) {
-				}
 				dataMember.addAxis(axis);
 			}
 			data.addMember(dataMember);
@@ -338,6 +339,9 @@ public enum DataDefService {
 		Collections.sort(data.getMembers(), new RowComparator());
 		Collections.sort(data.getMembers(), new ColComparator());
 		for (Member member : data.getMembers()) {
+			sb.append("Member [");			
+			sb.append(FieldsUtil.getFormattedFields(member.getFields()));
+			sb.append(line);
 			List<Axis> axes = new ArrayList<Axis>(member.getAxes());
 			Collections.sort(axes);
 			for (Axis axis : axes) {

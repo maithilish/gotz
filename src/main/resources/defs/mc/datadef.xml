@@ -3,6 +3,10 @@
 	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
 	<datadef name="finlocators">
 		<field name="type" value="locator" />
+		<fields name="group" value="member">
+			<field name="group" value="bs" />
+			<field name="live" value="P4D" />
+		</fields>
 		<axis name="col">
 			<fields name="group" value="script">
 				<field name="script" value="configs.getRunDate()" />
@@ -15,10 +19,7 @@
 					value="//ul//*[count(*)=0 and contains(.,'Balance Sheet')]/ancestor::ul[1]" />
 				<field name="field" value="li/a[contains(.,'%{row.match}')]" />
 			</fields>
-			<member name="bs" match="Balance Sheet">
-				<field name="group" value="bs" />
-				<field name="live" value="P3D" />
-			</member>
+			<member name="bs" match="Balance Sheet" />
 			<!-- <member name="pl" match="Profit &amp; Loss" group="pl" /> -->
 		</axis>
 		<axis name="fact">
@@ -40,8 +41,8 @@
 				<field name="field" value="*//tr[1]/td[%{col.index}+1]" />
 			</fields>
 			<member name="year">
-				<!-- <field name="indexRange" value="1-5" /> -->
-				<field name="breakAfter" value="Mar '16" />
+				<field name="indexRange" value="1-5" />
+				<!-- <field name="breakAfter" value="Mar '16" /> -->
 			</member>
 		</axis>
 		<axis name="row">
@@ -51,12 +52,13 @@
 				<field name="field" value="*//tr[%{row.index}+4]/td[1]" />
 			</fields>
 			<member name="item">
-				<field name="breakAfter" value="Total Share Capital" />
+				<!-- <field name="indexRange" value="1-34" /> -->
+				<field name="breakAfter" value="Book Value (Rs)" />
 			</member>
 			<filter axis="row">
 				<fields name="group" value="value">
 					<field name="blank" value="" />
-					<!-- <field name="f1" value="Sources Of Funds" /> -->
+					<field name="f1" value="Sources Of Funds" />
 					<field name="f2" value="Application Of Funds" />
 				</fields>
 			</filter>

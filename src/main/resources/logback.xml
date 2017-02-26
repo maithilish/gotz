@@ -1,6 +1,7 @@
 <configuration>
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
 		<file>logs/picks.log</file>
+		<append>false</append>
 		<encoder>
 			<pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n</pattern>
 		</encoder>
@@ -18,7 +19,7 @@
 	<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
 		<discriminator>
 			<key>entitytype</key>
-			<defaultValue>unknown</defaultValue>
+			<defaultValue>sift</defaultValue>
 		</discriminator>
 		<sift>
 			<appender name="FILE-${entitytype}" class="ch.qos.logback.core.FileAppender">
@@ -33,9 +34,10 @@
 
 	<logger name="DataNucleus.JDO" level="OFF" />
 
-	<root level="debug">
+	<root level="trace">
 		<!-- <appender-ref ref="FILE" /> -->
 		<appender-ref ref="STDOUT" />
+		<appender-ref ref="FILE" />
 		<appender-ref ref="SIFT" />
 	</root>
 </configuration>

@@ -86,8 +86,8 @@ public class HtmlDataParser extends HtmlParser {
 				axis.setIndex(startIndex);
 			}
 			if (isDocumentLoaded()) {
-				HtmlPage page = (HtmlPage) getDocument().getDocumentObject();
-				String value = getValue(page, dataDef, member, axis);
+				HtmlPage documentObject = (HtmlPage) getDocument().getDocumentObject();
+				String value = getValue(documentObject, dataDef, member, axis);
 				axis.setValue(value);
 			}
 		}

@@ -263,7 +263,8 @@ public abstract class Loader implements IStep {
 		try {
 			live = FieldsUtil.getValue(locator.getFields(), "live");
 		} catch (FieldNotFoundException e) {
-			logger.warn("{} - defaults to 0 day. {}", e, locator.getName());
+			logger.warn("{} - defaults to 0 day. Locator[name={}, group={}]", e,
+					locator.getName(), locator.getGroup());
 		}
 		if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
 			live = "PT0S"; // zero second

@@ -211,4 +211,31 @@ public class FieldsUtil {
 		}
 		return count;
 	}
+
+	public static String getFormattedFields(List<FieldsBase> fields) {
+		if(fields == null){
+			return "Fields=null";
+		}
+		FieldsIterator ite = new FieldsIterator(fields);
+		if(!ite.hasNext()){
+			return "Fields=[]";
+		}
+		StringBuilder sb = new StringBuilder("fields=");
+		String line = System.lineSeparator();		
+		while (ite.hasNext()) {
+			sb.append(line);
+			FieldsBase f = ite.next();
+			if (f instanceof Fields) {
+				sb.append(" Fields [name=");
+			}
+			if (f instanceof Field) {
+				sb.append("  Field [name=");
+			}
+			sb.append(f.getName());
+			sb.append(", value=");
+			sb.append(f.getValue());
+			sb.append("]");
+		}
+		return sb.toString();
+	}
 }
