@@ -3,9 +3,13 @@
 	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
 	<datadef name="finlocators">
 		<field name="type" value="locator" />
-		<fields name="group" value="member">
+		<fields name="member" value="bs">
 			<field name="group" value="bs" />
 			<field name="live" value="P4D" />
+		</fields>
+		<fields name="member" value="pl">
+			<field name="group" value="pl" />
+			<field name="live" value="P1D" />
 		</fields>
 		<axis name="col">
 			<fields name="group" value="script">
@@ -20,7 +24,7 @@
 				<field name="field" value="li/a[contains(.,'%{row.match}')]" />
 			</fields>
 			<member name="bs" match="Balance Sheet" />
-			<!-- <member name="pl" match="Profit &amp; Loss" group="pl" /> -->
+			<member name="pl" match="Profit &amp; Loss" />
 		</axis>
 		<axis name="fact">
 			<fields name="group" value="query">
@@ -67,6 +71,44 @@
 			<fields name="group" value="query">
 				<field name="region"
 					value="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]" />
+				<field name="field"
+					value="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
+			</fields>
+		</axis>
+	</datadef>
+	<datadef name="pl">
+		<axis name="col">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]" />
+				<field name="field" value="*//tr[1]/td[%{col.index}+1]" />
+			</fields>
+			<member name="year">
+				<field name="indexRange" value="1-5" />
+			</member>
+		</axis>
+		<axis name="row">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]" />
+				<field name="field" value="*//tr[%{row.index}+5]/td[1]" />
+			</fields>
+			<member name="item">
+				<!-- <field name="indexRange" value="1-37" /> -->
+				<field name="breakAfter" value="Book Value (Rs)" />
+			</member>
+			<filter axis="row">
+				<fields name="group" value="value">
+					<field name="blank" value="" />
+					<field name="f1" value="Expenditure" />
+					<field name="f2" value="Per share data (annualised)" />
+				</fields>
+			</filter>
+		</axis>
+		<axis name="fact">
+			<fields name="group" value="query">
+				<field name="region"
+					value="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]" />
 				<field name="field"
 					value="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
 			</fields>

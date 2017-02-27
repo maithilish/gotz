@@ -183,7 +183,7 @@ public class HtmlDataParser extends HtmlParser {
 	@Override
 	public void filter() throws Exception {
 		List<Member> forRemovalMembers = new ArrayList<Member>();
-		Map<String, List<FieldsBase>> filterMap = DataDefService.INSTANCE
+		Map<AxisName, List<FieldsBase>> filterMap = DataDefService.INSTANCE
 				.getFilterMap(dataDefName);
 		for (Member member : data.getMembers()) {
 			for (Axis axis : member.getAxes()) {
@@ -200,7 +200,7 @@ public class HtmlDataParser extends HtmlParser {
 	}
 
 	private boolean requireFilter(Axis axis,
-			Map<String, List<FieldsBase>> filterMap) {
+			Map<AxisName, List<FieldsBase>> filterMap) {		
 		List<FieldsBase> filters = filterMap.get(axis.getName());
 		if (filters == null) {
 			return false;
@@ -228,6 +228,9 @@ public class HtmlDataParser extends HtmlParser {
 					}
 					if (filterGroup.equals("value")) {
 						value = axis.getValue();
+					}
+					if(value == null){
+						return false;
 					}
 					if (value.equals(field.getValue())) {
 						return true;
