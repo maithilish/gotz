@@ -18,7 +18,7 @@ public class FileAppender extends Appender {
 	public void run() {
 		PrintWriter writer = null;
 		try {
-			writer = new PrintWriter(new File("target/output.txt"));
+			writer = new PrintWriter(new File("output/result.txt"));
 			for (;;) {
 				Object item = queue.take();
 				if (item == Marker.EOF) {

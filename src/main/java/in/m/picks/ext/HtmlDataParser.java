@@ -86,7 +86,8 @@ public class HtmlDataParser extends HtmlParser {
 				axis.setIndex(startIndex);
 			}
 			if (isDocumentLoaded()) {
-				HtmlPage documentObject = (HtmlPage) getDocument().getDocumentObject();
+				HtmlPage documentObject = (HtmlPage) getDocument()
+						.getDocumentObject();
 				String value = getValue(documentObject, dataDef, member, axis);
 				axis.setValue(value);
 			}
@@ -200,7 +201,7 @@ public class HtmlDataParser extends HtmlParser {
 	}
 
 	private boolean requireFilter(Axis axis,
-			Map<AxisName, List<FieldsBase>> filterMap) {		
+			Map<AxisName, List<FieldsBase>> filterMap) {
 		List<FieldsBase> filters = filterMap.get(axis.getName());
 		if (filters == null) {
 			return false;
@@ -229,7 +230,7 @@ public class HtmlDataParser extends HtmlParser {
 					if (filterGroup.equals("value")) {
 						value = axis.getValue();
 					}
-					if(value == null){
+					if (value == null) {
 						return false;
 					}
 					if (value.equals(field.getValue())) {

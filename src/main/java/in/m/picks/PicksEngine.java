@@ -22,6 +22,7 @@ public class PicksEngine {
 
 		logger.info("Starting PicksEngine");
 		logPicksMode();
+		MonitorService.INSTANCE.start();
 		logger.info("Run Date : [{}]", ConfigService.INSTANCE.getRunDate());
 		BeanService.INSTANCE.getBeans(Locator.class);
 		loadDataDefs();
@@ -31,9 +32,9 @@ public class PicksEngine {
 
 		AppenderService.INSTANCE.closeAll();
 		AppenderPoolService.getInstance().waitForFinish();
-		MonitorService.INSTANCE.logActivities();
 
-		logger.info("PicksEngine shutdown complete");
+		MonitorService.INSTANCE.end();
+		logger.info("PicksEngine shutdown");
 
 	}
 

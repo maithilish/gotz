@@ -213,15 +213,15 @@ public class FieldsUtil {
 	}
 
 	public static String getFormattedFields(List<FieldsBase> fields) {
-		if(fields == null){
+		if (fields == null) {
 			return "Fields=null";
 		}
 		FieldsIterator ite = new FieldsIterator(fields);
-		if(!ite.hasNext()){
+		if (!ite.hasNext()) {
 			return "Fields=[]";
 		}
 		StringBuilder sb = new StringBuilder("fields=");
-		String line = System.lineSeparator();		
+		String line = System.lineSeparator();
 		while (ite.hasNext()) {
 			sb.append(line);
 			FieldsBase f = ite.next();
