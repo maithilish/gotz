@@ -1,5 +1,6 @@
 package in.m.picks.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,16 +41,15 @@ public class Member extends Base {
 	}
 
 	public List<FieldsBase> getFields() {
-		return fields;
+		if (fields == null) {
+			fields = new ArrayList<FieldsBase>();
+		}
+		return this.fields;
 	}
 
-	public void setFields(List<FieldsBase> fields) {
-		this.fields = fields;
-	}
-
-	public final Axis getAxis(String axisName) {
+	public final Axis getAxis(AxisName axisName) {
 		for (Axis axis : axes) {
-			if (axis.getName().equalsIgnoreCase(axisName)) {
+			if (axis.getName().equals(axisName)) {
 				return axis;
 			}
 		}
@@ -59,7 +59,7 @@ public class Member extends Base {
 	public final Map<String, Axis> getAxisMap() {
 		Map<String, Axis> axisMap = new HashMap<>();
 		for (Axis axis : axes) {
-			axisMap.put(axis.getName(), axis);
+			axisMap.put(axis.getName().toString(), axis);
 		}
 		return axisMap;
 	}
@@ -68,7 +68,7 @@ public class Member extends Base {
 		axes.add(axis);
 	}
 
-	public String getValue(String axisName) {
+	public String getValue(AxisName axisName) {
 		Axis axis = getAxis(axisName);
 		return axis.getValue();
 	}

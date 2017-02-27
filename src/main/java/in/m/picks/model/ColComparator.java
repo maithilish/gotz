@@ -8,8 +8,8 @@ public class ColComparator implements Comparator<Member> {
 
 	@Override
 	public int compare(Member m1, Member m2) {
-		Axis m1Col = m1.getAxis("col");
-		Axis m2Col = m2.getAxis("col");
+		Axis m1Col = m1.getAxis(AxisName.COL);
+		Axis m2Col = m2.getAxis(AxisName.COL);
 		if (Util.hasNulls(m1Col, m2Col))
 			return 0;
 		return m1Col.getOrder() - m2Col.getOrder();

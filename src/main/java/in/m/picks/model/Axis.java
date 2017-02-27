@@ -1,18 +1,19 @@
 package in.m.picks.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+
+import in.m.picks.util.FieldsUtil;
 
 public class Axis implements Comparable<Axis>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String name;
+	private AxisName name;
 	private String value;
 	private String match;
 	private Integer index;
@@ -22,11 +23,11 @@ public class Axis implements Comparable<Axis>, Serializable {
 	public Axis() {
 	}
 
-	public final String getName() {
+	public AxisName getName() {
 		return name;
 	}
 
-	public final void setName(String name) {
+	public void setName(AxisName name) {
 		this.name = name;
 	}
 
@@ -63,18 +64,17 @@ public class Axis implements Comparable<Axis>, Serializable {
 	}
 
 	public List<FieldsBase> getFields() {
-		return fields;
-	}
-
-	public void setFields(List<FieldsBase> fields) {
-		this.fields = fields;
+		if (fields == null) {
+			fields = new ArrayList<FieldsBase>();
+		}
+		return this.fields;
 	}
 
 	public int compareTo(Axis other) {
 		// TODO write test
 		// String name is converted to Enum AxisName and compared
-		AxisName a1 = AxisName.valueOf(name.toUpperCase());
-		AxisName a2 = AxisName.valueOf(other.name.toUpperCase());
+		AxisName a1 = name;
+		AxisName a2 = other.name;
 		return a1.compareTo(a2);
 	}
 
@@ -86,9 +86,23 @@ public class Axis implements Comparable<Axis>, Serializable {
 		return HashCodeBuilder.reflectionHashCode(this);
 	}
 
+	@Override
 	public String toString() {
-		return ToStringBuilder.reflectionToString(this,
-				ToStringStyle.MULTI_LINE_STYLE);
+		StringBuilder builder = new StringBuilder();
+		builder.append("Axis [name=");
+		builder.append(name);
+		builder.append(", value=");
+		builder.append(value);
+		builder.append(", match=");
+		builder.append(match);
+		builder.append(", index=");
+		builder.append(index);
+		builder.append(", order=");
+		builder.append(order);
+		builder.append(",");
+		builder.append(FieldsUtil.getFormattedFields(fields));
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

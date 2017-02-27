@@ -49,12 +49,16 @@ public class Activity {
 
 	@Override
 	public String toString() {
-		String str;
-		str = "Activity [type=" + type + ", message=" + message;
+		StringBuilder sb = new StringBuilder();
+		sb.append("Activity [type=");
+		sb.append(type);
+		sb.append("\n          message=");
+		sb.append(message);
 		if (throwable != null) {
-			str += ", throwable=" + throwable;
+			sb.append("\n          throwable=");
+			sb.append(throwable);
 		}
-		str += "]";
-		return str;
+		sb.append("]");
+		return sb.toString();
 	}
 }
