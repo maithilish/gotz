@@ -101,11 +101,6 @@ public class HtmlLocatorParser extends HtmlParser {
 	}
 
 	@Override
-	protected void filter() throws Exception {
-		// not required
-	}
-
-	@Override
 	public void store() throws Exception {
 		// not required
 	}

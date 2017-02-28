@@ -62,7 +62,6 @@ public abstract class Parser implements IStep {
 				logger.info("parse data {}", Util.getLocatorLabel(fields));
 				prepareData();
 				parse();
-				filter();
 				store();
 			} else {
 				logger.info("found parsed data {}", Util.getLocatorLabel(fields));
@@ -78,8 +77,6 @@ public abstract class Parser implements IStep {
 
 	protected abstract void setValue(DataDef dataDef, Member member)
 			throws ScriptException, NumberFormatException;
-
-	protected abstract void filter() throws Exception;
 
 	private void initialize()
 			throws FieldNotFoundException, DataDefNotFoundException {
@@ -244,17 +241,17 @@ public abstract class Parser implements IStep {
 
 	@Override
 	public void handover() throws Exception {
-		String givenUpMessage = Util.buildString("Create transformer for locator [",
+		String givenUpMessage = Util.buildString("Create filter for locator [",
 				locatorName, "] failed.");
-		List<FieldsBase> transformers = FieldsUtil.getFieldList(fields,
-				"transformer");
-		if (transformers.size() == 0) {
-			logger.warn("{} {}", givenUpMessage, " No transformer afield found.");
+		List<FieldsBase> filters = FieldsUtil.getFieldList(fields, "filter");
+		if (filters.size() == 0) {
+			logger.warn("{} {}", givenUpMessage, " No filter field found.");
 		}
-		for (FieldsBase transformer : transformers) {
+		for (FieldsBase filter : filters) {
 			if (data != null) {
-				String transformerClassName = transformer.getValue();
-				pushTransformerTask(transformerClassName);
+				String filterClassName = filter.getValue();
+				IStep task = createTask(filterClassName, data);
+				pushTask(task);
 			} else {
 				logger.warn("Data not loaded - Locator [{}]", locatorName);
 				MonitorService.INSTANCE.addActivity(Type.GIVENUP,
@@ -263,29 +260,27 @@ public abstract class Parser implements IStep {
 		}
 	}
 
-	private void pushTransformerTask(String transformerClassName) {
+	private void pushTask(IStep task) {
 		try {
-			IStep task = createTransformer(transformerClassName, data);
-			TaskPoolService.getInstance().submit("transformer", task);
-			logger.debug("Transformer instance [{}] pushed to pool. Locator [{}]",
+			TaskPoolService.getInstance().submit("filter", task);
+			logger.debug("Filter instance [{}] pushed to pool. Locator [{}]",
 					task.getClass(), locatorName);
 		} catch (Exception e) {
-			logger.warn("Unable to create parser [{}] for locator [{}]", e,
+			logger.warn("Unable to create filter [{}] for locator [{}]", e,
 					locatorName);
-			String givenUpMessage = Util.buildString("Create parser for locator [",
+			String givenUpMessage = Util.buildString("Create filter for locator [",
 					locatorName, "] failed.");
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
 		}
 	}
 
-	private IStep createTransformer(String transformerClassName, Data input)
+	private IStep createTask(String taskClassName, Data input)
 			throws ClassNotFoundException, InstantiationException,
 			IllegalAccessException {
-		IStep transformerStep = StepService.INSTANCE.getStep(transformerClassName)
-				.instance();
-		transformerStep.setInput(input);
-		transformerStep.setFields(fields);
-		return transformerStep;
+		IStep task = StepService.INSTANCE.getStep(taskClassName).instance();
+		task.setInput(input);
+		task.setFields(fields);
+		return task;
 	}
 
 	@Override
