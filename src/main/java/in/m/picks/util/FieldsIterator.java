@@ -1,4 +1,4 @@
-package in.m.picks.misc;
+package in.m.picks.util;
 
 import java.util.Iterator;
 import java.util.List;

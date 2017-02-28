@@ -1,28 +1,18 @@
 package in.m.picks.ext;
 
-import java.io.IOException;
 import java.util.List;
-
-import javax.script.ScriptException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
-import in.m.picks.exception.DataDefNotFoundException;
 import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
-import in.m.picks.model.Axis;
 import in.m.picks.model.AxisName;
-import in.m.picks.model.Data;
-import in.m.picks.model.DataDef;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Locator;
 import in.m.picks.model.Member;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.BeanService;
-import in.m.picks.shared.DataDefService;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.shared.StepService;
 import in.m.picks.step.IStep;
@@ -32,33 +22,10 @@ import in.m.picks.util.Util;
 public class HtmlLocatorParser extends HtmlParser {
 
 	final Logger log = LoggerFactory.getLogger(HtmlLocatorParser.class);
-	private Data data;
 
 	@Override
-	public void parse() throws ClassNotFoundException, DataDefNotFoundException,
-			IOException, ScriptException {
-		parseLocator();
-	}
-
-	private void parseLocator() throws DataDefNotFoundException,
-			ClassNotFoundException, IOException, ScriptException {
-		DataDef dataDef = DataDefService.INSTANCE.getDataDef(dataDefName);
-		data = DataDefService.INSTANCE.getDataTemplate(dataDefName);
-		for (Member member : data.getMembers()) {
-			// collections.sort not possible as axes is set so implied sort
-			// as value field of an axis may be referred by later axis
-			for (AxisName axisName : AxisName.values()) {
-				Axis axis = member.getAxis(axisName);
-				if (axis != null) {
-					if (isDocumentLoaded()) {
-						HtmlPage page = (HtmlPage) document.getDocumentObject();
-						String value = getValue(page, dataDef, member, axis);
-						axis.setValue(value);
-					}
-				}
-			}
-		}
-		DataDefService.INSTANCE.traceDataStructure(data);
+	public IStep instance() {
+		return new HtmlLocatorParser();
 	}
 
 	@Override
@@ -131,11 +98,6 @@ public class HtmlLocatorParser extends HtmlParser {
 			return fields;
 		}
 		return null;
-	}
-
-	@Override
-	public IStep instance() {
-		return new HtmlLocatorParser();
 	}
 
 	@Override

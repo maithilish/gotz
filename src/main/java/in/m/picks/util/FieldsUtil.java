@@ -8,7 +8,6 @@ import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 
 import in.m.picks.exception.FieldNotFoundException;
-import in.m.picks.misc.FieldsIterator;
 import in.m.picks.model.Field;
 import in.m.picks.model.Fields;
 import in.m.picks.model.FieldsBase;
@@ -104,6 +103,31 @@ public class FieldsUtil {
 			return true;
 		}
 		return false;
+	}
+
+	public static boolean isAnyFieldDefined(List<FieldsBase> fields,
+			String... names) {
+		for (String name : names) {
+			try {
+				FieldsUtil.getValue(fields, name);
+				return true;
+			} catch (FieldNotFoundException e) {
+			}
+		}
+		return false;
+	}
+
+	public static boolean isAllFieldsDefined(List<FieldsBase> fields,
+			String... names) {
+		boolean allFieldsDefined = true;
+		for (String name : names) {
+			try {
+				FieldsUtil.getValue(fields, name);
+			} catch (FieldNotFoundException e) {
+				allFieldsDefined = false;
+			}
+		}
+		return allFieldsDefined;
 	}
 
 	public static Field getField(List<FieldsBase> fields, String name)

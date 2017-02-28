@@ -24,7 +24,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import in.m.picks.misc.FieldsIterator;
+import in.m.picks.util.FieldsIterator;
 
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "fields", propOrder = { "fields" })

@@ -17,6 +17,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Axis;
+import in.m.picks.model.AxisName;
 import in.m.picks.model.DataDef;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
@@ -36,6 +37,32 @@ public abstract class HtmlParser extends Parser {
 
 	public HtmlParser() {
 		nodeMap = new HashMap<Integer, List<?>>();
+	}
+
+	@Override
+	protected void setValue(DataDef dataDef, Member member)
+			throws ScriptException, NumberFormatException {
+		for (AxisName axisName : AxisName.values()) {
+			Axis axis = member.getAxis(axisName);
+			if (axis == null) {
+				continue;
+			}
+			if (axis.getIndex() == null) {
+				Integer startIndex;
+				try {
+					startIndex = getStartIndex(axis.getFields());
+				} catch (FieldNotFoundException e) {
+					startIndex = 1;
+				}
+				axis.setIndex(startIndex);
+			}
+			if (isDocumentLoaded()) {
+				HtmlPage documentObject = (HtmlPage) getDocument()
+						.getDocumentObject();
+				String value = getValue(documentObject, dataDef, member, axis);
+				axis.setValue(value);
+			}
+		}
 	}
 
 	protected String getValue(HtmlPage page, DataDef dataDef, Member member,

@@ -25,6 +25,7 @@ import in.m.picks.model.DFilter;
 import in.m.picks.model.DMember;
 import in.m.picks.model.Data;
 import in.m.picks.model.DataDef;
+import in.m.picks.model.Field;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
 import in.m.picks.model.RowComparator;
@@ -135,10 +136,13 @@ public enum DataDefService {
 	}
 
 	private List<DataDef> getDataDefsFromBeans() {
-		List<DataDef> newDataDefs = BeanService.INSTANCE.getBeans(DataDef.class);
-		setDefaults(newDataDefs);
-		setDates(newDataDefs);
-		return newDataDefs;
+		List<DataDef> dataDefs = BeanService.INSTANCE.getBeans(DataDef.class);
+		for (DataDef dataDef : dataDefs) {
+			setDefaults(dataDef);
+			setDates(dataDef);
+			setDefaultIndexRange(dataDef);
+		}
+		return dataDefs;
 	}
 
 	// private void copyFields(List<DataDef> srcDataDefs, List<DataDef>
@@ -153,12 +157,6 @@ public enum DataDefService {
 	// }
 	// }
 
-	private void setDefaults(List<DataDef> dataDefs) {
-		for (DataDef dataDef : dataDefs) {
-			setDefaults(dataDef);
-		}
-	}
-
 	private void setDefaults(DataDef dataDef) {
 		for (DAxis axis : dataDef.getAxis()) {
 			if (axis.getName().equals("fact")) {
@@ -172,16 +170,35 @@ public enum DataDefService {
 			int i = 0;
 			for (DMember member : axis.getMember()) {
 				member.setAxis(axis.getName());
-				member.setOrder(i++);
+				if (member.getOrder() == null) {
+					member.setOrder(i++);
+				}
 			}
 		}
 	}
 
-	private void setDates(List<DataDef> dataDefs) {
-		for (DataDef dataDef : dataDefs) {
-			dataDef.setFromDate(ConfigService.INSTANCE.getRunDateTime());
-			dataDef.setToDate(ConfigService.INSTANCE.getHighDate());
+	private void setDefaultIndexRange(DataDef dataDef) {
+		for (DAxis dAxis : dataDef.getAxis()) {
+			for (DMember dMember : dAxis.getMember()) {
+				if (!FieldsUtil.isAnyFieldDefined(dMember.getFields(), "indexRange",
+						"breakAfter")) {
+					Field field = new Field();
+					field.setName("indexRange");
+					Integer index = dMember.getIndex();
+					if (index == null) {
+						field.setValue("1-1");
+					} else {
+						field.setValue(index + "-" + index);
+					}
+					dMember.getFields().add(field);
+				}
+			}
 		}
+	}
+
+	private void setDates(DataDef dataDef) {
+		dataDef.setFromDate(ConfigService.INSTANCE.getRunDateTime());
+		dataDef.setToDate(ConfigService.INSTANCE.getHighDate());
 	}
 
 	private void resetHighDate(DataDef dataDef) {
