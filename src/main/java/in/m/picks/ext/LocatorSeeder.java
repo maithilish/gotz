@@ -7,13 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import in.m.picks.exception.FieldNotFoundException;
-import in.m.picks.model.Activity.Type;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Locator;
 import in.m.picks.model.Locators;
-import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.BeanService;
-import in.m.picks.shared.MonitorService;
 import in.m.picks.step.IStep;
 import in.m.picks.step.Seeder;
 import in.m.picks.util.FieldsUtil;
@@ -85,27 +82,14 @@ public class LocatorSeeder extends Seeder {
 		logger.info("push locators to loader taskpool");
 		int count = 0;
 		for (Locator locator : locators) {
+			nextStepType = "loader";
+			entityLabel = Util.buildString(locator.getName(), ":",
+					locator.getGroup());
+			pushTask(locator, locator.getFields());
+			count++;
 			try {
-				List<FieldsBase> loaders = FieldsUtil
-						.getFieldList(locator.getFields(), "loader");
-				if (loaders.size() == 0) {
-					throw new FieldNotFoundException("no loader field defined");
-				}
-				for (FieldsBase loader : loaders) {
-					IStep task = createTask(loader.getValue(), locator,
-							locator.getFields());
-					TaskPoolService.getInstance().submit("loader", task);
-					count++;
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-				}
-			} catch (ClassNotFoundException | InstantiationException
-					| IllegalAccessException | FieldNotFoundException e) {
-				String message = "unable to queue to loader Locator[name="
-						+ locator.getName() + " url=" + locator.getUrl() + "]";
-				MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
 			}
 		}
 		logger.info("locators count [{}], queued to loader [{}].", locators.size(),

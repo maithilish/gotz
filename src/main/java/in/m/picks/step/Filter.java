@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
+import in.m.picks.model.Data;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.util.FieldsUtil;
@@ -16,6 +17,8 @@ public abstract class Filter extends Step {
 
 	final static Logger logger = LoggerFactory.getLogger(Filter.class);
 	protected List<FieldsBase> fields;
+	protected Data data;
+	protected String locatorGroup;
 	protected String locatorName;
 
 	@Override
@@ -23,6 +26,7 @@ public abstract class Filter extends Step {
 		try {
 			initialize();
 			filter();
+			consistent = true;
 			handover();
 		} catch (Exception e) {
 			String message = "parse data " + Util.getLocatorLabel(fields);
@@ -36,6 +40,29 @@ public abstract class Filter extends Step {
 
 	private void initialize() throws FieldNotFoundException {
 		locatorName = FieldsUtil.getValue(fields, "locatorName");
+		locatorGroup = FieldsUtil.getValue(fields, "locatorGroup");
+	}
+
+	@Override
+	public boolean isConsistent() {
+		return (consistent && data != null);
+	}
+
+	@Override
+	public void handover() throws Exception {
+		nextStepType = "transformer";
+		entityLabel = Util.buildString(locatorName, ":", locatorGroup);
+		pushTask(data, fields);
+	}
+
+	@Override
+	public void setInput(Object input) {
+		if (input instanceof Data) {
+			this.data = (Data) input;
+		} else {
+			logger.error("input is not instance of Data {}",
+					input.getClass().toString());
+		}
 	}
 
 	@Override

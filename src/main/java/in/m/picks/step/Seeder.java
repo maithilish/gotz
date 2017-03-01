@@ -22,6 +22,7 @@ public abstract class Seeder extends Step {
 	private void processStep() {
 		try {
 			load();
+			consistent = true;
 			handover();
 		} catch (Exception e) {
 			logger.warn("{}", e.getLocalizedMessage());
@@ -34,6 +35,11 @@ public abstract class Seeder extends Step {
 	@Override
 	public void store() throws Exception {
 		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public boolean isConsistent() {
+		return consistent;
 	}
 
 	@Override

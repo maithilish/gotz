@@ -51,6 +51,11 @@ public abstract class Transformer extends Step {
 	}
 
 	@Override
+	public boolean isConsistent() {
+		return (consistent && data != null);
+	}
+
+	@Override
 	public void setInput(Object input) {
 		if (input instanceof Data) {
 			data = (Data) input;

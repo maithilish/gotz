@@ -6,14 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import in.m.picks.exception.FieldNotFoundException;
-import in.m.picks.model.Activity.Type;
 import in.m.picks.model.AxisName;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Locator;
 import in.m.picks.model.Member;
-import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.BeanService;
-import in.m.picks.shared.MonitorService;
 import in.m.picks.step.IStep;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
@@ -29,30 +26,15 @@ public class HtmlLocatorParser extends HtmlParser {
 
 	@Override
 	public void handover() throws Exception {
-		String givenUpMessage = Util.buildString("Create locator for locator [",
-				locatorName, "] failed.");
 		for (Member member : data.getMembers()) {
 			Locator locator = createLocator(member);
+			nextStepType = "loader";
+			entityLabel = Util.buildString(locator.getName(), ":",
+					locator.getGroup());
+			pushTask(locator, locator.getFields());
 			try {
-				List<FieldsBase> loaders = FieldsUtil
-						.getFieldList(locator.getFields(), "loader");
-				if (loaders.size() == 0) {
-					throw new FieldNotFoundException("no loader field defined");
-				}
-				for (FieldsBase loader : loaders) {
-					IStep task = createTask(loader.getValue(), locator,
-							locator.getFields());
-					TaskPoolService.getInstance().submit("loader", task);
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-					}
-				}
-			} catch (ClassNotFoundException | InstantiationException
-					| IllegalAccessException | FieldNotFoundException e) {
-				log.warn("{} {}", givenUpMessage, e.getMessage());
-				MonitorService.INSTANCE.addActivity(Type.GIVENUP, locator.toString(),
-						e);
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
 			}
 		}
 	}

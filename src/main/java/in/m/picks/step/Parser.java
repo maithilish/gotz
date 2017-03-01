@@ -27,7 +27,6 @@ import in.m.picks.model.DataDef;
 import in.m.picks.model.Document;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
-import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.shared.DataDefService;
 import in.m.picks.shared.MonitorService;
@@ -47,6 +46,8 @@ public abstract class Parser extends Step {
 
 	private Set<Integer[]> memberIndexSet = new HashSet<>();
 
+	private String locatorGroup;
+
 	@Override
 	public void run() {
 		processStep();
@@ -61,8 +62,10 @@ public abstract class Parser extends Step {
 				logger.info("parse data {}", Util.getLocatorLabel(fields));
 				prepareData();
 				parse();
+				consistent = true;
 				store();
 			} else {
+				consistent = true;
 				logger.info("found parsed data {}", Util.getLocatorLabel(fields));
 			}
 			handover();
@@ -81,6 +84,7 @@ public abstract class Parser extends Step {
 			throws FieldNotFoundException, DataDefNotFoundException {
 		dataDefName = FieldsUtil.getValue(fields, "datadef");
 		locatorName = FieldsUtil.getValue(fields, "locatorName");
+		locatorGroup = FieldsUtil.getValue(fields, "locatorGroup");
 
 	}
 
@@ -240,37 +244,14 @@ public abstract class Parser extends Step {
 
 	@Override
 	public void handover() throws Exception {
-		String givenUpMessage = Util.buildString("Create filter for locator [",
-				locatorName, "] failed.");
-		List<FieldsBase> filters = FieldsUtil.getFieldList(fields, "filter");
-		if (filters.size() == 0) {
-			logger.warn("{} {}", givenUpMessage, " No filter field found.");
-		}
-		for (FieldsBase filter : filters) {
-			if (data != null) {
-				String filterClassName = filter.getValue();
-				IStep task = createTask(filterClassName, data, fields);
-				pushTask(task);
-			} else {
-				logger.warn("Data not loaded - Locator [{}]", locatorName);
-				MonitorService.INSTANCE.addActivity(Type.GIVENUP,
-						"Data not loaded. " + givenUpMessage);
-			}
-		}
+		nextStepType = "filter";
+		entityLabel = Util.buildString(locatorName, ":", locatorGroup);
+		pushTask(data, fields);
 	}
 
-	private void pushTask(IStep task) {
-		try {
-			TaskPoolService.getInstance().submit("filter", task);
-			logger.debug("Filter instance [{}] pushed to pool. Locator [{}]",
-					task.getClass(), locatorName);
-		} catch (Exception e) {
-			logger.warn("Unable to create filter [{}] for locator [{}]", e,
-					locatorName);
-			String givenUpMessage = Util.buildString("Create filter for locator [",
-					locatorName, "] failed.");
-			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
-		}
+	@Override
+	public boolean isConsistent() {
+		return (consistent && data != null);
 	}
 
 	@Override

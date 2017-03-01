@@ -18,4 +18,6 @@ public interface IStep extends Runnable {
 
 	void setFields(List<FieldsBase> fields);
 
+	boolean isConsistent();
+
 }
