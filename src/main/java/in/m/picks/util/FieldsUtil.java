@@ -236,6 +236,13 @@ public class FieldsUtil {
 		return count;
 	}
 
+	public static Field createField(String name, String value) {
+		Field field = new Field();
+		field.setName(name);
+		field.setValue(value);
+		return field;
+	}
+
 	public static String getFormattedFields(List<FieldsBase> fields) {
 		if (fields == null) {
 			return "Fields=null";

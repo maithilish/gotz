@@ -12,7 +12,7 @@ import in.m.picks.shared.MonitorService;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
-public abstract class Filter implements IStep {
+public abstract class Filter extends Step {
 
 	final static Logger logger = LoggerFactory.getLogger(Filter.class);
 	protected List<FieldsBase> fields;

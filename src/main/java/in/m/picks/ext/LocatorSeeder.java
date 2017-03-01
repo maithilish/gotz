@@ -14,7 +14,6 @@ import in.m.picks.model.Locators;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.BeanService;
 import in.m.picks.shared.MonitorService;
-import in.m.picks.shared.StepService;
 import in.m.picks.step.IStep;
 import in.m.picks.step.Seeder;
 import in.m.picks.util.FieldsUtil;
@@ -93,7 +92,8 @@ public class LocatorSeeder extends Seeder {
 					throw new FieldNotFoundException("no loader field defined");
 				}
 				for (FieldsBase loader : loaders) {
-					IStep task = createTask(loader.getValue(), locator);
+					IStep task = createTask(loader.getValue(), locator,
+							locator.getFields());
 					TaskPoolService.getInstance().submit("loader", task);
 					count++;
 					try {
@@ -110,16 +110,6 @@ public class LocatorSeeder extends Seeder {
 		}
 		logger.info("locators count [{}], queued to loader [{}].", locators.size(),
 				count);
-	}
-
-	private IStep createTask(String loaderClassName, Locator locator)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, FieldNotFoundException {
-		IStep task = StepService.INSTANCE.getStep(loaderClassName);
-		task.setInput(locator);
-		task.setFields(locator.getFields());
-		logger.trace("[Loader] {}", locator);
-		return task;
 	}
 
 	private void mergeFields(FieldsBase classFields) {

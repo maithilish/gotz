@@ -14,7 +14,6 @@ import in.m.picks.model.Member;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.BeanService;
 import in.m.picks.shared.MonitorService;
-import in.m.picks.shared.StepService;
 import in.m.picks.step.IStep;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
@@ -41,7 +40,8 @@ public class HtmlLocatorParser extends HtmlParser {
 					throw new FieldNotFoundException("no loader field defined");
 				}
 				for (FieldsBase loader : loaders) {
-					IStep task = createTask(loader.getValue(), locator);
+					IStep task = createTask(loader.getValue(), locator,
+							locator.getFields());
 					TaskPoolService.getInstance().submit("loader", task);
 					try {
 						Thread.sleep(1000);
@@ -55,16 +55,6 @@ public class HtmlLocatorParser extends HtmlParser {
 						e);
 			}
 		}
-	}
-
-	private IStep createTask(String loaderClassName, Locator locator)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, FieldNotFoundException {
-		IStep task = StepService.INSTANCE.getStep(loaderClassName);
-		task.setInput(locator);
-		task.setFields(locator.getFields());
-		logger.trace("> [Loader] {}", locator);
-		return task;
 	}
 
 	private Locator createLocator(Member member) throws FieldNotFoundException {

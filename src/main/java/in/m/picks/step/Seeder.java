@@ -9,7 +9,7 @@ import in.m.picks.model.Activity.Type;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.shared.MonitorService;
 
-public abstract class Seeder implements IStep {
+public abstract class Seeder extends Step {
 
 	final static Logger logger = LoggerFactory.getLogger(Seeder.class);
 

@@ -31,11 +31,10 @@ import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.shared.DataDefService;
 import in.m.picks.shared.MonitorService;
-import in.m.picks.shared.StepService;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
-public abstract class Parser implements IStep {
+public abstract class Parser extends Step {
 
 	final static Logger logger = LoggerFactory.getLogger(Parser.class);
 
@@ -250,7 +249,7 @@ public abstract class Parser implements IStep {
 		for (FieldsBase filter : filters) {
 			if (data != null) {
 				String filterClassName = filter.getValue();
-				IStep task = createTask(filterClassName, data);
+				IStep task = createTask(filterClassName, data, fields);
 				pushTask(task);
 			} else {
 				logger.warn("Data not loaded - Locator [{}]", locatorName);
@@ -272,15 +271,6 @@ public abstract class Parser implements IStep {
 					locatorName, "] failed.");
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
 		}
-	}
-
-	private IStep createTask(String taskClassName, Data input)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
-		IStep task = StepService.INSTANCE.getStep(taskClassName).instance();
-		task.setInput(input);
-		task.setFields(fields);
-		return task;
 	}
 
 	@Override

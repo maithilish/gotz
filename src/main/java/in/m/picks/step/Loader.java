@@ -32,11 +32,10 @@ import in.m.picks.model.Locator;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.shared.MonitorService;
-import in.m.picks.shared.StepService;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
-public abstract class Loader implements IStep {
+public abstract class Loader extends Step {
 
 	final static Logger logger = LoggerFactory.getLogger(Loader.class);
 
@@ -151,9 +150,19 @@ public abstract class Loader implements IStep {
 		}
 		for (FieldsBase dataDefField : dataDefFields) {
 			if (dataDefField instanceof Fields) {
-				Fields fields = (Fields) dataDefField;
+				Fields fields = Util.deepClone(Fields.class, (Fields) dataDefField);
 				if (isDocumentLoaded()) {
-					pushParserTask(fields);
+					Field field = FieldsUtil.createField("locatorName",
+							locator.getName());
+					fields.getFields().add(field);
+					field = FieldsUtil.createField("locatorGroup",
+							locator.getGroup());
+					fields.getFields().add(field);
+					field = FieldsUtil.createField("locatorUrl", locator.getUrl());
+					fields.getFields().add(field);
+					List<FieldsBase> fieldsList = new ArrayList<>();
+					fieldsList.add(fields);
+					pushParserTask(fieldsList);
 				} else {
 					logger.warn("Document not loaded - Locator [{}]", locator);
 					MonitorService.INSTANCE.addActivity(Type.GIVENUP,
@@ -163,49 +172,32 @@ public abstract class Loader implements IStep {
 		}
 	}
 
-	private void pushParserTask(Fields fields) {
+	private void pushParserTask(List<FieldsBase> fields) {
+		String givenUpMessage = Util.buildString("create parser for locator [",
+				locator.getName(), "] failed.");
 		try {
-			IStep task = createParser(fields, document);
-			// PerserPool.INSTANCE.submit(parser);
-			TaskPoolService.getInstance().submit("parser", task);
-			logger.debug("Parser instance [{}] pushed to pool. Locator [{}]",
-					task.getClass(), locator.getName());
+			List<FieldsBase> parsers = FieldsUtil.getFieldList(fields, "parser");
+			if (parsers.size() == 0) {
+				logger.warn("{} {}", givenUpMessage, " No parser field found.");
+			}
+			for (FieldsBase parser : parsers) {
+				if (document.getDocumentObject() != null) {
+					String stepClassName = parser.getValue();
+					IStep task = createTask(stepClassName, document, fields);
+					TaskPoolService.getInstance().submit("parser", task);
+					logger.debug("Parser instance [{}] pushed to pool. Locator [{}]",
+							task.getClass(), locator.getName());
+				} else {
+					logger.warn("Document not loaded - Locator [{}]",
+							locator.getName());
+					MonitorService.INSTANCE.addActivity(Type.GIVENUP,
+							"Document not loaded. " + givenUpMessage);
+				}
+			}
 		} catch (Exception e) {
-			String givenUpMessage = Util.buildString("create parser for locator [",
-					locator.getName(), "] failed");
 			logger.error("{}. {}", givenUpMessage, Util.getMessage(e));
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
 		}
-	}
-
-	private IStep createParser(Fields fields, Document input)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException, FieldNotFoundException {
-		String parserClassName = FieldsUtil.getValue(fields, "parser");
-		IStep parserStep = StepService.INSTANCE.getStep(parserClassName).instance();
-		parserStep.setInput(input);
-
-		Field field = new Field();
-		field.setName("locatorName");
-		field.setValue(locator.getName());
-		fields.getFields().add(field);
-
-		field = new Field();
-		field.setName("locatorGroup");
-		field.setValue(locator.getGroup());
-		fields.getFields().add(field);
-
-		field = new Field();
-		field.setName("locatorUrl");
-		field.setValue(locator.getUrl());
-		fields.getFields().add(field);
-
-		List<FieldsBase> handoverFields = new ArrayList<>();
-		handoverFields.add(fields);
-
-		parserStep.setFields(handoverFields);
-
-		return parserStep;
 	}
 
 	@Override

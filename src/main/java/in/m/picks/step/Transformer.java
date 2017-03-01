@@ -13,7 +13,7 @@ import in.m.picks.model.FieldsBase;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.util.Util;
 
-public abstract class Transformer implements IStep {
+public abstract class Transformer extends Step {
 
 	final static Logger logger = LoggerFactory.getLogger(Transformer.class);
 

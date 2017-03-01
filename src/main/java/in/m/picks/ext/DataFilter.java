@@ -18,7 +18,6 @@ import in.m.picks.model.Member;
 import in.m.picks.pool.TaskPoolService;
 import in.m.picks.shared.DataDefService;
 import in.m.picks.shared.MonitorService;
-import in.m.picks.shared.StepService;
 import in.m.picks.step.Filter;
 import in.m.picks.step.IStep;
 import in.m.picks.util.FieldsIterator;
@@ -109,7 +108,7 @@ public class DataFilter extends Filter {
 		for (FieldsBase transformer : transformers) {
 			if (data != null) {
 				String filterClassName = transformer.getValue();
-				IStep task = createTask(filterClassName, data);
+				IStep task = createTask(filterClassName, data, fields);
 				pushTask(task);
 			} else {
 				logger.warn("Data not loaded - Locator [{}]", locatorName);
@@ -131,15 +130,6 @@ public class DataFilter extends Filter {
 					"create transformer for locator [", locatorName, "] failed.");
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
 		}
-	}
-
-	private IStep createTask(String taskClassName, Data input)
-			throws ClassNotFoundException, InstantiationException,
-			IllegalAccessException {
-		IStep task = StepService.INSTANCE.getStep(taskClassName).instance();
-		task.setInput(input);
-		task.setFields(fields);
-		return task;
 	}
 
 	@Override
