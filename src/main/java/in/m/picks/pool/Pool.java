@@ -7,18 +7,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import in.m.picks.shared.ConfigService;
 import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 @ThreadSafe
 public abstract class Pool {
 
+	final static Logger logger = LoggerFactory.getLogger(Pool.class);
+
 	final protected Map<String, ExecutorService> executorsMap;
 	final protected ArrayList<Future<?>> futures;
-	final private int poolSize;
 
 	protected Pool() {
-		poolSize = 4;
 		executorsMap = new HashMap<String, ExecutorService>();
 		futures = new ArrayList<Future<?>>();
 	}
@@ -26,7 +30,16 @@ public abstract class Pool {
 	private ExecutorService getPool(String poolName) {
 		ExecutorService executor = executorsMap.get(poolName);
 		if (executor == null) {
+			int poolSize = 4;
+			try {
+				String ps = ConfigService.INSTANCE
+						.getConfig("picks.poolsize." + poolName);
+				poolSize = Integer.valueOf(ps);
+			} catch (NumberFormatException e) {
+			}
 			executor = Executors.newFixedThreadPool(poolSize);
+			logger.info("create ExecutorPool [{}], pool size [{}]", poolName,
+					poolSize);
 			executorsMap.put(poolName, executor);
 		}
 		return executor;

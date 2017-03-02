@@ -18,6 +18,14 @@
 		</dateTimeParsePattern>
 		<orm>jdo</orm>
 		<datastore>datastore</datastore>
+		<poolsize>
+			<seeder>6</seeder>
+			<loader>4</loader>
+			<parser>4</parser>
+			<filter>4</filter>
+			<transformer>4</transformer>
+			<appender>2</appender>
+		</poolsize>
 	</picks>
 </configuration>
 
