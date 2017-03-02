@@ -1,11 +1,17 @@
 package in.m.picks.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrSubstitutor;
 
 import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Field;
@@ -50,12 +56,7 @@ public class FieldsUtil {
 
 	public static int getIntValue(List<FieldsBase> fields, String name)
 			throws FieldNotFoundException {
-		try {
-			return Integer.parseInt(getValue(fields, name));
-		} catch (NumberFormatException e) {
-			AccessUtil.logger.warn("Field [{}] {}", name, e);
-			throw e;
-		}
+		return Integer.parseInt(getValue(fields, name));
 	}
 
 	public static Range<Integer> getRange(List<FieldsBase> fields, String name)
@@ -65,7 +66,6 @@ public class FieldsUtil {
 		if (tokens.length < 1 || tokens.length > 2) {
 			NumberFormatException e = new NumberFormatException(
 					"Invalid Range " + value);
-			AccessUtil.logger.warn("AField [{}] {} {}", name, e, fields);
 			throw e;
 		}
 		Integer min = 0, max = 0;
@@ -81,7 +81,6 @@ public class FieldsUtil {
 		if (min > max) {
 			NumberFormatException e = new NumberFormatException(
 					"Invalid Range [min > max] " + value);
-			AccessUtil.logger.warn("AField [{}] {} {}", name, e, fields);
 			throw e;
 		}
 		return Range.between(min, max);
@@ -268,5 +267,45 @@ public class FieldsUtil {
 			sb.append("]");
 		}
 		return sb.toString();
+	}
+
+	public static List<FieldsBase> replaceVariables(List<FieldsBase> fields,
+			Map<String, ?> map) throws IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
+		Iterator<FieldsBase> ite = new FieldsIterator(fields);
+		List<FieldsBase> patchedFields = new ArrayList<>();
+		while (ite.hasNext()) {
+			FieldsBase field = ite.next();
+			if (field instanceof Field) {
+				String str = field.getValue();
+				Map<String, String> valueMap = getValueMap(str, map);
+				String patchedStr = StrSubstitutor.replace(str, valueMap, "%{", "}");
+				Field patchedField = new Field();
+				patchedField.setName(field.getName());
+				patchedField.setValue(patchedStr);
+				patchedFields.add(patchedField);
+			}
+		}
+		return patchedFields;
+	}
+
+	static Map<String, String> getValueMap(String str, Map<String, ?> map)
+			throws IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException {
+		String[] keys = StringUtils.substringsBetween(str, "%{", "}");
+		if (keys == null) {
+			return null;
+		}
+		Map<String, String> valueMap = new HashMap<>();
+		for (String key : keys) {
+			String[] parts = key.split("\\.");
+			String axisName = parts[0];
+			String property = parts[1];
+			Object axis = map.get(axisName.toUpperCase());
+			// call getter and type convert to String
+			Object o = PropertyUtils.getProperty(axis, property);
+			valueMap.put(key, ConvertUtils.convert(o));
+		}
+		return valueMap;
 	}
 }

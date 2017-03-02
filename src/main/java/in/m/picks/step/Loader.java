@@ -40,8 +40,6 @@ public abstract class Loader extends Step {
 
 	private Locator locator;
 	private Document document;
-	@SuppressWarnings("unused")
-	private List<FieldsBase> fields;
 
 	@Override
 	public void run() {
@@ -165,8 +163,6 @@ public abstract class Loader extends Step {
 					fieldsList.add(fields);
 
 					nextStepType = "parser";
-					entityLabel = Util.buildString(locator.getName(), ":",
-							locator.getGroup());
 					pushTask(document, fieldsList);
 				} else {
 					logger.warn("Document not loaded - Locator [{}]", locator);
@@ -190,11 +186,6 @@ public abstract class Loader extends Step {
 			logger.warn("Input is not instance of Locator type. {}",
 					input.getClass().toString());
 		}
-	}
-
-	@Override
-	public void setFields(List<FieldsBase> fields) {
-		this.fields = fields;
 	}
 
 	protected Locator getLocatorFromStore(String locName, String locGroup) {

@@ -13,7 +13,6 @@ import in.m.picks.model.Member;
 import in.m.picks.shared.BeanService;
 import in.m.picks.step.IStep;
 import in.m.picks.util.FieldsUtil;
-import in.m.picks.util.Util;
 
 public class HtmlLocatorParser extends HtmlParser {
 
@@ -29,8 +28,6 @@ public class HtmlLocatorParser extends HtmlParser {
 		for (Member member : data.getMembers()) {
 			Locator locator = createLocator(member);
 			nextStepType = "loader";
-			entityLabel = Util.buildString(locator.getName(), ":",
-					locator.getGroup());
 			pushTask(locator, locator.getFields());
 			try {
 				Thread.sleep(1000);
@@ -41,7 +38,7 @@ public class HtmlLocatorParser extends HtmlParser {
 
 	private Locator createLocator(Member member) throws FieldNotFoundException {
 		Locator locator = new Locator();
-		locator.setName(FieldsUtil.getValue(getFields(), "locatorName"));
+		locator.setName(FieldsUtil.getValue(fields, "locatorName"));
 		locator.setUrl(member.getValue(AxisName.FACT));
 		if (member.getGroup() == null) {
 			throw new FieldNotFoundException(

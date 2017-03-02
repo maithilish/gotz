@@ -1,14 +1,11 @@
 package in.m.picks.step;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
 import in.m.picks.model.Data;
-import in.m.picks.model.FieldsBase;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
@@ -16,7 +13,7 @@ import in.m.picks.util.Util;
 public abstract class Filter extends Step {
 
 	final static Logger logger = LoggerFactory.getLogger(Filter.class);
-	protected List<FieldsBase> fields;
+
 	protected Data data;
 	protected String locatorGroup;
 	protected String locatorName;
@@ -51,7 +48,6 @@ public abstract class Filter extends Step {
 	@Override
 	public void handover() throws Exception {
 		nextStepType = "transformer";
-		entityLabel = Util.buildString(locatorName, ":", locatorGroup);
 		pushTask(data, fields);
 	}
 
@@ -63,11 +59,6 @@ public abstract class Filter extends Step {
 			logger.error("input is not instance of Data {}",
 					input.getClass().toString());
 		}
-	}
-
-	@Override
-	public void setFields(List<FieldsBase> fields) {
-		this.fields = fields;
 	}
 
 	@Override

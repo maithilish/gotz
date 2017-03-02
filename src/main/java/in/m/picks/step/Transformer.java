@@ -1,7 +1,5 @@
 package in.m.picks.step;
 
-import java.util.List;
-
 import javax.naming.OperationNotSupportedException;
 
 import org.slf4j.Logger;
@@ -9,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import in.m.picks.model.Activity.Type;
 import in.m.picks.model.Data;
-import in.m.picks.model.FieldsBase;
 import in.m.picks.shared.MonitorService;
 import in.m.picks.util.Util;
 
@@ -18,7 +15,6 @@ public abstract class Transformer extends Step {
 	final static Logger logger = LoggerFactory.getLogger(Transformer.class);
 
 	protected Data data;
-	protected List<FieldsBase> fields;
 
 	@Override
 	public void run() {
@@ -63,11 +59,6 @@ public abstract class Transformer extends Step {
 			logger.error("input is not instance of Data type. {}",
 					input.getClass().toString());
 		}
-	}
-
-	@Override
-	public void setFields(List<FieldsBase> fields) {
-		this.fields = fields;
 	}
 
 }

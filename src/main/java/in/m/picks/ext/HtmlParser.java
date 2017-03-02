@@ -1,5 +1,6 @@
 package in.m.picks.ext;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,6 @@ import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Member;
 import in.m.picks.shared.ConfigService;
 import in.m.picks.step.Parser;
-import in.m.picks.util.AccessUtil;
 import in.m.picks.util.DataDefUtil;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
@@ -41,7 +41,8 @@ public abstract class HtmlParser extends Parser {
 
 	@Override
 	protected void setValue(DataDef dataDef, Member member)
-			throws ScriptException, NumberFormatException {
+			throws ScriptException, NumberFormatException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
 		for (AxisName axisName : AxisName.values()) {
 			Axis axis = member.getAxis(axisName);
 			if (axis == null) {
@@ -66,7 +67,8 @@ public abstract class HtmlParser extends Parser {
 	}
 
 	protected String getValue(HtmlPage page, DataDef dataDef, Member member,
-			Axis axis) throws ScriptException {
+			Axis axis) throws ScriptException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
 		StringBuilder sb = new StringBuilder(); // to trace query strings
 		String value = null;
 		List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName())
@@ -74,10 +76,10 @@ public abstract class HtmlParser extends Parser {
 		try {
 			List<FieldsBase> scripts = FieldsUtil.getGroupFields(list, "script");
 			setTraceString(sb, scripts, "--- Script ---");
-			scripts = AccessUtil.replaceVariables(scripts, member.getAxisMap());
+			scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
 			setTraceString(sb, scripts, "-- Patched --");
 			logger.trace("{}", sb);
-			Util.logState(logger, "parser-" + dataDefName, "", getFields(), sb);
+			Util.logState(logger, "parser-" + dataDefName, "", fields, sb);
 			value = queryByScript(scripts);
 		} catch (FieldNotFoundException e) {
 		}
@@ -85,10 +87,10 @@ public abstract class HtmlParser extends Parser {
 		try {
 			List<FieldsBase> queries = FieldsUtil.getGroupFields(list, "query");
 			setTraceString(sb, queries, "--- Query ---");
-			queries = AccessUtil.replaceVariables(queries, member.getAxisMap());
+			queries = FieldsUtil.replaceVariables(queries, member.getAxisMap());
 			setTraceString(sb, queries, "-- Patched --");
 			logger.trace("{}", sb);
-			Util.logState(logger, "parser-" + dataDefName, "", getFields(), sb);
+			Util.logState(logger, "parser-" + dataDefName, "", fields, sb);
 			value = queryByXPath(page, queries);
 		} catch (FieldNotFoundException e) {
 		}
@@ -169,8 +171,7 @@ public abstract class HtmlParser extends Parser {
 			String nodeTraceStr = Util.stripe(node.asXml(), 5,
 					"Data Region \n-------------\n", "-------------");
 			logger.trace("{}", nodeTraceStr);
-			Util.logState(logger, "parser-" + dataDefName, "", getFields(),
-					nodeTraceStr);
+			Util.logState(logger, "parser-" + dataDefName, "", fields, nodeTraceStr);
 		}
 		return nodes;
 	}
@@ -185,8 +186,7 @@ public abstract class HtmlParser extends Parser {
 			String nodeTraceStr = Util.stripe(childNode.asXml(), 5,
 					"Data Node \n--------\n", "--------");
 			logger.trace("{}", nodeTraceStr);
-			Util.logState(logger, "parser-" + dataDefName, "", getFields(),
-					nodeTraceStr);
+			Util.logState(logger, "parser-" + dataDefName, "", fields, nodeTraceStr);
 		}
 		logger.trace("Text Content of the node: " + value);
 		return value;

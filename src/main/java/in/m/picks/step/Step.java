@@ -5,6 +5,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Activity.Type;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.pool.TaskPoolService;
@@ -17,13 +18,14 @@ public abstract class Step implements IStep {
 
 	final static Logger logger = LoggerFactory.getLogger(Step.class);
 
-	protected String entityLabel;
+	protected String label = "unknown";
 	protected String nextStepType;
 	protected boolean consistent = false;
+	protected List<FieldsBase> fields;
 
 	protected void pushTask(Object input, List<FieldsBase> fields) {
-		String givenUpMessage = Util.buildString("create ", nextStepType,
-				" for entity [", entityLabel, "] failed");
+		String givenUpMessage = Util.buildString("create ", nextStepType, " for [",
+				label, "] failed");
 		try {
 			List<FieldsBase> stepClasses = FieldsUtil.getFieldList(fields,
 					nextStepType);
@@ -37,9 +39,9 @@ public abstract class Step implements IStep {
 					IStep task = createTask(stepClass, input, fields);
 					TaskPoolService.getInstance().submit(nextStepType, task);
 					logger.debug("{} instance [{}] pushed to pool, entity [{}]",
-							nextStepType, task.getClass(), entityLabel);
+							nextStepType, task.getClass(), label);
 				} else {
-					logger.warn("step inconsistent, entity [{}]", entityLabel);
+					logger.warn("step inconsistent, entity [{}]", label);
 					MonitorService.INSTANCE.addActivity(Type.GIVENUP,
 							Util.buildString(givenUpMessage, ", step inconsistent"));
 				}
@@ -47,6 +49,15 @@ public abstract class Step implements IStep {
 		} catch (Exception e) {
 			logger.error("{}. {}", givenUpMessage, Util.getMessage(e));
 			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
+		}
+	}
+
+	@Override
+	public void setFields(List<FieldsBase> fields) {
+		this.fields = fields;
+		try {
+			label = FieldsUtil.getValue(fields, "label");
+		} catch (FieldNotFoundException e1) {
 		}
 	}
 

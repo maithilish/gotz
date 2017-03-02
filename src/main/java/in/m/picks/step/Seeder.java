@@ -1,12 +1,9 @@
 package in.m.picks.step;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import in.m.picks.model.Activity.Type;
-import in.m.picks.model.FieldsBase;
 import in.m.picks.shared.MonitorService;
 
 public abstract class Seeder extends Step {
@@ -46,7 +43,4 @@ public abstract class Seeder extends Step {
 	public void setInput(Object input) {
 	}
 
-	@Override
-	public void setFields(List<FieldsBase> fields) {
-	}
 }

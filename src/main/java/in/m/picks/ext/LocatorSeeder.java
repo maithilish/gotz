@@ -51,9 +51,18 @@ public class LocatorSeeder extends Seeder {
 			extractLocator(locators);
 		}
 		for (Locator locator : locators) {
+			addLabelField(locator);
+		}
+		for (Locator locator : locators) {
 			Util.logState(logger, "locator", "initialized locator",
 					locator.getFields(), locator);
 		}
+	}
+
+	private void addLabelField(Locator locator) {
+		String label = Util.buildString(locator.getName(), ":", locator.getGroup());
+		FieldsBase field = FieldsUtil.createField("label", label);
+		locator.getFields().add(field);
 	}
 
 	private void extractLocator(Locators locators) {
@@ -83,8 +92,6 @@ public class LocatorSeeder extends Seeder {
 		int count = 0;
 		for (Locator locator : locators) {
 			nextStepType = "loader";
-			entityLabel = Util.buildString(locator.getName(), ":",
-					locator.getGroup());
 			pushTask(locator, locator.getFields());
 			count++;
 			try {

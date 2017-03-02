@@ -1,6 +1,7 @@
 package in.m.picks.step;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -40,13 +41,10 @@ public abstract class Parser extends Step {
 	protected String dataDefName;
 	protected String locatorName;
 	protected Document document;
-	private List<FieldsBase> fields;
 
 	protected Data data;
 
 	private Set<Integer[]> memberIndexSet = new HashSet<>();
-
-	private String locatorGroup;
 
 	@Override
 	public void run() {
@@ -78,14 +76,13 @@ public abstract class Parser extends Step {
 	}
 
 	protected abstract void setValue(DataDef dataDef, Member member)
-			throws ScriptException, NumberFormatException;
+			throws ScriptException, NumberFormatException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException;
 
 	private void initialize()
 			throws FieldNotFoundException, DataDefNotFoundException {
 		dataDefName = FieldsUtil.getValue(fields, "datadef");
 		locatorName = FieldsUtil.getValue(fields, "locatorName");
-		locatorGroup = FieldsUtil.getValue(fields, "locatorGroup");
-
 	}
 
 	private void prepareData()
@@ -98,13 +95,16 @@ public abstract class Parser extends Step {
 	}
 
 	public void parse() throws DataDefNotFoundException, ScriptException,
-			FieldNotFoundException, ClassNotFoundException, IOException {
+			FieldNotFoundException, ClassNotFoundException, IOException,
+			NumberFormatException, IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException {
 		parseData();
 	}
 
-	public void parseData()
-			throws DataDefNotFoundException, ScriptException, ClassNotFoundException,
-			IOException, NumberFormatException, FieldNotFoundException {
+	public void parseData() throws DataDefNotFoundException, ScriptException,
+			ClassNotFoundException, IOException, NumberFormatException,
+			FieldNotFoundException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
 		DataDef dataDef = DataDefService.INSTANCE.getDataDef(dataDefName);
 		Deque<Member> mStack = new ArrayDeque<>();
 		for (Member member : data.getMembers()) {
@@ -120,8 +120,8 @@ public abstract class Parser extends Step {
 			pushNewMember(mStack, member);
 		}
 		data.setMembers(members); // replace with expanded member list
-		Util.logState(logger, "parser-" + dataDefName, "Data after parse",
-				getFields(), data);
+		Util.logState(logger, "parser-" + dataDefName, "Data after parse", fields,
+				data);
 	}
 
 	private void pushNewMember(Deque<Member> mStack, Member member)
@@ -160,7 +160,7 @@ public abstract class Parser extends Step {
 		} catch (FieldNotFoundException e) {
 		} catch (NullPointerException e) {
 			throw new NullPointerException("check breakAfter value in datadef "
-					+ Util.getLocatorLabel(getFields()));
+					+ Util.getLocatorLabel(fields));
 		}
 		try {
 			Integer endIndex = getEndIndex(axis.getFields());
@@ -172,7 +172,7 @@ public abstract class Parser extends Step {
 		}
 		if (noField) {
 			throw new FieldNotFoundException("breakAfter or indexRange undefined "
-					+ Util.getLocatorLabel(getFields()));
+					+ Util.getLocatorLabel(fields));
 		}
 		return false;
 	}
@@ -245,7 +245,6 @@ public abstract class Parser extends Step {
 	@Override
 	public void handover() throws Exception {
 		nextStepType = "filter";
-		entityLabel = Util.buildString(locatorName, ":", locatorGroup);
 		pushTask(data, fields);
 	}
 
@@ -262,15 +261,6 @@ public abstract class Parser extends Step {
 			logger.warn("Input is not instance of Document type. {}",
 					input.getClass().toString());
 		}
-	}
-
-	@Override
-	public void setFields(List<FieldsBase> fields) {
-		this.fields = fields;
-	}
-
-	public List<FieldsBase> getFields() {
-		return fields;
 	}
 
 	public Document getDocument() {
