@@ -156,6 +156,19 @@ public class FieldsUtil {
 		}
 		return list;
 	}
+	
+	public static List<FieldsBase> getFieldList(List<FieldsBase> fields)
+			throws FieldNotFoundException {
+		List<FieldsBase> list = new ArrayList<>();
+		FieldsIterator ite = new FieldsIterator(fields);
+		while (ite.hasNext()) {
+			FieldsBase f = ite.next();
+			if (f instanceof Field) {
+				list.add(f);
+			}
+		}		
+		return list;
+	}
 
 	public static List<FieldsBase> getGroupFields(List<FieldsBase> fields,
 			String group) throws FieldNotFoundException {

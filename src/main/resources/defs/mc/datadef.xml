@@ -4,12 +4,10 @@
 	<datadef name="finlocators">
 		<field name="type" value="locator" />
 		<fields name="member" value="bs">
-			<field name="group" value="bs" />
-			<field name="live" value="P4D" />
+			<field name="group" value="bs" />			
 		</fields>
 		<fields name="member" value="pl">
-			<field name="group" value="pl" />
-			<field name="live" value="P1D" />
+			<field name="group" value="pl" />			
 		</fields>
 		<axis name="col">
 			<fields name="group" value="script">

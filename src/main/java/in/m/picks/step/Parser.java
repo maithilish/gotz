@@ -243,8 +243,7 @@ public abstract class Parser extends Step {
 	}
 
 	@Override
-	public void handover() throws Exception {
-		nextStepType = "filter";
+	public void handover() throws Exception {		
 		pushTask(data, fields);
 	}
 

@@ -13,6 +13,7 @@ import in.m.picks.model.Locators;
 import in.m.picks.shared.BeanService;
 import in.m.picks.step.IStep;
 import in.m.picks.step.Seeder;
+import in.m.picks.step.Step;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
@@ -24,7 +25,9 @@ public class LocatorSeeder extends Seeder {
 
 	@Override
 	public IStep instance() {
-		return new LocatorSeeder();
+		Step step = new LocatorSeeder();
+		step.setStepType("seeder");
+		return step;
 	}
 
 	@Override
@@ -34,6 +37,8 @@ public class LocatorSeeder extends Seeder {
 		try {
 			FieldsBase classFields = FieldsUtil.getFieldsByValue(fields, "class",
 					Locator.class.getName());
+			List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields, "steps");
+			setFields(steps);
 			if (classFields != null) {
 				mergeFields(classFields);
 			}
@@ -91,7 +96,6 @@ public class LocatorSeeder extends Seeder {
 		logger.info("push locators to loader taskpool");
 		int count = 0;
 		for (Locator locator : locators) {
-			nextStepType = "loader";
 			pushTask(locator, locator.getFields());
 			count++;
 			try {
@@ -106,10 +110,14 @@ public class LocatorSeeder extends Seeder {
 	private void mergeFields(FieldsBase classFields) {
 		logger.info("merge fields with locators");
 		for (Locator locator : locators) {
-			List<FieldsBase> fields;
 			try {
-				fields = FieldsUtil.getGroupFields(classFields, locator.getGroup());
+				List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
+						locator.getGroup());
 				locator.getFields().addAll(fields);
+				
+				List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
+						"steps");				
+				locator.getFields().addAll(steps);
 			} catch (FieldNotFoundException e) {
 			}
 		}

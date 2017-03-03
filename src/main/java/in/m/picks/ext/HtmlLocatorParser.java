@@ -27,8 +27,10 @@ public class HtmlLocatorParser extends HtmlParser {
 	public void handover() throws Exception {
 		for (Member member : data.getMembers()) {
 			Locator locator = createLocator(member);
-			nextStepType = "loader";
+			String stepType = getStepType();
+			setStepType("seeder");
 			pushTask(locator, locator.getFields());
+			setStepType(stepType);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -46,8 +48,10 @@ public class HtmlLocatorParser extends HtmlParser {
 							+ member.getName());
 		} else {
 			locator.setGroup(member.getGroup());
-			List<FieldsBase> groupFileds = getGroupFields(locator.getGroup());
-			locator.getFields().addAll(groupFileds);
+			List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
+			locator.getFields().addAll(groupFields);
+			List<FieldsBase> stepFields = getGroupFields("steps");
+			locator.getFields().addAll(stepFields);
 			if (member.getFields() != null) {
 				locator.getFields().addAll(member.getFields());
 			}

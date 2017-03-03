@@ -46,8 +46,7 @@ public abstract class Filter extends Step {
 	}
 
 	@Override
-	public void handover() throws Exception {
-		nextStepType = "transformer";
+	public void handover() throws Exception {		
 		pushTask(data, fields);
 	}
 
