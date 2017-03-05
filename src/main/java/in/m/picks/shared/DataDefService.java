@@ -164,6 +164,7 @@ public enum DataDefService {
 				fact.setAxis(axis.getName());
 				fact.setName("fact");
 				fact.setOrder(0);
+				fact.setValue(null);
 				axis.getMember().add(fact);
 			}
 			// set member's axis name and order
@@ -296,6 +297,7 @@ public enum DataDefService {
 		axis.setOrder(dMember.getOrder());
 		axis.setIndex(dMember.getIndex());
 		axis.setMatch(dMember.getMatch());
+		axis.setValue(dMember.getValue());
 		// fields from DMember level
 		axis.getFields().addAll(dMember.getFields());
 		return axis;

@@ -9,7 +9,6 @@
 		<loaderThreads>2</loaderThreads>
 		<parserThreads>4</parserThreads>
 		<processThreads>4</processThreads>
-		<webClientTimeout>120000</webClientTimeout>
 		<highDate>31-12-2099 23:59:59.999</highDate>
 		<dateParsePattern>dd-MM-yyyy ; dd/MM/yyyy</dateParsePattern>
 		<dateTimeParsePattern>
@@ -26,6 +25,10 @@
 			<transformer>4</transformer>
 			<appender>2</appender>
 		</poolsize>
+		<webClient>
+			<timeout>120000</timeout>
+			<userAgent>Mozilla/5.0</userAgent>
+		</webClient>
 	</picks>
 </configuration>
 

@@ -167,6 +167,7 @@
 				<xs:attribute name="index" type="xs:int" />
 				<xs:attribute name="match" type="xs:string" />
 				<xs:attribute name="order" type="xs:int" />
+				<xs:attribute name="value" type="xs:string" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

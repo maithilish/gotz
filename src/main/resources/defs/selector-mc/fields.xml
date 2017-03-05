@@ -14,22 +14,28 @@
 		</fields>
 		<fields name="group" value="quote">
 			<fields name="group" value="task">
-				<field name="loader" value="in.m.picks.ext.HtmlLoader" />
+				<field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
 				<fields name="group" value="datadef">
 					<field name="datadef" value="finlocators" />
-					<field name="parser" value="in.m.picks.ext.HtmlLocatorParser" />
+					<field name="parser" value="in.m.picks.ext.JSoupHtmlLocatorParser" />
 					<field name="logstate" value="true" />
 				</fields>
-				<!-- <fields name="group" value="datadef"> -->
-				<!-- <field name="datadef" value="quotePage" /> -->
-				<!-- <field name="parser" value="in.m.picks.ext.HtmlDataParser" /> -->
-				<!-- <field name="filter" value="in.m.picks.ext.DataFilter" /> -->
-				<!-- <field name="transformer" value="in.m.picks.ext.CsvTransformer" 
-					/> -->
-				<!-- <field name="appender" value="in.m.picks.appender.FileAppender" 
-					/> -->
-				<!-- <field name="logstate" value="true" /> -->
-				<!-- </fields> -->
+				<fields name="group" value="datadef">
+					<field name="datadef" value="quotePage" />
+					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
+					<field name="filter" value="in.m.picks.ext.DataFilter" />
+					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
+					<field name="appender" value="in.m.picks.appender.FileAppender" />
+					<field name="logstate" value="true" />
+				</fields>
+				<fields name="group" value="datadef">
+					<field name="datadef" value="price" />
+					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
+					<field name="filter" value="in.m.picks.ext.DataFilter" />
+					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
+					<field name="appender" value="in.m.picks.appender.FileAppender" />
+					<field name="logstate" value="true" />
+				</fields>
 			</fields>
 			<field name="persist" value="true" />
 			<field name="persistdata" value="true" />
@@ -37,10 +43,10 @@
 		</fields>
 		<fields name="group" value="bs">
 			<fields name="group" value="task">
-				<field name="loader" value="in.m.picks.ext.HtmlLoader" />
+				<field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
 				<fields name="group" value="datadef">
 					<field name="datadef" value="bs" />
-					<field name="parser" value="in.m.picks.ext.HtmlDataParser" />
+					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
 					<field name="filter" value="in.m.picks.ext.DataFilter" />
 					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
 					<field name="appender" value="in.m.picks.appender.FileAppender" />
@@ -53,10 +59,10 @@
 		</fields>
 		<fields name="group" value="pl">
 			<fields name="group" value="task">
-				<field name="loader" value="in.m.picks.ext.HtmlLoader" />
+				<field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
 				<fields name="group" value="datadef">
 					<field name="datadef" value="pl" />
-					<field name="parser" value="in.m.picks.ext.HtmlDataParser" />
+					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
 					<field name="filter" value="in.m.picks.ext.DataFilter" />
 					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
 					<field name="appender" value="in.m.picks.appender.FileAppender" />

@@ -42,7 +42,7 @@ public class HtmlLoader extends Loader {
 
 	private WebClient getWebClient() {
 		int timeout = 120000; // millis
-		String key = "picks.webClientTimeout";
+		String key = "picks.webClient.timeout";
 		try {
 			timeout = Integer.parseInt(ConfigService.INSTANCE.getConfig(key));
 		} catch (NumberFormatException e) {

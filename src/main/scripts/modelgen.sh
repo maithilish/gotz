@@ -1,3 +1,4 @@
+
 PROJ_DIR=/orange/data/workspace/npicks
 GENERATED_DIR=target/generated-sources
 SCHEMA_DIR=src/main/resources/schema
@@ -65,6 +66,11 @@ replace "s/$code_point/$code/g" $java_file
 
 
 ## other replacements
+
+code_point="protected Object documentObject"
+code="@ToStringExclude"
+java_file=Document.java
+sed -i "s/$code_point/$code $code_point/g" $GENERATED_DIR/$MODEL_DIR/$java_file
 
 #code_point="protected Date toDate;"
 #code="private transient Set<Set<DMember>> memberSets;"

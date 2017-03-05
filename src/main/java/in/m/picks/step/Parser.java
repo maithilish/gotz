@@ -139,7 +139,10 @@ public abstract class Parser extends Step {
 					Axis newAxis = newMember.getAxis(axisName);
 					newAxis.setIndex(newAxis.getIndex() + 1);
 					newAxis.setOrder(newAxis.getOrder() + 1);
-					newAxis.setValue(null);
+					// nullify all axis value
+					for (Axis na : newMember.getAxes()) {
+						na.setValue(null);
+					}
 					mStack.addFirst(newMember); // push
 					memberIndexSet.add(nextMemberIndexes);
 				}
@@ -243,7 +246,7 @@ public abstract class Parser extends Step {
 	}
 
 	@Override
-	public void handover() throws Exception {		
+	public void handover() throws Exception {
 		pushTask(data, fields);
 	}
 

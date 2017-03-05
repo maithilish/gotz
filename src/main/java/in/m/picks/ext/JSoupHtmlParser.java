@@ -10,11 +10,12 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.Axis;
@@ -28,15 +29,15 @@ import in.m.picks.util.DataDefUtil;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
-public abstract class HtmlParser extends Parser {
+public abstract class JSoupHtmlParser extends Parser {
 
-	final static Logger logger = LoggerFactory.getLogger(HtmlParser.class);
+	final static Logger logger = LoggerFactory.getLogger(JSoupHtmlParser.class);
 
-	private Map<Integer, List<?>> nodeMap;
+	private Map<Integer, Elements> elementsMap;
 	private ScriptEngine jsEngine;
 
-	public HtmlParser() {
-		nodeMap = new HashMap<Integer, List<?>>();
+	public JSoupHtmlParser() {
+		elementsMap = new HashMap<>();
 	}
 
 	@Override
@@ -58,15 +59,15 @@ public abstract class HtmlParser extends Parser {
 				axis.setIndex(startIndex);
 			}
 			if (isDocumentLoaded() && axis.getValue() == null) {
-				HtmlPage documentObject = (HtmlPage) getDocument()
-						.getDocumentObject();
-				String value = getValue(documentObject, dataDef, member, axis);
+				String docHtml = (String) getDocument().getDocumentObject();
+				Document doc = Jsoup.parse(docHtml);
+				String value = getValue(doc, dataDef, member, axis);
 				axis.setValue(value);
 			}
 		}
 	}
 
-	protected String getValue(HtmlPage page, DataDef dataDef, Member member,
+	protected String getValue(Document page, DataDef dataDef, Member member,
 			Axis axis) throws ScriptException, IllegalAccessException,
 			InvocationTargetException, NoSuchMethodException {
 		StringBuilder sb = new StringBuilder(); // to trace query strings
@@ -91,7 +92,7 @@ public abstract class HtmlParser extends Parser {
 			setTraceString(sb, queries, "-- Patched --");
 			logger.trace("{}", sb);
 			Util.logState(logger, "parser-" + dataDefName, "", fields, sb);
-			value = queryByXPath(page, queries);
+			value = queryBySelector(page, queries);
 		} catch (FieldNotFoundException e) {
 		}
 
@@ -121,13 +122,13 @@ public abstract class HtmlParser extends Parser {
 	private void initializeScriptEngine() {
 		logger.debug("{}", "Initializing script engine");
 		ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
-		jsEngine = scriptEngineMgr.getEngineByName("JavaScript");		
+		jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
 		if (jsEngine == null) {
 			throw new NullPointerException("No script engine found for JavaScript");
 		}
 	}
 
-	private String queryByXPath(HtmlPage page, List<FieldsBase> queries)
+	private String queryBySelector(Document page, List<FieldsBase> queries)
 			throws FieldNotFoundException {
 		if (FieldsUtil.fieldCount(queries) < 2) {
 			logger.warn("Insufficient queries in DataDef [{}]", dataDefName);
@@ -137,53 +138,57 @@ public abstract class HtmlParser extends Parser {
 		logger.trace("Queries {} ", queries);
 		String regionXpathExpr = FieldsUtil.getValue(queries, "region");
 		String xpathExpr = FieldsUtil.getValue(queries, "field");
-		String value = getByXPath(page, regionXpathExpr, xpathExpr);
-		return value;
-	}
-
-	private String getByXPath(HtmlPage page, String regionXpathExpr,
-			String xpathExpr) {
-		String value = null;
-		List<?> nodes = getRegionNodes(page, regionXpathExpr);
-		for (Object o : nodes) {
-			DomNode node = (DomNode) o;
-			value = getByXPath(node, xpathExpr);
+		String attr = null;
+		try {
+			attr = FieldsUtil.getValue(queries, "attribute"); // optional
+		} catch (FieldNotFoundException e) {
 		}
+		String value = getBySelector(page, regionXpathExpr, xpathExpr, attr);
 		return value;
 	}
 
-	private List<?> getRegionNodes(HtmlPage page, String xpathExpr) {
+	private String getBySelector(Document page, String regionXpathExpr,
+			String xpathExpr, String attr) {
+		String value = null;
+		Elements elements = getRegionNodes(page, regionXpathExpr);
+		value = getBySelector(elements, xpathExpr, attr);
+		return value;
+	}
+
+	private Elements getRegionNodes(Document page, String xpathExpr) {
 		/*
 		 * regional nodes are cached in HashMap for performance. Map is flushed
 		 * in loadObject method.
 		 */
 		Integer hash = xpathExpr.hashCode();
-		List<?> nodes = null;
-		if (nodeMap.containsKey(hash)) {
-			nodes = nodeMap.get(hash);
+		Elements elements = null;
+		if (elementsMap.containsKey(hash)) {
+			elements = elementsMap.get(hash);
 		} else {
-			nodes = page.getByXPath(xpathExpr);
-			nodeMap.put(hash, nodes);
+			elements = page.select(xpathExpr);
+			elementsMap.put(hash, elements);
 		}
-		logger.trace("Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
-		for (Object o : nodes) {
-			DomNode node = (DomNode) o;
-			String nodeTraceStr = Util.stripe(node.asXml(), 5,
+		logger.trace("Region Nodes " + elements.size() + " for XPATH: " + xpathExpr);
+		for (Element element : elements) {
+			String nodeTraceStr = Util.stripe(element.outerHtml(), 5,
 					"Data Region \n-------------\n", "-------------");
 			logger.trace("{}", nodeTraceStr);
 			Util.logState(logger, "parser-" + dataDefName, "", fields, nodeTraceStr);
 		}
-		return nodes;
+		return elements;
 	}
 
-	private String getByXPath(DomNode node, String xpathExpr) {
+	private String getBySelector(Elements elements, String xpathExpr, String attr) {
 		String value = null;
-		List<?> nodes = node.getByXPath(xpathExpr);
-		logger.trace("Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
-		for (Object o : nodes) {
-			DomNode childNode = (DomNode) o;
-			value = childNode.getTextContent();
-			String nodeTraceStr = Util.stripe(childNode.asXml(), 5,
+		Elements subElements = elements.select(xpathExpr);
+		logger.trace("Nodes " + subElements.size() + " for XPATH: " + xpathExpr);
+		for (Element element : subElements) {
+			if (attr == null) {
+				value = element.ownText();
+			} else {
+				value = element.attr(attr); // get value by attribute key
+			}
+			String nodeTraceStr = Util.stripe(element.outerHtml(), 5,
 					"Data Node \n--------\n", "--------");
 			logger.trace("{}", nodeTraceStr);
 			Util.logState(logger, "parser-" + dataDefName, "", fields, nodeTraceStr);
