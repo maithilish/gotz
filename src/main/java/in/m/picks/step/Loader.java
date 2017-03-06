@@ -142,8 +142,8 @@ public abstract class Loader extends Step {
 
 		String givenUpMessage = Util.buildString("Create parser for locator [",
 				locator.getName(), "] failed.");
-		List<FieldsBase> stepsFields = FieldsUtil
-				.getGroupFields(locator.getFields(), "steps");
+		List<FieldsBase> stepsFields = FieldsUtil.getGroupFields(locator.getFields(),
+				"steps");
 		List<FieldsBase> dataDefFields = FieldsUtil
 				.getGroupFields(locator.getFields(), "datadef");
 		if (dataDefFields.size() == 0) {
@@ -151,7 +151,7 @@ public abstract class Loader extends Step {
 		}
 		for (FieldsBase dataDefField : dataDefFields) {
 			if (dataDefField instanceof Fields) {
-				Fields fields = Util.deepClone(Fields.class, (Fields) dataDefField);				
+				Fields fields = Util.deepClone(Fields.class, (Fields) dataDefField);
 				if (isDocumentLoaded()) {
 					Field field = FieldsUtil.createField("locatorName",
 							locator.getName());

@@ -23,7 +23,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "dMember", propOrder = { "fields" })
 public class DMember extends Base implements Serializable {
@@ -43,7 +42,6 @@ public class DMember extends Base implements Serializable {
 	@XmlAttribute(name = "value")
 	protected String value;
 
-	
 	public List<FieldsBase> getFields() {
 		if (fields == null) {
 			fields = new ArrayList<FieldsBase>();
@@ -51,52 +49,42 @@ public class DMember extends Base implements Serializable {
 		return this.fields;
 	}
 
-	
 	public String getAxis() {
 		return axis;
 	}
 
-	
 	public void setAxis(String value) {
 		this.axis = value;
 	}
 
-	
 	public Integer getIndex() {
 		return index;
 	}
 
-	
 	public void setIndex(Integer value) {
 		this.index = value;
 	}
 
-	
 	public String getMatch() {
 		return match;
 	}
 
-	
 	public void setMatch(String value) {
 		this.match = value;
 	}
 
-	
 	public Integer getOrder() {
 		return order;
 	}
 
-	
 	public void setOrder(Integer value) {
 		this.order = value;
 	}
 
-	
 	public String getValue() {
 		return value;
 	}
 
-	
 	public void setValue(String value) {
 		this.value = value;
 	}

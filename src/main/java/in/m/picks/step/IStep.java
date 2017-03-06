@@ -17,7 +17,7 @@ public interface IStep extends Runnable {
 	void setInput(Object input);
 
 	void setFields(List<FieldsBase> fields);
-	
+
 	void setStepType(String stepType);
 
 	boolean isConsistent();

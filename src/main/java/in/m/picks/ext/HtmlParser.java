@@ -121,7 +121,7 @@ public abstract class HtmlParser extends Parser {
 	private void initializeScriptEngine() {
 		logger.debug("{}", "Initializing script engine");
 		ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
-		jsEngine = scriptEngineMgr.getEngineByName("JavaScript");		
+		jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
 		if (jsEngine == null) {
 			throw new NullPointerException("No script engine found for JavaScript");
 		}

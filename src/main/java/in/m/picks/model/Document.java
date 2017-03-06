@@ -24,7 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringExclude;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "document", propOrder = { "documentObject" })
 public class Document extends Base implements Serializable {
@@ -44,42 +43,34 @@ public class Document extends Base implements Serializable {
 	@XmlAttribute(name = "url")
 	protected String url;
 
-	
 	public Object getDocumentObject() {
 		return documentObject;
 	}
 
-	
 	public void setDocumentObject(Object value) {
 		this.documentObject = value;
 	}
 
-	
 	public Date getFromDate() {
 		return fromDate;
 	}
 
-	
 	public void setFromDate(Date value) {
 		this.fromDate = value;
 	}
 
-	
 	public Date getToDate() {
 		return toDate;
 	}
 
-	
 	public void setToDate(Date value) {
 		this.toDate = value;
 	}
 
-	
 	public String getUrl() {
 		return url;
 	}
 
-	
 	public void setUrl(String value) {
 		this.url = value;
 	}

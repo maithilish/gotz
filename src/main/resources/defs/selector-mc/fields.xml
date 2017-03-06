@@ -2,9 +2,6 @@
 
 <fields xmlns="http://codetab.org/picks">
 	<fields name="class" value="in.m.picks.model.Locator">
-		<fields name="group" value="property">
-			<field name="mc" value="http://mc.com" />
-		</fields>
 		<fields name="group" value="steps">
 			<field name="seeder" value="1" />
 			<field name="loader" value="2" />
@@ -25,7 +22,11 @@
 					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
 					<field name="filter" value="in.m.picks.ext.DataFilter" />
 					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<field name="appender" value="in.m.picks.appender.FileAppender" />
+					<fields name="group" value="appender">
+						<field name="name" value="quote" />
+						<field name="class" value="in.m.picks.appender.FileAppender" />
+						<field name="file" value="output/quote.txt" />
+					</fields>
 					<field name="logstate" value="true" />
 				</fields>
 				<fields name="group" value="datadef">
@@ -33,7 +34,11 @@
 					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
 					<field name="filter" value="in.m.picks.ext.DataFilter" />
 					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<field name="appender" value="in.m.picks.appender.FileAppender" />
+					<fields name="group" value="appender">
+						<field name="name" value="quote" />
+						<field name="class" value="in.m.picks.appender.FileAppender" />
+						<field name="file" value="output/quote.txt" />
+					</fields>
 					<field name="logstate" value="true" />
 				</fields>
 			</fields>
@@ -49,7 +54,11 @@
 					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
 					<field name="filter" value="in.m.picks.ext.DataFilter" />
 					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<field name="appender" value="in.m.picks.appender.FileAppender" />
+					<fields name="group" value="appender">
+						<field name="name" value="bs" />
+						<field name="class" value="in.m.picks.appender.FileAppender" />
+						<field name="file" value="output/bs.txt" />
+					</fields>
 					<field name="logstate" value="true" />
 				</fields>
 			</fields>
@@ -65,7 +74,11 @@
 					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
 					<field name="filter" value="in.m.picks.ext.DataFilter" />
 					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<field name="appender" value="in.m.picks.appender.FileAppender" />
+					<fields name="group" value="appender">
+						<field name="name" value="pl" />
+						<field name="class" value="in.m.picks.appender.FileAppender" />
+						<field name="file" value="output/pl.txt" />
+					</fields>
 					<field name="logstate" value="true" />
 				</fields>
 			</fields>

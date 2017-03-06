@@ -156,7 +156,7 @@ public class FieldsUtil {
 		}
 		return list;
 	}
-	
+
 	public static List<FieldsBase> getFieldList(List<FieldsBase> fields)
 			throws FieldNotFoundException {
 		List<FieldsBase> list = new ArrayList<>();
@@ -166,7 +166,7 @@ public class FieldsUtil {
 			if (f instanceof Field) {
 				list.add(f);
 			}
-		}		
+		}
 		return list;
 	}
 
@@ -320,5 +320,11 @@ public class FieldsUtil {
 			valueMap.put(key, ConvertUtils.convert(o));
 		}
 		return valueMap;
+	}
+
+	public static List<FieldsBase> asList(FieldsBase f) {
+		List<FieldsBase> fields = new ArrayList<>();
+		fields.add(f);
+		return fields;
 	}
 }

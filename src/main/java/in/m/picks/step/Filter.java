@@ -46,7 +46,7 @@ public abstract class Filter extends Step {
 	}
 
 	@Override
-	public void handover() throws Exception {		
+	public void handover() throws Exception {
 		pushTask(data, fields);
 	}
 

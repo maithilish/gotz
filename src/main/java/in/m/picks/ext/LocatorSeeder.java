@@ -114,9 +114,9 @@ public class LocatorSeeder extends Seeder {
 				List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
 						locator.getGroup());
 				locator.getFields().addAll(fields);
-				
+
 				List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
-						"steps");				
+						"steps");
 				locator.getFields().addAll(steps);
 			} catch (FieldNotFoundException e) {
 			}

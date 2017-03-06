@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fields xmlns="http://codetab.org/picks">
-	<fields name="class" value="in.m.picks.model.Locator">
-		<fields name="group" value="property">
-			<field name="mc" value="http://mc.com" />
-		</fields>
+	<fields name="class" value="in.m.picks.model.Locator">		
 		<fields name="group" value="steps">
 			<field name="seeder" value="1" />
 			<field name="loader" value="2" />
