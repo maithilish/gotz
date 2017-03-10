@@ -16,114 +16,119 @@ import in.m.picks.model.Activity.Type;
 
 public enum MonitorService {
 
-	INSTANCE;
+    INSTANCE;
 
-	final Logger logger = LoggerFactory.getLogger(MonitorService.class);
+    private final Logger logger = LoggerFactory.getLogger(MonitorService.class);
 
-	List<Activity> activitesList;
+    private List<Activity> activitesList;
 
-	Map<String, Long> memoryHighs = new HashMap<>();
-	Map<String, Long> memoryLows = new HashMap<>();
+    private Map<String, Long> memoryHighs = new HashMap<>();
+    private Map<String, Long> memoryLows = new HashMap<>();
 
-	private Timer timer;
-	private StopWatch stopWatch;
+    private Timer timer;
+    private StopWatch stopWatch;
 
-	private MonitorService() {
-		activitesList = new ArrayList<Activity>();
-	}
+    MonitorService() {
+        activitesList = new ArrayList<Activity>();
+    }
 
-	public void start() {
-		stopWatch = new StopWatch();
-		stopWatch.start();
-		timer = new Timer("Memory Timer");
-		timer.schedule(new MemoryTask(), 0, 5000);
-	}
+    public void start() {
+        stopWatch = new StopWatch();
+        stopWatch.start();
 
-	public void triggerFatal(String message) {
-		activitesList.add(new Activity(Type.FATAL, message));
-		end();
-		logger.info("Picks Terminated");
-		System.exit(1);
-	}
+        final long memoryPollFrequency = 5000;
+        timer = new Timer("Memory Timer");
+        timer.schedule(new MemoryTask(), 0, memoryPollFrequency);
+    }
 
-	public void addActivity(Type type, String message) {
-		activitesList.add(new Activity(type, message));
-	}
+    public void triggerFatal(final String message) {
+        activitesList.add(new Activity(Type.FATAL, message));
+        end();
+        logger.info("Picks Terminated");
+        System.exit(1);
+    }
 
-	public void addActivity(Type type, String message, Throwable throwable) {
-		activitesList.add(new Activity(type, message, throwable));
-	}
+    public void addActivity(final Type type, final String message) {
+        activitesList.add(new Activity(type, message));
+    }
 
-	public void end() {
-		logger.info("{}", "Picks run completed");
-		timer.cancel();
-		logActivities();
-		logMemoryUsage();
-		stopWatch.stop();
-		logger.info("{}  {}", "Total time:", stopWatch);
-	}
+    public void addActivity(final Type type, final String message,
+            final Throwable throwable) {
+        activitesList.add(new Activity(type, message, throwable));
+    }
 
-	private void logMemoryUsage() {
-		logger.info("{}", "--- Memory Usage ---");
-		logger.info("Highs: {}", memoryUsage(memoryHighs));
-		logger.info("Lows: {}", memoryUsage(memoryLows));
-	}
+    public void end() {
+        logger.info("{}", "Picks run completed");
+        timer.cancel();
+        logActivities();
+        logMemoryUsage();
+        stopWatch.stop();
+        logger.info("{}  {}", "Total time:", stopWatch);
+    }
 
-	private String memoryUsage(Map<String, Long> map) {
-		StringBuilder sb = new StringBuilder();
-		for (String name : map.keySet()) {
-			Long inMB = (map.get(name)) / (1024 * 1024);
-			sb.append(name);
-			sb.append(" : ");
-			sb.append(inMB);
-			sb.append("M   ");
-		}
-		return sb.toString();
-	}
+    private void logMemoryUsage() {
+        logger.info("{}", "--- Memory Usage ---");
+        logger.info("Highs: {}", memoryUsage(memoryHighs));
+        logger.info("Lows: {}", memoryUsage(memoryLows));
+    }
 
-	private void logActivities() {
-		logger.info("{}", "--- Summary ---");
-		if (activitesList.size() == 0) {
-			logger.info("no issues");
-		}
-		for (Activity activity : activitesList) {
-			logger.info("Activity type={}", activity.getType());
-			logger.info("         message={}", activity.getMessage());
-			logger.info("         {}={}",
-					activity.getThrowable().getClass().getSimpleName(),
-					activity.getThrowable().getLocalizedMessage());
-		}
-	}
+    private String memoryUsage(final Map<String, Long> map) {
+        final long divisor = 1024 * 1024;
+        StringBuilder sb = new StringBuilder();
+        for (String name : map.keySet()) {
+            Long inMB = (map.get(name)) / divisor;
+            sb.append(name);
+            sb.append(" : ");
+            sb.append(inMB);
+            sb.append("M   ");
+        }
+        return sb.toString();
+    }
 
-	public void pollMemory(Long maxMemory, Long totalMemory, Long freeMemory) {
-		setHighs("Total", totalMemory);
-		setHighs("Maximum", maxMemory);
-		setHighs("Free", freeMemory);
-		setLows("Total", totalMemory);
-		setLows("Maximum", maxMemory);
-		setLows("Free", freeMemory);
-	}
+    private void logActivities() {
+        logger.info("{}", "--- Summary ---");
+        if (activitesList.size() == 0) {
+            logger.info("no issues");
+        }
+        for (Activity activity : activitesList) {
+            logger.info("Activity type={}", activity.getType());
+            logger.info("         message={}", activity.getMessage());
+            logger.info("         {}={}",
+                    activity.getThrowable().getClass().getSimpleName(),
+                    activity.getThrowable().getLocalizedMessage());
+        }
+    }
 
-	private void setHighs(String name, long value) {
-		Long previousValue = memoryHighs.get(name);
-		if (previousValue == null) {
-			memoryHighs.put(name, value);
-		} else {
-			if (value > previousValue) {
-				memoryHighs.put(name, value);
-			}
-		}
-	}
+    public void pollMemory(final Long maxMemory, final Long totalMemory,
+            final Long freeMemory) {
+        setHighs("Total", totalMemory);
+        setHighs("Maximum", maxMemory);
+        setHighs("Free", freeMemory);
+        setLows("Total", totalMemory);
+        setLows("Maximum", maxMemory);
+        setLows("Free", freeMemory);
+    }
 
-	private void setLows(String name, long value) {
-		Long previousValue = memoryLows.get(name);
-		if (previousValue == null) {
-			memoryLows.put(name, value);
-		} else {
-			if (value < previousValue) {
-				memoryLows.put(name, value);
-			}
-		}
-	}
+    private void setHighs(final String name, final long value) {
+        Long previousValue = memoryHighs.get(name);
+        if (previousValue == null) {
+            memoryHighs.put(name, value);
+        } else {
+            if (value > previousValue) {
+                memoryHighs.put(name, value);
+            }
+        }
+    }
+
+    private void setLows(final String name, final long value) {
+        Long previousValue = memoryLows.get(name);
+        if (previousValue == null) {
+            memoryLows.put(name, value);
+        } else {
+            if (value < previousValue) {
+                memoryLows.put(name, value);
+            }
+        }
+    }
 
 }

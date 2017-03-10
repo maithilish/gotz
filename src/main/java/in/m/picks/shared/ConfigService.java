@@ -23,216 +23,218 @@ import in.m.picks.util.Util;
 
 public enum ConfigService {
 
-	INSTANCE;
+    INSTANCE;
 
-	enum ConfigIndex {
-		SYSTEM, PROPERTIES, DEFAULTS
-	}
+    enum ConfigIndex {
+        SYSTEM, PROPERTIES, DEFAULTS
+    }
 
-	final Logger logger = LoggerFactory.getLogger(ConfigService.class);
+    private final Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
-	private CompositeConfiguration configs;
+    private CompositeConfiguration configs;
 
-	private ConfigService() {
+    ConfigService() {
 
-		logger.info("Initializing Configs");
+        logger.info("Initializing Configs");
 
-		configs = loadConfigs();
-		addRunDate();
-		addRunDateTime();
+        configs = loadConfigs();
+        addRunDate();
+        addRunDateTime();
 
-		logger.trace("{}", configsAsString(ConfigIndex.SYSTEM));
-		logger.debug("{}", configsAsString(ConfigIndex.PROPERTIES));
-		logger.debug("{}", configsAsString(ConfigIndex.DEFAULTS));
-		logger.debug("Initialized Configs");
+        logger.trace("{}", configsAsString(ConfigIndex.SYSTEM));
+        logger.debug("{}", configsAsString(ConfigIndex.PROPERTIES));
+        logger.debug("{}", configsAsString(ConfigIndex.DEFAULTS));
+        logger.debug("Initialized Configs");
 
-		logger.info("Config precedence - SYSTEM, PROPERTIES, DEFAULTS");
-		logger.info(
-				"Use picks.properties or system property to override defaults");
-	}
+        logger.info("Config precedence - SYSTEM, PROPERTIES, DEFAULTS");
+        logger.info(
+                "Use picks.properties or system property to override defaults");
+    }
 
-	private String configsAsString(ConfigIndex index) {
-		Configuration config = getConfig(index);
-		Iterator<String> keys = config.getKeys();
+    private String configsAsString(final ConfigIndex index) {
+        Configuration config = getConfig(index);
+        Iterator<String> keys = config.getKeys();
 
-		StringBuilder sb = new StringBuilder();
-		sb.append(index);
-		sb.append(System.lineSeparator());
-		while (keys.hasNext()) {
-			String key = keys.next();
-			sb.append(Util.logIndent());
-			sb.append(key);
-			sb.append(" = ");
-			sb.append(configs.getProperty(key));
-			sb.append(System.lineSeparator());
-		}
-		return sb.toString();
-	}
+        StringBuilder sb = new StringBuilder();
+        sb.append(index);
+        sb.append(System.lineSeparator());
+        while (keys.hasNext()) {
+            String key = keys.next();
+            sb.append(Util.logIndent());
+            sb.append(key);
+            sb.append(" = ");
+            sb.append(configs.getProperty(key));
+            sb.append(System.lineSeparator());
+        }
+        return sb.toString();
+    }
 
-	public String getConfig(final String key) {
-		String value = configs.getString(key);
-		if (value == null) {
-			logger.error("Config [{}] not found. Check prefix and key.", key); //$NON-NLS-1$
-			MonitorService.INSTANCE.triggerFatal("Config failure");
-		}
-		return value;
-	}
+    public String getConfig(final String key) {
+        String value = configs.getString(key);
+        if (value == null) {
+            logger.error("{}", "Config [{}] not found. Check prefix and key.",
+                    key);
+            MonitorService.INSTANCE.triggerFatal("Config failure");
+        }
+        return value;
+    }
 
-	public String[] getConfigArray(final String key) {
-		String[] values = configs.getStringArray(key);
-		if (values == null) {
-			logger.error("Config [{}] not found. Check prefix and key.", key); //$NON-NLS-1$
-			MonitorService.INSTANCE.triggerFatal("Config failure");
-		}
-		return values;
-	}
+    public String[] getConfigArray(final String key) {
+        String[] values = configs.getStringArray(key);
+        if (values == null) {
+            logger.error("{}", "Config [{}] not found. Check prefix and key.",
+                    key);
+            MonitorService.INSTANCE.triggerFatal("Config failure");
+        }
+        return values;
+    }
 
-	public final CompositeConfiguration getConfigs() {
-		return configs;
-	}
+    public final CompositeConfiguration getConfigs() {
+        return configs;
+    }
 
-	public final Configuration getConfig(ConfigIndex index) {
-		Configuration config;
-		switch (index) {
-		case SYSTEM:
-			config = configs.getConfiguration(0);
-			break;
-		case PROPERTIES:
-			config = configs.getConfiguration(1);
-			break;
-		case DEFAULTS:
-			config = configs.getConfiguration(2);
-			break;
-		default:
-			config = configs.getConfiguration(2);
-			break;
-		}
-		return config;
-	}
+    public final Configuration getConfig(final ConfigIndex index) {
+        Configuration config;
+        switch (index) {
+        case SYSTEM:
+            config = configs.getConfiguration(0);
+            break;
+        case PROPERTIES:
+            config = configs.getConfiguration(1);
+            break;
+        case DEFAULTS:
+            config = configs.getConfiguration(2);
+            break;
+        default:
+            config = configs.getConfiguration(2);
+            break;
+        }
+        return config;
+    }
 
-	public Date getRunDate() {
-		Date runDate = null;
-		String dateStr = getConfig("picks.runDate"); //$NON-NLS-1$
-		String patterns = getConfig("picks.dateParsePattern"); //$NON-NLS-1$
+    public Date getRunDate() {
+        Date runDate = null;
+        String dateStr = getConfig("picks.runDate"); //$NON-NLS-1$
+        String patterns = getConfig("picks.dateParsePattern"); //$NON-NLS-1$
 
-		try {
-			runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
-		} catch (ParseException e) {
-			logger.error("Run Date error. {}", e); //$NON-NLS-1$
-			MonitorService.INSTANCE.triggerFatal("Config failure");
-		}
-		return runDate;
-	}
+        try {
+            runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
+        } catch (ParseException e) {
+            logger.error("Run Date error. {}", e); //$NON-NLS-1$
+            MonitorService.INSTANCE.triggerFatal("Config failure");
+        }
+        return runDate;
+    }
 
-	public Date getRunDateTime() {
-		Date runDateTime = null;
-		String dateTimeStr = getConfig("picks.runDateTime"); //$NON-NLS-1$
-		String patterns = getConfig("picks.dateTimeParsePattern"); //$NON-NLS-1$
+    public Date getRunDateTime() {
+        Date runDateTime = null;
+        String dateTimeStr = getConfig("picks.runDateTime"); //$NON-NLS-1$
+        String patterns = getConfig("picks.dateTimeParsePattern"); //$NON-NLS-1$
 
-		try {
-			runDateTime = DateUtils.parseDate(dateTimeStr,
-					new String[] {patterns});
-		} catch (ParseException e) {
-			logger.error("Run Date error. {}", e); //$NON-NLS-1$
-			MonitorService.INSTANCE.triggerFatal("Config failure");
-		}
-		return runDateTime;
-	}
+        try {
+            runDateTime = DateUtils.parseDate(dateTimeStr,
+                    new String[] {patterns});
+        } catch (ParseException e) {
+            logger.error("Run Date error. {}", e); //$NON-NLS-1$
+            MonitorService.INSTANCE.triggerFatal("Config failure");
+        }
+        return runDateTime;
+    }
 
-	public Date getHighDate() {
-		Date highDate = null;
-		String dateStr = getConfig("picks.highDate"); //$NON-NLS-1$
-		String[] patterns = getConfigArray("picks.dateTimeParsePattern"); //$NON-NLS-1$
-		try {
-			highDate = DateUtils.parseDate(dateStr, patterns);
-		} catch (ParseException e) {
-			logger.error("{}", e); //$NON-NLS-1$
-			MonitorService.INSTANCE.triggerFatal("Config failure");
-		}
-		return highDate;
-	}
+    public Date getHighDate() {
+        Date highDate = null;
+        String dateStr = getConfig("picks.highDate"); //$NON-NLS-1$
+        String[] patterns = getConfigArray("picks.dateTimeParsePattern"); //$NON-NLS-1$
+        try {
+            highDate = DateUtils.parseDate(dateStr, patterns);
+        } catch (ParseException e) {
+            logger.error("{}", e); //$NON-NLS-1$
+            MonitorService.INSTANCE.triggerFatal("Config failure");
+        }
+        return highDate;
+    }
 
-	private CompositeConfiguration loadConfigs() {
+    private CompositeConfiguration loadConfigs() {
 
-		CompositeConfiguration configs = new CompositeConfiguration();
+        CompositeConfiguration configs = new CompositeConfiguration();
 
-		configs.addConfiguration(new SystemConfiguration());
+        configs.addConfiguration(new SystemConfiguration());
 
-		try {
-			configs.addConfiguration(userProvidedConfigs());
-		} catch (ConfigurationException e) {
-			logger.info(e.getLocalizedMessage() + ". "
-					+ "Using default properties");
-		}
+        try {
+            configs.addConfiguration(userProvidedConfigs());
+        } catch (ConfigurationException e) {
+            logger.info(e.getLocalizedMessage() + ". "
+                    + "Using default properties");
+        }
 
-		try {
-			configs.addConfiguration(defaultConfigs());
-		} catch (ConfigurationException e) {
-			logger.error("{}. Exit", e);
-			MonitorService.INSTANCE.triggerFatal("Config failure");
-		}
-		return configs;
-	}
+        try {
+            configs.addConfiguration(defaultConfigs());
+        } catch (ConfigurationException e) {
+            logger.error("{}. Exit", e);
+            MonitorService.INSTANCE.triggerFatal("Config failure");
+        }
+        return configs;
+    }
 
-	private Configuration userProvidedConfigs() throws ConfigurationException {
+    private Configuration userProvidedConfigs() throws ConfigurationException {
 
-		FileBasedConfigurationBuilder<PropertiesConfiguration> builder;
-		builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-				PropertiesConfiguration.class)
-						.configure(new Parameters().properties()
-								.setFileName("picks.properties")
-								.setThrowExceptionOnMissing(true)
-								.setListDelimiterHandler(
-										new DefaultListDelimiterHandler(';')));
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builder;
+        builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
+                PropertiesConfiguration.class)
+                        .configure(new Parameters().properties()
+                                .setFileName("picks.properties")
+                                .setThrowExceptionOnMissing(true)
+                                .setListDelimiterHandler(
+                                        new DefaultListDelimiterHandler(';')));
 
-		Configuration userProvided = builder.getConfiguration();
-		return userProvided;
-	}
+        Configuration userProvided = builder.getConfiguration();
+        return userProvided;
+    }
 
-	private Configuration defaultConfigs() throws ConfigurationException {
+    private Configuration defaultConfigs() throws ConfigurationException {
 
-		FileBasedConfigurationBuilder<XMLConfiguration> builder;
-		builder = new FileBasedConfigurationBuilder<XMLConfiguration>(
-				XMLConfiguration.class)
-						.configure(new Parameters().properties()
-								.setFileName("picks-default.xml")
-								.setThrowExceptionOnMissing(true)
-								.setListDelimiterHandler(
-										new DefaultListDelimiterHandler(';')));
+        FileBasedConfigurationBuilder<XMLConfiguration> builder;
+        builder = new FileBasedConfigurationBuilder<XMLConfiguration>(
+                XMLConfiguration.class)
+                        .configure(new Parameters().properties()
+                                .setFileName("picks-default.xml")
+                                .setThrowExceptionOnMissing(true)
+                                .setListDelimiterHandler(
+                                        new DefaultListDelimiterHandler(';')));
 
-		Configuration defaultConfigs = builder.getConfiguration();
-		return defaultConfigs;
-	}
+        Configuration defaultConfigs = builder.getConfiguration();
+        return defaultConfigs;
+    }
 
-	private void addRunDate() {
-		Date runDate = new Date();
-		String runDateStr = configs.getString("picks.runDate"); //$NON-NLS-1$
-		if (runDateStr == null) {
-			String dateFormat = configs.getString("picks.dateParsePattern"); //$NON-NLS-1$
-			runDateStr = DateFormatUtils.format(runDate, dateFormat);
-			configs.addProperty("picks.runDate", runDateStr); //$NON-NLS-1$
-		}
-	}
+    private void addRunDate() {
+        Date runDate = new Date();
+        String runDateStr = configs.getString("picks.runDate"); //$NON-NLS-1$
+        if (runDateStr == null) {
+            String dateFormat = configs.getString("picks.dateParsePattern"); //$NON-NLS-1$
+            runDateStr = DateFormatUtils.format(runDate, dateFormat);
+            configs.addProperty("picks.runDate", runDateStr); //$NON-NLS-1$
+        }
+    }
 
-	private void addRunDateTime() {
-		Date runDateTime = new Date();
-		String runDateTimeStr = configs.getString("picks.runDateTime"); //$NON-NLS-1$
-		if (runDateTimeStr == null) {
-			String dateTimeFormat = configs
-					.getString("picks.dateTimeParsePattern"); //$NON-NLS-1$
-			runDateTimeStr = DateFormatUtils.format(runDateTime,
-					dateTimeFormat);
-			configs.addProperty("picks.runDateTime", runDateTimeStr); //$NON-NLS-1$
-		}
-	}
+    private void addRunDateTime() {
+        Date runDateTime = new Date();
+        String runDateTimeStr = configs.getString("picks.runDateTime"); //$NON-NLS-1$
+        if (runDateTimeStr == null) {
+            String dateTimeFormat = configs
+                    .getString("picks.dateTimeParsePattern"); //$NON-NLS-1$
+            runDateTimeStr = DateFormatUtils.format(runDateTime,
+                    dateTimeFormat);
+            configs.addProperty("picks.runDateTime", runDateTimeStr); //$NON-NLS-1$
+        }
+    }
 
-	public boolean isTestMode() {
-		return StringUtils
-				.isNotBlank(System.getProperty("surefire.test.class.path"));
-	}
+    public boolean isTestMode() {
+        return StringUtils
+                .isNotBlank(System.getProperty("surefire.test.class.path"));
+    }
 
-	public boolean isDevMode() {
-		return StringUtils.equalsIgnoreCase(configs.getString("picks.mode"),
-				"dev");
-	}
+    public boolean isDevMode() {
+        return StringUtils.equalsIgnoreCase(configs.getString("picks.mode"),
+                "dev");
+    }
 }
