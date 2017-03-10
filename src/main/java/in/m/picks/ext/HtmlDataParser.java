@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 
 import in.m.picks.step.IStep;
 
-public class HtmlDataParser extends HtmlParser {
+public final class HtmlDataParser extends HtmlParser {
 
-	final static Logger logger = LoggerFactory.getLogger(HtmlDataParser.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(HtmlDataParser.class);
 
-	@Override
-	public IStep instance() {
-		return new HtmlDataParser();
-	}
+    @Override
+    public IStep instance() {
+        return new HtmlDataParser();
+    }
 
 }

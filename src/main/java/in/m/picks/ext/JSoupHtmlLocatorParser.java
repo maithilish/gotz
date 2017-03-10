@@ -13,69 +13,74 @@ import in.m.picks.model.Member;
 import in.m.picks.shared.BeanService;
 import in.m.picks.step.IStep;
 import in.m.picks.util.FieldsUtil;
+import in.m.picks.util.Util;
 
-public class JSoupHtmlLocatorParser extends JSoupHtmlParser {
+public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
 
-	final Logger log = LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
+    static final Logger LOGGER = LoggerFactory
+            .getLogger(JSoupHtmlLocatorParser.class);
 
-	@Override
-	public IStep instance() {
-		return new JSoupHtmlLocatorParser();
-	}
+    @Override
+    public IStep instance() {
+        return new JSoupHtmlLocatorParser();
+    }
 
-	@Override
-	public void handover() throws Exception {
-		for (Member member : data.getMembers()) {
-			Locator locator = createLocator(member);
-			String stepType = getStepType();
-			setStepType("seeder");
-			pushTask(locator, locator.getFields());
-			setStepType(stepType);
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-			}
-		}
-	}
+    @Override
+    public void handover() throws Exception {
+        final long sleepMillis = 1000;
+        for (Member member : getData().getMembers()) {
+            Locator locator = createLocator(member);
+            String stepType = getStepType();
+            setStepType("seeder");
+            pushTask(locator, locator.getFields());
+            setStepType(stepType);
+            try {
+                Thread.sleep(sleepMillis);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
 
-	private Locator createLocator(Member member) throws FieldNotFoundException {
-		Locator locator = new Locator();
-		locator.setName(FieldsUtil.getValue(fields, "locatorName"));
-		locator.setUrl(member.getValue(AxisName.FACT));
-		if (member.getGroup() == null) {
-			throw new FieldNotFoundException(
-					"unable to create new locator. define group for member in datadef of locator type "
-							+ member.getName());
-		} else {
-			locator.setGroup(member.getGroup());
-			List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
-			locator.getFields().addAll(groupFields);
-			List<FieldsBase> stepFields = getGroupFields("steps");
-			locator.getFields().addAll(stepFields);
-			if (member.getFields() != null) {
-				locator.getFields().addAll(member.getFields());
-			}
-		}
-		log.trace("created new {} {}", locator, locator.getUrl());
-		return locator;
-	}
+    private Locator createLocator(final Member member)
+            throws FieldNotFoundException {
+        Locator locator = new Locator();
+        locator.setName(FieldsUtil.getValue(getFields(), "locatorName"));
+        locator.setUrl(member.getValue(AxisName.FACT));
+        if (member.getGroup() == null) {
+            String message = Util.buildString(
+                    "unable to create new locator. define group for member ",
+                    "in datadef of locator type ", member.getName());
+            throw new FieldNotFoundException(message);
+        } else {
+            locator.setGroup(member.getGroup());
+            List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
+            locator.getFields().addAll(groupFields);
+            List<FieldsBase> stepFields = getGroupFields("steps");
+            locator.getFields().addAll(stepFields);
+            if (member.getFields() != null) {
+                locator.getFields().addAll(member.getFields());
+            }
+        }
+        LOGGER.trace("created new {} {}", locator, locator.getUrl());
+        return locator;
+    }
 
-	private List<FieldsBase> getGroupFields(String group)
-			throws FieldNotFoundException {
-		List<FieldsBase> fieldsBeans = BeanService.INSTANCE
-				.getBeans(FieldsBase.class);
-		FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans,
-				"class", Locator.class.getName());
-		if (classFields != null) {
-			List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
-					group);
-			return fields;
-		}
-		return null;
-	}
+    private List<FieldsBase> getGroupFields(final String group)
+            throws FieldNotFoundException {
+        List<FieldsBase> fieldsBeans = BeanService.INSTANCE
+                .getBeans(FieldsBase.class);
+        FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans,
+                "class", Locator.class.getName());
+        if (classFields != null) {
+            List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
+                    group);
+            return fields;
+        }
+        return null;
+    }
 
-	@Override
-	public void store() throws Exception {
-		// not required
-	}
+    @Override
+    public void store() throws Exception {
+        // not required - don't throw illegal oper
+    }
 }

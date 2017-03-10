@@ -12,53 +12,86 @@ import in.m.picks.util.Util;
 
 public abstract class Transformer extends Step {
 
-	final static Logger logger = LoggerFactory.getLogger(Transformer.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Transformer.class);
 
-	protected Data data;
+    private Data data;
 
-	@Override
-	public void run() {
-		processStep();
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Runnable#run()
+     */
+    @Override
+    public void run() {
+        processStep();
+    }
 
-	// template method
-	private void processStep() {
-		try {
-			transform();
-			handover();
-		} catch (Exception e) {
-			String message = "transform data " + Util.getLocatorLabel(fields);
-			logger.error("{} {}", message, Util.getMessage(e));
-			logger.debug("{}", e);
-			MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
-		}
-	}
+    // template method
+    private void processStep() {
+        try {
+            transform();
+            handover();
+        } catch (Exception e) {
+            String message = "transform data "
+                    + Util.getLocatorLabel(getFields());
+            LOGGER.error("{} {}", message, Util.getMessage(e));
+            LOGGER.debug("{}", e);
+            MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
+        }
+    }
 
-	protected abstract void transform() throws Exception;
+    protected abstract void transform() throws Exception;
 
-	@Override
-	public void load() throws Exception {
-		throw new OperationNotSupportedException("nothing to load");
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see in.m.picks.step.IStep#load()
+     */
+    @Override
+    public void load() throws Exception {
+        throw new OperationNotSupportedException("nothing to load");
+    }
 
-	@Override
-	public void store() throws Exception {
-		throw new OperationNotSupportedException("nothing to store");
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see in.m.picks.step.IStep#store()
+     */
+    @Override
+    public void store() throws Exception {
+        throw new OperationNotSupportedException("nothing to store");
+    }
 
-	@Override
-	public boolean isConsistent() {
-		return (consistent && data != null);
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see in.m.picks.step.Step#isConsistent()
+     */
+    @Override
+    public boolean isConsistent() {
+        return (super.isConsistent() && data != null);
+    }
 
-	@Override
-	public void setInput(Object input) {
-		if (input instanceof Data) {
-			data = (Data) input;
-		} else {
-			logger.error("input is not instance of Data type. {}",
-					input.getClass().toString());
-		}
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see in.m.picks.step.IStep#setInput(java.lang.Object)
+     */
+    @Override
+    public void setInput(final Object input) {
+        if (input instanceof Data) {
+            data = (Data) input;
+        } else {
+            LOGGER.error("input is not instance of Data type. {}",
+                    input.getClass().toString());
+        }
+    }
+
+    /*
+     *
+     */
+    protected Data getData() {
+        return data;
+    }
 
 }

@@ -17,117 +17,129 @@ import in.m.picks.step.Step;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
-public class LocatorSeeder extends Seeder {
+public final class LocatorSeeder extends Seeder {
 
-	final static Logger logger = LoggerFactory.getLogger(LocatorSeeder.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(LocatorSeeder.class);
 
-	List<Locator> locators = new ArrayList<>();
+    private static final long SLEEP_MILLIS = 1000;
 
-	@Override
-	public IStep instance() {
-		Step step = new LocatorSeeder();
-		step.setStepType("seeder");
-		return step;
-	}
+    private List<Locator> locators = new ArrayList<>();
 
-	@Override
-	public void load() {
-		initLocators();
-		List<FieldsBase> fields = BeanService.INSTANCE
-				.getBeans(FieldsBase.class);
-		try {
-			FieldsBase classFields = FieldsUtil.getFieldsByValue(fields,
-					"class", Locator.class.getName());
-			List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
-					"steps");
-			setFields(steps);
-			if (classFields != null) {
-				mergeFields(classFields);
-			}
-		} catch (FieldNotFoundException e) {
-		}
-	}
+    @Override
+    public IStep instance() {
+        Step step = new LocatorSeeder();
+        step.setStepType("seeder");
+        return step;
+    }
 
-	private void initLocators() {
-		logger.info("initialize locators");
-		List<Locators> list = BeanService.INSTANCE.getBeans(Locators.class);
-		for (Locators locators : list) {
-			trikleGroup(locators);
-		}
-		for (Locators locators : list) {
-			extractLocator(locators);
-		}
-		for (Locator locator : locators) {
-			addLabelField(locator);
-		}
-		for (Locator locator : locators) {
-			Util.logState(logger, "locator", "initialized locator",
-					locator.getFields(), locator);
-		}
-	}
+    @Override
+    public void load() {
+        initLocators();
+        List<FieldsBase> fields = BeanService.INSTANCE
+                .getBeans(FieldsBase.class);
+        try {
+            FieldsBase classFields = FieldsUtil.getFieldsByValue(fields,
+                    "class", Locator.class.getName());
+            List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
+                    "steps");
+            setFields(steps);
+            if (classFields != null) {
+                mergeFields(classFields);
+            }
+        } catch (FieldNotFoundException e) {
+        }
+    }
 
-	private void addLabelField(Locator locator) {
-		String label = Util.buildString(locator.getName(), ":",
-				locator.getGroup());
-		FieldsBase field = FieldsUtil.createField("label", label);
-		locator.getFields().add(field);
-	}
+    private void initLocators() {
+        LOGGER.info("initialize locators");
+        List<Locators> list = BeanService.INSTANCE.getBeans(Locators.class);
+        for (Locators locators : list) {
+            trikleGroup(locators);
+        }
+        for (Locators locators : list) {
+            extractLocator(locators);
+        }
+        for (Locator locator : locators) {
+            addLabelField(locator);
+        }
+        for (Locator locator : locators) {
+            Util.logState(LOGGER, "locator", "initialized locator",
+                    locator.getFields(), locator);
+        }
+    }
 
-	private void extractLocator(Locators locators) {
-		for (Locators locs : locators.getLocators()) {
-			extractLocator(locs);
-		}
-		for (Locator locator : locators.getLocator()) {
-			this.locators.add(locator);
-		}
-	}
+    private void addLabelField(final Locator locator) {
+        String label = Util.buildString(locator.getName(), ":",
+                locator.getGroup());
+        FieldsBase field = FieldsUtil.createField("label", label);
+        locator.getFields().add(field);
+    }
 
-	private void trikleGroup(Locators locators) {
-		logger.info("cascade locators group to all locator");
-		for (Locators locs : locators.getLocators()) {
-			trikleGroup(locs);
-		}
-		for (Locator locator : locators.getLocator()) {
-			if (locator.getGroup() == null) {
-				locator.setGroup(locators.getGroup());
-			}
-		}
-	}
+    private void extractLocator(final Locators locators) {
+        for (Locators locs : locators.getLocators()) {
+            extractLocator(locs);
+        }
+        for (Locator locator : locators.getLocator()) {
+            this.locators.add(locator);
+        }
+    }
 
-	@Override
-	public void handover() {
-		logger.info("push locators to loader taskpool");
-		int count = 0;
-		for (Locator locator : locators) {
-			pushTask(locator, locator.getFields());
-			count++;
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-			}
-		}
-		logger.info("locators count [{}], queued to loader [{}].",
-				locators.size(), count);
-	}
+    private void trikleGroup(final Locators locators) {
+        LOGGER.info("cascade locators group to all locator");
+        for (Locators locs : locators.getLocators()) {
+            trikleGroup(locs);
+        }
+        for (Locator locator : locators.getLocator()) {
+            if (locator.getGroup() == null) {
+                locator.setGroup(locators.getGroup());
+            }
+        }
+    }
 
-	private void mergeFields(FieldsBase classFields) {
-		logger.info("merge fields with locators");
-		for (Locator locator : locators) {
-			try {
-				List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
-						locator.getGroup());
-				locator.getFields().addAll(fields);
+    @Override
+    public void handover() {
+        LOGGER.info("push locators to loader taskpool");
+        int count = 0;
+        for (Locator locator : locators) {
+            pushTask(locator, locator.getFields());
+            count++;
+            try {
+                Thread.sleep(SLEEP_MILLIS);
+            } catch (InterruptedException e) {
+            }
+        }
+        LOGGER.info("locators count [{}], queued to loader [{}].",
+                locators.size(), count);
+    }
 
-				List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
-						"steps");
-				locator.getFields().addAll(steps);
-			} catch (FieldNotFoundException e) {
-			}
-		}
-		for (Locator locator : locators) {
-			Util.logState(logger, "locator", "after merging fields",
-					locator.getFields(), locator);
-		}
-	}
+    private void mergeFields(final FieldsBase classFields) {
+        LOGGER.info("merge fields with locators");
+        for (Locator locator : locators) {
+            try {
+                List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
+                        locator.getGroup());
+                locator.getFields().addAll(fields);
+
+                List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
+                        "steps");
+                locator.getFields().addAll(steps);
+            } catch (FieldNotFoundException e) {
+            }
+        }
+        for (Locator locator : locators) {
+            Util.logState(LOGGER, "locator", "after merging fields",
+                    locator.getFields(), locator);
+        }
+    }
+
+    @Override
+    public void store() throws Exception {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setInput(final Object input) {
+        throw new UnsupportedOperationException();
+    }
 
 }

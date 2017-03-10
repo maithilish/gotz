@@ -16,50 +16,51 @@ import in.m.picks.shared.ConfigService;
 import in.m.picks.step.IStep;
 import in.m.picks.step.Loader;
 
-public class HtmlLoader extends Loader {
+public final class HtmlLoader extends Loader {
 
-	final static Logger logger = LoggerFactory.getLogger(HtmlLoader.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(HtmlLoader.class);
+    private static final int TIMEOUT_MILLIS = 120000;
 
-	@Override
-	public IStep instance() {
-		return new HtmlLoader();
-	}
+    @Override
+    public IStep instance() {
+        return new HtmlLoader();
+    }
 
-	@Override
-	public Object fetchDocument(String url)
-			throws Exception, MalformedURLException, IOException {
-		WebClient webClient = getWebClient();
-		logger.info("fetch web resource {}", url);
-		try {
-			HtmlPage htmlPage = webClient.getPage(url);
-			logger.debug("fetched web resource {}", url);
-			return htmlPage;
-		} finally {
-			webClient.setRefreshHandler(new ImmediateRefreshHandler());
-			webClient.close();
-		}
-	}
+    @Override
+    public Object fetchDocument(final String url)
+            throws Exception, MalformedURLException, IOException {
+        WebClient webClient = getWebClient();
+        LOGGER.info("fetch web resource {}", url);
+        try {
+            HtmlPage htmlPage = webClient.getPage(url);
+            LOGGER.debug("fetched web resource {}", url);
+            return htmlPage;
+        } finally {
+            webClient.setRefreshHandler(new ImmediateRefreshHandler());
+            webClient.close();
+        }
+    }
 
-	private WebClient getWebClient() {
-		int timeout = 120000; // millis
-		String key = "picks.webClient.timeout";
-		try {
-			timeout = Integer.parseInt(ConfigService.INSTANCE.getConfig(key));
-		} catch (NumberFormatException e) {
-			// TODO add activity or update config with default
-			String msg = "for config [" + key + "] using default value "
-					+ timeout;
-			logger.warn("{}. {}", e, msg);
-		}
+    private WebClient getWebClient() {
+        int timeout = TIMEOUT_MILLIS;
+        String key = "picks.webClient.timeout";
+        try {
+            timeout = Integer.parseInt(ConfigService.INSTANCE.getConfig(key));
+        } catch (NumberFormatException e) {
+            // TODO add activity or update config with default
+            String msg = "for config [" + key + "] using default value "
+                    + timeout;
+            LOGGER.warn("{}. {}", e, msg);
+        }
 
-		WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
-		webClient.setRefreshHandler(new ThreadedRefreshHandler());
+        WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
+        webClient.setRefreshHandler(new ThreadedRefreshHandler());
 
-		webClient.getOptions().setJavaScriptEnabled(false);
-		webClient.getOptions().setCssEnabled(false);
-		webClient.getOptions().setAppletEnabled(false);
-		webClient.getOptions().setPopupBlockerEnabled(true);
-		webClient.getOptions().setTimeout(timeout);
-		return webClient;
-	}
+        webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setAppletEnabled(false);
+        webClient.getOptions().setPopupBlockerEnabled(true);
+        webClient.getOptions().setTimeout(timeout);
+        return webClient;
+    }
 }

@@ -21,93 +21,106 @@ import in.m.picks.step.IStep;
 import in.m.picks.step.Transformer;
 import in.m.picks.util.FieldsUtil;
 
-public class CsvTransformer extends Transformer {
+public final class CsvTransformer extends Transformer {
 
-	final Logger log = LoggerFactory.getLogger(CsvTransformer.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(CsvTransformer.class);
 
-	final static int itemColSize = 30;
-	final static int factColSize = 10;
-	final static String lineBreak = System.getProperty("line.separator");
+    static final int ITEM_COL_SIZE = 30;
+    static final int FACT_COL_SIZE = 10;
+    static final String LINE_BREAK = System.getProperty("line.separator");
 
-	StringBuilder sb;
+    private StringBuilder content;
 
-	@Override
-	public IStep instance() {
-		return new CsvTransformer();
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see in.m.picks.step.IStep#instance()
+     */
+    @Override
+    public IStep instance() {
+        return new CsvTransformer();
+    }
 
-	@Override
-	protected void transform() {
-		processStep();
-	}
+    /*
+     * (non-Javadoc)
+     *
+     * @see in.m.picks.step.Transformer#transform()
+     */
+    @Override
+    protected void transform() {
+        processStep();
+    }
 
-	public void processStep() {
-		sb = new StringBuilder();
+    /*
+     *
+     */
+    public void processStep() {
+        content = new StringBuilder();
 
-		ColComparator cc = new ColComparator();
-		Collections.sort(data.getMembers(), cc);
-		RowComparator rc = new RowComparator();
-		Collections.sort(data.getMembers(), rc);
-		String prevRow = null;
+        ColComparator cc = new ColComparator();
+        Collections.sort(getData().getMembers(), cc);
+        RowComparator rc = new RowComparator();
+        Collections.sort(getData().getMembers(), rc);
+        String prevRow = null;
 
-		sb.append(getHeader());
-		for (Member member : data.getMembers()) {
-			String row = member.getValue(AxisName.ROW);
-			String fact = member.getValue(AxisName.FACT);
+        content.append(getHeader());
+        for (Member member : getData().getMembers()) {
+            String row = member.getValue(AxisName.ROW);
+            String fact = member.getValue(AxisName.FACT);
 
-			if (prevRow == null) {
-				sb.append(StringUtils.rightPad(row, itemColSize));
-				sb.append(" |");
-			} else {
-				if (!prevRow.equals(row)) {
-					sb.append(lineBreak);
-					sb.append(StringUtils.rightPad(row, itemColSize));
-					sb.append(" |");
-				} else {
-					sb.append(" |");
-				}
-			}
-			sb.append(StringUtils.leftPad(fact, factColSize));
-			prevRow = row;
-		}
-		sb.append(lineBreak);
-	}
+            if (prevRow == null) {
+                content.append(StringUtils.rightPad(row, ITEM_COL_SIZE));
+                content.append(" |");
+            } else {
+                if (!prevRow.equals(row)) {
+                    content.append(LINE_BREAK);
+                    content.append(StringUtils.rightPad(row, ITEM_COL_SIZE));
+                    content.append(" |");
+                } else {
+                    content.append(" |");
+                }
+            }
+            content.append(StringUtils.leftPad(fact, FACT_COL_SIZE));
+            prevRow = row;
+        }
+        content.append(LINE_BREAK);
+    }
 
-	private int getColCount() {
-		Set<String> cols = new HashSet<String>();
-		for (Member member : data.getMembers()) {
-			cols.add(member.getValue(AxisName.COL));
-		}
-		return cols.size();
-	}
+    private int getColCount() {
+        Set<String> cols = new HashSet<String>();
+        for (Member member : getData().getMembers()) {
+            cols.add(member.getValue(AxisName.COL));
+        }
+        return cols.size();
+    }
 
-	private String getHeader() {
-		String header = StringUtils.rightPad("item", itemColSize);
-		int colCount = getColCount();
-		for (int c = 0; c < colCount; c++) {
-			header += " |";
-			String col = data.getMembers().get(c).getValue(AxisName.COL);
-			header += StringUtils.leftPad(col, factColSize);
-		}
-		header += lineBreak;
-		return header;
-	}
+    private String getHeader() {
+        String header = StringUtils.rightPad("item", ITEM_COL_SIZE);
+        int colCount = getColCount();
+        for (int c = 0; c < colCount; c++) {
+            header += " |";
+            String col = getData().getMembers().get(c).getValue(AxisName.COL);
+            header += StringUtils.leftPad(col, FACT_COL_SIZE);
+        }
+        header += LINE_BREAK;
+        return header;
+    }
 
-	@Override
-	public void handover() throws ClassNotFoundException,
-			InstantiationException, IllegalAccessException,
-			InterruptedException, FieldNotFoundException {
-		List<FieldsBase> appenders = FieldsUtil.getGroupFields(fields,
-				"appender");
-		for (FieldsBase f : appenders) {
-			List<FieldsBase> fields = FieldsUtil.asList(f);
-			AppenderService.INSTANCE.createAppender(fields);
+    @Override
+    public void handover() throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException,
+            InterruptedException, FieldNotFoundException {
+        List<FieldsBase> appenders = FieldsUtil.getGroupFields(getFields(),
+                "appender");
+        for (FieldsBase f : appenders) {
+            List<FieldsBase> fields = FieldsUtil.asList(f);
+            AppenderService.INSTANCE.createAppender(fields);
 
-			String appenderName = FieldsUtil.getValue(fields, "name");
-			Appender appender = AppenderService.INSTANCE
-					.getAppender(appenderName);
+            String appenderName = FieldsUtil.getValue(fields, "name");
+            Appender appender = AppenderService.INSTANCE
+                    .getAppender(appenderName);
 
-			appender.append(sb);
-		}
-	}
+            appender.append(content);
+        }
+    }
 }
