@@ -181,8 +181,8 @@ public enum DataDefService {
 	private void setDefaultIndexRange(DataDef dataDef) {
 		for (DAxis dAxis : dataDef.getAxis()) {
 			for (DMember dMember : dAxis.getMember()) {
-				if (!FieldsUtil.isAnyFieldDefined(dMember.getFields(), "indexRange",
-						"breakAfter")) {
+				if (!FieldsUtil.isAnyFieldDefined(dMember.getFields(),
+						"indexRange", "breakAfter")) {
 					Field field = new Field();
 					field.setName("indexRange");
 					Integer index = dMember.getIndex();
@@ -249,15 +249,17 @@ public enum DataDefService {
 	}
 
 	public Data getDataTemplate(String dataDefName)
-			throws DataDefNotFoundException, ClassNotFoundException, IOException {
+			throws DataDefNotFoundException, ClassNotFoundException,
+			IOException {
 		DataDef dataDef = getDataDef(dataDefName);
 		return getDataTemplate(dataDef);
 	}
 
 	// transforms DAxis/DMember to Member/Axis
-	public Data getDataTemplate(DataDef dataDef)
-			throws ClassNotFoundException, IOException, IllegalArgumentException {
-		if (memberSetsMap == null || memberSetsMap.get(dataDef.getName()) == null) {
+	public Data getDataTemplate(DataDef dataDef) throws ClassNotFoundException,
+			IOException, IllegalArgumentException {
+		if (memberSetsMap == null
+				|| memberSetsMap.get(dataDef.getName()) == null) {
 			synchronized (this) {
 				generateMemberSets(dataDef);
 			}
@@ -281,7 +283,8 @@ public enum DataDefService {
 				}
 			}
 			try {
-				String group = FieldsUtil.getValue(dataMember.getFields(), "group");
+				String group = FieldsUtil.getValue(dataMember.getFields(),
+						"group");
 				dataMember.setGroup(group);
 			} catch (FieldNotFoundException e) {
 			}
@@ -343,7 +346,8 @@ public enum DataDefService {
 		return dataDefsMap.size();
 	}
 
-	private void traceDataStructure() throws ClassNotFoundException, IOException {
+	private void traceDataStructure()
+			throws ClassNotFoundException, IOException {
 		if (!logger.isTraceEnabled()) {
 			return;
 		}

@@ -70,10 +70,12 @@ public abstract class Loader extends Step {
 			savedLocator.setUrl(locator.getUrl());
 			// switch locator with existing locator (detached locator)
 			locator = savedLocator;
-			Util.logState(logger, "locator", "--- Locator loaded from store ---",
-					locator.getFields(), locator);
+			Util.logState(logger, "locator",
+					"--- Locator loaded from store ---", locator.getFields(),
+					locator);
 		} else {
-			logger.debug("{}", "Locator from file is used as it is not yet stored");
+			logger.debug("{}",
+					"Locator from file is used as it is not yet stored");
 		}
 
 		Long liveDocumentId = getLiveDocumentId();
@@ -87,14 +89,18 @@ public abstract class Loader extends Step {
 			document.setUrl(locator.getUrl());
 			locator.getDocuments().add(document);
 			consistent = true;
-			logger.info("create new document. Locator[name={} group={} toDate={}]",
-					locator.getName(), locator.getGroup(), document.getToDate());
+			logger.info(
+					"create new document. Locator[name={} group={} toDate={}]",
+					locator.getName(), locator.getGroup(),
+					document.getToDate());
 			logger.trace("create new document {}", document);
 		} else {
 			document = getDocument(liveDocumentId);
 			consistent = true;
-			logger.info("use stored document. Locator[name={} group={} toDate={}]",
-					locator.getName(), locator.getGroup(), document.getToDate());
+			logger.info(
+					"use stored document. Locator[name={} group={} toDate={}]",
+					locator.getName(), locator.getGroup(),
+					document.getToDate());
 			logger.trace("found document {}", document);
 		}
 	}
@@ -114,8 +120,8 @@ public abstract class Loader extends Step {
 			 */
 			try {
 				List<FieldsBase> fields = locator.getFields();
-				ORM orm = DaoFactory
-						.getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));
+				ORM orm = DaoFactory.getOrmType(
+						ConfigService.INSTANCE.getConfig("picks.orm"));
 				ILocatorDao dao = DaoFactory.getDaoFactory(orm).getLocatorDao();
 				dao.storeLocator(locator);
 				// reload locator and document
@@ -142,8 +148,8 @@ public abstract class Loader extends Step {
 
 		String givenUpMessage = Util.buildString("Create parser for locator [",
 				locator.getName(), "] failed.");
-		List<FieldsBase> stepsFields = FieldsUtil.getGroupFields(locator.getFields(),
-				"steps");
+		List<FieldsBase> stepsFields = FieldsUtil
+				.getGroupFields(locator.getFields(), "steps");
 		List<FieldsBase> dataDefFields = FieldsUtil
 				.getGroupFields(locator.getFields(), "datadef");
 		if (dataDefFields.size() == 0) {
@@ -151,7 +157,8 @@ public abstract class Loader extends Step {
 		}
 		for (FieldsBase dataDefField : dataDefFields) {
 			if (dataDefField instanceof Fields) {
-				Fields fields = Util.deepClone(Fields.class, (Fields) dataDefField);
+				Fields fields = Util.deepClone(Fields.class,
+						(Fields) dataDefField);
 				if (isDocumentLoaded()) {
 					Field field = FieldsUtil.createField("locatorName",
 							locator.getName());
@@ -159,7 +166,8 @@ public abstract class Loader extends Step {
 					field = FieldsUtil.createField("locatorGroup",
 							locator.getGroup());
 					fields.getFields().add(field);
-					field = FieldsUtil.createField("locatorUrl", locator.getUrl());
+					field = FieldsUtil.createField("locatorUrl",
+							locator.getUrl());
 					fields.getFields().add(field);
 					List<FieldsBase> fieldsList = new ArrayList<>();
 					fieldsList.add(fields);
@@ -248,14 +256,14 @@ public abstract class Loader extends Step {
 				toDate = ZonedDateTime.ofInstant(td.toInstant(),
 						ZoneId.systemDefault());
 			} catch (ParseException pe) {
-				logger.warn("{} field [live] {} {}. Defaults to 0 days", locator,
-						live, e);
+				logger.warn("{} field [live] {} {}. Defaults to 0 days",
+						locator, live, e);
 				TemporalAmount ta = Util.praseTemporalAmount("PT0S");
 				toDate = fromDate.plus(ta);
 			}
 		}
-		logger.trace("Document.toDate. [live] {} [toDate] {} : {}", live, toDate,
-				locator);
+		logger.trace("Document.toDate. [live] {} [toDate] {} : {}", live,
+				toDate, locator);
 		return Date.from(Instant.from(toDate));
 	}
 

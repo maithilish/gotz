@@ -53,7 +53,7 @@ public class Data extends Base {
 	}
 
 	public String toStringIds() {
-		return "Data [id=" + id + ", dataDefId=" + dataDefId + ", documentId="
-				+ documentId + "]";
+		return "Data [id=" + getId() + ", dataDefId=" + dataDefId
+				+ ", documentId=" + documentId + "]";
 	}
 }

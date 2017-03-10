@@ -49,7 +49,8 @@ public class JSoupHtmlLoader extends Loader {
 			timeout = Integer.parseInt(ConfigService.INSTANCE.getConfig(key));
 		} catch (NumberFormatException e) {
 			// TODO add activity or update config with default
-			String msg = "for config [" + key + "] using default value " + timeout;
+			String msg = "for config [" + key + "] using default value "
+					+ timeout;
 			logger.warn("{}. {}", e, msg);
 		}
 		return timeout;

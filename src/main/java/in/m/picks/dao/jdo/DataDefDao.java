@@ -48,8 +48,8 @@ public class DataDefDao implements IDataDefDao {
 			if (dataDefs.size() > 0) {
 				DataDef lastDataDef = dataDefs.get(dataDefs.size() - 1);
 				if (!dataDef.equals(lastDataDef)) {
-					Date toDate = DateUtils.addMilliseconds(dataDef.getFromDate(),
-							-1);
+					Date toDate = DateUtils
+							.addMilliseconds(dataDef.getFromDate(), -1);
 					lastDataDef.setToDate(toDate);
 					pm.makePersistent(dataDef);
 				}

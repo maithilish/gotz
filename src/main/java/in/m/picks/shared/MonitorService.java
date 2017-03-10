@@ -83,7 +83,7 @@ public enum MonitorService {
 
 	private void logActivities() {
 		logger.info("{}", "--- Summary ---");
-		if(activitesList.size() == 0){
+		if (activitesList.size() == 0) {
 			logger.info("no issues");
 		}
 		for (Activity activity : activitesList) {

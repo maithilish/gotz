@@ -141,8 +141,8 @@ public class FieldsUtil {
 		throw new FieldNotFoundException("Name [" + name + "]");
 	}
 
-	public static List<FieldsBase> getFieldList(List<FieldsBase> fields, String name)
-			throws FieldNotFoundException {
+	public static List<FieldsBase> getFieldList(List<FieldsBase> fields,
+			String name) throws FieldNotFoundException {
 		List<FieldsBase> list = new ArrayList<>();
 		FieldsIterator ite = new FieldsIterator(fields);
 		while (ite.hasNext()) {
@@ -184,13 +184,14 @@ public class FieldsUtil {
 			}
 		}
 		if (groupFields.size() == 0) {
-			throw new FieldNotFoundException("name [group] value [" + group + "]");
+			throw new FieldNotFoundException(
+					"name [group] value [" + group + "]");
 		}
 		return groupFields;
 	}
 
-	public static List<FieldsBase> getGroupFields(FieldsBase fields, String group)
-			throws FieldNotFoundException {
+	public static List<FieldsBase> getGroupFields(FieldsBase fields,
+			String group) throws FieldNotFoundException {
 		List<FieldsBase> groupFields = new ArrayList<>();
 		Iterator<FieldsBase> ite = fields.iterator();
 		while (ite.hasNext()) {
@@ -203,13 +204,14 @@ public class FieldsUtil {
 			}
 		}
 		if (groupFields.size() == 0) {
-			throw new FieldNotFoundException("name [group] value [" + group + "]");
+			throw new FieldNotFoundException(
+					"name [group] value [" + group + "]");
 		}
 		return groupFields;
 	}
 
-	public static FieldsBase getFieldsByValue(List<FieldsBase> fields, String name,
-			String value) throws FieldNotFoundException {
+	public static FieldsBase getFieldsByValue(List<FieldsBase> fields,
+			String name, String value) throws FieldNotFoundException {
 		FieldsIterator ite = new FieldsIterator(fields);
 		while (ite.hasNext()) {
 			FieldsBase f = ite.next();
@@ -224,7 +226,8 @@ public class FieldsUtil {
 				"name [" + name + "] value [" + value + "]");
 	}
 
-	public static String prefixFieldValue(List<FieldsBase> prefixes, String value) {
+	public static String prefixFieldValue(List<FieldsBase> prefixes,
+			String value) {
 		String prefixedValue = value;
 		Iterator<FieldsBase> ite = new FieldsIterator(prefixes);
 		while (ite.hasNext()) {
@@ -292,7 +295,8 @@ public class FieldsUtil {
 			if (field instanceof Field) {
 				String str = field.getValue();
 				Map<String, String> valueMap = getValueMap(str, map);
-				String patchedStr = StrSubstitutor.replace(str, valueMap, "%{", "}");
+				String patchedStr = StrSubstitutor.replace(str, valueMap, "%{",
+						"}");
 				Field patchedField = new Field();
 				patchedField.setName(field.getName());
 				patchedField.setValue(patchedStr);

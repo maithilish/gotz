@@ -64,7 +64,8 @@ public abstract class Parser extends Step {
 				store();
 			} else {
 				consistent = true;
-				logger.info("found parsed data {}", Util.getLocatorLabel(fields));
+				logger.info("found parsed data {}",
+						Util.getLocatorLabel(fields));
 			}
 			handover();
 		} catch (Exception e) {
@@ -76,8 +77,9 @@ public abstract class Parser extends Step {
 	}
 
 	protected abstract void setValue(DataDef dataDef, Member member)
-			throws ScriptException, NumberFormatException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException;
+			throws ScriptException, NumberFormatException,
+			IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException;
 
 	private void initialize()
 			throws FieldNotFoundException, DataDefNotFoundException {
@@ -85,10 +87,11 @@ public abstract class Parser extends Step {
 		locatorName = FieldsUtil.getValue(fields, "locatorName");
 	}
 
-	private void prepareData()
-			throws DataDefNotFoundException, ClassNotFoundException, IOException {
+	private void prepareData() throws DataDefNotFoundException,
+			ClassNotFoundException, IOException {
 		data = DataDefService.INSTANCE.getDataTemplate(dataDefName);
-		data.setDataDefId(DataDefService.INSTANCE.getDataDef(dataDefName).getId());
+		data.setDataDefId(
+				DataDefService.INSTANCE.getDataDef(dataDefName).getId());
 		data.setDocumentId(getDocument().getId());
 		Util.logState(logger, "parser-" + dataDefName, "Data Template", fields,
 				data);
@@ -96,8 +99,8 @@ public abstract class Parser extends Step {
 
 	public void parse() throws DataDefNotFoundException, ScriptException,
 			FieldNotFoundException, ClassNotFoundException, IOException,
-			NumberFormatException, IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException {
+			NumberFormatException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
 		parseData();
 	}
 
@@ -120,8 +123,8 @@ public abstract class Parser extends Step {
 			pushNewMember(mStack, member);
 		}
 		data.setMembers(members); // replace with expanded member list
-		Util.logState(logger, "parser-" + dataDefName, "Data after parse", fields,
-				data);
+		Util.logState(logger, "parser-" + dataDefName, "Data after parse",
+				fields, data);
 	}
 
 	private void pushNewMember(Deque<Member> mStack, Member member)
@@ -133,7 +136,8 @@ public abstract class Parser extends Step {
 				continue;
 			}
 			if (!hasFinished(axis)) {
-				Integer[] nextMemberIndexes = nextMemberIndexes(member, axisName);
+				Integer[] nextMemberIndexes = nextMemberIndexes(member,
+						axisName);
 				if (!alreadyProcessed(nextMemberIndexes)) {
 					Member newMember = Util.deepClone(Member.class, member);
 					Axis newAxis = newMember.getAxis(axisName);
@@ -154,7 +158,8 @@ public abstract class Parser extends Step {
 			throws NumberFormatException, FieldNotFoundException {
 		boolean noField = true;
 		try {
-			String breakAfter = FieldsUtil.getValue(axis.getFields(), "breakAfter");
+			String breakAfter = FieldsUtil.getValue(axis.getFields(),
+					"breakAfter");
 			noField = false;
 			String value = axis.getValue().trim();
 			if (value.equals(breakAfter)) {
@@ -174,8 +179,9 @@ public abstract class Parser extends Step {
 		} catch (FieldNotFoundException e) {
 		}
 		if (noField) {
-			throw new FieldNotFoundException("breakAfter or indexRange undefined "
-					+ Util.getLocatorLabel(fields));
+			throw new FieldNotFoundException(
+					"breakAfter or indexRange undefined "
+							+ Util.getLocatorLabel(fields));
 		}
 		return false;
 	}
@@ -216,7 +222,8 @@ public abstract class Parser extends Step {
 
 	@Override
 	public void load() throws Exception {
-		Long dataDefId = DataDefService.INSTANCE.getDataDef(dataDefName).getId();
+		Long dataDefId = DataDefService.INSTANCE.getDataDef(dataDefName)
+				.getId();
 		Long documentId = getDocument().getId();
 		data = getDataFromStore(dataDefId, documentId);
 	}
@@ -230,8 +237,8 @@ public abstract class Parser extends Step {
 		}
 		if (persist) {
 			try {
-				ORM orm = DaoFactory
-						.getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));
+				ORM orm = DaoFactory.getOrmType(
+						ConfigService.INSTANCE.getConfig("picks.orm"));
 				IDataDao dao = DaoFactory.getDaoFactory(orm).getDataDao();
 				dao.storeData(data);
 				data = dao.getData(data.getId());

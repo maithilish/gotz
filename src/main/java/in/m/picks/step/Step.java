@@ -15,9 +15,13 @@ import in.m.picks.shared.StepService;
 import in.m.picks.util.FieldsUtil;
 import in.m.picks.util.Util;
 
+/**
+ * @author m
+ *
+ */
 public abstract class Step implements IStep {
 
-	final static Logger logger = LoggerFactory.getLogger(Step.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(Step.class);
 
 	protected String label = "unknown";
 	protected String stepType;
@@ -25,14 +29,14 @@ public abstract class Step implements IStep {
 	protected List<FieldsBase> fields;
 
 	protected void pushTask(Object input, List<FieldsBase> nextStepFields) {
-		String givenUpMessage = Util.buildString("[", label, "] step [", stepType,
-				"] create next step failed");
+		String givenUpMessage = Util.buildString("[", label, "] step [",
+				stepType, "] create next step failed");
 		try {
 			String nextStepType = getNextStepType(stepType);
 			List<FieldsBase> stepTasks = getStepTaskFields(nextStepFields,
 					nextStepType);
 			if (stepTasks.size() == 0) {
-				logger.warn("{}, no {} {}", givenUpMessage, nextStepType,
+				LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType,
 						"field found");
 			}
 			for (FieldsBase stepTask : stepTasks) {
@@ -41,17 +45,19 @@ public abstract class Step implements IStep {
 					IStep task = createTask(nextStepType, stepClass, input,
 							nextStepFields);
 					TaskPoolService.getInstance().submit(nextStepType, task);
-					logger.debug("{} instance [{}] pushed to pool, entity [{}]",
+					LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
 							nextStepType, task.getClass(), label);
 				} else {
-					logger.warn("step inconsistent, entity [{}]", label);
+					LOGGER.warn("step inconsistent, entity [{}]", label);
 					MonitorService.INSTANCE.addActivity(Type.GIVENUP,
-							Util.buildString(givenUpMessage, ", step inconsistent"));
+							Util.buildString(givenUpMessage,
+									", step inconsistent"));
 				}
 			}
 		} catch (Exception e) {
-			logger.error("{}. {}", givenUpMessage, Util.getMessage(e));
-			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
+			LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
+			MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage,
+					e);
 		}
 	}
 
@@ -63,11 +69,13 @@ public abstract class Step implements IStep {
 		} catch (FieldNotFoundException e) {
 			list = FieldsUtil.getGroupFields(fields, "datadef");
 		}
-		List<FieldsBase> stepTaskFields = FieldsUtil.getFieldList(list, stepType);
+		List<FieldsBase> stepTaskFields = FieldsUtil.getFieldList(list,
+				stepType);
 		return stepTaskFields;
 	}
 
-	private String getNextStepType(String stepType) throws FieldNotFoundException {
+	private String getNextStepType(String stepType)
+			throws FieldNotFoundException {
 		List<FieldsBase> list = FieldsUtil.getGroupFields(fields, "steps");
 		List<FieldsBase> steps = FieldsUtil.getFieldList(list);
 		steps.sort(new FieldComparator());
@@ -82,7 +90,7 @@ public abstract class Step implements IStep {
 	}
 
 	@Override
-	public void setFields(List<FieldsBase> fields) {
+	public final void setFields(final List<FieldsBase> fields) {
 		this.fields = fields;
 		try {
 			label = FieldsUtil.getValue(fields, "label");
@@ -90,17 +98,46 @@ public abstract class Step implements IStep {
 		}
 	}
 
-	public void setStepType(String stepType) {
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see in.m.picks.step.IStep#setStepType(java.lang.String)
+	 */
+	@Override
+	public void setStepType(final String stepType) {
 		this.stepType = stepType;
 	}
 
+	/**
+	 * @return stepType
+	 */
 	public String getStepType() {
 		return stepType;
 	}
 
-	private IStep createTask(String stepType, String taskClassName, Object input,
-			List<FieldsBase> fields) throws ClassNotFoundException,
-			InstantiationException, IllegalAccessException {
+	/**
+	 * uses StepService to creates and returns task.
+	 *
+	 * @param stepType
+	 *            type
+	 * @param taskClassName
+	 *            task class
+	 * @param input
+	 *            task input
+	 * @param fields
+	 *            task fields
+	 * @return task
+	 * @throws ClassNotFoundException
+	 *             expection
+	 * @throws InstantiationException
+	 *             expection
+	 * @throws IllegalAccessException
+	 *             expection
+	 */
+	private IStep createTask(final String stepType, final String taskClassName,
+			final Object input, final List<FieldsBase> fields)
+			throws ClassNotFoundException, InstantiationException,
+			IllegalAccessException {
 		IStep task = StepService.INSTANCE.getStep(taskClassName).instance();
 		task.setStepType(stepType);
 		task.setInput(input);

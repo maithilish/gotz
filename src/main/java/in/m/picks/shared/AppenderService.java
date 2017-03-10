@@ -21,7 +21,7 @@ public enum AppenderService {
 
 	final Logger logger = LoggerFactory.getLogger(AppenderService.class);
 
-	final private Map<String, Appender> appenders;
+	private final Map<String, Appender> appenders;
 
 	private AppenderService() {
 		appenders = new HashMap<String, Appender>();

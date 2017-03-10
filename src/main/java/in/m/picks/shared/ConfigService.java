@@ -47,7 +47,8 @@ public enum ConfigService {
 		logger.debug("Initialized Configs");
 
 		logger.info("Config precedence - SYSTEM, PROPERTIES, DEFAULTS");
-		logger.info("Use picks.properties or system property to override defaults");
+		logger.info(
+				"Use picks.properties or system property to override defaults");
 	}
 
 	private String configsAsString(ConfigIndex index) {
@@ -115,7 +116,7 @@ public enum ConfigService {
 		String patterns = getConfig("picks.dateParsePattern"); //$NON-NLS-1$
 
 		try {
-			runDate = DateUtils.parseDate(dateStr, new String[] { patterns });
+			runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
 		} catch (ParseException e) {
 			logger.error("Run Date error. {}", e); //$NON-NLS-1$
 			MonitorService.INSTANCE.triggerFatal("Config failure");
@@ -130,7 +131,7 @@ public enum ConfigService {
 
 		try {
 			runDateTime = DateUtils.parseDate(dateTimeStr,
-					new String[] { patterns });
+					new String[] {patterns});
 		} catch (ParseException e) {
 			logger.error("Run Date error. {}", e); //$NON-NLS-1$
 			MonitorService.INSTANCE.triggerFatal("Config failure");
@@ -160,7 +161,8 @@ public enum ConfigService {
 		try {
 			configs.addConfiguration(userProvidedConfigs());
 		} catch (ConfigurationException e) {
-			logger.info(e.getLocalizedMessage() + ". " + "Using default properties");
+			logger.info(e.getLocalizedMessage() + ". "
+					+ "Using default properties");
 		}
 
 		try {
@@ -176,8 +178,9 @@ public enum ConfigService {
 
 		FileBasedConfigurationBuilder<PropertiesConfiguration> builder;
 		builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-				PropertiesConfiguration.class).configure(
-						new Parameters().properties().setFileName("picks.properties")
+				PropertiesConfiguration.class)
+						.configure(new Parameters().properties()
+								.setFileName("picks.properties")
 								.setThrowExceptionOnMissing(true)
 								.setListDelimiterHandler(
 										new DefaultListDelimiterHandler(';')));
@@ -215,8 +218,10 @@ public enum ConfigService {
 		Date runDateTime = new Date();
 		String runDateTimeStr = configs.getString("picks.runDateTime"); //$NON-NLS-1$
 		if (runDateTimeStr == null) {
-			String dateTimeFormat = configs.getString("picks.dateTimeParsePattern"); //$NON-NLS-1$
-			runDateTimeStr = DateFormatUtils.format(runDateTime, dateTimeFormat);
+			String dateTimeFormat = configs
+					.getString("picks.dateTimeParsePattern"); //$NON-NLS-1$
+			runDateTimeStr = DateFormatUtils.format(runDateTime,
+					dateTimeFormat);
 			configs.addProperty("picks.runDateTime", runDateTimeStr); //$NON-NLS-1$
 		}
 	}
@@ -227,6 +232,7 @@ public enum ConfigService {
 	}
 
 	public boolean isDevMode() {
-		return StringUtils.equalsIgnoreCase(configs.getString("picks.mode"), "dev");
+		return StringUtils.equalsIgnoreCase(configs.getString("picks.mode"),
+				"dev");
 	}
 }

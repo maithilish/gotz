@@ -59,8 +59,8 @@ public class XMLValidator {
 			validXML = false;
 		}
 		if (!validXML) {
-			throw new SAXException(
-					"XML validation failed [" + xmlFile + "] [" + schemaFile + "]");
+			throw new SAXException("XML validation failed [" + xmlFile + "] ["
+					+ schemaFile + "]");
 		}
 		logger.debug("validated Bean file [{}] with [{}]", xmlFile, schemaFile);
 		return false;
@@ -82,7 +82,8 @@ public class XMLValidator {
 		}
 
 		@Override
-		public void fatalError(SAXParseException exception) throws SAXException {
+		public void fatalError(SAXParseException exception)
+				throws SAXException {
 			logger.error("{}", exception.getLocalizedMessage());
 			throw exception;
 		}

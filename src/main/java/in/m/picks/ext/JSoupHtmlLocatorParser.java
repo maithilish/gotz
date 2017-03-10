@@ -64,10 +64,11 @@ public class JSoupHtmlLocatorParser extends JSoupHtmlParser {
 			throws FieldNotFoundException {
 		List<FieldsBase> fieldsBeans = BeanService.INSTANCE
 				.getBeans(FieldsBase.class);
-		FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans, "class",
-				Locator.class.getName());
+		FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans,
+				"class", Locator.class.getName());
 		if (classFields != null) {
-			List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields, group);
+			List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
+					group);
 			return fields;
 		}
 		return null;

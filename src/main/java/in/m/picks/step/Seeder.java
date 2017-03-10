@@ -24,7 +24,8 @@ public abstract class Seeder extends Step {
 		} catch (Exception e) {
 			logger.warn("{}", e.getLocalizedMessage());
 			logger.debug("{}", e);
-			MonitorService.INSTANCE.addActivity(Type.GIVENUP, "unable to seed", e);
+			MonitorService.INSTANCE.addActivity(Type.GIVENUP, "unable to seed",
+					e);
 
 		}
 	}

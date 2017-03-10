@@ -1,7 +1,7 @@
 <jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
-	jaxb:extensionBindingPrefixes="xjc" jaxb:version="2.0"
-	xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector">
+	jaxb:extensionBindingPrefixes="xjc annox" jaxb:version="2.0"
+	xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector" xmlns:annox="http://annox.dev.java.net">
 
 	<jaxb:bindings schemaLocation="picks.xsd" node="/xs:schema">
 		<jaxb:schemaBindings>
@@ -20,28 +20,41 @@
 			<jaxb:property collectionType="java.util.HashSet" />
 		</jaxb:bindings>
 		<jaxb:bindings node="//xs:complexType" multiple="true">
-			<ci:code>
-				<!-- !!! don't change the first line i.e. equals line, it used for code 
-					insertion point by modelgen.sh so that equal,hash and toString methods comes 
-					at last -->
-			    <![CDATA[
-				@Override public boolean equals(Object obj) {
-				    String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
-					return EqualsBuilder.reflectionEquals(this, obj,excludes);
-				}
-
-				@Override
-				public int hashCode() {
-				    String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
-					return HashCodeBuilder.reflectionHashCode(this,excludes);
-				}
-
-				@Override
-				public String toString() {				    
-					return ToStringBuilder.reflectionToString(this,
-							ToStringStyle.MULTI_LINE_STYLE);
-				}
-				]]>
+			<annox:annotate target="class">@javax.xml.bind.annotation.XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.NONE)
+			</annox:annotate>
+		</jaxb:bindings>
+		<jaxb:bindings
+			node="//xs:complexType[@name='document']//xs:sequence/xs:element[@name='documentObject']">
+			<annox:annotate target="field">@org.apache.commons.lang3.builder.ToStringExclude
+			</annox:annotate>
+		</jaxb:bindings>		
+		<jaxb:bindings node="//xs:complexType[@name='fieldsBase']">
+			<ci:code>                                
+              <![CDATA[
+                public abstract String getName();
+                public abstract String getValue();
+                public abstract Iterator<FieldsBase> iterator();			  
+              ]]>
+			</ci:code>
+		</jaxb:bindings>
+		<jaxb:bindings node="//xs:complexType[@name='fields']">
+			<ci:code>                                
+              <![CDATA[
+            	@Override
+	            public Iterator<FieldsBase> iterator() {
+		               return new FieldsIterator(fields);
+	            }
+              ]]>
+			</ci:code>
+		</jaxb:bindings>
+		<jaxb:bindings node="//xs:complexType[@name='field']">		
+			<ci:code>                                
+              <![CDATA[
+            	@Override	 
+	            public Iterator<FieldsBase> iterator() {
+		               return new NullIterator();
+	            }
+              ]]>
 			</ci:code>
 		</jaxb:bindings>
 	</jaxb:bindings>

@@ -58,7 +58,8 @@ public enum PMF {
 		InputStream inputStream = null;
 		String propFileName = "jdoconfig.properties";
 
-		inputStream = PMF.class.getClassLoader().getResourceAsStream(propFileName);
+		inputStream = PMF.class.getClassLoader()
+				.getResourceAsStream(propFileName);
 		if (inputStream != null) {
 			try {
 				jdoProperties.load(inputStream);

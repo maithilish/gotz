@@ -42,7 +42,8 @@ public class Util {
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
 		oos.writeObject(obj);
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		ByteArrayInputStream bais = new ByteArrayInputStream(
+				baos.toByteArray());
 		ObjectInputStream ois = new ObjectInputStream(bais);
 		return ofClass.cast(ois.readObject());
 	}
@@ -60,17 +61,19 @@ public class Util {
 	public static Set<Set<Object>> cartesianProduct(Set<?>... sets) {
 		if (sets.length < 2)
 			throw new IllegalArgumentException(
-					"Can't have a product of fewer than two sets (got " + sets.length
-							+ ")");
+					"Can't have a product of fewer than two sets (got "
+							+ sets.length + ")");
 		for (Set<?> set : sets) {
 			if (set.size() == 0) {
-				throw new IllegalArgumentException("argument contains a empty set");
+				throw new IllegalArgumentException(
+						"argument contains a empty set");
 			}
 		}
 		return _cartesianProduct(0, sets);
 	}
 
-	private static Set<Set<Object>> _cartesianProduct(int index, Set<?>... sets) {
+	private static Set<Set<Object>> _cartesianProduct(int index,
+			Set<?>... sets) {
 		Set<Set<Object>> ret = new HashSet<Set<Object>>();
 		if (index == sets.length) {
 			ret.add(new HashSet<Object>());
@@ -157,7 +160,8 @@ public class Util {
 	 */
 	public static List<Object> unmarshal(Unmarshaller um, String xmlFile)
 			throws JAXBException, FileNotFoundException {
-		StreamSource xmlSource = new StreamSource(Util.getResourceAsStream(xmlFile));
+		StreamSource xmlSource = new StreamSource(
+				Util.getResourceAsStream(xmlFile));
 		Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
 		return wrapper.getAny();
 	}
@@ -166,7 +170,8 @@ public class Util {
 			throws FileNotFoundException {
 		InputStream stream = Util.class.getResourceAsStream(resource);
 		if (stream == null) {
-			throw new FileNotFoundException("Resource [" + resource + "] not found");
+			throw new FileNotFoundException(
+					"Resource [" + resource + "] not found");
 		}
 		return stream;
 	}
@@ -191,7 +196,7 @@ public class Util {
 	}
 
 	public static String[] excludes(String... excludes) {
-		String[] jdoExcludes = { "dnDetachedState", "dnFlags", "dnStateManager" };
+		String[] jdoExcludes = {"dnDetachedState", "dnFlags", "dnStateManager"};
 		return ArrayUtils.addAll(jdoExcludes, excludes);
 	}
 
@@ -201,7 +206,8 @@ public class Util {
 			if (FieldsUtil.isFieldTrue(fields, "logstate")) {
 				MDC.put("entitytype", entity);
 				logger.debug("{}", label);
-				if (object instanceof String || object instanceof StringBuilder) {
+				if (object instanceof String
+						|| object instanceof StringBuilder) {
 					logger.debug("{}", object);
 				} else {
 					logger.debug("{}", getState(object));

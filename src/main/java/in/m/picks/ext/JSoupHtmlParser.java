@@ -42,8 +42,9 @@ public abstract class JSoupHtmlParser extends Parser {
 
 	@Override
 	protected void setValue(DataDef dataDef, Member member)
-			throws ScriptException, NumberFormatException, IllegalAccessException,
-			InvocationTargetException, NoSuchMethodException {
+			throws ScriptException, NumberFormatException,
+			IllegalAccessException, InvocationTargetException,
+			NoSuchMethodException {
 		for (AxisName axisName : AxisName.values()) {
 			Axis axis = member.getAxis(axisName);
 			if (axis == null) {
@@ -75,7 +76,8 @@ public abstract class JSoupHtmlParser extends Parser {
 		List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName())
 				.getFields();
 		try {
-			List<FieldsBase> scripts = FieldsUtil.getGroupFields(list, "script");
+			List<FieldsBase> scripts = FieldsUtil.getGroupFields(list,
+					"script");
 			setTraceString(sb, scripts, "--- Script ---");
 			scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
 			setTraceString(sb, scripts, "-- Patched --");
@@ -124,7 +126,8 @@ public abstract class JSoupHtmlParser extends Parser {
 		ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
 		jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
 		if (jsEngine == null) {
-			throw new NullPointerException("No script engine found for JavaScript");
+			throw new NullPointerException(
+					"No script engine found for JavaScript");
 		}
 	}
 
@@ -168,20 +171,24 @@ public abstract class JSoupHtmlParser extends Parser {
 			elements = page.select(xpathExpr);
 			elementsMap.put(hash, elements);
 		}
-		logger.trace("Region Nodes " + elements.size() + " for XPATH: " + xpathExpr);
+		logger.trace(
+				"Region Nodes " + elements.size() + " for XPATH: " + xpathExpr);
 		for (Element element : elements) {
 			String nodeTraceStr = Util.stripe(element.outerHtml(), 5,
 					"Data Region \n-------------\n", "-------------");
 			logger.trace("{}", nodeTraceStr);
-			Util.logState(logger, "parser-" + dataDefName, "", fields, nodeTraceStr);
+			Util.logState(logger, "parser-" + dataDefName, "", fields,
+					nodeTraceStr);
 		}
 		return elements;
 	}
 
-	private String getBySelector(Elements elements, String xpathExpr, String attr) {
+	private String getBySelector(Elements elements, String xpathExpr,
+			String attr) {
 		String value = null;
 		Elements subElements = elements.select(xpathExpr);
-		logger.trace("Nodes " + subElements.size() + " for XPATH: " + xpathExpr);
+		logger.trace(
+				"Nodes " + subElements.size() + " for XPATH: " + xpathExpr);
 		for (Element element : subElements) {
 			if (attr == null) {
 				value = element.ownText();
@@ -191,7 +198,8 @@ public abstract class JSoupHtmlParser extends Parser {
 			String nodeTraceStr = Util.stripe(element.outerHtml(), 5,
 					"Data Node \n--------\n", "--------");
 			logger.trace("{}", nodeTraceStr);
-			Util.logState(logger, "parser-" + dataDefName, "", fields, nodeTraceStr);
+			Util.logState(logger, "parser-" + dataDefName, "", fields,
+					nodeTraceStr);
 		}
 		logger.trace("Text Content of the node: " + value);
 		return value;

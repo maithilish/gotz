@@ -85,15 +85,19 @@ public enum BeanService {
 		return count;
 	}
 
-	private void validateBeanFile() throws JAXBException, SAXException, IOException {
+	private void validateBeanFile()
+			throws JAXBException, SAXException, IOException {
 		String beanFile = ConfigService.INSTANCE.getConfig("picks.beanFile");
-		String schemaFile = ConfigService.INSTANCE.getConfig("picks.schemaFile");
+		String schemaFile = ConfigService.INSTANCE
+				.getConfig("picks.schemaFile");
 		validateSchema(beanFile, schemaFile);
 	}
 
-	private void setBeanFiles() throws JAXBException, SAXException, IOException {
+	private void setBeanFiles()
+			throws JAXBException, SAXException, IOException {
 		String beanFile = ConfigService.INSTANCE.getConfig("picks.beanFile");
-		String schemaFile = ConfigService.INSTANCE.getConfig("picks.schemaFile");
+		String schemaFile = ConfigService.INSTANCE
+				.getConfig("picks.schemaFile");
 		String baseName = FilenameUtils.getFullPath(beanFile);
 
 		logger.info("initialize Bean file");
@@ -127,8 +131,8 @@ public enum BeanService {
 		validator.validate();
 	}
 
-	private void unmarshallBeanFiles()
-			throws ClassNotFoundException, JAXBException, FileNotFoundException {
+	private void unmarshallBeanFiles() throws ClassNotFoundException,
+			JAXBException, FileNotFoundException {
 		logger.info("unmarshall bean files...");
 		for (Bean bean : beanFiles) {
 			Class<?> ofClass = Class.forName(bean.getClassName());
