@@ -4,9 +4,9 @@ import in.m.picks.model.Locator;
 
 public interface ILocatorDao {
 
-	public Locator getLocator(String name, String group);
+    Locator getLocator(String name, String group);
 
-	public void storeLocator(Locator locator);
+    void storeLocator(Locator locator);
 
-	public Locator getLocator(Long id);
+    Locator getLocator(Long id);
 }

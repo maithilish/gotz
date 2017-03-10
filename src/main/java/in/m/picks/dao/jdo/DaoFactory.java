@@ -10,38 +10,38 @@ import in.m.picks.dao.IDataDefDao;
 import in.m.picks.dao.IDocumentDao;
 import in.m.picks.dao.ILocatorDao;
 
-public class DaoFactory extends in.m.picks.dao.DaoFactory {
+public final class DaoFactory extends in.m.picks.dao.DaoFactory {
 
-	final static Logger logger = LoggerFactory.getLogger(DaoFactory.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(DaoFactory.class);
 
-	private PersistenceManagerFactory pmf;
+    private PersistenceManagerFactory pmf;
 
-	public DaoFactory() {
-		pmf = PMF.INSTANCE.getFactory();
-	}
+    public DaoFactory() {
+        pmf = PMF.INSTANCE.getFactory();
+    }
 
-	public PersistenceManagerFactory getFactory() {
-		return pmf;
-	}
+    public PersistenceManagerFactory getFactory() {
+        return pmf;
+    }
 
-	@Override
-	public IDocumentDao getDocumentDao() {
-		return new DocumentDao(pmf);
-	}
+    @Override
+    public IDocumentDao getDocumentDao() {
+        return new DocumentDao(pmf);
+    }
 
-	@Override
-	public IDataDefDao getDataDefDao() {
-		return new DataDefDao(pmf);
-	}
+    @Override
+    public IDataDefDao getDataDefDao() {
+        return new DataDefDao(pmf);
+    }
 
-	@Override
-	public IDataDao getDataDao() {
-		return new DataDao(pmf);
-	}
+    @Override
+    public IDataDao getDataDao() {
+        return new DataDao(pmf);
+    }
 
-	@Override
-	public ILocatorDao getLocatorDao() {
-		return new LocatorDao(pmf);
-	}
+    @Override
+    public ILocatorDao getLocatorDao() {
+        return new LocatorDao(pmf);
+    }
 
 }

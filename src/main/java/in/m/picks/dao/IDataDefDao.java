@@ -7,8 +7,8 @@ import in.m.picks.model.DataDef;
 
 public interface IDataDefDao {
 
-	public void storeDataDef(DataDef dataDef);
+    void storeDataDef(DataDef dataDef);
 
-	List<DataDef> getDataDefs(Date date);
+    List<DataDef> getDataDefs(Date date);
 
 }

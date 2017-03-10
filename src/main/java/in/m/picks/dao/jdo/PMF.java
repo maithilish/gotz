@@ -18,83 +18,83 @@ import in.m.picks.util.Util;
 
 public enum PMF {
 
-	INSTANCE;
+    INSTANCE;
 
-	final Logger logger = LoggerFactory.getLogger(PMF.class);
+    private final Logger logger = LoggerFactory.getLogger(PMF.class);
 
-	private PersistenceManagerFactory factory;
+    private PersistenceManagerFactory factory;
 
-	private PMF() {
-		logger.info("initialize JDO PMF");
-		createFactory();
-		logger.debug("initialized JDO PMF");
-	}
+    PMF() {
+        logger.info("initialize JDO PMF");
+        createFactory();
+        logger.debug("initialized JDO PMF");
+    }
 
-	private void createFactory() {
+    private void createFactory() {
 
-		try {
-			Properties jdoProperties = getJdoConfig();
-			factory = JDOHelper.getPersistenceManagerFactory(jdoProperties);
-			logger.info("JDO PersistenceManagerFactory created");
-			debugPMFProperties(factory.getProperties());
-		} catch (JDOFatalUserException e) {
-			logger.error("{} Exit", e.getMessage());
-			logger.trace("{}", e);
-			MonitorService.INSTANCE.triggerFatal("Database failure");
-		} catch (JDOFatalDataStoreException e) {
-			logger.error("{} Exit", e.getMessage());
-			logger.trace("{}", e);
-			MonitorService.INSTANCE.triggerFatal("Database failure");
-		} catch (Exception e) {
-			logger.error("{} Exit", e.getMessage());
-			logger.trace("{}", e);
-			MonitorService.INSTANCE.triggerFatal("Database failure");
-		}
-	}
+        try {
+            Properties jdoProperties = getJdoConfig();
+            factory = JDOHelper.getPersistenceManagerFactory(jdoProperties);
+            logger.info("JDO PersistenceManagerFactory created");
+            debugPMFProperties(factory.getProperties());
+        } catch (JDOFatalUserException e) {
+            logger.error("{} Exit", e.getMessage());
+            logger.trace("{}", e);
+            MonitorService.INSTANCE.triggerFatal("Database failure");
+        } catch (JDOFatalDataStoreException e) {
+            logger.error("{} Exit", e.getMessage());
+            logger.trace("{}", e);
+            MonitorService.INSTANCE.triggerFatal("Database failure");
+        } catch (Exception e) {
+            logger.error("{} Exit", e.getMessage());
+            logger.trace("{}", e);
+            MonitorService.INSTANCE.triggerFatal("Database failure");
+        }
+    }
 
-	private Properties getJdoConfig() throws Exception {
+    private Properties getJdoConfig() throws Exception {
 
-		Properties jdoProperties = new Properties();
-		InputStream inputStream = null;
-		String propFileName = "jdoconfig.properties";
+        Properties jdoProperties = new Properties();
+        InputStream inputStream = null;
+        String propFileName = "jdoconfig.properties";
 
-		inputStream = PMF.class.getClassLoader()
-				.getResourceAsStream(propFileName);
-		if (inputStream != null) {
-			try {
-				jdoProperties.load(inputStream);
-				inputStream.close();
-			} catch (IOException e) {
-				throw e;
-			}
-		} else {
-			throw new Exception("JDO Config file {}" + propFileName
-					+ "not found in classpath. Exit");
-		}
-		return jdoProperties;
-	}
+        inputStream = PMF.class.getClassLoader()
+                .getResourceAsStream(propFileName);
+        if (inputStream != null) {
+            try {
+                jdoProperties.load(inputStream);
+                inputStream.close();
+            } catch (IOException e) {
+                throw e;
+            }
+        } else {
+            throw new Exception("JDO Config file {}" + propFileName
+                    + "not found in classpath. Exit");
+        }
+        return jdoProperties;
+    }
 
-	private void debugPMFProperties(Properties properties) {
-		if (!logger.isDebugEnabled()) {
-			return;
-		}
-		String line = System.lineSeparator();
-		StringBuilder sb = new StringBuilder();
-		sb.append(line);
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			sb.append(Util.logIndent());
-			sb.append(entry);
-			sb.append(line);
-		}
-		logger.debug("PMF Properties {}", sb);
-	}
+    private void debugPMFProperties(final Properties properties) {
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        String line = System.lineSeparator();
+        StringBuilder sb = new StringBuilder();
+        sb.append(line);
+        for (Entry<Object, Object> entry : properties.entrySet()) {
+            sb.append(Util.logIndent());
+            sb.append(entry);
+            sb.append(line);
+        }
+        logger.debug("PMF Properties {}", sb);
+    }
 
-	public PersistenceManagerFactory getFactory() {
-		return factory;
-	}
+    public PersistenceManagerFactory getFactory() {
+        return factory;
+    }
 
-	public final void setFactory(PersistenceManagerFactory pmf) {
-		this.factory = pmf;
-	}
+    public final void setFactory(final PersistenceManagerFactory pmf) {
+        this.factory = pmf;
+    }
 
 }
