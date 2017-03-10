@@ -1,13 +1,13 @@
 package in.m.picks.pool;
 
-public class TaskPoolService extends Pool {
+public final class TaskPoolService extends Pool {
 
-	private static final TaskPoolService INSTANCE = new TaskPoolService();
+    private static final TaskPoolService INSTANCE = new TaskPoolService();
 
-	private TaskPoolService() {
-	}
+    private TaskPoolService() {
+    }
 
-	public static TaskPoolService getInstance() {
-		return INSTANCE;
-	}
+    public static TaskPoolService getInstance() {
+        return INSTANCE;
+    }
 }

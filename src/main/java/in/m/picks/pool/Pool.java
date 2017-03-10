@@ -17,92 +17,91 @@ import net.jcip.annotations.ThreadSafe;
 @ThreadSafe
 public abstract class Pool {
 
-	final static Logger logger = LoggerFactory.getLogger(Pool.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Pool.class);
 
-	final protected Map<String, ExecutorService> executorsMap;
-	final protected ArrayList<Future<?>> futures;
+    private static final int POOL_SIZE = 4;
+    private static final int SLEEP_MILLIS = 1000;
 
-	protected Pool() {
-		executorsMap = new HashMap<String, ExecutorService>();
-		futures = new ArrayList<Future<?>>();
-	}
+    private final Map<String, ExecutorService> executorsMap;
+    private final ArrayList<Future<?>> futures;
 
-	private ExecutorService getPool(String poolName) {
-		ExecutorService executor = executorsMap.get(poolName);
-		if (executor == null) {
-			int poolSize = 4;
-			try {
-				String ps = ConfigService.INSTANCE
-						.getConfig("picks.poolsize." + poolName);
-				poolSize = Integer.valueOf(ps);
-			} catch (NumberFormatException e) {
-			}
-			executor = Executors.newFixedThreadPool(poolSize);
-			logger.info("create ExecutorPool [{}], pool size [{}]", poolName,
-					poolSize);
-			executorsMap.put(poolName, executor);
-		}
-		return executor;
-	}
+    protected Pool() {
+        executorsMap = new HashMap<String, ExecutorService>();
+        futures = new ArrayList<Future<?>>();
+    }
 
-	@GuardedBy("this")
-	public synchronized void submit(String poolName, Runnable task) {
-		ExecutorService pool = getPool(poolName);
-		Future<?> future = pool.submit(task);
-		futures.add(future);
-	}
+    private ExecutorService getPool(final String poolName) {
+        ExecutorService executor = executorsMap.get(poolName);
+        if (executor == null) {
+            int poolSize = POOL_SIZE;
+            try {
+                String ps = ConfigService.INSTANCE
+                        .getConfig("picks.poolsize." + poolName);
+                poolSize = Integer.valueOf(ps);
+            } catch (NumberFormatException e) {
+            }
+            executor = Executors.newFixedThreadPool(poolSize);
+            LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName,
+                    poolSize);
+            executorsMap.put(poolName, executor);
+        }
+        return executor;
+    }
 
-	@GuardedBy("this")
-	public synchronized boolean isDone() {
-		if (getNotDone() == 0) {
-			return true;
-		} else {
-			return false;
+    @GuardedBy("this")
+    public final synchronized void submit(final String poolName,
+            final Runnable task) {
+        ExecutorService pool = getPool(poolName);
+        Future<?> future = pool.submit(task);
+        futures.add(future);
+    }
 
-		}
-	}
+    @GuardedBy("this")
+    public final synchronized boolean isDone() {
+        return getNotDone() == 0;
+    }
 
-	private int getNotDone() {
-		int count = 0;
-		for (Future<?> future : futures) {
-			if (!future.isDone()) {
-				count++;
-			}
-		}
-		return count;
-	}
+    private int getNotDone() {
+        int count = 0;
+        for (Future<?> future : futures) {
+            if (!future.isDone()) {
+                count++;
+            }
+        }
+        return count;
+    }
 
-	private boolean isAllTerminated() {
-		for (ExecutorService pool : executorsMap.values()) {
-			if (!pool.isTerminated()) {
-				return false;
-			}
-		}
-		return true;
-	}
+    private boolean isAllTerminated() {
+        for (ExecutorService pool : executorsMap.values()) {
+            if (!pool.isTerminated()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-	public void shutdownAll() {
-		for (ExecutorService pool : executorsMap.values()) {
-			pool.shutdown();
-		}
-	}
+    public final void shutdownAll() {
+        for (ExecutorService pool : executorsMap.values()) {
+            pool.shutdown();
+        }
+    }
 
-	public void waitForFinish() {
-		while (!isDone()) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		shutdownAll();
-		while (!isAllTerminated()) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
+    public final void waitForFinish() {
+        while (!isDone()) {
+            try {
+                Thread.sleep(SLEEP_MILLIS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        shutdownAll();
+        while (!isAllTerminated()) {
+            try {
+                Thread.sleep(SLEEP_MILLIS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 }

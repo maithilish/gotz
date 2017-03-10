@@ -1,13 +1,13 @@
 package in.m.picks.pool;
 
-public class AppenderPoolService extends Pool {
+public final class AppenderPoolService extends Pool {
 
-	private static final AppenderPoolService INSTANCE = new AppenderPoolService();
+    private static final AppenderPoolService INSTANCE = new AppenderPoolService();
 
-	private AppenderPoolService() {
-	}
+    private AppenderPoolService() {
+    }
 
-	public static AppenderPoolService getInstance() {
-		return INSTANCE;
-	}
+    public static AppenderPoolService getInstance() {
+        return INSTANCE;
+    }
 }

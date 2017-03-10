@@ -14,57 +14,57 @@ import in.m.picks.shared.MonitorService;
 import in.m.picks.shared.StepService;
 import in.m.picks.step.IStep;
 
-public class PicksEngine {
+public final class PicksEngine {
 
-	final static Logger logger = LoggerFactory.getLogger(PicksEngine.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(PicksEngine.class);
 
-	public void start() {
+    public void start() {
 
-		logger.info("Starting PicksEngine");
-		logPicksMode();
-		MonitorService.INSTANCE.start();
-		logger.info("Run Date : [{}]", ConfigService.INSTANCE.getRunDate());
-		BeanService.INSTANCE.getBeans(Locator.class);
-		loadDataDefs();
+        LOGGER.info("Starting PicksEngine");
+        logPicksMode();
+        MonitorService.INSTANCE.start();
+        LOGGER.info("Run Date : [{}]", ConfigService.INSTANCE.getRunDate());
+        BeanService.INSTANCE.getBeans(Locator.class);
+        loadDataDefs();
 
-		seed();
-		TaskPoolService.getInstance().waitForFinish();
+        seed();
+        TaskPoolService.getInstance().waitForFinish();
 
-		AppenderService.INSTANCE.closeAll();
-		AppenderPoolService.getInstance().waitForFinish();
+        AppenderService.INSTANCE.closeAll();
+        AppenderPoolService.getInstance().waitForFinish();
 
-		MonitorService.INSTANCE.end();
-		logger.info("PicksEngine shutdown");
+        MonitorService.INSTANCE.end();
+        LOGGER.info("PicksEngine shutdown");
 
-	}
+    }
 
-	private void loadDataDefs() {
-		DataDefService dataDefs = DataDefService.INSTANCE;
-		logger.info("DataDefs loaded {}", dataDefs.getCount());
-	}
+    private void loadDataDefs() {
+        DataDefService dataDefs = DataDefService.INSTANCE;
+        LOGGER.info("DataDefs loaded {}", dataDefs.getCount());
+    }
 
-	private void seed() {
-		try {
-			String seederClassName = ConfigService.INSTANCE
-					.getConfig("picks.seederClass");
-			IStep task = StepService.INSTANCE.getStep(seederClassName)
-					.instance();
-			TaskPoolService.getInstance().submit("seeder", task);
-		} catch (ClassNotFoundException | InstantiationException
-				| IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+    private void seed() {
+        try {
+            String seederClassName = ConfigService.INSTANCE
+                    .getConfig("picks.seederClass");
+            IStep task = StepService.INSTANCE.getStep(seederClassName)
+                    .instance();
+            TaskPoolService.getInstance().submit("seeder", task);
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
-	private void logPicksMode() {
-		String modeInfo = "Mode : [Production]";
-		if (ConfigService.INSTANCE.isTestMode()) {
-			modeInfo = "Mode : [Test]";
-		}
-		if (ConfigService.INSTANCE.isDevMode()) {
-			modeInfo = "Mode : [Dev]";
-		}
-		logger.info(modeInfo);
-	}
+    private void logPicksMode() {
+        String modeInfo = "Mode : [Production]";
+        if (ConfigService.INSTANCE.isTestMode()) {
+            modeInfo = "Mode : [Test]";
+        }
+        if (ConfigService.INSTANCE.isDevMode()) {
+            modeInfo = "Mode : [Dev]";
+        }
+        LOGGER.info(modeInfo);
+    }
 }
