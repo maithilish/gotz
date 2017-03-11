@@ -47,8 +47,7 @@ public enum ConfigService {
         logger.debug("Initialized Configs");
 
         logger.info("Config precedence - SYSTEM, PROPERTIES, DEFAULTS");
-        logger.info(
-                "Use picks.properties or system property to override defaults");
+        logger.info("Use picks.properties or system property to override defaults");
     }
 
     private String configsAsString(final ConfigIndex index) {
@@ -72,8 +71,7 @@ public enum ConfigService {
     public String getConfig(final String key) {
         String value = configs.getString(key);
         if (value == null) {
-            logger.error("{}", "Config [{}] not found. Check prefix and key.",
-                    key);
+            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
             MonitorService.INSTANCE.triggerFatal("Config failure");
         }
         return value;
@@ -82,8 +80,7 @@ public enum ConfigService {
     public String[] getConfigArray(final String key) {
         String[] values = configs.getStringArray(key);
         if (values == null) {
-            logger.error("{}", "Config [{}] not found. Check prefix and key.",
-                    key);
+            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
             MonitorService.INSTANCE.triggerFatal("Config failure");
         }
         return values;
@@ -132,8 +129,7 @@ public enum ConfigService {
         String patterns = getConfig("picks.dateTimeParsePattern"); //$NON-NLS-1$
 
         try {
-            runDateTime = DateUtils.parseDate(dateTimeStr,
-                    new String[] {patterns});
+            runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
         } catch (ParseException e) {
             logger.error("Run Date error. {}", e); //$NON-NLS-1$
             MonitorService.INSTANCE.triggerFatal("Config failure");
@@ -163,8 +159,7 @@ public enum ConfigService {
         try {
             configs.addConfiguration(userProvidedConfigs());
         } catch (ConfigurationException e) {
-            logger.info(e.getLocalizedMessage() + ". "
-                    + "Using default properties");
+            logger.info(e.getLocalizedMessage() + ". " + "Using default properties");
         }
 
         try {
@@ -180,11 +175,9 @@ public enum ConfigService {
 
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder;
         builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-                PropertiesConfiguration.class)
-                        .configure(new Parameters().properties()
-                                .setFileName("picks.properties")
-                                .setThrowExceptionOnMissing(true)
-                                .setListDelimiterHandler(
+                PropertiesConfiguration.class).configure(
+                        new Parameters().properties().setFileName("picks.properties")
+                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
                                         new DefaultListDelimiterHandler(';')));
 
         Configuration userProvided = builder.getConfiguration();
@@ -195,11 +188,9 @@ public enum ConfigService {
 
         FileBasedConfigurationBuilder<XMLConfiguration> builder;
         builder = new FileBasedConfigurationBuilder<XMLConfiguration>(
-                XMLConfiguration.class)
-                        .configure(new Parameters().properties()
-                                .setFileName("picks-default.xml")
-                                .setThrowExceptionOnMissing(true)
-                                .setListDelimiterHandler(
+                XMLConfiguration.class).configure(
+                        new Parameters().properties().setFileName("picks-default.xml")
+                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
                                         new DefaultListDelimiterHandler(';')));
 
         Configuration defaultConfigs = builder.getConfiguration();
@@ -220,21 +211,17 @@ public enum ConfigService {
         Date runDateTime = new Date();
         String runDateTimeStr = configs.getString("picks.runDateTime"); //$NON-NLS-1$
         if (runDateTimeStr == null) {
-            String dateTimeFormat = configs
-                    .getString("picks.dateTimeParsePattern"); //$NON-NLS-1$
-            runDateTimeStr = DateFormatUtils.format(runDateTime,
-                    dateTimeFormat);
+            String dateTimeFormat = configs.getString("picks.dateTimeParsePattern");
+            runDateTimeStr = DateFormatUtils.format(runDateTime, dateTimeFormat);
             configs.addProperty("picks.runDateTime", runDateTimeStr); //$NON-NLS-1$
         }
     }
 
     public boolean isTestMode() {
-        return StringUtils
-                .isNotBlank(System.getProperty("surefire.test.class.path"));
+        return StringUtils.isNotBlank(System.getProperty("surefire.test.class.path"));
     }
 
     public boolean isDevMode() {
-        return StringUtils.equalsIgnoreCase(configs.getString("picks.mode"),
-                "dev");
+        return StringUtils.equalsIgnoreCase(configs.getString("picks.mode"), "dev");
     }
 }

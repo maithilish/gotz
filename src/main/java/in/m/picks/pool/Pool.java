@@ -41,16 +41,14 @@ public abstract class Pool {
             } catch (NumberFormatException e) {
             }
             executor = Executors.newFixedThreadPool(poolSize);
-            LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName,
-                    poolSize);
+            LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName, poolSize);
             executorsMap.put(poolName, executor);
         }
         return executor;
     }
 
     @GuardedBy("this")
-    public final synchronized void submit(final String poolName,
-            final Runnable task) {
+    public final synchronized void submit(final String poolName, final Runnable task) {
         ExecutorService pool = getPool(poolName);
         Future<?> future = pool.submit(task);
         futures.add(future);

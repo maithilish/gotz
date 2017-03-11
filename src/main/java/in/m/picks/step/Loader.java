@@ -56,8 +56,8 @@ public abstract class Loader extends Step {
                 store();
                 handover();
             } catch (Exception e) {
-                String message = Util.buildString("load Locator[name=",
-                        locator.getName(), " group=", locator.getGroup(), "]");
+                String message = Util.buildString("load Locator[name=", locator.getName(),
+                        " group=", locator.getGroup(), "]");
                 LOGGER.error("{} {}", message, Util.getMessage(e));
                 LOGGER.debug("{}", e);
                 MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
@@ -72,20 +72,17 @@ public abstract class Loader extends Step {
      */
     @Override
     public void load() throws Exception {
-        Locator savedLocator = getLocatorFromStore(locator.getName(),
-                locator.getGroup());
+        Locator savedLocator = getLocatorFromStore(locator.getName(), locator.getGroup());
         if (savedLocator != null) {
             // update existing locator with new values
             savedLocator.getFields().addAll(locator.getFields());
             savedLocator.setUrl(locator.getUrl());
             // switch locator with existing locator (detached locator)
             locator = savedLocator;
-            Util.logState(LOGGER, "locator",
-                    "--- Locator loaded from store ---", locator.getFields(),
-                    locator);
+            Util.logState(LOGGER, "locator", "--- Locator loaded from store ---",
+                    locator.getFields(), locator);
         } else {
-            LOGGER.debug("{}",
-                    "Locator from file is used as it is not yet stored");
+            LOGGER.debug("{}", "Locator from file is used as it is not yet stored");
         }
 
         Long liveDocumentId = getLiveDocumentId();
@@ -99,18 +96,14 @@ public abstract class Loader extends Step {
             document.setUrl(locator.getUrl());
             locator.getDocuments().add(document);
             setConsistent(true);
-            LOGGER.info(
-                    "create new document. Locator[name={} group={} toDate={}]",
-                    locator.getName(), locator.getGroup(),
-                    document.getToDate());
+            LOGGER.info("create new document. Locator[name={} group={} toDate={}]",
+                    locator.getName(), locator.getGroup(), document.getToDate());
             LOGGER.trace("create new document {}", document);
         } else {
             document = getDocument(liveDocumentId);
             setConsistent(true);
-            LOGGER.info(
-                    "use stored document. Locator[name={} group={} toDate={}]",
-                    locator.getName(), locator.getGroup(),
-                    document.getToDate());
+            LOGGER.info("use stored document. Locator[name={} group={} toDate={}]",
+                    locator.getName(), locator.getGroup(), document.getToDate());
             LOGGER.trace("found document {}", document);
         }
     }
@@ -130,13 +123,13 @@ public abstract class Loader extends Step {
 
         if (persist) {
             /*
-             * fields are not persistable, so need to set them from the
-             * fields.xml every time
+             * fields are not persistable, so need to set them from the fields.xml every
+             * time
              */
             try {
                 List<FieldsBase> fields = locator.getFields();
-                ORM orm = DaoFactory.getOrmType(
-                        ConfigService.INSTANCE.getConfig("picks.orm"));
+                ORM orm = DaoFactory
+                        .getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));
                 ILocatorDao dao = DaoFactory.getDaoFactory(orm).getLocatorDao();
                 dao.storeLocator(locator);
                 // reload locator and document
@@ -168,26 +161,23 @@ public abstract class Loader extends Step {
 
         String givenUpMessage = Util.buildString("Create parser for locator [",
                 locator.getName(), "] failed.");
-        List<FieldsBase> stepsFields = FieldsUtil
-                .getGroupFields(locator.getFields(), "steps");
-        List<FieldsBase> dataDefFields = FieldsUtil
-                .getGroupFields(locator.getFields(), "datadef");
+        List<FieldsBase> stepsFields = FieldsUtil.getGroupFields(locator.getFields(),
+                "steps");
+        List<FieldsBase> dataDefFields = FieldsUtil.getGroupFields(locator.getFields(),
+                "datadef");
         if (dataDefFields.size() == 0) {
             LOGGER.warn("{} {}", givenUpMessage, " No datadef field found.");
         }
         for (FieldsBase dataDefField : dataDefFields) {
             if (dataDefField instanceof Fields) {
-                Fields fields = Util.deepClone(Fields.class,
-                        (Fields) dataDefField);
+                Fields fields = Util.deepClone(Fields.class, (Fields) dataDefField);
                 if (isDocumentLoaded()) {
                     Field field = FieldsUtil.createField("locatorName",
                             locator.getName());
                     fields.getFields().add(field);
-                    field = FieldsUtil.createField("locatorGroup",
-                            locator.getGroup());
+                    field = FieldsUtil.createField("locatorGroup", locator.getGroup());
                     fields.getFields().add(field);
-                    field = FieldsUtil.createField("locatorUrl",
-                            locator.getUrl());
+                    field = FieldsUtil.createField("locatorUrl", locator.getUrl());
                     fields.getFields().add(field);
                     List<FieldsBase> fieldsList = new ArrayList<>();
                     fieldsList.add(fields);
@@ -228,8 +218,7 @@ public abstract class Loader extends Step {
         }
     }
 
-    private Locator getLocatorFromStore(final String locName,
-            final String locGroup) {
+    private Locator getLocatorFromStore(final String locName, final String locGroup) {
         try {
             ORM orm = DaoFactory
                     .getOrmType(ConfigService.INSTANCE.getConfig("picks.orm"));
@@ -262,8 +251,8 @@ public abstract class Loader extends Step {
     }
 
     private Date getToDate() {
-        ZonedDateTime fromDate = ZonedDateTime.ofInstant(
-                document.getFromDate().toInstant(), ZoneId.systemDefault());
+        ZonedDateTime fromDate = ZonedDateTime
+                .ofInstant(document.getFromDate().toInstant(), ZoneId.systemDefault());
         ZonedDateTime toDate = null;
         String live = null;
         try {
@@ -284,17 +273,16 @@ public abstract class Loader extends Step {
             try {
                 // multiple patterns so needs DateUtils
                 Date td = DateUtils.parseDateStrictly(live, patterns);
-                toDate = ZonedDateTime.ofInstant(td.toInstant(),
-                        ZoneId.systemDefault());
+                toDate = ZonedDateTime.ofInstant(td.toInstant(), ZoneId.systemDefault());
             } catch (ParseException pe) {
-                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days",
-                        locator, live, e);
+                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", locator, live,
+                        e);
                 TemporalAmount ta = Util.praseTemporalAmount("PT0S");
                 toDate = fromDate.plus(ta);
             }
         }
-        LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live,
-                toDate, locator);
+        LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live, toDate,
+                locator);
         return Date.from(Instant.from(toDate));
     }
 

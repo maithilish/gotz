@@ -12,7 +12,7 @@ public abstract class Seeder extends Step {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -29,8 +29,7 @@ public abstract class Seeder extends Step {
         } catch (Exception e) {
             LOGGER.warn("{}", e.getLocalizedMessage());
             LOGGER.debug("{}", e);
-            MonitorService.INSTANCE.addActivity(Type.GIVENUP, "unable to seed",
-                    e);
+            MonitorService.INSTANCE.addActivity(Type.GIVENUP, "unable to seed", e);
 
         }
     }

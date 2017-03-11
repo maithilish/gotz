@@ -58,8 +58,7 @@ public enum PMF {
         InputStream inputStream = null;
         String propFileName = "jdoconfig.properties";
 
-        inputStream = PMF.class.getClassLoader()
-                .getResourceAsStream(propFileName);
+        inputStream = PMF.class.getClassLoader().getResourceAsStream(propFileName);
         if (inputStream != null) {
             try {
                 jdoProperties.load(inputStream);
@@ -68,8 +67,8 @@ public enum PMF {
                 throw e;
             }
         } else {
-            throw new Exception("JDO Config file {}" + propFileName
-                    + "not found in classpath. Exit");
+            throw new Exception(
+                    "JDO Config file {}" + propFileName + "not found in classpath. Exit");
         }
         return jdoProperties;
     }

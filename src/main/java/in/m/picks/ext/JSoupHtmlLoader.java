@@ -28,8 +28,8 @@ public final class JSoupHtmlLoader extends Loader {
         LOGGER.info("fetch web resource {}", url);
         Document doc;
         if (UrlValidator.getInstance().isValid(url)) {
-            doc = Jsoup.connect(url).userAgent(getUserAgent())
-                    .timeout(getTimeout()).get();
+            doc = Jsoup.connect(url).userAgent(getUserAgent()).timeout(getTimeout())
+                    .get();
             LOGGER.debug("fetched web resource {}", url);
         } else {
             File file = new File(url);
@@ -46,16 +46,14 @@ public final class JSoupHtmlLoader extends Loader {
             timeout = Integer.parseInt(ConfigService.INSTANCE.getConfig(key));
         } catch (NumberFormatException e) {
             // TODO add activity or update config with default
-            String msg = "for config [" + key + "] using default value "
-                    + timeout;
+            String msg = "for config [" + key + "] using default value " + timeout;
             LOGGER.warn("{}. {}", e, msg);
         }
         return timeout;
     }
 
     private String getUserAgent() {
-        String userAgent = ConfigService.INSTANCE
-                .getConfig("picks.webClient.userAgent");
+        String userAgent = ConfigService.INSTANCE.getConfig("picks.webClient.userAgent");
         return userAgent;
     }
 }

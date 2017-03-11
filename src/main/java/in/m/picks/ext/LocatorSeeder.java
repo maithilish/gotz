@@ -35,13 +35,11 @@ public final class LocatorSeeder extends Seeder {
     @Override
     public void load() {
         initLocators();
-        List<FieldsBase> fields = BeanService.INSTANCE
-                .getBeans(FieldsBase.class);
+        List<FieldsBase> fields = BeanService.INSTANCE.getBeans(FieldsBase.class);
         try {
-            FieldsBase classFields = FieldsUtil.getFieldsByValue(fields,
-                    "class", Locator.class.getName());
-            List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
-                    "steps");
+            FieldsBase classFields = FieldsUtil.getFieldsByValue(fields, "class",
+                    Locator.class.getName());
+            List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields, "steps");
             setFields(steps);
             if (classFields != null) {
                 mergeFields(classFields);
@@ -63,14 +61,13 @@ public final class LocatorSeeder extends Seeder {
             addLabelField(locator);
         }
         for (Locator locator : locators) {
-            Util.logState(LOGGER, "locator", "initialized locator",
-                    locator.getFields(), locator);
+            Util.logState(LOGGER, "locator", "initialized locator", locator.getFields(),
+                    locator);
         }
     }
 
     private void addLabelField(final Locator locator) {
-        String label = Util.buildString(locator.getName(), ":",
-                locator.getGroup());
+        String label = Util.buildString(locator.getName(), ":", locator.getGroup());
         FieldsBase field = FieldsUtil.createField("label", label);
         locator.getFields().add(field);
     }
@@ -108,8 +105,8 @@ public final class LocatorSeeder extends Seeder {
             } catch (InterruptedException e) {
             }
         }
-        LOGGER.info("locators count [{}], queued to loader [{}].",
-                locators.size(), count);
+        LOGGER.info("locators count [{}], queued to loader [{}].", locators.size(),
+                count);
     }
 
     private void mergeFields(final FieldsBase classFields) {
@@ -120,15 +117,14 @@ public final class LocatorSeeder extends Seeder {
                         locator.getGroup());
                 locator.getFields().addAll(fields);
 
-                List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields,
-                        "steps");
+                List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields, "steps");
                 locator.getFields().addAll(steps);
             } catch (FieldNotFoundException e) {
             }
         }
         for (Locator locator : locators) {
-            Util.logState(LOGGER, "locator", "after merging fields",
-                    locator.getFields(), locator);
+            Util.logState(LOGGER, "locator", "after merging fields", locator.getFields(),
+                    locator);
         }
     }
 

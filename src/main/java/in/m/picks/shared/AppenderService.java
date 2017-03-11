@@ -19,8 +19,7 @@ public enum AppenderService {
 
     INSTANCE;
 
-    private final Logger logger = LoggerFactory
-            .getLogger(AppenderService.class);
+    private final Logger logger = LoggerFactory.getLogger(AppenderService.class);
 
     private final Map<String, Appender> appenders;
 
@@ -38,8 +37,8 @@ public enum AppenderService {
     }
 
     public synchronized void createAppender(final List<FieldsBase> fields)
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldNotFoundException {
+            throws ClassNotFoundException, InstantiationException, IllegalAccessException,
+            FieldNotFoundException {
         String appenderName = FieldsUtil.getValue(fields, "name");
         String appenderClzName = FieldsUtil.getValue(fields, "class");
         if (appenders.containsKey(appenderName)) {

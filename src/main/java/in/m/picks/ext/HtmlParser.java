@@ -47,9 +47,8 @@ public abstract class HtmlParser extends Parser {
      */
     @Override
     protected void setValue(final DataDef dataDef, final Member member)
-            throws ScriptException, NumberFormatException,
-            IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
+            throws ScriptException, NumberFormatException, IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = member.getAxis(axisName);
             if (axis == null) {
@@ -65,8 +64,7 @@ public abstract class HtmlParser extends Parser {
                 axis.setIndex(startIndex);
             }
             if (isDocumentLoaded() && axis.getValue() == null) {
-                HtmlPage documentObject = (HtmlPage) getDocument()
-                        .getDocumentObject();
+                HtmlPage documentObject = (HtmlPage) getDocument().getDocumentObject();
                 String value = getValue(documentObject, dataDef, member, axis);
                 axis.setValue(value);
             }
@@ -77,22 +75,18 @@ public abstract class HtmlParser extends Parser {
      *
      */
     private String getValue(final HtmlPage page, final DataDef dataDef,
-            final Member member, final Axis axis)
-            throws ScriptException, IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException {
+            final Member member, final Axis axis) throws ScriptException,
+            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
-        List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName())
-                .getFields();
+        List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
         try {
-            List<FieldsBase> scripts = FieldsUtil.getGroupFields(list,
-                    "script");
+            List<FieldsBase> scripts = FieldsUtil.getGroupFields(list, "script");
             setTraceString(sb, scripts, "--- Script ---");
             scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, "-- Patched --");
             LOGGER.trace("{}", sb);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(),
-                    sb);
+            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(), sb);
             value = queryByScript(scripts);
         } catch (FieldNotFoundException e) {
         }
@@ -103,8 +97,7 @@ public abstract class HtmlParser extends Parser {
             queries = FieldsUtil.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, "-- Patched --");
             LOGGER.trace("{}", sb);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(),
-                    sb);
+            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(), sb);
             value = queryByXPath(page, queries);
         } catch (FieldNotFoundException e) {
         }
@@ -137,16 +130,14 @@ public abstract class HtmlParser extends Parser {
         ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
         jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
         if (jsEngine == null) {
-            throw new NullPointerException(
-                    "No script engine found for JavaScript");
+            throw new NullPointerException("No script engine found for JavaScript");
         }
     }
 
-    private String queryByXPath(final HtmlPage page,
-            final List<FieldsBase> queries) throws FieldNotFoundException {
+    private String queryByXPath(final HtmlPage page, final List<FieldsBase> queries)
+            throws FieldNotFoundException {
         if (FieldsUtil.fieldCount(queries) < 2) {
-            LOGGER.warn("Insufficient queries in DataDef [{}]",
-                    getDataDefName());
+            LOGGER.warn("Insufficient queries in DataDef [{}]", getDataDefName());
             return null;
         }
         LOGGER.trace("------Query Data------");
@@ -168,11 +159,10 @@ public abstract class HtmlParser extends Parser {
         return value;
     }
 
-    private List<?> getRegionNodes(final HtmlPage page,
-            final String xpathExpr) {
+    private List<?> getRegionNodes(final HtmlPage page, final String xpathExpr) {
         /*
-         * regional nodes are cached in HashMap for performance. Map is flushed
-         * in loadObject method.
+         * regional nodes are cached in HashMap for performance. Map is flushed in
+         * loadObject method.
          */
         final int numOfLines = 5;
         Integer hash = xpathExpr.hashCode();
@@ -183,8 +173,7 @@ public abstract class HtmlParser extends Parser {
             nodes = page.getByXPath(xpathExpr);
             nodeMap.put(hash, nodes);
         }
-        LOGGER.trace(
-                "Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
+        LOGGER.trace("Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
         for (Object o : nodes) {
             DomNode node = (DomNode) o;
             String nodeTraceStr = Util.stripe(node.asXml(), numOfLines,
@@ -214,8 +203,8 @@ public abstract class HtmlParser extends Parser {
         return value;
     }
 
-    private void setTraceString(final StringBuilder sb,
-            final List<FieldsBase> fields, final String header) {
+    private void setTraceString(final StringBuilder sb, final List<FieldsBase> fields,
+            final String header) {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }

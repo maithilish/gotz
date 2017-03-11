@@ -17,8 +17,7 @@ import in.m.picks.util.Util;
 
 public final class HtmlLocatorParser extends HtmlParser {
 
-    static final Logger LOGGER = LoggerFactory
-            .getLogger(HtmlLocatorParser.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(HtmlLocatorParser.class);
 
     @Override
     public IStep instance() {
@@ -41,16 +40,13 @@ public final class HtmlLocatorParser extends HtmlParser {
         }
     }
 
-    private Locator createLocator(final Member member)
-            throws FieldNotFoundException {
+    private Locator createLocator(final Member member) throws FieldNotFoundException {
         Locator locator = new Locator();
         locator.setName(FieldsUtil.getValue(getFields(), "locatorName"));
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
-            String message = Util.buildString(
-                    "unable to create new locator. define ",
-                    "group for member in datadef of locator type ",
-                    member.getName());
+            String message = Util.buildString("unable to create new locator. define ",
+                    "group for member in datadef of locator type ", member.getName());
             throw new FieldNotFoundException(message);
         } else {
             locator.setGroup(member.getGroup());
@@ -68,13 +64,11 @@ public final class HtmlLocatorParser extends HtmlParser {
 
     private List<FieldsBase> getGroupFields(final String group)
             throws FieldNotFoundException {
-        List<FieldsBase> fieldsBeans = BeanService.INSTANCE
-                .getBeans(FieldsBase.class);
-        FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans,
-                "class", Locator.class.getName());
+        List<FieldsBase> fieldsBeans = BeanService.INSTANCE.getBeans(FieldsBase.class);
+        FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans, "class",
+                Locator.class.getName());
         if (classFields != null) {
-            List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
-                    group);
+            List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields, group);
             return fields;
         }
         return null;

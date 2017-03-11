@@ -45,8 +45,7 @@ public final class FileAppender extends Appender {
                 String str = item.toString();
                 writer.println(str);
             }
-        } catch (FieldNotFoundException | IOException
-                | InterruptedException e) {
+        } catch (FieldNotFoundException | IOException | InterruptedException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

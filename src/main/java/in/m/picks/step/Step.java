@@ -31,17 +31,14 @@ public abstract class Step implements IStep {
     /*
      *
      */
-    protected void pushTask(final Object input,
-            final List<FieldsBase> nextStepFields) {
-        String givenUpMessage = Util.buildString("[", label, "] step [",
-                stepType, "] create next step failed");
+    protected void pushTask(final Object input, final List<FieldsBase> nextStepFields) {
+        String givenUpMessage = Util.buildString("[", label, "] step [", stepType,
+                "] create next step failed");
         try {
             String nextStepType = getNextStepType(stepType);
-            List<FieldsBase> stepTasks = getStepTaskFields(nextStepFields,
-                    nextStepType);
+            List<FieldsBase> stepTasks = getStepTaskFields(nextStepFields, nextStepType);
             if (stepTasks.size() == 0) {
-                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType,
-                        "field found");
+                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType, "field found");
             }
             for (FieldsBase stepTask : stepTasks) {
                 if (isConsistent()) {
@@ -54,14 +51,12 @@ public abstract class Step implements IStep {
                 } else {
                     LOGGER.warn("step inconsistent, entity [{}]", label);
                     MonitorService.INSTANCE.addActivity(Type.GIVENUP,
-                            Util.buildString(givenUpMessage,
-                                    ", step inconsistent"));
+                            Util.buildString(givenUpMessage, ", step inconsistent"));
                 }
             }
         } catch (Exception e) {
             LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
-            MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage,
-                    e);
+            MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
         }
     }
 
@@ -73,13 +68,11 @@ public abstract class Step implements IStep {
         } catch (FieldNotFoundException e) {
             list = FieldsUtil.getGroupFields(fields, "datadef");
         }
-        List<FieldsBase> stepTaskFields = FieldsUtil.getFieldList(list,
-                stepType);
+        List<FieldsBase> stepTaskFields = FieldsUtil.getFieldList(list, stepType);
         return stepTaskFields;
     }
 
-    private String getNextStepType(final String stepType)
-            throws FieldNotFoundException {
+    private String getNextStepType(final String stepType) throws FieldNotFoundException {
         List<FieldsBase> list = FieldsUtil.getGroupFields(fields, "steps");
         List<FieldsBase> steps = FieldsUtil.getFieldList(list);
         steps.sort(new FieldComparator());
@@ -111,7 +104,7 @@ public abstract class Step implements IStep {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see in.m.picks.step.IStep#isConsistent()
      */
     @Override

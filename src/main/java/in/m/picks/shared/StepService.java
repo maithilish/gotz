@@ -17,8 +17,7 @@ public enum StepService {
         if (obj instanceof IStep) {
             step = (IStep) obj;
         } else {
-            throw new ClassCastException(
-                    "Class " + clzName + " is not of type IStep");
+            throw new ClassCastException("Class " + clzName + " is not of type IStep");
         }
         return step;
     }

@@ -23,8 +23,7 @@ public final class LocatorDao implements ILocatorDao {
     public LocatorDao(final PersistenceManagerFactory pmf) {
         this.pmf = pmf;
         if (pmf == null) {
-            LOGGER.error(
-                    "loading JDO Dao failed as PersistenceManagerFactory is null");
+            LOGGER.error("loading JDO Dao failed as PersistenceManagerFactory is null");
         }
     }
 
@@ -40,8 +39,7 @@ public final class LocatorDao implements ILocatorDao {
             @SuppressWarnings("unchecked")
             List<Locator> locators = (List<Locator>) query.execute(name, group);
             for (Locator locator : locators) {
-                if (locator.getName().equals(name)
-                        && locator.getGroup().equals(group)) {
+                if (locator.getName().equals(name) && locator.getGroup().equals(group)) {
                     // document without documentObject !!!
                     // to fetch documentObject use DocumentDao
                     pm.getFetchPlan().addGroup("detachDocuments");

@@ -23,8 +23,7 @@ public final class DataDao implements IDataDao {
     public DataDao(final PersistenceManagerFactory pmf) {
         this.pmf = pmf;
         if (pmf == null) {
-            LOGGER.error(
-                    "loading JDO Dao failed as PersistenceManagerFactory is null");
+            LOGGER.error("loading JDO Dao failed as PersistenceManagerFactory is null");
         }
     }
 

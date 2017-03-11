@@ -62,11 +62,10 @@ public final class DataFilter extends Filter {
         return false;
     }
 
-    private boolean requireFilter(final Axis axis,
-            final List<FieldsBase> filters, final String filterGroup) {
+    private boolean requireFilter(final Axis axis, final List<FieldsBase> filters,
+            final String filterGroup) {
         try {
-            List<FieldsBase> fil = FieldsUtil.getGroupFields(filters,
-                    filterGroup);
+            List<FieldsBase> fil = FieldsUtil.getGroupFields(filters, filterGroup);
             FieldsIterator ite = new FieldsIterator(fil);
             while (ite.hasNext()) {
                 FieldsBase field = ite.next();

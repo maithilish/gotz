@@ -45,12 +45,10 @@ public enum BeanService {
             setBeanFiles();
             validateBeanFiles();
             unmarshallBeanFiles();
-        } catch (JAXBException | ClassNotFoundException | SAXException
-                | IOException e) {
+        } catch (JAXBException | ClassNotFoundException | SAXException | IOException e) {
             logger.trace("{}", e);
             logger.error("{}", e.getLocalizedMessage());
-            MonitorService.INSTANCE
-                    .triggerFatal("initialization failure " + className);
+            MonitorService.INSTANCE.triggerFatal("initialization failure " + className);
         }
         logger.debug("initialized singleton {}", className);
     }
@@ -66,8 +64,7 @@ public enum BeanService {
                     T deepClone = Util.deepClone(ofClass, ofClass.cast(bean));
                     list.add(deepClone);
                 } catch (ClassNotFoundException | IOException e) {
-                    logger.error("Unable to get deep Clone of bean. {}",
-                            e.getMessage());
+                    logger.error("Unable to get deep Clone of bean. {}", e.getMessage());
                     logger.trace("", e);
                 }
             }
@@ -85,19 +82,15 @@ public enum BeanService {
         return count;
     }
 
-    private void validateBeanFile()
-            throws JAXBException, SAXException, IOException {
+    private void validateBeanFile() throws JAXBException, SAXException, IOException {
         String beanFile = ConfigService.INSTANCE.getConfig("picks.beanFile");
-        String schemaFile = ConfigService.INSTANCE
-                .getConfig("picks.schemaFile");
+        String schemaFile = ConfigService.INSTANCE.getConfig("picks.schemaFile");
         validateSchema(beanFile, schemaFile);
     }
 
-    private void setBeanFiles()
-            throws JAXBException, SAXException, IOException {
+    private void setBeanFiles() throws JAXBException, SAXException, IOException {
         String beanFile = ConfigService.INSTANCE.getConfig("picks.beanFile");
-        String schemaFile = ConfigService.INSTANCE
-                .getConfig("picks.schemaFile");
+        String schemaFile = ConfigService.INSTANCE.getConfig("picks.schemaFile");
         String baseName = FilenameUtils.getFullPath(beanFile);
 
         logger.info("initialize Bean file");
@@ -115,8 +108,7 @@ public enum BeanService {
         }
     }
 
-    private void validateBeanFiles()
-            throws JAXBException, SAXException, IOException {
+    private void validateBeanFiles() throws JAXBException, SAXException, IOException {
         logger.info("validate Bean files...");
         for (Bean bean : beanFiles) {
             validateSchema(bean.getXmlFile(), bean.getSchemaFile());
@@ -131,8 +123,8 @@ public enum BeanService {
         validator.validate();
     }
 
-    private void unmarshallBeanFiles() throws ClassNotFoundException,
-            JAXBException, FileNotFoundException {
+    private void unmarshallBeanFiles()
+            throws ClassNotFoundException, JAXBException, FileNotFoundException {
         logger.info("unmarshall bean files...");
         for (Bean bean : beanFiles) {
             Class<?> ofClass = Class.forName(bean.getClassName());
@@ -141,15 +133,13 @@ public enum BeanService {
         }
     }
 
-    private <T> List<T> unmarshall(final String fileName,
-            final Class<T> ofClass)
+    private <T> List<T> unmarshall(final String fileName, final Class<T> ofClass)
             throws JAXBException, FileNotFoundException {
         String packageName = ofClass.getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(packageName);
         Unmarshaller um = jc.createUnmarshaller();
         logger.debug("unmarshall : [{}] to type [{}]", fileName, ofClass);
-        StreamSource xmlSource = new StreamSource(
-                Util.getResourceAsStream(fileName));
+        StreamSource xmlSource = new StreamSource(Util.getResourceAsStream(fileName));
         Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
         debugState(wrapper);
         List<T> list = new ArrayList<T>();
@@ -170,8 +160,7 @@ public enum BeanService {
         MDC.remove("entitytype");
     }
 
-    public void marshall(final JAXBElement<?> e, final Object o)
-            throws JAXBException {
+    public void marshall(final JAXBElement<?> e, final Object o) throws JAXBException {
         String packageName = o.getClass().getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(packageName);
         Marshaller jm = jc.createMarshaller();

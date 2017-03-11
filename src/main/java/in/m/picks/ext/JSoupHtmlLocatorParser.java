@@ -17,8 +17,7 @@ import in.m.picks.util.Util;
 
 public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
 
-    static final Logger LOGGER = LoggerFactory
-            .getLogger(JSoupHtmlLocatorParser.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
 
     @Override
     public IStep instance() {
@@ -41,8 +40,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
         }
     }
 
-    private Locator createLocator(final Member member)
-            throws FieldNotFoundException {
+    private Locator createLocator(final Member member) throws FieldNotFoundException {
         Locator locator = new Locator();
         locator.setName(FieldsUtil.getValue(getFields(), "locatorName"));
         locator.setUrl(member.getValue(AxisName.FACT));
@@ -67,13 +65,11 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
 
     private List<FieldsBase> getGroupFields(final String group)
             throws FieldNotFoundException {
-        List<FieldsBase> fieldsBeans = BeanService.INSTANCE
-                .getBeans(FieldsBase.class);
-        FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans,
-                "class", Locator.class.getName());
+        List<FieldsBase> fieldsBeans = BeanService.INSTANCE.getBeans(FieldsBase.class);
+        FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans, "class",
+                Locator.class.getName());
         if (classFields != null) {
-            List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
-                    group);
+            List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields, group);
             return fields;
         }
         return null;

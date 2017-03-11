@@ -32,8 +32,7 @@ public abstract class Transformer extends Step {
             transform();
             handover();
         } catch (Exception e) {
-            String message = "transform data "
-                    + Util.getLocatorLabel(getFields());
+            String message = "transform data " + Util.getLocatorLabel(getFields());
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
             MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);

@@ -59,8 +59,8 @@ public final class XMLValidator {
             validXML = false;
         }
         if (!validXML) {
-            throw new SAXException("XML validation failed [" + xmlFile + "] ["
-                    + schemaFile + "]");
+            throw new SAXException(
+                    "XML validation failed [" + xmlFile + "] [" + schemaFile + "]");
         }
         LOGGER.debug("validated Bean file [{}] with [{}]", xmlFile, schemaFile);
         return false;
@@ -70,8 +70,7 @@ public final class XMLValidator {
         static final Logger LOGGER = LoggerFactory.getLogger("Validator");
 
         @Override
-        public void error(final SAXParseException exception)
-                throws SAXException {
+        public void error(final SAXParseException exception) throws SAXException {
             String message = exception.getLocalizedMessage();
             LOGGER.error("{}", message);
             if (StringUtils.startsWith(message, "cvc-elt.1.a")) {
@@ -84,15 +83,13 @@ public final class XMLValidator {
         }
 
         @Override
-        public void fatalError(final SAXParseException exception)
-                throws SAXException {
+        public void fatalError(final SAXParseException exception) throws SAXException {
             LOGGER.error("{}", exception.getLocalizedMessage());
             throw exception;
         }
 
         @Override
-        public void warning(final SAXParseException exception)
-                throws SAXException {
+        public void warning(final SAXParseException exception) throws SAXException {
             LOGGER.warn("{}", exception.getLocalizedMessage());
             throw exception;
         }

@@ -25,8 +25,7 @@ public final class DataDefDao implements IDataDefDao {
     public DataDefDao(final PersistenceManagerFactory pmf) {
         this.pmf = pmf;
         if (pmf == null) {
-            LOGGER.error(
-                    "loading JDO Dao failed as PersistenceManagerFactory is null");
+            LOGGER.error("loading JDO Dao failed as PersistenceManagerFactory is null");
         }
     }
 
@@ -44,13 +43,11 @@ public final class DataDefDao implements IDataDefDao {
             query.declareParameters(paramDecla);
             query.setOrdering(ordering);
             @SuppressWarnings("unchecked")
-            List<DataDef> dataDefs = (List<DataDef>) query
-                    .execute(dataDef.getName());
+            List<DataDef> dataDefs = (List<DataDef>) query.execute(dataDef.getName());
             if (dataDefs.size() > 0) {
                 DataDef lastDataDef = dataDefs.get(dataDefs.size() - 1);
                 if (!dataDef.equals(lastDataDef)) {
-                    Date toDate = DateUtils
-                            .addMilliseconds(dataDef.getFromDate(), -1);
+                    Date toDate = DateUtils.addMilliseconds(dataDef.getFromDate(), -1);
                     lastDataDef.setToDate(toDate);
                     pm.makePersistent(dataDef);
                 }

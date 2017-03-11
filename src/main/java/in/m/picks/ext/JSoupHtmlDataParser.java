@@ -7,8 +7,7 @@ import in.m.picks.step.IStep;
 
 public final class JSoupHtmlDataParser extends JSoupHtmlParser {
 
-    static final Logger LOGGER = LoggerFactory
-            .getLogger(JSoupHtmlDataParser.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(JSoupHtmlDataParser.class);
 
     @Override
     public IStep instance() {

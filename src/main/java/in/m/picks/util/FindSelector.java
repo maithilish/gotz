@@ -34,8 +34,7 @@ public final class FindSelector {
 
     }
 
-    private static void printElements(final Elements elements,
-            final boolean inner) {
+    private static void printElements(final Elements elements, final boolean inner) {
         if (elements.size() > 0) {
             System.out.println("");
             System.out.println("       --- HTML ---\n");

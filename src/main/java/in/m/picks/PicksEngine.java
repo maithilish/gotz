@@ -47,8 +47,7 @@ public final class PicksEngine {
         try {
             String seederClassName = ConfigService.INSTANCE
                     .getConfig("picks.seederClass");
-            IStep task = StepService.INSTANCE.getStep(seederClassName)
-                    .instance();
+            IStep task = StepService.INSTANCE.getStep(seederClassName).instance();
             TaskPoolService.getInstance().submit("seeder", task);
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException e) {

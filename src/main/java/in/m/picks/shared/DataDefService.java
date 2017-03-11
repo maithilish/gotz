@@ -101,8 +101,7 @@ public enum DataDefService {
 
     }
 
-    private String getSaveMode(final DataDef oldDataDef,
-            final DataDef newDataDef) {
+    private String getSaveMode(final DataDef oldDataDef, final DataDef newDataDef) {
         String saveMode = null;
         if (oldDataDef == null) {
             saveMode = "insert";
@@ -116,8 +115,7 @@ public enum DataDefService {
         return saveMode;
     }
 
-    private DataDef getDataDef(final List<DataDef> dataDefs,
-            final String name) {
+    private DataDef getDataDef(final List<DataDef> dataDefs, final String name) {
         for (DataDef dataDef : dataDefs) {
             if (dataDef.getName().equals(name)) {
                 return dataDef;
@@ -183,8 +181,8 @@ public enum DataDefService {
     private void setDefaultIndexRange(final DataDef dataDef) {
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {
-                if (!FieldsUtil.isAnyFieldDefined(dMember.getFields(),
-                        "indexRange", "breakAfter")) {
+                if (!FieldsUtil.isAnyFieldDefined(dMember.getFields(), "indexRange",
+                        "breakAfter")) {
                     Field field = new Field();
                     field.setName("indexRange");
                     Integer index = dMember.getIndex();
@@ -242,8 +240,7 @@ public enum DataDefService {
         }
     }
 
-    public DataDef getDataDef(final String name)
-            throws DataDefNotFoundException {
+    public DataDef getDataDef(final String name) throws DataDefNotFoundException {
         DataDef dataDef = dataDefsMap.get(name);
         if (dataDef == null) {
             throw new DataDefNotFoundException(name);
@@ -252,18 +249,15 @@ public enum DataDefService {
     }
 
     public Data getDataTemplate(final String dataDefName)
-            throws DataDefNotFoundException, ClassNotFoundException,
-            IOException {
+            throws DataDefNotFoundException, ClassNotFoundException, IOException {
         DataDef dataDef = getDataDef(dataDefName);
         return getDataTemplate(dataDef);
     }
 
     // transforms DAxis/DMember to Member/Axis
     public Data getDataTemplate(final DataDef dataDef)
-            throws ClassNotFoundException, IOException,
-            IllegalArgumentException {
-        if (memberSetsMap == null
-                || memberSetsMap.get(dataDef.getName()) == null) {
+            throws ClassNotFoundException, IOException, IllegalArgumentException {
+        if (memberSetsMap == null || memberSetsMap.get(dataDef.getName()) == null) {
             synchronized (this) {
                 generateMemberSets(dataDef);
             }
@@ -280,15 +274,14 @@ public enum DataDefService {
                 try {
                     // fields from DMember level are added in createAxis()
                     // fields from datadef level are added here
-                    FieldsBase fields = FieldsUtil.getFieldsByValue(
-                            dataDef.getFields(), "member", dMember.getName());
+                    FieldsBase fields = FieldsUtil.getFieldsByValue(dataDef.getFields(),
+                            "member", dMember.getName());
                     dataMember.getFields().add(fields);
                 } catch (FieldNotFoundException e) {
                 }
             }
             try {
-                String group = FieldsUtil.getValue(dataMember.getFields(),
-                        "group");
+                String group = FieldsUtil.getValue(dataMember.getFields(), "group");
                 dataMember.setGroup(group);
             } catch (FieldNotFoundException e) {
             }
@@ -350,8 +343,7 @@ public enum DataDefService {
         return dataDefsMap.size();
     }
 
-    private void traceDataStructure()
-            throws ClassNotFoundException, IOException {
+    private void traceDataStructure() throws ClassNotFoundException, IOException {
         if (!logger.isTraceEnabled()) {
             return;
         }
