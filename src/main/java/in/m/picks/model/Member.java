@@ -12,87 +12,89 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Member extends Base {
+public final class Member extends Base {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String group;
-	private Set<Axis> axes;
-	private List<FieldsBase> fields;
+    private String group;
+    private Set<Axis> axes;
+    private List<FieldsBase> fields;
 
-	public Member() {
-		axes = new HashSet<Axis>();
-	}
+    public Member() {
+        axes = new HashSet<Axis>();
+    }
 
-	public final String getGroup() {
-		return group;
-	}
+    public String getGroup() {
+        return group;
+    }
 
-	public final void setGroup(String group) {
-		this.group = group;
-	}
+    public void setGroup(final String group) {
+        this.group = group;
+    }
 
-	public final Set<Axis> getAxes() {
-		return axes;
-	}
+    public Set<Axis> getAxes() {
+        return axes;
+    }
 
-	public final void setAxes(Set<Axis> axes) {
-		this.axes = axes;
-	}
+    public void setAxes(final Set<Axis> axes) {
+        this.axes = axes;
+    }
 
-	public List<FieldsBase> getFields() {
-		if (fields == null) {
-			fields = new ArrayList<FieldsBase>();
-		}
-		return this.fields;
-	}
+    public List<FieldsBase> getFields() {
+        if (fields == null) {
+            fields = new ArrayList<FieldsBase>();
+        }
+        return this.fields;
+    }
 
-	public final Axis getAxis(AxisName axisName) {
-		for (Axis axis : axes) {
-			if (axis.getName().equals(axisName)) {
-				return axis;
-			}
-		}
-		return null;
-	}
+    public Axis getAxis(final AxisName axisName) {
+        for (Axis axis : axes) {
+            if (axis.getName().equals(axisName)) {
+                return axis;
+            }
+        }
+        return null;
+    }
 
-	public final Map<String, Axis> getAxisMap() {
-		Map<String, Axis> axisMap = new HashMap<>();
-		for (Axis axis : axes) {
-			axisMap.put(axis.getName().toString(), axis);
-		}
-		return axisMap;
-	}
+    public Map<String, Axis> getAxisMap() {
+        Map<String, Axis> axisMap = new HashMap<>();
+        for (Axis axis : axes) {
+            axisMap.put(axis.getName().toString(), axis);
+        }
+        return axisMap;
+    }
 
-	public void addAxis(Axis axis) {
-		axes.add(axis);
-	}
+    public void addAxis(final Axis axis) {
+        axes.add(axis);
+    }
 
-	public String getValue(AxisName axisName) {
-		Axis axis = getAxis(axisName);
-		return axis.getValue();
-	}
+    public String getValue(final AxisName axisName) {
+        Axis axis = getAxis(axisName);
+        return axis.getValue();
+    }
 
-	public StringBuilder traceMember() {
-		StringBuilder sb = new StringBuilder();
-		sb.append(toString());
-		for (Axis axis : axes) {
-			sb.append(axis);
-		}
-		return sb;
-	}
+    public StringBuilder traceMember() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(toString());
+        for (Axis axis : axes) {
+            sb.append(axis);
+        }
+        return sb;
+    }
 
-	public boolean equals(Object obj) {
-		return EqualsBuilder.reflectionEquals(this, obj);
-	}
+    @Override
+    public boolean equals(final Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj);
+    }
 
-	public int hashCode() {
-		return HashCodeBuilder.reflectionHashCode(this);
-	}
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this);
+    }
 
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this,
-				ToStringStyle.MULTI_LINE_STYLE);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
 
 }
