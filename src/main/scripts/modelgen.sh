@@ -57,7 +57,7 @@ replace "s/$code_point/$code/g" $java_file
 java_file=DAxis.java
 replace "s/List<DMember>/Set<DMember>/g" $java_file
 
-# make members private
+# make members private and remove trailing space
 cd $GENERATED_DIR/$MODEL_DIR
 java_files=$(ls *.java)
 cd $PROJ_DIR
@@ -65,6 +65,8 @@ cd $PROJ_DIR
 for java_file in $java_files 
 do
     replace "s/protected/private/g" $java_file
+    # remove trailing space
+    replace "s/ *$//g" $java_file
 done
 
 

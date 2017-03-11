@@ -5,65 +5,66 @@
 
 <!-- Fields are not persisted so we need to copy them from beans -->
 <jdo>
-	<package name="in.m.picks.model">
-		<class name="Base" detachable="true">
-			<inheritance strategy="subclass-table" />
-			<field name="id" primary-key="true" value-strategy="identity" />
-			<field name="name" />
-		</class>
-		<class name="Locator" detachable="true">
-			<!-- <field name="id" primary-key="true" value-strategy="identity" /> -->
-			<unique name="UNIQUE_NAMEGROUP">
-				<field name="name" />
-				<field name="group" />
-			</unique>
-			<field name="url" persistence-modifier="none" />
-			<field name="fields" persistence-modifier="none" />
-			<field name="documents">
-				<collection element-type="in.m.picks.model.Document" />
-				<element column="LOCATOR_ID" />
-			</field>
-			<fetch-group name="detachDocuments">
-				<field name="documents" />
-			</fetch-group>
-		</class>
-		<class name="Document">
-			<field name="fromDate" />
-			<field name="toDate" />
-			<field name="documentObject" persistence-modifier="persistent"
-				serialized="true" />
-			<fetch-group name="detachDocumentObject">
-				<field name="documentObject" />
-			</fetch-group>
-		</class>
-		<class name="DataDef" detachable="true">
-			<unique name="UNIQUE_NAME_DATE">
-				<field name="name" />
-				<field name="fromDate" />
-				<field name="toDate" />
-			</unique>
-			<field name="axis" serialized="true" />
-			<!-- <field name="memberSets" persistence-modifier="none" /> -->
-			<field name="fields" serialized="true" />
-			<fetch-group name="detachAxis">
-				<field name="axis" />
-			</fetch-group>
-			<fetch-group name="detachFields">
-				<field name="fields" />
-			</fetch-group>
-		</class>
-		<class name="Data">
-			<unique name="UNIQUE_DATA">
-				<field name="dataDefId" />
-				<field name="documentId" />
-			</unique>
-			<field name="dataDefId" />
-			<field name="documentId" />
-			<field name="members" persistence-modifier="persistent"
-				serialized="true" />
-			<fetch-group name="detachMembers">
-				<field name="members" />
-			</fetch-group>
-		</class>
-	</package>
+    <package name="in.m.picks.model">
+        <class name="Base" detachable="true">
+            <inheritance strategy="subclass-table" />
+            <field name="id" primary-key="true" value-strategy="identity" />
+            <field name="name" />
+        </class>
+        <class name="Locator" detachable="true">
+            <!-- <field name="id" primary-key="true" value-strategy="identity" 
+                /> -->
+            <unique name="UNIQUE_NAMEGROUP">
+                <field name="name" />
+                <field name="group" />
+            </unique>
+            <field name="url" persistence-modifier="none" />
+            <field name="fields" persistence-modifier="none" />
+            <field name="documents">
+                <collection element-type="in.m.picks.model.Document" />
+                <element column="LOCATOR_ID" />
+            </field>
+            <fetch-group name="detachDocuments">
+                <field name="documents" />
+            </fetch-group>
+        </class>
+        <class name="Document">
+            <field name="fromDate" />
+            <field name="toDate" />
+            <field name="documentObject" persistence-modifier="persistent"
+                serialized="true" />
+            <fetch-group name="detachDocumentObject">
+                <field name="documentObject" />
+            </fetch-group>
+        </class>
+        <class name="DataDef" detachable="true">
+            <unique name="UNIQUE_NAME_DATE">
+                <field name="name" />
+                <field name="fromDate" />
+                <field name="toDate" />
+            </unique>
+            <field name="axis" serialized="true" />
+            <!-- <field name="memberSets" persistence-modifier="none" /> -->
+            <field name="fields" serialized="true" />
+            <fetch-group name="detachAxis">
+                <field name="axis" />
+            </fetch-group>
+            <fetch-group name="detachFields">
+                <field name="fields" />
+            </fetch-group>
+        </class>
+        <class name="Data">
+            <unique name="UNIQUE_DATA">
+                <field name="dataDefId" />
+                <field name="documentId" />
+            </unique>
+            <field name="dataDefId" />
+            <field name="documentId" />
+            <field name="members" persistence-modifier="persistent"
+                serialized="true" />
+            <fetch-group name="detachMembers">
+                <field name="members" />
+            </fetch-group>
+        </class>
+    </package>
 </jdo>

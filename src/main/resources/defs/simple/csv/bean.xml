@@ -1,8 +1,11 @@
 <?xml version='1.0' ?>
 
 <beans xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
-	<bean name="datadef" className="in.m.picks.model.DataDef" xmlFile="datadef.xml" />
-	<bean name="locator" className="in.m.picks.model.Locator" xmlFile="locator.xml" />
-	<bean name="afields" className="in.m.picks.model.Afields" xmlFile="afields.xml" />
+    xsi:schemaLocation="http://codetab.org/picks picks.xsd">
+    <bean name="datadef" className="in.m.picks.model.DataDef"
+        xmlFile="datadef.xml" />
+    <bean name="locator" className="in.m.picks.model.Locator"
+        xmlFile="locator.xml" />
+    <bean name="afields" className="in.m.picks.model.Afields"
+        xmlFile="afields.xml" />
 </beans>

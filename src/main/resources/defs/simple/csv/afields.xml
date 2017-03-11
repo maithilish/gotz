@@ -1,15 +1,15 @@
 <?xml version='1.0'?>
 
 <afieldslist xmlns="http://codetab.org/picks"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://codetab.org/picks picks.xsd">
-	<afields className="in.m.picks.model.Locator">
-		<afield name="loader" value="in.m.picks.dev.SimpleCsvLoader"
-			group="csv" />
-		<afield name="parser" value="in.m.picks.dev.SimpleCsvParser"
-			group="csv" />
-		<afield name="datadef" value="csv" group="csv" />
-		<afield name="persist" value="true" group="csv" />
-	</afields>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://codetab.org/picks picks.xsd">
+    <afields className="in.m.picks.model.Locator">
+        <afield name="loader" value="in.m.picks.dev.SimpleCsvLoader"
+            group="csv" />
+        <afield name="parser" value="in.m.picks.dev.SimpleCsvParser"
+            group="csv" />
+        <afield name="datadef" value="csv" group="csv" />
+        <afield name="persist" value="true" group="csv" />
+    </afields>
 </afieldslist>
 

@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://codetab.org/picks">
-	<bean name="datadef" className="in.m.picks.model.DataDef" xmlFile="datadef.xml" />
-	<bean name="locator" className="in.m.picks.model.Locator" xmlFile="locator.xml" />
-	<bean name="fields" className="in.m.picks.model.Fields" xmlFile="fields.xml" />
+    <bean name="datadef" className="in.m.picks.model.DataDef"
+        xmlFile="datadef.xml" />
+    <bean name="locator" className="in.m.picks.model.Locator"
+        xmlFile="locator.xml" />
+    <bean name="fields" className="in.m.picks.model.Fields"
+        xmlFile="fields.xml" />
 </beans>

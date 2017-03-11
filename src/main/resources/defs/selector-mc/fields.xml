@@ -1,90 +1,99 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <fields xmlns="http://codetab.org/picks">
-	<fields name="class" value="in.m.picks.model.Locator">
-		<fields name="group" value="steps">
-			<field name="seeder" value="1" />
-			<field name="loader" value="2" />
-			<field name="parser" value="3" />
-			<field name="filter" value="4" />
-			<field name="transformer" value="5" />
-		</fields>
-		<fields name="group" value="quote">
-			<fields name="group" value="task">
-				<field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
-				<fields name="group" value="datadef">
-					<field name="datadef" value="finlocators" />
-					<field name="parser" value="in.m.picks.ext.JSoupHtmlLocatorParser" />
-					<field name="logstate" value="true" />
-				</fields>
-				<fields name="group" value="datadef">
-					<field name="datadef" value="quotePage" />
-					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
-					<field name="filter" value="in.m.picks.ext.DataFilter" />
-					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<fields name="group" value="appender">
-						<field name="name" value="quote" />
-						<field name="class" value="in.m.picks.appender.FileAppender" />
-						<field name="file" value="output/quote.txt" />
-					</fields>
-					<field name="logstate" value="true" />
-				</fields>
-				<fields name="group" value="datadef">
-					<field name="datadef" value="price" />
-					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
-					<field name="filter" value="in.m.picks.ext.DataFilter" />
-					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<fields name="group" value="appender">
-						<field name="name" value="quote" />
-						<field name="class" value="in.m.picks.appender.FileAppender" />
-						<field name="file" value="output/quote.txt" />
-					</fields>
-					<field name="logstate" value="true" />
-				</fields>
-			</fields>
-			<field name="persist" value="true" />
-			<field name="persistdata" value="true" />
-			<field name="live" value="P7D" />
-		</fields>
-		<fields name="group" value="bs">
-			<fields name="group" value="task">
-				<field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
-				<fields name="group" value="datadef">
-					<field name="datadef" value="bs" />
-					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
-					<field name="filter" value="in.m.picks.ext.DataFilter" />
-					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<fields name="group" value="appender">
-						<field name="name" value="bs" />
-						<field name="class" value="in.m.picks.appender.FileAppender" />
-						<field name="file" value="output/bs.txt" />
-					</fields>
-					<field name="logstate" value="true" />
-				</fields>
-			</fields>
-			<field name="live" value="P3M" />
-			<field name="persist" value="true" />
-			<field name="persistdata" value="true" />
-		</fields>
-		<fields name="group" value="pl">
-			<fields name="group" value="task">
-				<field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
-				<fields name="group" value="datadef">
-					<field name="datadef" value="pl" />
-					<field name="parser" value="in.m.picks.ext.JSoupHtmlDataParser" />
-					<field name="filter" value="in.m.picks.ext.DataFilter" />
-					<field name="transformer" value="in.m.picks.ext.CsvTransformer" />
-					<fields name="group" value="appender">
-						<field name="name" value="pl" />
-						<field name="class" value="in.m.picks.appender.FileAppender" />
-						<field name="file" value="output/pl.txt" />
-					</fields>
-					<field name="logstate" value="true" />
-				</fields>
-			</fields>
-			<field name="live" value="P6M" />
-			<field name="persist" value="true" />
-			<field name="persistdata" value="true" />
-		</fields>
-	</fields>
+    <fields name="class" value="in.m.picks.model.Locator">
+        <fields name="group" value="steps">
+            <field name="seeder" value="1" />
+            <field name="loader" value="2" />
+            <field name="parser" value="3" />
+            <field name="filter" value="4" />
+            <field name="transformer" value="5" />
+        </fields>
+        <fields name="group" value="quote">
+            <fields name="group" value="task">
+                <field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
+                <fields name="group" value="datadef">
+                    <field name="datadef" value="finlocators" />
+                    <field name="parser"
+                        value="in.m.picks.ext.JSoupHtmlLocatorParser" />
+                    <field name="logstate" value="true" />
+                </fields>
+                <fields name="group" value="datadef">
+                    <field name="datadef" value="quotePage" />
+                    <field name="parser"
+                        value="in.m.picks.ext.JSoupHtmlDataParser" />
+                    <field name="filter" value="in.m.picks.ext.DataFilter" />
+                    <field name="transformer" value="in.m.picks.ext.CsvTransformer" />
+                    <fields name="group" value="appender">
+                        <field name="name" value="quote" />
+                        <field name="class"
+                            value="in.m.picks.appender.FileAppender" />
+                        <field name="file" value="output/quote.txt" />
+                    </fields>
+                    <field name="logstate" value="true" />
+                </fields>
+                <fields name="group" value="datadef">
+                    <field name="datadef" value="price" />
+                    <field name="parser"
+                        value="in.m.picks.ext.JSoupHtmlDataParser" />
+                    <field name="filter" value="in.m.picks.ext.DataFilter" />
+                    <field name="transformer" value="in.m.picks.ext.CsvTransformer" />
+                    <fields name="group" value="appender">
+                        <field name="name" value="quote" />
+                        <field name="class"
+                            value="in.m.picks.appender.FileAppender" />
+                        <field name="file" value="output/quote.txt" />
+                    </fields>
+                    <field name="logstate" value="true" />
+                </fields>
+            </fields>
+            <field name="persist" value="true" />
+            <field name="persistdata" value="true" />
+            <field name="live" value="P7D" />
+        </fields>
+        <fields name="group" value="bs">
+            <fields name="group" value="task">
+                <field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
+                <fields name="group" value="datadef">
+                    <field name="datadef" value="bs" />
+                    <field name="parser"
+                        value="in.m.picks.ext.JSoupHtmlDataParser" />
+                    <field name="filter" value="in.m.picks.ext.DataFilter" />
+                    <field name="transformer" value="in.m.picks.ext.CsvTransformer" />
+                    <fields name="group" value="appender">
+                        <field name="name" value="bs" />
+                        <field name="class"
+                            value="in.m.picks.appender.FileAppender" />
+                        <field name="file" value="output/bs.txt" />
+                    </fields>
+                    <field name="logstate" value="true" />
+                </fields>
+            </fields>
+            <field name="live" value="P3M" />
+            <field name="persist" value="true" />
+            <field name="persistdata" value="true" />
+        </fields>
+        <fields name="group" value="pl">
+            <fields name="group" value="task">
+                <field name="loader" value="in.m.picks.ext.JSoupHtmlLoader" />
+                <fields name="group" value="datadef">
+                    <field name="datadef" value="pl" />
+                    <field name="parser"
+                        value="in.m.picks.ext.JSoupHtmlDataParser" />
+                    <field name="filter" value="in.m.picks.ext.DataFilter" />
+                    <field name="transformer" value="in.m.picks.ext.CsvTransformer" />
+                    <fields name="group" value="appender">
+                        <field name="name" value="pl" />
+                        <field name="class"
+                            value="in.m.picks.appender.FileAppender" />
+                        <field name="file" value="output/pl.txt" />
+                    </fields>
+                    <field name="logstate" value="true" />
+                </fields>
+            </fields>
+            <field name="live" value="P6M" />
+            <field name="persist" value="true" />
+            <field name="persistdata" value="true" />
+        </fields>
+    </fields>
 </fields>
