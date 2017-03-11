@@ -31,219 +31,226 @@ import in.m.picks.exception.FieldNotFoundException;
 import in.m.picks.model.FieldsBase;
 import in.m.picks.model.Wrapper;
 
-public class Util {
+public final class Util {
 
-	/*
-	 * uses serialization to get deep clone of an object
-	 */
-	public static <T> T deepClone(Class<T> ofClass, T obj)
-			throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(obj);
+    private Util() {
+    }
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(
-				baos.toByteArray());
-		ObjectInputStream ois = new ObjectInputStream(bais);
-		return ofClass.cast(ois.readObject());
-	}
+    /*
+     * uses serialization to get deep clone of an object
+     */
+    public static <T> T deepClone(final Class<T> ofClass, final T obj)
+            throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(obj);
 
-	// TODO test
-	public static boolean hasNulls(Object... sets) {
-		for (Object o : sets) {
-			if (o == null) {
-				return true;
-			}
-		}
-		return false;
-	}
+        ByteArrayInputStream bais = new ByteArrayInputStream(
+                baos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        return ofClass.cast(ois.readObject());
+    }
 
-	public static Set<Set<Object>> cartesianProduct(Set<?>... sets) {
-		if (sets.length < 2)
-			throw new IllegalArgumentException(
-					"Can't have a product of fewer than two sets (got "
-							+ sets.length + ")");
-		for (Set<?> set : sets) {
-			if (set.size() == 0) {
-				throw new IllegalArgumentException(
-						"argument contains a empty set");
-			}
-		}
-		return _cartesianProduct(0, sets);
-	}
+    // TODO test
+    public static boolean hasNulls(final Object... sets) {
+        for (Object o : sets) {
+            if (o == null) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private static Set<Set<Object>> _cartesianProduct(int index,
-			Set<?>... sets) {
-		Set<Set<Object>> ret = new HashSet<Set<Object>>();
-		if (index == sets.length) {
-			ret.add(new HashSet<Object>());
-		} else {
-			for (Object obj : sets[index]) {
-				for (Set<Object> set : _cartesianProduct(index + 1, sets)) {
-					set.add(obj);
-					ret.add(set);
-				}
-			}
-		}
-		return ret;
-	}
+    public static Set<Set<Object>> cartesianProduct(final Set<?>... sets) {
+        if (sets.length < 2) {
+            throw new IllegalArgumentException(buildString(
+                    "Can't have a product of fewer than two sets (has ",
+                    String.valueOf(sets.length), " sets)"));
+        }
+        for (Set<?> set : sets) {
+            if (set.size() == 0) {
+                throw new IllegalArgumentException(
+                        "argument contains a empty set");
+            }
+        }
+        return cartesianProduct(0, sets);
+    }
 
-	public static String stripe(String string, int noOfLines, String prefix,
-			String suffix) {
-		StringBuffer sb = new StringBuffer();
-		if (prefix != null) {
-			sb.append(prefix);
-		}
-		if (StringUtils.countMatches(string, "\n") <= noOfLines) {
-			sb.append(string);
-		} else {
-			sb.append(head(string, noOfLines));
-			sb.append("\n      ...\n");
-			sb.append(tail(string, noOfLines));
-		}
-		if (suffix != null) {
-			sb.append(suffix);
-		}
-		return sb.toString();
-	}
+    private static Set<Set<Object>> cartesianProduct(final int index,
+            final Set<?>... sets) {
+        Set<Set<Object>> ret = new HashSet<Set<Object>>();
+        if (index == sets.length) {
+            ret.add(new HashSet<Object>());
+        } else {
+            for (Object obj : sets[index]) {
+                for (Set<Object> set : cartesianProduct(index + 1, sets)) {
+                    set.add(obj);
+                    ret.add(set);
+                }
+            }
+        }
+        return ret;
+    }
 
-	public static String head(String string, int noOfLines) {
-		if (noOfLines < 1) {
-			noOfLines = 1;
-		}
-		return string.substring(0,
-				StringUtils.ordinalIndexOf(string, "\n", noOfLines));
-	}
+    public static String stripe(final String string, final int noOfLines,
+            final String prefix, final String suffix) {
+        StringBuffer sb = new StringBuffer();
+        if (prefix != null) {
+            sb.append(prefix);
+        }
+        if (StringUtils.countMatches(string, "\n") <= noOfLines) {
+            sb.append(string);
+        } else {
+            sb.append(head(string, noOfLines));
+            sb.append("\n      ...\n");
+            sb.append(tail(string, noOfLines));
+        }
+        if (suffix != null) {
+            sb.append(suffix);
+        }
+        return sb.toString();
+    }
 
-	public static String tail(String string, int noOfLines) {
-		if (noOfLines < 1) {
-			noOfLines = 1;
-		}
-		if (StringUtils.endsWith(string, "\n")) {
-			noOfLines++;
-		}
-		return string.substring(
-				StringUtils.lastOrdinalIndexOf(string, "\n", noOfLines) + 1);
-	}
+    public static String head(final String string, final int noOfLines) {
+        int n = noOfLines;
+        if (n < 1) {
+            n = 1;
+        }
+        return string.substring(0, StringUtils.ordinalIndexOf(string, "\n", n));
+    }
 
-	public static String getJson(Object obj, boolean prettyPrint) {
-		GsonBuilder gb = new GsonBuilder();
-		if (prettyPrint) {
-			gb.setPrettyPrinting();
-			gb.serializeNulls();
-			gb.disableHtmlEscaping();
-		}
-		Gson gson = gb.create();
-		String json = gson.toJson(obj);
-		return json;
-	}
+    public static String tail(final String string, final int noOfLines) {
+        int n = noOfLines;
+        if (n < 1) {
+            n = 1;
+        }
+        if (StringUtils.endsWith(string, "\n")) {
+            n++;
+        }
+        return string.substring(
+                StringUtils.lastOrdinalIndexOf(string, "\n", noOfLines) + 1);
+    }
 
-	public static String getIndentedJson(Object obj, boolean prettyPrint) {
-		String json = getJson(obj, prettyPrint);
-		String indentedJson = json.replaceAll("(?m)^", Util.logIndent());
-		return indentedJson;
-	}
+    public static String getJson(final Object obj, final boolean prettyPrint) {
+        GsonBuilder gb = new GsonBuilder();
+        if (prettyPrint) {
+            gb.setPrettyPrinting();
+            gb.serializeNulls();
+            gb.disableHtmlEscaping();
+        }
+        Gson gson = gb.create();
+        String json = gson.toJson(obj);
+        return json;
+    }
 
-	public static String buildString(String... strings) {
-		StringBuilder sb = new StringBuilder();
-		for (String str : strings) {
-			sb.append(str);
-		}
-		return sb.toString();
-	}
+    public static String getIndentedJson(final Object obj,
+            final boolean prettyPrint) {
+        String json = getJson(obj, prettyPrint);
+        String indentedJson = json.replaceAll("(?m)^", Util.logIndent());
+        return indentedJson;
+    }
 
-	/*
-	 * to marshal/unmarshal a list with a JAXB, we need to create a wrapper
-	 * object to hold the list such as list of datadefs, locators etc. It is
-	 * cumbersome to create multiple wrapper objects and to avoid this generic
-	 * list wrapper is useful. See - blog.bdoughan.com jaxb list wrapper
-	 */
-	public static List<Object> unmarshal(Unmarshaller um, String xmlFile)
-			throws JAXBException, FileNotFoundException {
-		StreamSource xmlSource = new StreamSource(
-				Util.getResourceAsStream(xmlFile));
-		Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
-		return wrapper.getAny();
-	}
+    public static String buildString(final String... strings) {
+        StringBuilder sb = new StringBuilder();
+        for (String str : strings) {
+            sb.append(str);
+        }
+        return sb.toString();
+    }
 
-	public static InputStream getResourceAsStream(String resource)
-			throws FileNotFoundException {
-		InputStream stream = Util.class.getResourceAsStream(resource);
-		if (stream == null) {
-			throw new FileNotFoundException(
-					"Resource [" + resource + "] not found");
-		}
-		return stream;
-	}
+    /*
+     * to marshal/unmarshal a list with a JAXB, we need to create a wrapper
+     * object to hold the list such as list of datadefs, locators etc. It is
+     * cumbersome to create multiple wrapper objects and to avoid this generic
+     * list wrapper is useful. See - blog.bdoughan.com jaxb list wrapper
+     */
+    public static List<Object> unmarshal(final Unmarshaller um,
+            final String xmlFile) throws JAXBException, FileNotFoundException {
+        StreamSource xmlSource = new StreamSource(
+                Util.getResourceAsStream(xmlFile));
+        Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
+        return wrapper.getAny();
+    }
 
-	public static String logIndent() {
-		return "\t\t\t";
-	}
+    public static InputStream getResourceAsStream(final String resource)
+            throws FileNotFoundException {
+        InputStream stream = Util.class.getResourceAsStream(resource);
+        if (stream == null) {
+            throw new FileNotFoundException(
+                    "Resource [" + resource + "] not found");
+        }
+        return stream;
+    }
 
-	/*
-	 * Parse ISO-8601 duration format PnDTnHnMn.nS or period format PnYnMnWnD as
-	 * TemporalAmount (Duration or Period)
-	 */
-	public static TemporalAmount praseTemporalAmount(CharSequence text)
-			throws DateTimeParseException {
-		TemporalAmount ta;
-		try {
-			ta = Duration.parse(text);
-		} catch (DateTimeParseException e) {
-			ta = Period.parse(text);
-		}
-		return ta;
-	}
+    public static String logIndent() {
+        return "\t\t\t";
+    }
 
-	public static String[] excludes(String... excludes) {
-		String[] jdoExcludes = {"dnDetachedState", "dnFlags", "dnStateManager"};
-		return ArrayUtils.addAll(jdoExcludes, excludes);
-	}
+    /*
+     * Parse ISO-8601 duration format PnDTnHnMn.nS or period format PnYnMnWnD as
+     * TemporalAmount (Duration or Period)
+     */
+    public static TemporalAmount praseTemporalAmount(final CharSequence text)
+            throws DateTimeParseException {
+        TemporalAmount ta;
+        try {
+            ta = Duration.parse(text);
+        } catch (DateTimeParseException e) {
+            ta = Period.parse(text);
+        }
+        return ta;
+    }
 
-	public static void logState(Logger logger, String entity, String label,
-			List<FieldsBase> fields, Object object) {
-		try {
-			if (FieldsUtil.isFieldTrue(fields, "logstate")) {
-				MDC.put("entitytype", entity);
-				logger.debug("{}", label);
-				if (object instanceof String
-						|| object instanceof StringBuilder) {
-					logger.debug("{}", object);
-				} else {
-					logger.debug("{}", getState(object));
-				}
+    public static String[] excludes(final String... excludes) {
+        String[] jdoExcludes = {"dnDetachedState", "dnFlags", "dnStateManager"};
+        return ArrayUtils.addAll(jdoExcludes, excludes);
+    }
 
-				MDC.remove("entitytype");
-			}
-		} catch (FieldNotFoundException e) {
-		}
-	}
+    public static void logState(final Logger logger, final String entity,
+            final String label, final List<FieldsBase> fields,
+            final Object object) {
+        try {
+            if (FieldsUtil.isFieldTrue(fields, "logstate")) {
+                MDC.put("entitytype", entity);
+                logger.debug("{}", label);
+                if (object instanceof String
+                        || object instanceof StringBuilder) {
+                    logger.debug("{}", object);
+                } else {
+                    logger.debug("{}", getState(object));
+                }
 
-	private static StringBuilder getState(Object object) {
-		String line = System.lineSeparator();
-		String json = Util.getIndentedJson(object, true);
-		String className = object.getClass().getName();
-		StringBuilder sb = new StringBuilder();
-		sb.append(className);
-		sb.append(line);
-		sb.append(json);
-		return sb;
-	}
+                MDC.remove("entitytype");
+            }
+        } catch (FieldNotFoundException e) {
+        }
+    }
 
-	public static String getMessage(Exception e) {
-		return e.getClass().getSimpleName() + ": " + e.getLocalizedMessage();
-	}
+    private static StringBuilder getState(final Object object) {
+        String line = System.lineSeparator();
+        String json = Util.getIndentedJson(object, true);
+        String className = object.getClass().getName();
+        StringBuilder sb = new StringBuilder();
+        sb.append(className);
+        sb.append(line);
+        sb.append(json);
+        return sb;
+    }
 
-	public static String getLocatorLabel(List<FieldsBase> fields) {
-		String name = "field not found";
-		String group = "field not found";
-		try {
-			name = FieldsUtil.getValue(fields, "locatorName");
-			group = FieldsUtil.getValue(fields, "locatorGroup");
-			return buildString("Locator[name=", name, " group=", group, "]");
-		} catch (FieldNotFoundException e) {
-			return buildString("Locator[name=", name, " group=", group, "]");
-		}
-	}
+    public static String getMessage(final Exception e) {
+        return e.getClass().getSimpleName() + ": " + e.getLocalizedMessage();
+    }
+
+    public static String getLocatorLabel(final List<FieldsBase> fields) {
+        String name = "field not found";
+        String group = "field not found";
+        try {
+            name = FieldsUtil.getValue(fields, "locatorName");
+            group = FieldsUtil.getValue(fields, "locatorGroup");
+            return buildString("Locator[name=", name, " group=", group, "]");
+        } catch (FieldNotFoundException e) {
+            return buildString("Locator[name=", name, " group=", group, "]");
+        }
+    }
 
 }
