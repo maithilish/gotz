@@ -2,12 +2,11 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>in.m</groupId>
-    <artifactId>picks</artifactId>
+    <groupId>org.codetab</groupId>
+    <artifactId>gotz</artifactId>
     <packaging>jar</packaging>
 
-    <name>n picks</name>
-    <url>http://maven.apache.org</url>
+    <url>http://www.codetab.org/gotz</url>
 
     <prerequisites>
         <maven>3.0</maven>
@@ -229,4 +228,5 @@
 
     <inceptionYear>2016</inceptionYear>
     <version>1.0</version>
+    <name>Gotz</name>
 </project>
