@@ -43,7 +43,7 @@ public enum MonitorService {
     public void triggerFatal(final String message) {
         activitesList.add(new Activity(Type.FATAL, message));
         end();
-        logger.info("Picks Terminated");
+        logger.info("Gotz Terminated");
         System.exit(1);
     }
 
@@ -57,7 +57,7 @@ public enum MonitorService {
     }
 
     public void end() {
-        logger.info("{}", "Picks run completed");
+        logger.info("{}", "Gotz run completed");
         timer.cancel();
         logActivities();
         logMemoryUsage();

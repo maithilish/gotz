@@ -18,7 +18,7 @@ mvn clean compile
 # generate
 schemagen -d $TEMP -cp $CLASSES $SRC/DataDefs.java $SRC/Locators.java $SRC/Beans.java $SRC/AfieldsList.java
 
-echo -e "\n\n--- Picks SchemaGen ---\n"
+echo -e "\n\n--- Gotz SchemaGen ---\n"
 rename schema gotz $TEMP/*.xsd
 SCHEMAFILES=$(ls $TEMP/*.xsd)
 echo "Generated [$SCHEMAFILES]"

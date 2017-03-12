@@ -13,14 +13,14 @@ import org.codetab.gotz.step.IStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class PicksEngine {
+public final class GotzEngine {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(PicksEngine.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(GotzEngine.class);
 
     public void start() {
 
-        LOGGER.info("Starting PicksEngine");
-        logPicksMode();
+        LOGGER.info("Starting GotzEngine");
+        logMode();
         MonitorService.INSTANCE.start();
         LOGGER.info("Run Date : [{}]", ConfigService.INSTANCE.getRunDate());
         BeanService.INSTANCE.getBeans(Locator.class);
@@ -33,7 +33,7 @@ public final class PicksEngine {
         AppenderPoolService.getInstance().waitForFinish();
 
         MonitorService.INSTANCE.end();
-        LOGGER.info("PicksEngine shutdown");
+        LOGGER.info("GotzEngine shutdown");
 
     }
 
@@ -54,7 +54,7 @@ public final class PicksEngine {
         }
     }
 
-    private void logPicksMode() {
+    private void logMode() {
         String modeInfo = "Mode : [Production]";
         if (ConfigService.INSTANCE.isTestMode()) {
             modeInfo = "Mode : [Test]";

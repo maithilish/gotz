@@ -1,12 +1,12 @@
 package org.codetab.gotz;
 
-public final class Picks {
+public final class Gotz {
 
-    private Picks() {
+    private Gotz() {
     }
 
     public static void main(final String[] args) {
-        PicksEngine engine = new PicksEngine();
+        GotzEngine engine = new GotzEngine();
         engine.start();
     }
 
