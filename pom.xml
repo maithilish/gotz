@@ -142,7 +142,7 @@
                     <schemaDirectory>src/main/resources/schema</schemaDirectory>
                     <bindingDirectory>src/main/resources/schema</bindingDirectory>
                     <cleanPackageDirectories>true</cleanPackageDirectories>
-                    <generatePackage>in.m.picks.model</generatePackage>
+                    <generatePackage>org.codetab.gotz.model</generatePackage>
                     <args>
                         <arg>-Xinject-code</arg>
                         <arg>-Xannotate</arg>

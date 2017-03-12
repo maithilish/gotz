@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<locators xmlns="http://codetab.org/picks">
+<locators xmlns="http://codetab.org/gotz">
     <locators group="quote">
         <locator name="ITC"
             url="http://www.moneycontrol.com/india/stockpricequote/cigarettes/itc/ITC" />

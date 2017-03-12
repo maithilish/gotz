@@ -1,11 +1,11 @@
 <?xml version='1.0' ?>
 
-<beans xmlns="http://codetab.org/picks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://codetab.org/picks picks.xsd">
-    <bean name="datadef" className="in.m.picks.model.DataDef"
+<beans xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+    <bean name="datadef" className="org.codetab.gotz.model.DataDef"
         xmlFile="datadef.xml" />
-    <bean name="locator" className="in.m.picks.model.Locator"
+    <bean name="locator" className="org.codetab.gotz.model.Locator"
         xmlFile="locator.xml" />
-    <bean name="afields" className="in.m.picks.model.Afields"
+    <bean name="afields" className="org.codetab.gotz.model.Afields"
         xmlFile="afields.xml" />
 </beans>

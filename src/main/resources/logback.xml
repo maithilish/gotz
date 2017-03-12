@@ -1,6 +1,6 @@
 <configuration>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/picks.log</file>
+        <file>logs/gotz.log</file>
         <append>false</append>
         <encoder>
             <pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n

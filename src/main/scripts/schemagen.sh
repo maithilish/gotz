@@ -3,7 +3,7 @@
 # add all Top Level JAXB annotated java files to schamegen command below
 
 BASE_DIR=.
-SRC=$BASE_DIR/src/main/java/in/m/picks/model
+SRC=$BASE_DIR/src/main/java/org.codetab.gotz/model
 RESOURCES=$BASE_DIR/src/main/resources/schema
 CLASSES=$BASE_DIR/target/classes
 TEMP=$BASE_DIR/temp
@@ -19,7 +19,7 @@ mvn clean compile
 schemagen -d $TEMP -cp $CLASSES $SRC/DataDefs.java $SRC/Locators.java $SRC/Beans.java $SRC/AfieldsList.java
 
 echo -e "\n\n--- Picks SchemaGen ---\n"
-rename schema picks $TEMP/*.xsd
+rename schema gotz $TEMP/*.xsd
 SCHEMAFILES=$(ls $TEMP/*.xsd)
 echo "Generated [$SCHEMAFILES]"
 

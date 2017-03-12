@@ -1,12 +1,12 @@
 <?xml version='1.0'?>
 
-<afieldslist xmlns="http://codetab.org/picks"
+<afieldslist xmlns="http://codetab.org/gotz"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://codetab.org/picks picks.xsd">
-    <afields className="in.m.picks.model.Locator">
-        <afield name="loader" value="in.m.picks.dev.SimpleCsvLoader"
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+    <afields className="org.codetab.gotz.model.Locator">
+        <afield name="loader" value="org.codetab.gotz.dev.SimpleCsvLoader"
             group="csv" />
-        <afield name="parser" value="in.m.picks.dev.SimpleCsvParser"
+        <afield name="parser" value="org.codetab.gotz.dev.SimpleCsvParser"
             group="csv" />
         <afield name="datadef" value="csv" group="csv" />
         <afield name="persist" value="true" group="csv" />

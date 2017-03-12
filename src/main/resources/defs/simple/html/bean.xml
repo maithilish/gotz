@@ -1,10 +1,10 @@
 <?xml version='1.0'?>
 
-<beans xmlns="http://codetab.org/picks">
-    <bean name="datadef" className="in.m.picks.model.DataDef"
+<beans xmlns="http://codetab.org/gotz">
+    <bean name="datadef" className="org.codetab.gotz.model.DataDef"
         xmlFile="datadef.xml" />
-    <bean name="locator" className="in.m.picks.model.Locator"
+    <bean name="locator" className="org.codetab.gotz.model.Locator"
         xmlFile="locator.xml" />
-    <bean name="fields" className="in.m.picks.model.Fields"
+    <bean name="fields" className="org.codetab.gotz.model.Fields"
         xmlFile="fields.xml" />
 </beans>

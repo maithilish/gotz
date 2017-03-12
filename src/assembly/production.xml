@@ -48,11 +48,11 @@
             <outputDirectory>config</outputDirectory>
             <includes>
                 <include>*.xml</include>
-                <include>picks.properties</include>
+                <include>gotz.properties</include>
                 <include>jdoconfig.properties</include>
             </includes>
             <excludes>
-                <exclude>picks-default.xml</exclude>
+                <exclude>gotz-default.xml</exclude>
                 <exclude>production.xml</exclude>
             </excludes>
         </fileSet>

@@ -2,8 +2,8 @@
 PROJ_DIR=/orange/data/workspace/npicks
 GENERATED_DIR=target/generated-sources/xjc
 SCHEMA_DIR=src/main/resources/schema
-PACKAGE=in.m.picks.model
-MODEL_DIR=in/m/picks/model
+PACKAGE=org.codetab.gotz.model
+MODEL_DIR=org/codetab/gotz/model
 
 cd $PROJ_DIR
 
@@ -11,7 +11,7 @@ rm -rf $GENERATED_DIR
 mvn jaxb2:generate
 
 #mkdir $GENERATED_DIR
-#xjc -Xinject-code -extension -p $PACKAGE -b $SCHEMA_DIR/picks.xjb -d $GENERATED_DIR $SCHEMA_DIR/picks.xsd
+#xjc -Xinject-code -extension -p $PACKAGE -b $SCHEMA_DIR/gotz.xjb -d $GENERATED_DIR $SCHEMA_DIR/gotz.xsd
 
 replace() {
    sed -i "$1" "$GENERATED_DIR/$MODEL_DIR/$2"
