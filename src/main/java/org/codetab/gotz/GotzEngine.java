@@ -13,7 +13,7 @@ import org.codetab.gotz.step.IStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class GotzEngine {
+public class GotzEngine {
 
     static final Logger LOGGER = LoggerFactory.getLogger(GotzEngine.class);
 
@@ -21,9 +21,9 @@ public final class GotzEngine {
 
         LOGGER.info("Starting GotzEngine");
         logMode();
-        MonitorService.INSTANCE.start();
+        MonitorService.instance().start();
         LOGGER.info("Run Date : [{}]", ConfigService.INSTANCE.getRunDate());
-        BeanService.INSTANCE.getBeans(Locator.class);
+        BeanService.instance().getBeans(Locator.class);
         loadDataDefs();
 
         seed();
@@ -32,13 +32,13 @@ public final class GotzEngine {
         AppenderService.INSTANCE.closeAll();
         AppenderPoolService.getInstance().waitForFinish();
 
-        MonitorService.INSTANCE.end();
+        MonitorService.instance().end();
         LOGGER.info("GotzEngine shutdown");
 
     }
 
     private void loadDataDefs() {
-        DataDefService dataDefs = DataDefService.INSTANCE;
+        DataDefService dataDefs = DataDefService.instance();
         LOGGER.info("DataDefs loaded {}", dataDefs.getCount());
     }
 
@@ -57,7 +57,7 @@ public final class GotzEngine {
     private void logMode() {
         String modeInfo = "Mode : [Production]";
         if (ConfigService.INSTANCE.isTestMode()) {
-            modeInfo = "Mode : [Test]";
+            modeInfo = "Mode : [CTest]";
         }
         if (ConfigService.INSTANCE.isDevMode()) {
             modeInfo = "Mode : [Dev]";

@@ -32,9 +32,9 @@ import org.codetab.gotz.validation.DataDefValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum DataDefService {
+public class DataDefService {
 
-    INSTANCE;
+    private static DataDefService INSTANCE;
 
     private final Logger logger = LoggerFactory.getLogger(DataDefService.class);
 
@@ -42,11 +42,16 @@ public enum DataDefService {
 
     private Map<String, Set<Set<DMember>>> memberSetsMap = new HashMap<>();
 
+    public static DataDefService instance(){
+        if(INSTANCE == null){
+            INSTANCE = new DataDefService();
+        }
+        return INSTANCE;
+    }
+
     DataDefService() {
         logger.info("initialize DataDefs singleton");
-        validateDataDefs();
-        storeDataDefs();
-        setDataDefsMap();
+        init();
         traceDataDefs();
         try {
             traceDataStructure();
@@ -54,6 +59,12 @@ public enum DataDefService {
             logger.warn("{}", Util.getMessage(e));
         }
         logger.debug("initialized DataDefs singleton");
+    }
+
+    protected void init() {
+        validateDataDefs();
+        storeDataDefs();
+        setDataDefsMap();
     }
 
     private void validateDataDefs() {
@@ -67,7 +78,7 @@ public enum DataDefService {
             }
         }
         if (!valid) {
-            MonitorService.INSTANCE.triggerFatal("invalid Datadefs");
+            MonitorService.instance().triggerFatal("invalid Datadefs");
         }
     }
 
@@ -135,7 +146,7 @@ public enum DataDefService {
     }
 
     private List<DataDef> getDataDefsFromBeans() {
-        List<DataDef> dataDefs = BeanService.INSTANCE.getBeans(DataDef.class);
+        List<DataDef> dataDefs = BeanService.instance().getBeans(DataDef.class);
         for (DataDef dataDef : dataDefs) {
             setDefaults(dataDef);
             setDates(dataDef);
@@ -207,7 +218,8 @@ public enum DataDefService {
 
     private void storeDataDef(final DataDef dataDef) {
         try {
-            ORM orm = DaoFactory.getOrmType(ConfigService.INSTANCE.getConfig("gotz.orm"));
+            ORM orm = DaoFactory
+                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
             IDataDefDao dao = DaoFactory.getDaoFactory(orm).getDataDefDao();
             String name = dataDef.getName();
             logger.debug("store DataDef");
@@ -224,7 +236,8 @@ public enum DataDefService {
 
     private List<DataDef> loadDataDefsFromStore() {
         try {
-            ORM orm = DaoFactory.getOrmType(ConfigService.INSTANCE.getConfig("gotz.orm"));
+            ORM orm = DaoFactory
+                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
             IDataDefDao dao = DaoFactory.getDaoFactory(orm).getDataDefDao();
             List<DataDef> dataDefs = dao
                     .getDataDefs(ConfigService.INSTANCE.getRunDateTime());

@@ -48,7 +48,7 @@ public final class FileAppender extends Appender {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
+            MonitorService.instance().addActivity(Type.GIVENUP, message, e);
         } finally {
             writer.close();
         }

@@ -71,7 +71,6 @@ public final class Axis implements Comparable<Axis>, Serializable {
 
     @Override
     public int compareTo(final Axis other) {
-        // TODO write test
         // String name is converted to Enum AxisName and compared
         AxisName a1 = name;
         AxisName a2 = other.name;

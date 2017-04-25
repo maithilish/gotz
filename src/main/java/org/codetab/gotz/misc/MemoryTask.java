@@ -17,7 +17,7 @@ public final class MemoryTask extends TimerTask {
         long mm = runtime.maxMemory();
         long fm = runtime.freeMemory();
         long tm = runtime.totalMemory();
-        MonitorService.INSTANCE.pollMemory(mm, tm, fm);
+        MonitorService.instance().pollMemory(mm, tm, fm);
         LOGGER.debug("{} {} {} {}", new Date(), mm, tm, fm);
     }
 

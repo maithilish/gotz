@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fields xmlns="http://codetab.org/gotz">
+    <fields name="class" value="org.codetab.gotz.model.Locator">
+        <fields name="group" value="quote">
+            <fields name="group" value="task">
+                <field name="loader" value="org.codetab.gotz.ext.HtmlLoader" />
+                <fields name="group" value="datadef">
+                    <field name="datadef" value="finlocators" />
+                </fields>
+            </fields>
+            <field name="persist" value="true" />
+        </fields>
+    </fields>
+    <fields name="class" value="org.codetab.gotz.model.Locator">
+        <fields name="group" value="bs">
+            <field name="persist" value="true" />
+        </fields>
+    </fields>
+</fields>

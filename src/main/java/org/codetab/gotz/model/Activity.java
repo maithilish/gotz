@@ -27,24 +27,12 @@ public final class Activity {
         return type;
     }
 
-    public void setType(final Type type) {
-        this.type = type;
-    }
-
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(final String message) {
-        this.message = message;
-    }
-
     public Throwable getThrowable() {
         return throwable;
-    }
-
-    public void setThrowable(final Throwable throwable) {
-        this.throwable = throwable;
     }
 
     @Override

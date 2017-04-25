@@ -8,6 +8,7 @@ import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
 
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.model.Data;
 import org.slf4j.Logger;
@@ -20,14 +21,13 @@ public final class DataDao implements IDataDao {
     private PersistenceManagerFactory pmf;
 
     public DataDao(final PersistenceManagerFactory pmf) {
+        Validate.notNull(pmf, "pmf must not be null");
         this.pmf = pmf;
-        if (pmf == null) {
-            LOGGER.error("loading JDO Dao failed as PersistenceManagerFactory is null");
-        }
     }
 
     @Override
     public void storeData(final Data data) {
+        Validate.notNull(data, "data must not be null");
         PersistenceManager pm = getPM();
         Transaction tx = pm.currentTransaction();
         try {
@@ -62,13 +62,13 @@ public final class DataDao implements IDataDao {
             case 1:
                 return data.get(0);
             default:
-                // TODO log error
-                break;
+                throw new IllegalStateException(
+                        "found multiple data for [documentId][dataDefId] [" + documentId
+                                + "][" + dataDefId + "]");
             }
         } finally {
             pm.close();
         }
-        return null;
     }
 
     @Override

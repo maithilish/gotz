@@ -30,7 +30,7 @@ public final class DataFilter extends Filter {
     @Override
     public void filter() throws Exception {
         List<Member> forRemovalMembers = new ArrayList<Member>();
-        Map<AxisName, List<FieldsBase>> filterMap = DataDefService.INSTANCE
+        Map<AxisName, List<FieldsBase>> filterMap = DataDefService.instance()
                 .getFilterMap(getData().getDataDef());
         for (Member member : getData().getMembers()) {
             for (Axis axis : member.getAxes()) {
@@ -43,7 +43,7 @@ public final class DataFilter extends Filter {
         for (Member member : forRemovalMembers) {
             getData().getMembers().remove(member);
         }
-        DataDefService.INSTANCE.traceDataStructure(getData());
+        DataDefService.instance().traceDataStructure(getData());
     }
 
     private boolean requireFilter(final Axis axis,

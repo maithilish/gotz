@@ -11,4 +11,6 @@ public interface IDataDefDao {
 
     List<DataDef> getDataDefs(Date date);
 
+    List<DataDef> getDataDefs(String name);
+
 }

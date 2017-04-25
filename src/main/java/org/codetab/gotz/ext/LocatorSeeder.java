@@ -34,7 +34,7 @@ public final class LocatorSeeder extends Seeder {
     @Override
     public void load() {
         initLocators();
-        List<FieldsBase> fields = BeanService.INSTANCE.getBeans(FieldsBase.class);
+        List<FieldsBase> fields = BeanService.instance().getBeans(FieldsBase.class);
         try {
             FieldsBase classFields = FieldsUtil.getFieldsByValue(fields, "class",
                     Locator.class.getName());
@@ -49,7 +49,7 @@ public final class LocatorSeeder extends Seeder {
 
     private void initLocators() {
         LOGGER.info("initialize locators");
-        List<Locators> list = BeanService.INSTANCE.getBeans(Locators.class);
+        List<Locators> list = BeanService.instance().getBeans(Locators.class);
         for (Locators locators : list) {
             trikleGroup(locators);
         }

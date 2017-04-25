@@ -13,11 +13,11 @@ import org.codetab.gotz.model.Activity.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum MonitorService {
-
-    INSTANCE;
+public class MonitorService {
 
     private final Logger logger = LoggerFactory.getLogger(MonitorService.class);
+
+    private static MonitorService INSTANCE;
 
     private List<Activity> activitesList;
 
@@ -27,8 +27,15 @@ public enum MonitorService {
     private Timer timer;
     private StopWatch stopWatch;
 
-    MonitorService() {
+    private MonitorService() {
         activitesList = new ArrayList<Activity>();
+    }
+
+    public static MonitorService instance(){
+        if(INSTANCE == null){
+            INSTANCE = new MonitorService();
+        }
+        return INSTANCE;
     }
 
     public void start() {
@@ -36,15 +43,26 @@ public enum MonitorService {
         stopWatch.start();
 
         final long memoryPollFrequency = 5000;
-        timer = new Timer("Memory Timer");
+        timer = makeTimer("Memory Timer");
         timer.schedule(new MemoryTask(), 0, memoryPollFrequency);
+    }
+
+    /*
+     * used for testing
+     */
+    Timer makeTimer(String name){
+        return new Timer(name);
     }
 
     public void triggerFatal(final String message) {
         activitesList.add(new Activity(Type.FATAL, message));
         end();
         logger.info("Gotz Terminated");
-        System.exit(1);
+        if (ConfigService.INSTANCE.isTestMode()) {
+            throw new IllegalStateException("fatal expection triggered");
+        } else {
+            System.exit(1);
+        }
     }
 
     public void addActivity(final Type type, final String message) {
@@ -90,11 +108,16 @@ public enum MonitorService {
             logger.info("no issues");
         }
         for (Activity activity : activitesList) {
+            Throwable throwable = activity.getThrowable();
+            String throwableClass = "";
+            String throwableMessage = "";
+            if (throwable != null) {
+                throwableClass = throwable.getClass().getSimpleName();
+                throwableMessage = throwable.getLocalizedMessage();
+            }
             logger.info("Activity type={}", activity.getType());
             logger.info("         message={}", activity.getMessage());
-            logger.info("         {}={}",
-                    activity.getThrowable().getClass().getSimpleName(),
-                    activity.getThrowable().getLocalizedMessage());
+            logger.info("         {}={}", throwableClass, throwableMessage);
         }
     }
 

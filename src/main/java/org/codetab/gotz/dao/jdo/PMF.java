@@ -1,15 +1,16 @@
 package org.codetab.gotz.dao.jdo;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import javax.jdo.JDOFatalDataStoreException;
-import javax.jdo.JDOFatalUserException;
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManagerFactory;
 
+import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -25,57 +26,42 @@ public enum PMF {
 
     PMF() {
         logger.info("initialize JDO PMF");
-        createFactory();
-        logger.debug("initialized JDO PMF");
-    }
-
-    private void createFactory() {
-
         try {
-            Properties jdoProperties = getJdoConfig();
-            factory = JDOHelper.getPersistenceManagerFactory(jdoProperties);
+            String configFile = ConfigService.INSTANCE
+                    .getConfig("gotz.datastore.configFile");
+            Properties properties = getConfigProperties(configFile);
+
+            factory = createFactory(properties);
             logger.info("JDO PersistenceManagerFactory created");
-            debugPMFProperties(factory.getProperties());
-        } catch (JDOFatalUserException e) {
-            logger.error("{} Exit", e.getMessage());
-            logger.trace("{}", e);
-            MonitorService.INSTANCE.triggerFatal("Database failure");
-        } catch (JDOFatalDataStoreException e) {
-            logger.error("{} Exit", e.getMessage());
-            logger.trace("{}", e);
-            MonitorService.INSTANCE.triggerFatal("Database failure");
+
+            logger.debug("PMF Properties {}", pmfPropertiesString(properties));
+            logger.debug("initialized JDO PMF");
         } catch (Exception e) {
             logger.error("{} Exit", e.getMessage());
             logger.trace("{}", e);
-            MonitorService.INSTANCE.triggerFatal("Database failure");
+            MonitorService.instance().triggerFatal("Database failure");
         }
     }
 
-    private Properties getJdoConfig() throws Exception {
+    private PersistenceManagerFactory createFactory(Properties properties) {
+        return JDOHelper.getPersistenceManagerFactory(properties);
+    }
 
+    private Properties getConfigProperties(String propertyFile) throws IOException {
         Properties jdoProperties = new Properties();
-        InputStream inputStream = null;
-        String propFileName = "jdoconfig.properties";
-
-        inputStream = PMF.class.getClassLoader().getResourceAsStream(propFileName);
-        if (inputStream != null) {
-            try {
-                jdoProperties.load(inputStream);
-                inputStream.close();
-            } catch (IOException e) {
-                throw e;
-            }
-        } else {
-            throw new Exception(
-                    "JDO Config file {}" + propFileName + "not found in classpath. Exit");
+        InputStream inputStream = PMF.class.getClassLoader()
+                .getResourceAsStream(propertyFile);
+        if (inputStream == null) {
+            String message = MessageFormat.format(
+                    "JDO Config file {0} not found in classpath. Exit", propertyFile);
+            throw new FileNotFoundException(message);
         }
+        jdoProperties.load(inputStream);
+        inputStream.close();
         return jdoProperties;
     }
 
-    private void debugPMFProperties(final Properties properties) {
-        if (!logger.isDebugEnabled()) {
-            return;
-        }
+    private String pmfPropertiesString(final Properties properties) {
         String line = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
         sb.append(line);
@@ -84,15 +70,11 @@ public enum PMF {
             sb.append(entry);
             sb.append(line);
         }
-        logger.debug("PMF Properties {}", sb);
+        return sb.toString();
     }
 
     public PersistenceManagerFactory getFactory() {
         return factory;
-    }
-
-    public final void setFactory(final PersistenceManagerFactory pmf) {
-        this.factory = pmf;
     }
 
 }

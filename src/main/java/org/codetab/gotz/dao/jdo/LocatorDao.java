@@ -8,6 +8,7 @@ import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
 
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.ILocatorDao;
 import org.codetab.gotz.model.Locator;
 import org.slf4j.Logger;
@@ -20,10 +21,8 @@ public final class LocatorDao implements ILocatorDao {
     private PersistenceManagerFactory pmf;
 
     public LocatorDao(final PersistenceManagerFactory pmf) {
+        Validate.notNull(pmf, "pmf must not be null");
         this.pmf = pmf;
-        if (pmf == null) {
-            LOGGER.error("loading JDO Dao failed as PersistenceManagerFactory is null");
-        }
     }
 
     @Override
@@ -37,22 +36,28 @@ public final class LocatorDao implements ILocatorDao {
             query.declareParameters(paramDecalre);
             @SuppressWarnings("unchecked")
             List<Locator> locators = (List<Locator>) query.execute(name, group);
-            for (Locator locator : locators) {
-                if (locator.getName().equals(name) && locator.getGroup().equals(group)) {
-                    // document without documentObject !!!
-                    // to fetch documentObject use DocumentDao
-                    pm.getFetchPlan().addGroup("detachDocuments");
-                    return pm.detachCopy(locator);
-                }
+            // fetch document without documentObject !!!
+            // to fetch documentObject use DocumentDao
+            pm.getFetchPlan().addGroup("detachDocuments");
+            locators = (List<Locator>) pm.detachCopyAll(locators);
+            switch (locators.size()) {
+            case 0:
+                return null;
+            case 1:
+                return locators.get(0);
+            default:
+                throw new IllegalStateException(
+                        "found multiple locators for [name][group] [" + name + "]["
+                                + group + "]");
             }
         } finally {
             pm.close();
         }
-        return null;
     }
 
     @Override
     public void storeLocator(final Locator locator) {
+        Validate.notNull(locator, "locator must not be null");
         PersistenceManager pm = getPM();
         Transaction tx = pm.currentTransaction();
         try {

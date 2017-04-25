@@ -25,7 +25,7 @@ public enum ConfigService {
     INSTANCE;
 
     enum ConfigIndex {
-        SYSTEM, PROPERTIES, DEFAULTS
+        SYSTEM, PROVIDED, DEFAULTS
     }
 
     private final Logger logger = LoggerFactory.getLogger(ConfigService.class);
@@ -33,24 +33,205 @@ public enum ConfigService {
     private CompositeConfiguration configs;
 
     ConfigService() {
-
         logger.info("Initializing Configs");
 
-        configs = loadConfigs();
-        addRunDate();
-        addRunDateTime();
+        String userProvidedFile = "gotz.properties";
+        String defaultsFile = "gotz-default.xml";
+
+        init(userProvidedFile, defaultsFile);
 
         logger.trace("{}", configsAsString(ConfigIndex.SYSTEM));
-        logger.debug("{}", configsAsString(ConfigIndex.PROPERTIES));
+        logger.debug("{}", configsAsString(ConfigIndex.PROVIDED));
         logger.debug("{}", configsAsString(ConfigIndex.DEFAULTS));
         logger.debug("Initialized Configs");
 
-        logger.info("Config precedence - SYSTEM, PROPERTIES, DEFAULTS");
+        logger.info("Config precedence - SYSTEM, PROVIDED, DEFAULTS");
         logger.info("Use gotz.properties or system property to override defaults");
     }
 
+    public void init(String userProvidedFile, String defaultsFile) {
+
+        configs = new CompositeConfiguration();
+
+        SystemConfiguration systemConfigs = new SystemConfiguration();
+        configs.addConfiguration(systemConfigs);
+
+        try {
+            Configuration userProvided = getPropertiesConfigs(userProvidedFile);
+            configs.addConfiguration(userProvided);
+        } catch (ConfigurationException e) {
+            configs.addConfiguration(new PropertiesConfiguration());
+            logger.info(e.getLocalizedMessage() + ". " + "Using default properties");
+        }
+
+        try {
+            Configuration defaults = getXMLConfigs(defaultsFile);
+            configs.addConfiguration(defaults);
+        } catch (ConfigurationException e) {
+            logger.error("{}. Exit", e);
+            MonitorService.instance().triggerFatal("Config failure");
+        }
+
+        addRunDate();
+        addRunDateTime();
+    }
+
+    public String getConfig(final String key) {
+        String value = configs.getString(key);
+        if (value == null) {
+            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
+            MonitorService.instance().triggerFatal("Config failure");
+        }
+        return value;
+    }
+
+    public String[] getConfigArray(final String key) {
+        String[] values = configs.getStringArray(key);
+        if (values.length == 0) {
+            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
+            MonitorService.instance().triggerFatal("Config failure");
+        }
+        return values;
+    }
+
+    public final CompositeConfiguration getConfigs() {
+        return configs;
+    }
+
+    protected void setConfigs(final CompositeConfiguration configs) {
+        this.configs = configs;
+    }
+
+    public final Configuration getConfiguration(final ConfigIndex index) {
+        return configs.getConfiguration(index.ordinal());
+    }
+
+    public Date getRunDate() {
+        Date runDate = null;
+        String dateStr = getConfig("gotz.runDate"); //$NON-NLS-1$
+        String patterns = getConfig("gotz.dateParsePattern"); //$NON-NLS-1$
+
+        try {
+            runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
+        } catch (ParseException e) {
+            logger.error("Run Date error. {}", e); //$NON-NLS-1$
+            MonitorService.instance().triggerFatal("Config failure");
+        }
+        return runDate;
+    }
+
+    public Date getRunDateTime() {
+        Date runDateTime = null;
+        String dateTimeStr = getConfig("gotz.runDateTime"); //$NON-NLS-1$
+        String patterns = getConfig("gotz.dateTimeParsePattern"); //$NON-NLS-1$
+
+        try {
+            runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
+        } catch (ParseException e) {
+            logger.error("Run Date error. {}", e); //$NON-NLS-1$
+            MonitorService.instance().triggerFatal("Config failure");
+        }
+        return runDateTime;
+    }
+
+    public Date getHighDate() {
+        Date highDate = null;
+        String dateStr = getConfig("gotz.highDate"); //$NON-NLS-1$
+        String[] patterns = getConfigArray("gotz.dateTimeParsePattern"); //$NON-NLS-1$
+        try {
+            highDate = DateUtils.parseDate(dateStr, patterns);
+        } catch (ParseException e) {
+            logger.error("{}", e); //$NON-NLS-1$
+            MonitorService.instance().triggerFatal("Config failure");
+        }
+        return highDate;
+    }
+
+    // public boolean isTestMode() {
+    // boolean testMode = false;
+    // String command = System.getProperty("sun.java.command");
+    // String surefirePath = System.getProperty("surefire.test.class.path");
+    // if (command.contains("surefire")) {
+    // testMode = true;
+    // }
+    // if (StringUtils.isNotBlank(surefirePath)) {
+    // testMode = true;
+    // }
+    // if (command.contains("junit.runner.RemoteTestRunner")) {
+    // testMode = true;
+    // }
+    // return testMode;
+    // }
+
+    public boolean isTestMode() {
+        StackTraceElement[] stackElements = Thread.currentThread().getStackTrace();
+        StackTraceElement stackElement = stackElements[stackElements.length - 1];
+        String mainClass = stackElement.getClassName();
+        String eclipseTestRunner = "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner";
+        String mavenTestRunner = "org.apache.maven.surefire.booter.ForkedBooter";
+        if (mainClass.equals(mavenTestRunner)) {
+            return true;
+        }
+        if (mainClass.equals(eclipseTestRunner)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isDevMode() {
+        return StringUtils.equalsIgnoreCase(configs.getString("gotz.mode"), "dev");
+    }
+
+    // private methods
+
+    private Configuration getPropertiesConfigs(String fileName)
+            throws ConfigurationException {
+
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
+                PropertiesConfiguration.class)
+                .configure(new Parameters().properties().setFileName(fileName)
+                        .setThrowExceptionOnMissing(true).setListDelimiterHandler(
+                                new DefaultListDelimiterHandler(';')));
+
+        Configuration configs = builder.getConfiguration();
+        return configs;
+    }
+
+    private Configuration getXMLConfigs(String fileName) throws ConfigurationException {
+
+        FileBasedConfigurationBuilder<XMLConfiguration> builder;
+        builder = new FileBasedConfigurationBuilder<XMLConfiguration>(
+                XMLConfiguration.class)
+                .configure(new Parameters().properties().setFileName(fileName)
+                        .setThrowExceptionOnMissing(true).setListDelimiterHandler(
+                                new DefaultListDelimiterHandler(';')));
+
+        Configuration configs = builder.getConfiguration();
+        return configs;
+    }
+
+    private void addRunDate() {
+        Date runDate = new Date();
+        String runDateStr = configs.getString("gotz.runDate"); //$NON-NLS-1$
+        if (runDateStr == null) {
+            String dateFormat = configs.getString("gotz.dateParsePattern"); //$NON-NLS-1$
+            runDateStr = DateFormatUtils.format(runDate, dateFormat);
+        }
+        configs.addProperty("gotz.runDate", runDateStr);
+    }
+
+    private void addRunDateTime() {
+        Date runDateTime = new Date();
+        String runDateTimeStr = configs.getString("gotz.runDateTime"); //$NON-NLS-1$
+        if (runDateTimeStr == null) {
+            String dateTimeFormat = configs.getString("gotz.dateTimeParsePattern");
+            runDateTimeStr = DateFormatUtils.format(runDateTime, dateTimeFormat);
+        }
+        configs.addProperty("gotz.runDateTime", runDateTimeStr); //$NON-NLS-1$
+    }
+
     private String configsAsString(final ConfigIndex index) {
-        Configuration config = getConfig(index);
+        Configuration config = getConfiguration(index);
         Iterator<String> keys = config.getKeys();
 
         StringBuilder sb = new StringBuilder();
@@ -65,162 +246,5 @@ public enum ConfigService {
             sb.append(System.lineSeparator());
         }
         return sb.toString();
-    }
-
-    public String getConfig(final String key) {
-        String value = configs.getString(key);
-        if (value == null) {
-            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            MonitorService.INSTANCE.triggerFatal("Config failure");
-        }
-        return value;
-    }
-
-    public String[] getConfigArray(final String key) {
-        String[] values = configs.getStringArray(key);
-        if (values == null) {
-            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            MonitorService.INSTANCE.triggerFatal("Config failure");
-        }
-        return values;
-    }
-
-    public final CompositeConfiguration getConfigs() {
-        return configs;
-    }
-
-    public final Configuration getConfig(final ConfigIndex index) {
-        Configuration config;
-        switch (index) {
-        case SYSTEM:
-            config = configs.getConfiguration(0);
-            break;
-        case PROPERTIES:
-            config = configs.getConfiguration(1);
-            break;
-        case DEFAULTS:
-            config = configs.getConfiguration(2);
-            break;
-        default:
-            config = configs.getConfiguration(2);
-            break;
-        }
-        return config;
-    }
-
-    public Date getRunDate() {
-        Date runDate = null;
-        String dateStr = getConfig("gotz.runDate"); //$NON-NLS-1$
-        String patterns = getConfig("gotz.dateParsePattern"); //$NON-NLS-1$
-
-        try {
-            runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
-        } catch (ParseException e) {
-            logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            MonitorService.INSTANCE.triggerFatal("Config failure");
-        }
-        return runDate;
-    }
-
-    public Date getRunDateTime() {
-        Date runDateTime = null;
-        String dateTimeStr = getConfig("gotz.runDateTime"); //$NON-NLS-1$
-        String patterns = getConfig("gotz.dateTimeParsePattern"); //$NON-NLS-1$
-
-        try {
-            runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
-        } catch (ParseException e) {
-            logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            MonitorService.INSTANCE.triggerFatal("Config failure");
-        }
-        return runDateTime;
-    }
-
-    public Date getHighDate() {
-        Date highDate = null;
-        String dateStr = getConfig("gotz.highDate"); //$NON-NLS-1$
-        String[] patterns = getConfigArray("gotz.dateTimeParsePattern"); //$NON-NLS-1$
-        try {
-            highDate = DateUtils.parseDate(dateStr, patterns);
-        } catch (ParseException e) {
-            logger.error("{}", e); //$NON-NLS-1$
-            MonitorService.INSTANCE.triggerFatal("Config failure");
-        }
-        return highDate;
-    }
-
-    private CompositeConfiguration loadConfigs() {
-
-        CompositeConfiguration configs = new CompositeConfiguration();
-
-        configs.addConfiguration(new SystemConfiguration());
-
-        try {
-            configs.addConfiguration(userProvidedConfigs());
-        } catch (ConfigurationException e) {
-            logger.info(e.getLocalizedMessage() + ". " + "Using default properties");
-        }
-
-        try {
-            configs.addConfiguration(defaultConfigs());
-        } catch (ConfigurationException e) {
-            logger.error("{}. Exit", e);
-            MonitorService.INSTANCE.triggerFatal("Config failure");
-        }
-        return configs;
-    }
-
-    private Configuration userProvidedConfigs() throws ConfigurationException {
-
-        FileBasedConfigurationBuilder<PropertiesConfiguration> builder;
-        builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-                PropertiesConfiguration.class).configure(
-                        new Parameters().properties().setFileName("gotz.properties")
-                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
-                                        new DefaultListDelimiterHandler(';')));
-
-        Configuration userProvided = builder.getConfiguration();
-        return userProvided;
-    }
-
-    private Configuration defaultConfigs() throws ConfigurationException {
-
-        FileBasedConfigurationBuilder<XMLConfiguration> builder;
-        builder = new FileBasedConfigurationBuilder<XMLConfiguration>(
-                XMLConfiguration.class).configure(
-                        new Parameters().properties().setFileName("gotz-default.xml")
-                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
-                                        new DefaultListDelimiterHandler(';')));
-
-        Configuration defaultConfigs = builder.getConfiguration();
-        return defaultConfigs;
-    }
-
-    private void addRunDate() {
-        Date runDate = new Date();
-        String runDateStr = configs.getString("gotz.runDate"); //$NON-NLS-1$
-        if (runDateStr == null) {
-            String dateFormat = configs.getString("gotz.dateParsePattern"); //$NON-NLS-1$
-            runDateStr = DateFormatUtils.format(runDate, dateFormat);
-            configs.addProperty("gotz.runDate", runDateStr); //$NON-NLS-1$
-        }
-    }
-
-    private void addRunDateTime() {
-        Date runDateTime = new Date();
-        String runDateTimeStr = configs.getString("gotz.runDateTime"); //$NON-NLS-1$
-        if (runDateTimeStr == null) {
-            String dateTimeFormat = configs.getString("gotz.dateTimeParsePattern");
-            runDateTimeStr = DateFormatUtils.format(runDateTime, dateTimeFormat);
-            configs.addProperty("gotz.runDateTime", runDateTimeStr); //$NON-NLS-1$
-        }
-    }
-
-    public boolean isTestMode() {
-        return StringUtils.isNotBlank(System.getProperty("surefire.test.class.path"));
-    }
-
-    public boolean isDevMode() {
-        return StringUtils.equalsIgnoreCase(configs.getString("gotz.mode"), "dev");
     }
 }

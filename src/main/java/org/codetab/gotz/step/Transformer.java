@@ -34,7 +34,7 @@ public abstract class Transformer extends Step {
             String message = "transform data " + Util.getLocatorLabel(getFields());
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
+            MonitorService.instance().addActivity(Type.GIVENUP, message, e);
         }
     }
 

@@ -26,30 +26,40 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.xml.sax.SAXException;
 
-public enum BeanService {
+public class BeanService {
 
-    INSTANCE;
+    private static BeanService INSTANCE;
 
     private final Logger logger = LoggerFactory.getLogger(BeanService.class);
 
     private List<Bean> beanFiles;
     private List<Object> beans;
 
-    BeanService() {
-        String className = this.getClass().getName();
-        logger.info("initialize singleton {}", className);
-        beans = new ArrayList<Object>();
+    private BeanService() {
+        logger.info("initialize singleton {}", "BeanService");
+        init();
+        logger.debug("initialized singleton {}", "BeanService");
+    }
+
+    public static BeanService instance(){
+        if(INSTANCE == null){
+            INSTANCE = new BeanService();
+        }
+        return INSTANCE;
+    }
+
+    protected void init() {
         try {
             validateBeanFile();
-            setBeanFiles();
+            beanFiles = setBeanFiles();
             validateBeanFiles();
-            unmarshallBeanFiles();
+            beans = unmarshallBeanFiles();
         } catch (JAXBException | ClassNotFoundException | SAXException | IOException e) {
             logger.trace("{}", e);
             logger.error("{}", e.getLocalizedMessage());
-            MonitorService.INSTANCE.triggerFatal("initialization failure " + className);
+            MonitorService.instance()
+            .triggerFatal("initialization failure : " + "BeanService");
         }
-        logger.debug("initialized singleton {}", className);
     }
 
     /*
@@ -71,14 +81,8 @@ public enum BeanService {
         return list;
     }
 
-    public <T> int getCount(final Class<T> ofClass) {
-        int count = 0;
-        for (Object bean : beans) {
-            if (bean.getClass() == ofClass) {
-                count++;
-            }
-        }
-        return count;
+    public <T> long getCount(final Class<T> ofClass) {
+        return beans.stream().filter(ofClass::isInstance).count();
     }
 
     private void validateBeanFile() throws JAXBException, SAXException, IOException {
@@ -87,7 +91,7 @@ public enum BeanService {
         validateSchema(beanFile, schemaFile);
     }
 
-    private void setBeanFiles() throws JAXBException, SAXException, IOException {
+    private List<Bean> setBeanFiles() throws JAXBException, SAXException, IOException {
         String beanFile = ConfigService.INSTANCE.getConfig("gotz.beanFile");
         String schemaFile = ConfigService.INSTANCE.getConfig("gotz.schemaFile");
         String baseName = FilenameUtils.getFullPath(beanFile);
@@ -95,9 +99,9 @@ public enum BeanService {
         logger.info("initialize Bean file");
         logger.info("using Bean configuartion file [{}]", beanFile);
 
-        beanFiles = unmarshall(beanFile, Bean.class);
+        List<Bean> list = unmarshall(beanFile, Bean.class);
         logger.info("configure Bean files...");
-        for (Bean bean : beanFiles) {
+        for (Bean bean : list) {
             String fileName = baseName.concat(bean.getXmlFile());
             bean.setXmlFile(fileName);
             if (StringUtils.isEmpty(bean.getSchemaFile())) {
@@ -105,6 +109,7 @@ public enum BeanService {
             }
             logger.debug("{}", bean.toString());
         }
+        return list;
     }
 
     private void validateBeanFiles() throws JAXBException, SAXException, IOException {
@@ -122,14 +127,15 @@ public enum BeanService {
         validator.validate();
     }
 
-    private void unmarshallBeanFiles()
+    private List<Object> unmarshallBeanFiles()
             throws ClassNotFoundException, JAXBException, FileNotFoundException {
         logger.info("unmarshall bean files...");
+        List<Object> list = new ArrayList<>();
         for (Bean bean : beanFiles) {
             Class<?> ofClass = Class.forName(bean.getClassName());
-            List<?> list = unmarshall(bean.getXmlFile(), ofClass);
-            beans.addAll(list);
+            list.addAll(unmarshall(bean.getXmlFile(), ofClass));
         }
+        return list;
     }
 
     private <T> List<T> unmarshall(final String fileName, final Class<T> ofClass)
@@ -159,7 +165,7 @@ public enum BeanService {
         MDC.remove("entitytype");
     }
 
-    public void marshall(final JAXBElement<?> e, final Object o) throws JAXBException {
+    private void marshall(final JAXBElement<?> e, final Object o) throws JAXBException {
         String packageName = o.getClass().getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(packageName);
         Marshaller jm = jc.createMarshaller();

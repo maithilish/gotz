@@ -9,6 +9,7 @@ import javax.jdo.PersistenceManagerFactory;
 import javax.jdo.Query;
 import javax.jdo.Transaction;
 
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.model.DataDef;
@@ -22,14 +23,13 @@ public final class DataDefDao implements IDataDefDao {
     private PersistenceManagerFactory pmf;
 
     public DataDefDao(final PersistenceManagerFactory pmf) {
+        Validate.notNull(pmf, "pmf must not be null");
         this.pmf = pmf;
-        if (pmf == null) {
-            LOGGER.error("loading JDO Dao failed as PersistenceManagerFactory is null");
-        }
     }
 
     @Override
     public void storeDataDef(final DataDef dataDef) {
+        Validate.notNull(dataDef, "dataDef must not be null");
         PersistenceManager pm = getPM();
         Transaction tx = pm.currentTransaction();
         try {
@@ -41,6 +41,12 @@ public final class DataDefDao implements IDataDefDao {
             Query<DataDef> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecla);
             query.setOrdering(ordering);
+
+            pm.getFetchPlan().addGroup("detachFields");
+            pm.getFetchPlan().addGroup("detachAxis");
+            pm.getFetchPlan().addGroup("detachMembers");
+            pm.getFetchPlan().addGroup("detachFilters");
+
             @SuppressWarnings("unchecked")
             List<DataDef> dataDefs = (List<DataDef>) query.execute(dataDef.getName());
             if (dataDefs.size() > 0) {
@@ -74,6 +80,28 @@ public final class DataDefDao implements IDataDefDao {
 
             @SuppressWarnings("unchecked")
             List<DataDef> dataDefs = (List<DataDef>) query.execute(date);
+            pm.getFetchPlan().addGroup("detachFields");
+            pm.getFetchPlan().addGroup("detachAxis");
+            pm.getFetchPlan().addGroup("detachMembers");
+            pm.getFetchPlan().addGroup("detachFilters");
+            return (List<DataDef>) pm.detachCopyAll(dataDefs);
+        } finally {
+            pm.close();
+        }
+    }
+
+    @Override
+    public List<DataDef> getDataDefs(final String name) {
+        PersistenceManager pm = getPM();
+        try {
+            String filter = "name == pname";
+            String paramDecla = "String pname";
+            Extent<DataDef> extent = pm.getExtent(DataDef.class);
+            Query<DataDef> query = pm.newQuery(extent, filter);
+            query.declareParameters(paramDecla);
+
+            @SuppressWarnings("unchecked")
+            List<DataDef> dataDefs = (List<DataDef>) query.execute(name);
             pm.getFetchPlan().addGroup("detachFields");
             pm.getFetchPlan().addGroup("detachAxis");
             pm.getFetchPlan().addGroup("detachMembers");

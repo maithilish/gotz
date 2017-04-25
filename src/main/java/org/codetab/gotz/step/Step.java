@@ -49,13 +49,13 @@ public abstract class Step implements IStep {
                             nextStepType, task.getClass(), label);
                 } else {
                     LOGGER.warn("step inconsistent, entity [{}]", label);
-                    MonitorService.INSTANCE.addActivity(Type.GIVENUP,
+                    MonitorService.instance().addActivity(Type.GIVENUP,
                             Util.buildString(givenUpMessage, ", step inconsistent"));
                 }
             }
         } catch (Exception e) {
             LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
-            MonitorService.INSTANCE.addActivity(Type.GIVENUP, givenUpMessage, e);
+            MonitorService.instance().addActivity(Type.GIVENUP, givenUpMessage, e);
         }
     }
 
@@ -156,8 +156,8 @@ public abstract class Step implements IStep {
      */
     private IStep createTask(final String stepType, final String taskClassName,
             final Object input, final List<FieldsBase> fields)
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException {
+                    throws ClassNotFoundException, InstantiationException,
+                    IllegalAccessException {
         IStep task = StepService.INSTANCE.getStep(taskClassName).instance();
         task.setStepType(stepType);
         task.setInput(input);

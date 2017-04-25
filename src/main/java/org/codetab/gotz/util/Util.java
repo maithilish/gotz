@@ -19,7 +19,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.FieldsBase;
@@ -49,7 +48,6 @@ public final class Util {
         return ofClass.cast(ois.readObject());
     }
 
-    // TODO test
     public static boolean hasNulls(final Object... sets) {
         for (Object o : sets) {
             if (o == null) {
@@ -124,8 +122,7 @@ public final class Util {
         if (StringUtils.endsWith(string, "\n")) {
             n++;
         }
-        return string
-                .substring(StringUtils.lastOrdinalIndexOf(string, "\n", noOfLines) + 1);
+        return string.substring(StringUtils.lastOrdinalIndexOf(string, "\n", n) + 1);
     }
 
     public static String getJson(final Object obj, final boolean prettyPrint) {
@@ -195,11 +192,6 @@ public final class Util {
         return ta;
     }
 
-    public static String[] excludes(final String... excludes) {
-        String[] jdoExcludes = {"dnDetachedState", "dnFlags", "dnStateManager"};
-        return ArrayUtils.addAll(jdoExcludes, excludes);
-    }
-
     public static void logState(final Logger logger, final String entity,
             final String label, final List<FieldsBase> fields, final Object object) {
         try {
@@ -234,8 +226,8 @@ public final class Util {
     }
 
     public static String getLocatorLabel(final List<FieldsBase> fields) {
-        String name = "field not found";
-        String group = "field not found";
+        String name = "undefined";
+        String group = "undefined";
         try {
             name = FieldsUtil.getValue(fields, "locatorName");
             group = FieldsUtil.getValue(fields, "locatorGroup");

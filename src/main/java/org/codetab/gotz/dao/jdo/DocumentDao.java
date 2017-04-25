@@ -3,6 +3,7 @@ package org.codetab.gotz.dao.jdo;
 import javax.jdo.PersistenceManager;
 import javax.jdo.PersistenceManagerFactory;
 
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.model.Document;
 import org.slf4j.Logger;
@@ -15,23 +16,23 @@ public final class DocumentDao implements IDocumentDao {
     private PersistenceManagerFactory pmf;
 
     public DocumentDao(final PersistenceManagerFactory pmf) {
+        Validate.notNull(pmf, "pmf must not be null");
         this.pmf = pmf;
-        if (pmf == null) {
-            LOGGER.error("loading JDO Dao failed as PersistenceManagerFactory is null");
-        }
     }
 
     @Override
     public Document getDocument(final Long id) {
+        Document document = null;
         PersistenceManager pm = getPM();
         try {
             Object result = pm.getObjectById(Document.class, id);
-            // document without documentObject
+            // document with documentObject
             pm.getFetchPlan().addGroup("detachDocumentObject");
-            return (Document) pm.detachCopy(result);
+            document = (Document) pm.detachCopy(result);
         } finally {
             pm.close();
         }
+        return document;
     }
 
     private PersistenceManager getPM() {

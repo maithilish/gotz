@@ -73,7 +73,7 @@ public abstract class Parser extends Step {
             String message = "parse data " + Util.getLocatorLabel(getFields());
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
+            MonitorService.instance().addActivity(Type.GIVENUP, message, e);
         }
     }
 
@@ -88,8 +88,8 @@ public abstract class Parser extends Step {
 
     private void prepareData()
             throws DataDefNotFoundException, ClassNotFoundException, IOException {
-        data = DataDefService.INSTANCE.getDataTemplate(dataDefName);
-        data.setDataDefId(DataDefService.INSTANCE.getDataDef(dataDefName).getId());
+        data = DataDefService.instance().getDataTemplate(dataDefName);
+        data.setDataDefId(DataDefService.instance().getDataDef(dataDefName).getId());
         data.setDocumentId(getDocument().getId());
         Util.logState(LOGGER, "parser-" + dataDefName, "Data Template", getFields(),
                 data);
@@ -112,7 +112,7 @@ public abstract class Parser extends Step {
             throws DataDefNotFoundException, ScriptException, ClassNotFoundException,
             IOException, NumberFormatException, FieldNotFoundException,
             IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        DataDef dataDef = DataDefService.INSTANCE.getDataDef(dataDefName);
+        DataDef dataDef = DataDefService.instance().getDataDef(dataDefName);
         Deque<Member> mStack = new ArrayDeque<>();
         for (Member member : data.getMembers()) {
             mStack.addFirst(member);
@@ -228,7 +228,7 @@ public abstract class Parser extends Step {
      */
     @Override
     public void load() throws Exception {
-        Long dataDefId = DataDefService.INSTANCE.getDataDef(dataDefName).getId();
+        Long dataDefId = DataDefService.instance().getDataDef(dataDefName).getId();
         Long documentId = getDocument().getId();
         data = getDataFromStore(dataDefId, documentId);
     }
@@ -247,8 +247,8 @@ public abstract class Parser extends Step {
         }
         if (persist) {
             try {
-                ORM orm = DaoFactory
-                        .getOrmType(ConfigService.INSTANCE.getConfig("gotz.orm"));
+                ORM orm = DaoFactory.getOrmType(
+                        ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
                 IDataDao dao = DaoFactory.getDaoFactory(orm).getDataDao();
                 dao.storeData(data);
                 data = dao.getData(data.getId());
@@ -323,7 +323,8 @@ public abstract class Parser extends Step {
 
     private Data getDataFromStore(final Long dataDefId, final Long documentId) {
         try {
-            ORM orm = DaoFactory.getOrmType(ConfigService.INSTANCE.getConfig("gotz.orm"));
+            ORM orm = DaoFactory
+                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
             IDataDao dao = DaoFactory.getDaoFactory(orm).getDataDao();
             Data data = dao.getData(documentId, dataDefId);
             return data;

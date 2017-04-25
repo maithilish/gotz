@@ -6,17 +6,11 @@
         <beanFile>/bean.xml</beanFile>
         <schemaFile>/schema/gotz.xsd</schemaFile>
         <seederClass>org.codetab.gotz.ext.LocatorSeeder</seederClass>
-        <loaderThreads>2</loaderThreads>
-        <parserThreads>4</parserThreads>
-        <processThreads>4</processThreads>
-        <highDate>31-12-2099 23:59:59.999</highDate>
-        <dateParsePattern>dd-MM-yyyy ; dd/MM/yyyy</dateParsePattern>
-        <dateTimeParsePattern>
-            dd-MM-yyyy HH:mm:ss.SSS ; dd/MM/yyyy
-            HH:mm:ss.SSS
-        </dateTimeParsePattern>
-        <orm>jdo</orm>
-        <datastore>datastore</datastore>
+        <datastore>
+            <name>datastore</name>
+            <orm>jdo</orm>
+            <configFile>jdoconfig.properties</configFile>
+        </datastore>
         <poolsize>
             <seeder>6</seeder>
             <loader>4</loader>
@@ -29,6 +23,13 @@
             <timeout>120000</timeout>
             <userAgent>Mozilla/5.0</userAgent>
         </webClient>
+        <highDate>31-12-2099 23:59:59.999</highDate>
+        <dateParsePattern>dd-MM-yyyy ; dd/MM/yyyy</dateParsePattern>
+        <dateTimeParsePattern>
+            <![CDATA[
+                 dd-MM-yyyy HH:mm:ss.SSS ; dd/MM/yyyy HH:mm:ss.SSS
+            ]]>
+        </dateTimeParsePattern>
     </gotz>
 </configuration>
 

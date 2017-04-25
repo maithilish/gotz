@@ -59,7 +59,7 @@ public abstract class Loader extends Step {
                         " group=", locator.getGroup(), "]");
                 LOGGER.error("{} {}", message, Util.getMessage(e));
                 LOGGER.debug("{}", e);
-                MonitorService.INSTANCE.addActivity(Type.GIVENUP, message, e);
+                MonitorService.instance().addActivity(Type.GIVENUP, message, e);
             }
         }
     }
@@ -127,8 +127,8 @@ public abstract class Loader extends Step {
              */
             try {
                 List<FieldsBase> fields = locator.getFields();
-                ORM orm = DaoFactory
-                        .getOrmType(ConfigService.INSTANCE.getConfig("gotz.orm"));
+                ORM orm = DaoFactory.getOrmType(
+                        ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
                 ILocatorDao dao = DaoFactory.getDaoFactory(orm).getLocatorDao();
                 dao.storeLocator(locator);
                 // reload locator and document
@@ -185,7 +185,7 @@ public abstract class Loader extends Step {
                     pushTask(document, fieldsList);
                 } else {
                     LOGGER.warn("Document not loaded - Locator [{}]", locator);
-                    MonitorService.INSTANCE.addActivity(Type.GIVENUP,
+                    MonitorService.instance().addActivity(Type.GIVENUP,
                             "Document not loaded. " + givenUpMessage);
                 }
             }
@@ -219,7 +219,8 @@ public abstract class Loader extends Step {
 
     private Locator getLocatorFromStore(final String locName, final String locGroup) {
         try {
-            ORM orm = DaoFactory.getOrmType(ConfigService.INSTANCE.getConfig("gotz.orm"));
+            ORM orm = DaoFactory
+                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
             ILocatorDao dao = DaoFactory.getDaoFactory(orm).getLocatorDao();
             Locator existingLocator = dao.getLocator(locName, locGroup);
             return existingLocator;
@@ -287,7 +288,8 @@ public abstract class Loader extends Step {
     private Document getDocument(final Long id) {
         // get Document with documentObject
         try {
-            ORM orm = DaoFactory.getOrmType(ConfigService.INSTANCE.getConfig("gotz.orm"));
+            ORM orm = DaoFactory
+                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
             IDocumentDao dao = DaoFactory.getDaoFactory(orm).getDocumentDao();
             return dao.getDocument(id);
         } catch (RuntimeException e) {
