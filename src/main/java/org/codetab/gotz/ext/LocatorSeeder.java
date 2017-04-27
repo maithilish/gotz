@@ -3,6 +3,8 @@ package org.codetab.gotz.ext;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
@@ -10,13 +12,12 @@ import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Seeder;
-import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class LocatorSeeder extends Seeder {
+public class LocatorSeeder extends Seeder {
 
     static final Logger LOGGER = LoggerFactory.getLogger(LocatorSeeder.class);
 
@@ -24,17 +25,24 @@ public final class LocatorSeeder extends Seeder {
 
     private List<Locator> locators = new ArrayList<>();
 
+    private BeanService beanService;
+
+    @Inject
+    public void setBeanService(BeanService beanService) {
+        this.beanService = beanService;
+    }
+
     @Override
     public IStep instance() {
-        Step step = new LocatorSeeder();
-        step.setStepType("seeder");
-        return step;
+        //Step step = new LocatorSeeder();
+        this.setStepType("seeder");
+        return this;
     }
 
     @Override
     public void load() {
         initLocators();
-        List<FieldsBase> fields = BeanService.instance().getBeans(FieldsBase.class);
+        List<FieldsBase> fields = beanService.getBeans(FieldsBase.class);
         try {
             FieldsBase classFields = FieldsUtil.getFieldsByValue(fields, "class",
                     Locator.class.getName());
@@ -49,7 +57,7 @@ public final class LocatorSeeder extends Seeder {
 
     private void initLocators() {
         LOGGER.info("initialize locators");
-        List<Locators> list = BeanService.instance().getBeans(Locators.class);
+        List<Locators> list = beanService.getBeans(Locators.class);
         for (Locators locators : list) {
             trikleGroup(locators);
         }

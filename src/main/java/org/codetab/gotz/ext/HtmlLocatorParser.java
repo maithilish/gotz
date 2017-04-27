@@ -2,6 +2,8 @@ package org.codetab.gotz.ext;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.FieldsBase;
@@ -18,9 +20,16 @@ public final class HtmlLocatorParser extends HtmlParser {
 
     static final Logger LOGGER = LoggerFactory.getLogger(HtmlLocatorParser.class);
 
+    private BeanService beanService;
+
+    @Inject
+    void setBeanService(BeanService beanService){
+        this.beanService = beanService;
+    }
+
     @Override
     public IStep instance() {
-        return new HtmlLocatorParser();
+        return this;
     }
 
     @Override
@@ -63,7 +72,7 @@ public final class HtmlLocatorParser extends HtmlParser {
 
     private List<FieldsBase> getGroupFields(final String group)
             throws FieldNotFoundException {
-        List<FieldsBase> fieldsBeans = BeanService.instance().getBeans(FieldsBase.class);
+        List<FieldsBase> fieldsBeans = beanService.getBeans(FieldsBase.class);
         FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans, "class",
                 Locator.class.getName());
         if (classFields != null) {

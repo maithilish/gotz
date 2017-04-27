@@ -1,5 +1,6 @@
 package org.codetab.gotz.step;
 
+import javax.inject.Inject;
 import javax.naming.OperationNotSupportedException;
 
 import org.codetab.gotz.model.Activity.Type;
@@ -14,6 +15,14 @@ public abstract class Transformer extends Step {
     static final Logger LOGGER = LoggerFactory.getLogger(Transformer.class);
 
     private Data data;
+
+    MonitorService monitorService;
+
+    @Override
+    @Inject
+    void setMonitorService(MonitorService monitorService){
+        this.monitorService = monitorService;
+    }
 
     /*
      * (non-Javadoc)
@@ -34,7 +43,7 @@ public abstract class Transformer extends Step {
             String message = "transform data " + Util.getLocatorLabel(getFields());
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            MonitorService.instance().addActivity(Type.GIVENUP, message, e);
+            monitorService.addActivity(Type.GIVENUP, message, e);
         }
     }
 

@@ -6,6 +6,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -26,29 +28,29 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.xml.sax.SAXException;
 
+@Singleton
 public class BeanService {
-
-    private static BeanService INSTANCE;
 
     private final Logger logger = LoggerFactory.getLogger(BeanService.class);
 
     private List<Bean> beanFiles;
     private List<Object> beans;
 
+    private MonitorService monitorService;
+
+    private ConfigService configService;
+
+    @Inject
+    void setMonitorService(MonitorService monitorService){
+        this.monitorService = monitorService;
+    }
+
+    @Inject
     private BeanService() {
+    }
+
+    public void init() {
         logger.info("initialize singleton {}", "BeanService");
-        init();
-        logger.debug("initialized singleton {}", "BeanService");
-    }
-
-    public static BeanService instance(){
-        if(INSTANCE == null){
-            INSTANCE = new BeanService();
-        }
-        return INSTANCE;
-    }
-
-    protected void init() {
         try {
             validateBeanFile();
             beanFiles = setBeanFiles();
@@ -57,9 +59,10 @@ public class BeanService {
         } catch (JAXBException | ClassNotFoundException | SAXException | IOException e) {
             logger.trace("{}", e);
             logger.error("{}", e.getLocalizedMessage());
-            MonitorService.instance()
+            monitorService
             .triggerFatal("initialization failure : " + "BeanService");
         }
+        logger.debug("initialized singleton {}", "BeanService");
     }
 
     /*
@@ -86,14 +89,14 @@ public class BeanService {
     }
 
     private void validateBeanFile() throws JAXBException, SAXException, IOException {
-        String beanFile = ConfigService.INSTANCE.getConfig("gotz.beanFile");
-        String schemaFile = ConfigService.INSTANCE.getConfig("gotz.schemaFile");
+        String beanFile = configService.getConfig("gotz.beanFile");
+        String schemaFile = configService.getConfig("gotz.schemaFile");
         validateSchema(beanFile, schemaFile);
     }
 
     private List<Bean> setBeanFiles() throws JAXBException, SAXException, IOException {
-        String beanFile = ConfigService.INSTANCE.getConfig("gotz.beanFile");
-        String schemaFile = ConfigService.INSTANCE.getConfig("gotz.schemaFile");
+        String beanFile = configService.getConfig("gotz.beanFile");
+        String schemaFile = configService.getConfig("gotz.schemaFile");
         String baseName = FilenameUtils.getFullPath(beanFile);
 
         logger.info("initialize Bean file");
@@ -175,4 +178,8 @@ public class BeanService {
         logger.debug(result.toString());
     }
 
+    @Inject
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
+    }
 }

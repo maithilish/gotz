@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang3.Range;
@@ -25,9 +26,6 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.shared.DataDefService;
-import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -42,6 +40,13 @@ public abstract class Parser extends Step {
     private Data data;
 
     private Set<Integer[]> memberIndexSet = new HashSet<>();
+
+    private DaoFactory daoFactory;
+
+    @Inject
+    public void setDaoFactory(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
 
     /*
      * (non-Javadoc)
@@ -73,7 +78,7 @@ public abstract class Parser extends Step {
             String message = "parse data " + Util.getLocatorLabel(getFields());
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            MonitorService.instance().addActivity(Type.GIVENUP, message, e);
+            monitorService.addActivity(Type.GIVENUP, message, e);
         }
     }
 
@@ -88,8 +93,8 @@ public abstract class Parser extends Step {
 
     private void prepareData()
             throws DataDefNotFoundException, ClassNotFoundException, IOException {
-        data = DataDefService.instance().getDataTemplate(dataDefName);
-        data.setDataDefId(DataDefService.instance().getDataDef(dataDefName).getId());
+        data = dataDefService.getDataTemplate(dataDefName);
+        data.setDataDefId(dataDefService.getDataDef(dataDefName).getId());
         data.setDocumentId(getDocument().getId());
         Util.logState(LOGGER, "parser-" + dataDefName, "Data Template", getFields(),
                 data);
@@ -112,7 +117,7 @@ public abstract class Parser extends Step {
             throws DataDefNotFoundException, ScriptException, ClassNotFoundException,
             IOException, NumberFormatException, FieldNotFoundException,
             IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        DataDef dataDef = DataDefService.instance().getDataDef(dataDefName);
+        DataDef dataDef = dataDefService.getDataDef(dataDefName);
         Deque<Member> mStack = new ArrayDeque<>();
         for (Member member : data.getMembers()) {
             mStack.addFirst(member);
@@ -228,7 +233,7 @@ public abstract class Parser extends Step {
      */
     @Override
     public void load() throws Exception {
-        Long dataDefId = DataDefService.instance().getDataDef(dataDefName).getId();
+        Long dataDefId = dataDefService.getDataDef(dataDefName).getId();
         Long documentId = getDocument().getId();
         data = getDataFromStore(dataDefId, documentId);
     }
@@ -248,8 +253,8 @@ public abstract class Parser extends Step {
         if (persist) {
             try {
                 ORM orm = DaoFactory.getOrmType(
-                        ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
-                IDataDao dao = DaoFactory.getDaoFactory(orm).getDataDao();
+                        configService.getConfig("gotz.datastore.orm"));
+                IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
                 dao.storeData(data);
                 data = dao.getData(data.getId());
             } catch (Exception e) {
@@ -324,8 +329,8 @@ public abstract class Parser extends Step {
     private Data getDataFromStore(final Long dataDefId, final Long documentId) {
         try {
             ORM orm = DaoFactory
-                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
-            IDataDao dao = DaoFactory.getDaoFactory(orm).getDataDao();
+                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
+            IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
             Data data = dao.getData(documentId, dataDefId);
             return data;
         } catch (RuntimeException e) {

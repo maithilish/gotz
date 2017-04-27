@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.commons.lang3.time.StopWatch;
 import org.codetab.gotz.misc.MemoryTask;
 import org.codetab.gotz.model.Activity;
@@ -13,11 +16,10 @@ import org.codetab.gotz.model.Activity.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class MonitorService {
 
     private final Logger logger = LoggerFactory.getLogger(MonitorService.class);
-
-    private static MonitorService INSTANCE;
 
     private List<Activity> activitesList;
 
@@ -26,39 +28,26 @@ public class MonitorService {
 
     private Timer timer;
     private StopWatch stopWatch;
+    private MemoryTask memoryTask;
+    private ConfigService configService;
 
+    @Inject
     private MonitorService() {
         activitesList = new ArrayList<Activity>();
     }
 
-    public static MonitorService instance(){
-        if(INSTANCE == null){
-            INSTANCE = new MonitorService();
-        }
-        return INSTANCE;
-    }
-
     public void start() {
-        stopWatch = new StopWatch();
         stopWatch.start();
 
         final long memoryPollFrequency = 5000;
-        timer = makeTimer("Memory Timer");
-        timer.schedule(new MemoryTask(), 0, memoryPollFrequency);
-    }
-
-    /*
-     * used for testing
-     */
-    Timer makeTimer(String name){
-        return new Timer(name);
+        timer.schedule(memoryTask, 0, memoryPollFrequency);
     }
 
     public void triggerFatal(final String message) {
         activitesList.add(new Activity(Type.FATAL, message));
         end();
         logger.info("Gotz Terminated");
-        if (ConfigService.INSTANCE.isTestMode()) {
+        if (configService.isTestMode()) {
             throw new IllegalStateException("fatal expection triggered");
         } else {
             System.exit(1);
@@ -153,4 +142,23 @@ public class MonitorService {
         }
     }
 
+    @Inject
+    public void setMemoryTask(MemoryTask memoryTask){
+        this.memoryTask = memoryTask;
+    }
+
+    @Inject
+    public void setTimer(Timer timer) {
+        this.timer = timer;
+    }
+
+    @Inject
+    public void setStopWatch(StopWatch stopWatch) {
+        this.stopWatch = stopWatch;
+    }
+
+    @Inject
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
+    }
 }

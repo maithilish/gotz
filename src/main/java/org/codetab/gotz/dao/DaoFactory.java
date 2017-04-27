@@ -1,9 +1,12 @@
 package org.codetab.gotz.dao;
 
+import javax.inject.Inject;
+
+import org.codetab.gotz.di.DInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DaoFactory {
+public class DaoFactory {
 
     static final Logger LOGGER = LoggerFactory.getLogger(DaoFactory.class);
 
@@ -11,24 +14,42 @@ public abstract class DaoFactory {
         JDO
     }
 
-    private static DaoFactory instance;
+    private DaoFactory instance;
+    private DInjector dInjector;
 
-    public abstract ILocatorDao getLocatorDao();
+    public ILocatorDao getLocatorDao() {
+        throw new UnsupportedOperationException("subclass should override this method");
+    }
 
-    public abstract IDocumentDao getDocumentDao();
+    public IDocumentDao getDocumentDao() {
+        throw new UnsupportedOperationException("subclass should override this method");
+    }
 
-    public abstract IDataDefDao getDataDefDao();
+    public IDataDefDao getDataDefDao() {
+        throw new UnsupportedOperationException("subclass should override this method");
+    }
 
-    public abstract IDataDao getDataDao();
+    public IDataDao getDataDao() {
+        throw new UnsupportedOperationException("subclass should override this method");
+    }
 
-    public static DaoFactory getDaoFactory(final ORM orm) {
+    @Inject
+    public DaoFactory() {
+    }
+
+    @Inject
+    public void setdInjector(DInjector dInjector) {
+        this.dInjector = dInjector;
+    }
+
+    public DaoFactory getDaoFactory(final ORM orm) {
         if (instance == null) {
             switch (orm) {
             case JDO:
-                instance = new org.codetab.gotz.dao.jdo.DaoFactory();
+                instance = dInjector.instance(org.codetab.gotz.dao.jdo.DaoFactory.class);
                 break;
             default:
-                instance = new org.codetab.gotz.dao.jdo.DaoFactory();
+                instance = dInjector.instance(org.codetab.gotz.dao.jdo.DaoFactory.class);
                 break;
             }
         }

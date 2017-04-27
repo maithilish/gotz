@@ -1,13 +1,12 @@
 package org.codetab.gotz.pool;
 
-public final class AppenderPoolService extends Pool {
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-    private static final AppenderPoolService INSTANCE = new AppenderPoolService();
+@Singleton
+public class AppenderPoolService extends Pool {
 
+    @Inject
     private AppenderPoolService() {
-    }
-
-    public static AppenderPoolService getInstance() {
-        return INSTANCE;
     }
 }

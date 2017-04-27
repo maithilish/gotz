@@ -1,5 +1,7 @@
 package org.codetab.gotz.step;
 
+import javax.inject.Inject;
+
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
@@ -13,6 +15,13 @@ public abstract class Filter extends Step {
     static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
 
     private Data data;
+
+    MonitorService monitorService;
+
+    @Inject
+    void setMonitorService(MonitorService monitorService){
+        this.monitorService = monitorService;
+    }
 
     /*
      * (non-Javadoc)
@@ -30,7 +39,7 @@ public abstract class Filter extends Step {
             String message = "parse data " + Util.getLocatorLabel(getFields());
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            MonitorService.instance().addActivity(Type.GIVENUP, message, e);
+            monitorService.addActivity(Type.GIVENUP, message, e);
         }
     }
 

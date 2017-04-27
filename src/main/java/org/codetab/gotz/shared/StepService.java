@@ -1,19 +1,30 @@
 package org.codetab.gotz.shared;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.step.IStep;
 
-public enum StepService {
+@Singleton
+public class StepService {
 
-    INSTANCE;
+    private DInjector dInjector;
 
-    StepService() {
+    @Inject
+    private StepService() {
+    }
+
+    @Inject
+    public void setdInjector(DInjector dInjector) {
+        this.dInjector = dInjector;
     }
 
     public IStep getStep(final String clzName) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+    InstantiationException, IllegalAccessException {
         IStep step = null;
         Class<?> stepClass = Class.forName(clzName);
-        Object obj = stepClass.newInstance();
+        Object obj = dInjector.instance(stepClass);
         if (obj instanceof IStep) {
             step = (IStep) obj;
         } else {
@@ -21,5 +32,4 @@ public enum StepService {
         }
         return step;
     }
-
 }

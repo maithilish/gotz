@@ -4,6 +4,9 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.apache.commons.configuration2.CompositeConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
@@ -20,9 +23,8 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum ConfigService {
-
-    INSTANCE;
+@Singleton
+public class ConfigService {
 
     enum ConfigIndex {
         SYSTEM, PROVIDED, DEFAULTS
@@ -32,24 +34,19 @@ public enum ConfigService {
 
     private CompositeConfiguration configs;
 
-    ConfigService() {
-        logger.info("Initializing Configs");
+    MonitorService monitorService;
 
-        String userProvidedFile = "gotz.properties";
-        String defaultsFile = "gotz-default.xml";
+    @Inject
+    void setMonitorService(MonitorService monitorService){
+        this.monitorService = monitorService;
+    }
 
-        init(userProvidedFile, defaultsFile);
-
-        logger.trace("{}", configsAsString(ConfigIndex.SYSTEM));
-        logger.debug("{}", configsAsString(ConfigIndex.PROVIDED));
-        logger.debug("{}", configsAsString(ConfigIndex.DEFAULTS));
-        logger.debug("Initialized Configs");
-
-        logger.info("Config precedence - SYSTEM, PROVIDED, DEFAULTS");
-        logger.info("Use gotz.properties or system property to override defaults");
+    @Inject
+    private ConfigService() {
     }
 
     public void init(String userProvidedFile, String defaultsFile) {
+        logger.info("Initializing Configs");
 
         configs = new CompositeConfiguration();
 
@@ -69,18 +66,26 @@ public enum ConfigService {
             configs.addConfiguration(defaults);
         } catch (ConfigurationException e) {
             logger.error("{}. Exit", e);
-            MonitorService.instance().triggerFatal("Config failure");
+            monitorService.triggerFatal("Config failure");
         }
 
         addRunDate();
         addRunDateTime();
+
+        logger.trace("{}", configsAsString(ConfigIndex.SYSTEM));
+        logger.debug("{}", configsAsString(ConfigIndex.PROVIDED));
+        logger.debug("{}", configsAsString(ConfigIndex.DEFAULTS));
+        logger.debug("Initialized Configs");
+
+        logger.info("Config precedence - SYSTEM, PROVIDED, DEFAULTS");
+        logger.info("Use gotz.properties or system property to override defaults");
     }
 
     public String getConfig(final String key) {
         String value = configs.getString(key);
         if (value == null) {
             logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            MonitorService.instance().triggerFatal("Config failure");
+            monitorService.triggerFatal("Config failure");
         }
         return value;
     }
@@ -89,7 +94,7 @@ public enum ConfigService {
         String[] values = configs.getStringArray(key);
         if (values.length == 0) {
             logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            MonitorService.instance().triggerFatal("Config failure");
+            monitorService.triggerFatal("Config failure");
         }
         return values;
     }
@@ -115,7 +120,7 @@ public enum ConfigService {
             runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
         } catch (ParseException e) {
             logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            MonitorService.instance().triggerFatal("Config failure");
+            monitorService.triggerFatal("Config failure");
         }
         return runDate;
     }
@@ -129,7 +134,7 @@ public enum ConfigService {
             runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
         } catch (ParseException e) {
             logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            MonitorService.instance().triggerFatal("Config failure");
+            monitorService.triggerFatal("Config failure");
         }
         return runDateTime;
     }
@@ -142,7 +147,7 @@ public enum ConfigService {
             highDate = DateUtils.parseDate(dateStr, patterns);
         } catch (ParseException e) {
             logger.error("{}", e); //$NON-NLS-1$
-            MonitorService.instance().triggerFatal("Config failure");
+            monitorService.triggerFatal("Config failure");
         }
         return highDate;
     }

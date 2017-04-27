@@ -7,6 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import javax.inject.Inject;
+
 import org.codetab.gotz.shared.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,8 @@ public abstract class Pool {
     private final Map<String, ExecutorService> executorsMap;
     private final ArrayList<Future<?>> futures;
 
+    private ConfigService configService;
+
     protected Pool() {
         executorsMap = new HashMap<String, ExecutorService>();
         futures = new ArrayList<Future<?>>();
@@ -35,7 +39,7 @@ public abstract class Pool {
         if (executor == null) {
             int poolSize = POOL_SIZE;
             try {
-                String ps = ConfigService.INSTANCE.getConfig("gotz.poolsize." + poolName);
+                String ps = configService.getConfig("gotz.poolsize." + poolName);
                 poolSize = Integer.valueOf(ps);
             } catch (NumberFormatException e) {
             }
@@ -47,10 +51,10 @@ public abstract class Pool {
     }
 
     @GuardedBy("this")
-    public final synchronized void submit(final String poolName, final Runnable task) {
+    public synchronized boolean submit(final String poolName, final Runnable task) {
         ExecutorService pool = getPool(poolName);
         Future<?> future = pool.submit(task);
-        futures.add(future);
+        return futures.add(future);
     }
 
     @GuardedBy("this")
@@ -83,7 +87,7 @@ public abstract class Pool {
         }
     }
 
-    public final void waitForFinish() {
+    public void waitForFinish() {
         while (!isDone()) {
             try {
                 Thread.sleep(SLEEP_MILLIS);
@@ -101,4 +105,8 @@ public abstract class Pool {
         }
     }
 
+    @Inject
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
+    }
 }

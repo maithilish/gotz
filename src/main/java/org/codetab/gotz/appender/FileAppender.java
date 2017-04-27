@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import javax.inject.Inject;
+
 import org.apache.commons.io.FileUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
@@ -23,6 +25,14 @@ public final class FileAppender extends Appender {
     private static final int QUEUE_CAPACITY = 1024;
 
     private BlockingQueue<Object> queue;
+
+    MonitorService monitorService;
+
+    @Inject
+    void setMonitorService(MonitorService monitorService){
+        this.monitorService = monitorService;
+    }
+
 
     public FileAppender() {
 
@@ -48,7 +58,7 @@ public final class FileAppender extends Appender {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            MonitorService.instance().addActivity(Type.GIVENUP, message, e);
+            monitorService.addActivity(Type.GIVENUP, message, e);
         } finally {
             writer.close();
         }

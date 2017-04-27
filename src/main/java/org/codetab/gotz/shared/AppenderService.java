@@ -4,8 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.appender.Appender.Marker;
+import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.pool.AppenderPoolService;
@@ -14,15 +18,29 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum AppenderService {
-
-    INSTANCE;
+@Singleton
+public class AppenderService {
 
     private final Logger logger = LoggerFactory.getLogger(AppenderService.class);
 
     private final Map<String, Appender> appenders;
 
-    AppenderService() {
+    private DInjector dInjector;
+
+    private AppenderPoolService appenderPoolService;
+
+    @Inject
+    public void setdInjector(DInjector dInjector) {
+        this.dInjector = dInjector;
+    }
+
+    @Inject
+    public void setAppenderPoolService(AppenderPoolService appenderPoolService) {
+        this.appenderPoolService = appenderPoolService;
+    }
+
+    @Inject
+    private AppenderService() {
         appenders = new HashMap<String, Appender>();
     }
 
@@ -45,7 +63,7 @@ public enum AppenderService {
         }
         Appender appender = null;
         Class<?> appenderClass = Class.forName(appenderClzName);
-        Object obj = appenderClass.newInstance();
+        Object obj = dInjector.instance(appenderClass);
         if (obj instanceof Appender) {
             appender = (Appender) obj;
         } else {
@@ -53,7 +71,7 @@ public enum AppenderService {
                     "Class " + appenderClzName + " is not of type Appender");
         }
         appender.setFields(fields);
-        AppenderPoolService.getInstance().submit("appender", appender);
+        appenderPoolService.submit("appender", appender);
         appenders.put(appenderName, appender);
     }
 

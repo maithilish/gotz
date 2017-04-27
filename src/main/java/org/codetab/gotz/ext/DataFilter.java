@@ -10,7 +10,6 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.step.Filter;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.FieldsIterator;
@@ -24,13 +23,13 @@ public final class DataFilter extends Filter {
 
     @Override
     public IStep instance() {
-        return new DataFilter();
+        return this;
     }
 
     @Override
     public void filter() throws Exception {
         List<Member> forRemovalMembers = new ArrayList<Member>();
-        Map<AxisName, List<FieldsBase>> filterMap = DataDefService.instance()
+        Map<AxisName, List<FieldsBase>> filterMap = dataDefService
                 .getFilterMap(getData().getDataDef());
         for (Member member : getData().getMembers()) {
             for (Axis axis : member.getAxes()) {
@@ -43,7 +42,7 @@ public final class DataFilter extends Filter {
         for (Member member : forRemovalMembers) {
             getData().getMembers().remove(member);
         }
-        DataDefService.instance().traceDataStructure(getData());
+        dataDefService.traceDataStructure(getData());
     }
 
     private boolean requireFilter(final Axis axis,

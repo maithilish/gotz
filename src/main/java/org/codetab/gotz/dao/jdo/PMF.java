@@ -7,39 +7,64 @@ import java.text.MessageFormat;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.jdo.JDOHelper;
 import javax.jdo.PersistenceManagerFactory;
 
+import org.apache.http.annotation.GuardedBy;
+import org.apache.http.annotation.ThreadSafe;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public enum PMF {
-
-    INSTANCE;
+@ThreadSafe
+@Singleton
+public class PMF {
 
     private final Logger logger = LoggerFactory.getLogger(PMF.class);
 
     private PersistenceManagerFactory factory;
+    private MonitorService monitorService;
+    private ConfigService configService;
 
-    PMF() {
-        logger.info("initialize JDO PMF");
-        try {
-            String configFile = ConfigService.INSTANCE
-                    .getConfig("gotz.datastore.configFile");
-            Properties properties = getConfigProperties(configFile);
+    @Inject
+    void setMonitorService(MonitorService monitorService) {
+        this.monitorService = monitorService;
+    }
 
-            factory = createFactory(properties);
-            logger.info("JDO PersistenceManagerFactory created");
+    @Inject
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
+    }
 
-            logger.debug("PMF Properties {}", pmfPropertiesString(properties));
-            logger.debug("initialized JDO PMF");
-        } catch (Exception e) {
-            logger.error("{} Exit", e.getMessage());
-            logger.trace("{}", e);
-            MonitorService.instance().triggerFatal("Database failure");
+    @Inject
+    private PMF() {
+    }
+
+    @GuardedBy("this")
+    public void init() {
+        if (factory == null) {
+            synchronized (this) {
+                logger.info("initialize JDO PMF");
+                try {
+                    String configFile = configService
+                            .getConfig("gotz.datastore.configFile");
+                    Properties properties = getConfigProperties(configFile);
+
+                    factory = createFactory(properties);
+                    logger.info("JDO PersistenceManagerFactory created");
+
+                    logger.debug("PMF Properties {}", pmfPropertiesString(properties));
+                    logger.debug("initialized JDO PMF");
+                } catch (Exception e) {
+                    logger.error("{} Exit", e.getMessage());
+                    logger.trace("{}", e);
+                    monitorService.triggerFatal("Database failure");
+                }
+            }
         }
     }
 

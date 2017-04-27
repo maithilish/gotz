@@ -16,7 +16,6 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.step.Parser;
 import org.codetab.gotz.util.DataDefUtil;
 import org.codetab.gotz.util.FieldsUtil;
@@ -77,7 +76,7 @@ public abstract class JSoupHtmlParser extends Parser {
      */
     private String getValue(final Document page, final DataDef dataDef,
             final Member member, final Axis axis) throws ScriptException,
-            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
@@ -120,7 +119,7 @@ public abstract class JSoupHtmlParser extends Parser {
         }
         LOGGER.trace("------Query Data------");
         LOGGER.trace("Scripts {} ", scripts);
-        jsEngine.put("configs", ConfigService.INSTANCE);
+        jsEngine.put("configs", configService);
         String scriptStr = FieldsUtil.getValue(scripts, "script");
         Object value = jsEngine.eval(scriptStr);
         return ConvertUtils.convert(value);

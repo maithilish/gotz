@@ -2,11 +2,15 @@ package org.codetab.gotz.step;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.FieldComparator;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.pool.TaskPoolService;
+import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.util.FieldsUtil;
@@ -27,6 +31,39 @@ public abstract class Step implements IStep {
     private boolean consistent = false;
     private List<FieldsBase> fields;
 
+    protected MonitorService monitorService;
+    protected DataDefService dataDefService;
+    protected ConfigService configService;
+    protected StepService stepService;
+    protected TaskPoolService taskPoolService;
+
+    @Inject
+    void setMonitorService(MonitorService monitorService){
+        this.monitorService = monitorService;
+    }
+
+
+    @Inject
+    void setDataDefService(DataDefService dataDefService){
+        this.dataDefService = dataDefService;
+    }
+
+    @Inject
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
+    }
+
+    @Inject
+    public void setStepService(StepService stepService) {
+        this.stepService = stepService;
+    }
+
+    @Inject
+    public void setTaskPoolService(TaskPoolService taskPoolService) {
+        this.taskPoolService = taskPoolService;
+    }
+
+
     /*
      *
      */
@@ -44,18 +81,18 @@ public abstract class Step implements IStep {
                     String stepClass = stepTask.getValue();
                     IStep task = createTask(nextStepType, stepClass, input,
                             nextStepFields);
-                    TaskPoolService.getInstance().submit(nextStepType, task);
+                    taskPoolService.submit(nextStepType, task);
                     LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
                             nextStepType, task.getClass(), label);
                 } else {
                     LOGGER.warn("step inconsistent, entity [{}]", label);
-                    MonitorService.instance().addActivity(Type.GIVENUP,
+                    monitorService.addActivity(Type.GIVENUP,
                             Util.buildString(givenUpMessage, ", step inconsistent"));
                 }
             }
         } catch (Exception e) {
             LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
-            MonitorService.instance().addActivity(Type.GIVENUP, givenUpMessage, e);
+            monitorService.addActivity(Type.GIVENUP, givenUpMessage, e);
         }
     }
 
@@ -158,7 +195,7 @@ public abstract class Step implements IStep {
             final Object input, final List<FieldsBase> fields)
                     throws ClassNotFoundException, InstantiationException,
                     IllegalAccessException {
-        IStep task = StepService.INSTANCE.getStep(taskClassName).instance();
+        IStep task = stepService.getStep(taskClassName).instance();
         task.setStepType(stepType);
         task.setInput(input);
         task.setFields(fields);

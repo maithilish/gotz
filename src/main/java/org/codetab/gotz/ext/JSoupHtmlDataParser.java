@@ -10,7 +10,7 @@ public final class JSoupHtmlDataParser extends JSoupHtmlParser {
 
     @Override
     public IStep instance() {
-        return new JSoupHtmlDataParser();
+        return this;
     }
 
 }

@@ -1,7 +1,6 @@
 package org.codetab.gotz.step;
 
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.shared.MonitorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ public abstract class Seeder extends Step {
         } catch (Exception e) {
             LOGGER.warn("{}", e.getLocalizedMessage());
             LOGGER.debug("{}", e);
-            MonitorService.instance().addActivity(Type.GIVENUP, "unable to seed", e);
+            monitorService.addActivity(Type.GIVENUP, "unable to seed", e);
 
         }
     }

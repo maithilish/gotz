@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.FieldNotFoundException;
@@ -30,6 +32,13 @@ public final class CsvTransformer extends Transformer {
 
     private StringBuilder content;
 
+    private AppenderService appenderService;
+
+    @Inject
+    public void setAppenderService(AppenderService appenderService) {
+        this.appenderService = appenderService;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -37,7 +46,7 @@ public final class CsvTransformer extends Transformer {
      */
     @Override
     public IStep instance() {
-        return new CsvTransformer();
+        return this;
     }
 
     /*
@@ -107,14 +116,14 @@ public final class CsvTransformer extends Transformer {
 
     @Override
     public void handover() throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, InterruptedException, FieldNotFoundException {
+    IllegalAccessException, InterruptedException, FieldNotFoundException {
         List<FieldsBase> appenders = FieldsUtil.getGroupFields(getFields(), "appender");
         for (FieldsBase f : appenders) {
             List<FieldsBase> fields = FieldsUtil.asList(f);
-            AppenderService.INSTANCE.createAppender(fields);
+            appenderService.createAppender(fields);
 
             String appenderName = FieldsUtil.getValue(fields, "name");
-            Appender appender = AppenderService.INSTANCE.getAppender(appenderName);
+            Appender appender = appenderService.getAppender(appenderName);
 
             appender.append(content);
         }

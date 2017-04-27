@@ -1,21 +1,30 @@
 package org.codetab.gotz;
 
+import org.codetab.gotz.di.BasicModule;
+import org.codetab.gotz.di.DInjector;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 public class Gotz {
 
-    private static GotzEngine gotzEngine = new GotzEngine();
+    private GotzEngine gotzEngine;
 
-    private Gotz() {
+    public Gotz(GotzEngine gotzEngine) {
+        this.gotzEngine = gotzEngine;
     }
 
-    public static void main(final String[] args) {
+    public void start(){
         gotzEngine.start();
     }
 
-    static void setGotzEngine(GotzEngine gotzEngine){
-        Gotz.gotzEngine = gotzEngine;
+    public static void main(final String[] args) {
+        Injector injector = Guice.createInjector(new BasicModule());
+        DInjector dInjector = injector.getInstance(DInjector.class);
+        GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);
+
+        Gotz gotz = new Gotz(gotzEngine);
+        gotz.start();
     }
 
-    static GotzEngine getGotzEngine(){
-        return Gotz.gotzEngine;
-    }
 }

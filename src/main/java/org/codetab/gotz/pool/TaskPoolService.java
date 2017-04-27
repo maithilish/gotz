@@ -1,13 +1,12 @@
 package org.codetab.gotz.pool;
 
-public final class TaskPoolService extends Pool {
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-    private static final TaskPoolService INSTANCE = new TaskPoolService();
+@Singleton
+public class TaskPoolService extends Pool {
 
+    @Inject
     private TaskPoolService() {
-    }
-
-    public static TaskPoolService getInstance() {
-        return INSTANCE;
     }
 }

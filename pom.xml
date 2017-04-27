@@ -108,9 +108,14 @@
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>  
+            <artifactId>assertj-core</artifactId>
             <version>3.6.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>4.1.0</version>
         </dependency>
     </dependencies>
 
@@ -123,6 +128,9 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <compilerArgs>
+                        <arg>-g</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <!-- datanucleus enhance -->

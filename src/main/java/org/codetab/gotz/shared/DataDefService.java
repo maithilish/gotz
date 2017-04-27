@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDataDefDao;
-import org.codetab.gotz.dao.jdo.DaoFactory;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Axis;
@@ -32,9 +35,8 @@ import org.codetab.gotz.validation.DataDefValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class DataDefService {
-
-    private static DataDefService INSTANCE;
 
     private final Logger logger = LoggerFactory.getLogger(DataDefService.class);
 
@@ -42,26 +44,45 @@ public class DataDefService {
 
     private Map<String, Set<Set<DMember>>> memberSetsMap = new HashMap<>();
 
-    public static DataDefService instance(){
-        if(INSTANCE == null){
-            INSTANCE = new DataDefService();
-        }
-        return INSTANCE;
+    private MonitorService monitorService;
+    private BeanService beanService;
+    private ConfigService configService;
+    private DaoFactory daoFactory;
+
+    @Inject
+    void setMonitorService(MonitorService monitorService){
+        this.monitorService = monitorService;
     }
 
-    DataDefService() {
-        logger.info("initialize DataDefs singleton");
-        init();
-        traceDataDefs();
-        try {
-            traceDataStructure();
-        } catch (ClassNotFoundException | IOException e) {
-            logger.warn("{}", Util.getMessage(e));
-        }
-        logger.debug("initialized DataDefs singleton");
+    @Inject
+    void setBeanService(BeanService beanService){
+        this.beanService = beanService;
     }
 
-    protected void init() {
+    @Inject
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
+    }
+
+    @Inject
+    public void setDaoFactory(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
+    @Inject
+    private DataDefService() {
+        //        logger.info("initialize DataDefs singleton");
+        //        init();
+        //        traceDataDefs();
+        //        try {
+        //            traceDataStructure();
+        //        } catch (ClassNotFoundException | IOException e) {
+        //            logger.warn("{}", Util.getMessage(e));
+        //        }
+        //        logger.debug("initialized DataDefs singleton");
+    }
+
+    public void init() {
         validateDataDefs();
         storeDataDefs();
         setDataDefsMap();
@@ -78,7 +99,7 @@ public class DataDefService {
             }
         }
         if (!valid) {
-            MonitorService.instance().triggerFatal("invalid Datadefs");
+            monitorService.triggerFatal("invalid Datadefs");
         }
     }
 
@@ -146,7 +167,7 @@ public class DataDefService {
     }
 
     private List<DataDef> getDataDefsFromBeans() {
-        List<DataDef> dataDefs = BeanService.instance().getBeans(DataDef.class);
+        List<DataDef> dataDefs = beanService.getBeans(DataDef.class);
         for (DataDef dataDef : dataDefs) {
             setDefaults(dataDef);
             setDates(dataDef);
@@ -208,19 +229,19 @@ public class DataDefService {
     }
 
     private void setDates(final DataDef dataDef) {
-        dataDef.setFromDate(ConfigService.INSTANCE.getRunDateTime());
-        dataDef.setToDate(ConfigService.INSTANCE.getHighDate());
+        dataDef.setFromDate(configService.getRunDateTime());
+        dataDef.setToDate(configService.getHighDate());
     }
 
     private void resetHighDate(final DataDef dataDef) {
-        dataDef.setToDate(ConfigService.INSTANCE.getRunDateTime());
+        dataDef.setToDate(configService.getRunDateTime());
     }
 
     private void storeDataDef(final DataDef dataDef) {
         try {
             ORM orm = DaoFactory
-                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
-            IDataDefDao dao = DaoFactory.getDaoFactory(orm).getDataDefDao();
+                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
+            IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
             String name = dataDef.getName();
             logger.debug("store DataDef");
             dao.storeDataDef(dataDef);
@@ -237,10 +258,10 @@ public class DataDefService {
     private List<DataDef> loadDataDefsFromStore() {
         try {
             ORM orm = DaoFactory
-                    .getOrmType(ConfigService.INSTANCE.getConfig("gotz.datastore.orm"));
-            IDataDefDao dao = DaoFactory.getDaoFactory(orm).getDataDefDao();
+                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
+            IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
             List<DataDef> dataDefs = dao
-                    .getDataDefs(ConfigService.INSTANCE.getRunDateTime());
+                    .getDataDefs(configService.getRunDateTime());
             logger.debug("DataDef loaded : [{}]", dataDefs.size());
             return dataDefs;
         } catch (RuntimeException e) {
