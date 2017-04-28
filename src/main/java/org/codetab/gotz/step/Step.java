@@ -9,9 +9,9 @@ import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.FieldComparator;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.pool.TaskPoolService;
+import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
-import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -31,20 +31,19 @@ public abstract class Step implements IStep {
     private boolean consistent = false;
     private List<FieldsBase> fields;
 
-    protected MonitorService monitorService;
     protected DataDefService dataDefService;
     protected ConfigService configService;
     protected StepService stepService;
     protected TaskPoolService taskPoolService;
+    protected ActivityService activityService;
 
     @Inject
-    void setMonitorService(MonitorService monitorService){
-        this.monitorService = monitorService;
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
     }
 
-
     @Inject
-    void setDataDefService(DataDefService dataDefService){
+    void setDataDefService(DataDefService dataDefService) {
         this.dataDefService = dataDefService;
     }
 
@@ -62,7 +61,6 @@ public abstract class Step implements IStep {
     public void setTaskPoolService(TaskPoolService taskPoolService) {
         this.taskPoolService = taskPoolService;
     }
-
 
     /*
      *
@@ -86,13 +84,13 @@ public abstract class Step implements IStep {
                             nextStepType, task.getClass(), label);
                 } else {
                     LOGGER.warn("step inconsistent, entity [{}]", label);
-                    monitorService.addActivity(Type.GIVENUP,
+                    activityService.addActivity(Type.GIVENUP,
                             Util.buildString(givenUpMessage, ", step inconsistent"));
                 }
             }
         } catch (Exception e) {
             LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
-            monitorService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
         }
     }
 

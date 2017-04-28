@@ -9,6 +9,7 @@ import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.shared.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +42,7 @@ public abstract class Pool {
             try {
                 String ps = configService.getConfig("gotz.poolsize." + poolName);
                 poolSize = Integer.valueOf(ps);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException | FatalException e) {
             }
             executor = Executors.newFixedThreadPool(poolSize);
             LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName, poolSize);

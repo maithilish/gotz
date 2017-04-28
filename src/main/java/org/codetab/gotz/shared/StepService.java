@@ -21,7 +21,7 @@ public class StepService {
     }
 
     public IStep getStep(final String clzName) throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException {
+            InstantiationException, IllegalAccessException {
         IStep step = null;
         Class<?> stepClass = Class.forName(clzName);
         Object obj = dInjector.instance(stepClass);

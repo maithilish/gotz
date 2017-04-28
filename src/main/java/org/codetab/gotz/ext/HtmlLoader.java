@@ -3,6 +3,7 @@ package org.codetab.gotz.ext;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Loader;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public final class HtmlLoader extends Loader {
         String key = "gotz.webClient.timeout";
         try {
             timeout = Integer.parseInt(configService.getConfig(key));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | FatalException e) {
             // TODO add activity or update config with default
             String msg = "for config [" + key + "] using default value " + timeout;
             LOGGER.warn("{}. {}", e, msg);

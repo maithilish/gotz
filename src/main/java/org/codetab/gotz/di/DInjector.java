@@ -18,7 +18,7 @@ public class DInjector {
         this.injector = injector;
     }
 
-    public <T> T instance(Class<T> clz){
+    public <T> T instance(Class<T> clz) {
         return injector.getInstance(clz);
     }
 }

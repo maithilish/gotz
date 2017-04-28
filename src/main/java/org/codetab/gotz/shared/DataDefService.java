@@ -16,6 +16,7 @@ import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.exception.DataDefNotFoundException;
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -44,18 +45,12 @@ public class DataDefService {
 
     private Map<String, Set<Set<DMember>>> memberSetsMap = new HashMap<>();
 
-    private MonitorService monitorService;
     private BeanService beanService;
     private ConfigService configService;
     private DaoFactory daoFactory;
 
     @Inject
-    void setMonitorService(MonitorService monitorService){
-        this.monitorService = monitorService;
-    }
-
-    @Inject
-    void setBeanService(BeanService beanService){
+    void setBeanService(BeanService beanService) {
         this.beanService = beanService;
     }
 
@@ -71,24 +66,25 @@ public class DataDefService {
 
     @Inject
     private DataDefService() {
-        //        logger.info("initialize DataDefs singleton");
-        //        init();
-        //        traceDataDefs();
-        //        try {
-        //            traceDataStructure();
-        //        } catch (ClassNotFoundException | IOException e) {
-        //            logger.warn("{}", Util.getMessage(e));
-        //        }
-        //        logger.debug("initialized DataDefs singleton");
     }
 
-    public void init() {
+    public void init() throws FatalException {
+        logger.info("initialize DataDefs singleton");
+
         validateDataDefs();
         storeDataDefs();
         setDataDefsMap();
+
+        traceDataDefs();
+        try {
+            traceDataStructure();
+        } catch (ClassNotFoundException | IOException e) {
+            logger.warn("{}", Util.getMessage(e));
+        }
+        logger.debug("initialized DataDefs singleton");
     }
 
-    private void validateDataDefs() {
+    private void validateDataDefs() throws FatalException {
         DataDefValidator validator = new DataDefValidator();
         List<DataDef> dataDefs = getDataDefsFromBeans();
         boolean valid = true;
@@ -99,11 +95,11 @@ public class DataDefService {
             }
         }
         if (!valid) {
-            monitorService.triggerFatal("invalid Datadefs");
+            throw new FatalException("invalid Datadefs");
         }
     }
 
-    private void storeDataDefs() {
+    private void storeDataDefs() throws FatalException {
         List<DataDef> newDataDefs = getDataDefsFromBeans();
         List<DataDef> oldDataDefs = loadDataDefsFromStore();
 
@@ -155,7 +151,7 @@ public class DataDefService {
         return null;
     }
 
-    private void setDataDefsMap() {
+    private void setDataDefsMap() throws FatalException {
         // List<DataDef> newDataDefs = getDataDefsFromBeans();
         List<DataDef> storedDataDefs = loadDataDefsFromStore();
         // copyFields(newDataDefs, storedDataDefs);
@@ -166,7 +162,7 @@ public class DataDefService {
         }
     }
 
-    private List<DataDef> getDataDefsFromBeans() {
+    private List<DataDef> getDataDefsFromBeans() throws FatalException {
         List<DataDef> dataDefs = beanService.getBeans(DataDef.class);
         for (DataDef dataDef : dataDefs) {
             setDefaults(dataDef);
@@ -228,16 +224,16 @@ public class DataDefService {
         }
     }
 
-    private void setDates(final DataDef dataDef) {
+    private void setDates(final DataDef dataDef) throws FatalException {
         dataDef.setFromDate(configService.getRunDateTime());
         dataDef.setToDate(configService.getHighDate());
     }
 
-    private void resetHighDate(final DataDef dataDef) {
+    private void resetHighDate(final DataDef dataDef) throws FatalException {
         dataDef.setToDate(configService.getRunDateTime());
     }
 
-    private void storeDataDef(final DataDef dataDef) {
+    private void storeDataDef(final DataDef dataDef) throws FatalException {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
@@ -255,13 +251,12 @@ public class DataDefService {
         }
     }
 
-    private List<DataDef> loadDataDefsFromStore() {
+    private List<DataDef> loadDataDefsFromStore() throws FatalException {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
             IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
-            List<DataDef> dataDefs = dao
-                    .getDataDefs(configService.getRunDateTime());
+            List<DataDef> dataDefs = dao.getDataDefs(configService.getRunDateTime());
             logger.debug("DataDef loaded : [{}]", dataDefs.size());
             return dataDefs;
         } catch (RuntimeException e) {

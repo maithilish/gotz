@@ -19,6 +19,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,18 +35,11 @@ public class ConfigService {
 
     private CompositeConfiguration configs;
 
-    MonitorService monitorService;
-
-    @Inject
-    void setMonitorService(MonitorService monitorService){
-        this.monitorService = monitorService;
-    }
-
     @Inject
     private ConfigService() {
     }
 
-    public void init(String userProvidedFile, String defaultsFile) {
+    public void init(String userProvidedFile, String defaultsFile) throws FatalException {
         logger.info("Initializing Configs");
 
         configs = new CompositeConfiguration();
@@ -66,7 +60,7 @@ public class ConfigService {
             configs.addConfiguration(defaults);
         } catch (ConfigurationException e) {
             logger.error("{}. Exit", e);
-            monitorService.triggerFatal("Config failure");
+            throw new FatalException("Configure error");
         }
 
         addRunDate();
@@ -81,20 +75,20 @@ public class ConfigService {
         logger.info("Use gotz.properties or system property to override defaults");
     }
 
-    public String getConfig(final String key) {
+    public String getConfig(final String key) throws FatalException {
         String value = configs.getString(key);
         if (value == null) {
             logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            monitorService.triggerFatal("Config failure");
+            throw new FatalException("Configure error");
         }
         return value;
     }
 
-    public String[] getConfigArray(final String key) {
+    public String[] getConfigArray(final String key) throws FatalException {
         String[] values = configs.getStringArray(key);
         if (values.length == 0) {
             logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            monitorService.triggerFatal("Config failure");
+            throw new FatalException("config failure");
         }
         return values;
     }
@@ -111,21 +105,20 @@ public class ConfigService {
         return configs.getConfiguration(index.ordinal());
     }
 
-    public Date getRunDate() {
+    public Date getRunDate() throws FatalException {
         Date runDate = null;
         String dateStr = getConfig("gotz.runDate"); //$NON-NLS-1$
         String patterns = getConfig("gotz.dateParsePattern"); //$NON-NLS-1$
-
         try {
             runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
         } catch (ParseException e) {
-            logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            monitorService.triggerFatal("Config failure");
+            logger.error("RunDate error. {}", e); //$NON-NLS-1$
+            throw new FatalException("config failure");
         }
         return runDate;
     }
 
-    public Date getRunDateTime() {
+    public Date getRunDateTime() throws FatalException {
         Date runDateTime = null;
         String dateTimeStr = getConfig("gotz.runDateTime"); //$NON-NLS-1$
         String patterns = getConfig("gotz.dateTimeParsePattern"); //$NON-NLS-1$
@@ -134,12 +127,12 @@ public class ConfigService {
             runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
         } catch (ParseException e) {
             logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            monitorService.triggerFatal("Config failure");
+            throw new FatalException("config failure");
         }
         return runDateTime;
     }
 
-    public Date getHighDate() {
+    public Date getHighDate() throws FatalException {
         Date highDate = null;
         String dateStr = getConfig("gotz.highDate"); //$NON-NLS-1$
         String[] patterns = getConfigArray("gotz.dateTimeParsePattern"); //$NON-NLS-1$
@@ -147,7 +140,7 @@ public class ConfigService {
             highDate = DateUtils.parseDate(dateStr, patterns);
         } catch (ParseException e) {
             logger.error("{}", e); //$NON-NLS-1$
-            monitorService.triggerFatal("Config failure");
+            throw new FatalException("config failure");
         }
         return highDate;
     }

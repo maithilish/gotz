@@ -18,6 +18,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.ObjectFactory;
 import org.codetab.gotz.model.Wrapper;
@@ -36,20 +37,13 @@ public class BeanService {
     private List<Bean> beanFiles;
     private List<Object> beans;
 
-    private MonitorService monitorService;
-
     private ConfigService configService;
-
-    @Inject
-    void setMonitorService(MonitorService monitorService){
-        this.monitorService = monitorService;
-    }
 
     @Inject
     private BeanService() {
     }
 
-    public void init() {
+    public void init() throws FatalException {
         logger.info("initialize singleton {}", "BeanService");
         try {
             validateBeanFile();
@@ -59,8 +53,7 @@ public class BeanService {
         } catch (JAXBException | ClassNotFoundException | SAXException | IOException e) {
             logger.trace("{}", e);
             logger.error("{}", e.getLocalizedMessage());
-            monitorService
-            .triggerFatal("initialization failure : " + "BeanService");
+            throw new FatalException("initialization failure : BeanService");
         }
         logger.debug("initialized singleton {}", "BeanService");
     }
@@ -88,13 +81,15 @@ public class BeanService {
         return beans.stream().filter(ofClass::isInstance).count();
     }
 
-    private void validateBeanFile() throws JAXBException, SAXException, IOException {
+    private void validateBeanFile()
+            throws JAXBException, SAXException, IOException, FatalException {
         String beanFile = configService.getConfig("gotz.beanFile");
         String schemaFile = configService.getConfig("gotz.schemaFile");
         validateSchema(beanFile, schemaFile);
     }
 
-    private List<Bean> setBeanFiles() throws JAXBException, SAXException, IOException {
+    private List<Bean> setBeanFiles()
+            throws JAXBException, SAXException, IOException, FatalException {
         String beanFile = configService.getConfig("gotz.beanFile");
         String schemaFile = configService.getConfig("gotz.schemaFile");
         String baseName = FilenameUtils.getFullPath(beanFile);

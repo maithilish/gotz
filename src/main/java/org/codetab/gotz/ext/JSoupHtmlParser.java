@@ -76,7 +76,7 @@ public abstract class JSoupHtmlParser extends Parser {
      */
     private String getValue(final Document page, final DataDef dataDef,
             final Member member, final Axis axis) throws ScriptException,
-    IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();

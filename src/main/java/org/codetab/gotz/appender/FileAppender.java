@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import org.apache.commons.io.FileUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.shared.MonitorService;
+import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -26,13 +26,7 @@ public final class FileAppender extends Appender {
 
     private BlockingQueue<Object> queue;
 
-    MonitorService monitorService;
-
-    @Inject
-    void setMonitorService(MonitorService monitorService){
-        this.monitorService = monitorService;
-    }
-
+    private ActivityService activityService;
 
     public FileAppender() {
 
@@ -58,7 +52,7 @@ public final class FileAppender extends Appender {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            monitorService.addActivity(Type.GIVENUP, message, e);
+            activityService.addActivity(Type.GIVENUP, message, e);
         } finally {
             writer.close();
         }
@@ -67,5 +61,10 @@ public final class FileAppender extends Appender {
     @Override
     public void append(final Object object) throws InterruptedException {
         queue.put(object);
+    }
+
+    @Inject
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
     }
 }

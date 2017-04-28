@@ -23,7 +23,7 @@ public final class HtmlLocatorParser extends HtmlParser {
     private BeanService beanService;
 
     @Inject
-    void setBeanService(BeanService beanService){
+    void setBeanService(BeanService beanService) {
         this.beanService = beanService;
     }
 

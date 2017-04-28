@@ -21,6 +21,7 @@ import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ILocatorDao;
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
@@ -28,7 +29,6 @@ import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
-import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -41,20 +41,13 @@ public abstract class Loader extends Step {
     private Locator locator;
     private Document document;
 
-    MonitorService monitorService;
-
     private DaoFactory daoFactory;
-
-    @Override
-    @Inject
-    void setMonitorService(MonitorService monitorService){
-        this.monitorService = monitorService;
-    }
 
     @Inject
     public void setDaoFactory(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
+
     /*
      * (non-Javadoc)
      *
@@ -74,7 +67,7 @@ public abstract class Loader extends Step {
                         " group=", locator.getGroup(), "]");
                 LOGGER.error("{} {}", message, Util.getMessage(e));
                 LOGGER.debug("{}", e);
-                monitorService.addActivity(Type.GIVENUP, message, e);
+                activityService.addActivity(Type.GIVENUP, message, e);
             }
         }
     }
@@ -142,8 +135,8 @@ public abstract class Loader extends Step {
              */
             try {
                 List<FieldsBase> fields = locator.getFields();
-                ORM orm = DaoFactory.getOrmType(
-                        configService.getConfig("gotz.datastore.orm"));
+                ORM orm = DaoFactory
+                        .getOrmType(configService.getConfig("gotz.datastore.orm"));
                 ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();
                 dao.storeLocator(locator);
                 // reload locator and document
@@ -200,7 +193,7 @@ public abstract class Loader extends Step {
                     pushTask(document, fieldsList);
                 } else {
                     LOGGER.warn("Document not loaded - Locator [{}]", locator);
-                    monitorService.addActivity(Type.GIVENUP,
+                    activityService.addActivity(Type.GIVENUP,
                             "Document not loaded. " + givenUpMessage);
                 }
             }
@@ -232,7 +225,8 @@ public abstract class Loader extends Step {
         }
     }
 
-    private Locator getLocatorFromStore(final String locName, final String locGroup) {
+    private Locator getLocatorFromStore(final String locName, final String locGroup)
+            throws FatalException {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
@@ -246,7 +240,7 @@ public abstract class Loader extends Step {
         }
     }
 
-    private Long getLiveDocumentId() {
+    private Long getLiveDocumentId() throws FatalException {
         Long liveDocumentId = null;
         if (locator.getId() == null) {
             // new locator so no document
@@ -264,7 +258,7 @@ public abstract class Loader extends Step {
         return liveDocumentId;
     }
 
-    private Date getToDate() {
+    private Date getToDate() throws FatalException {
         ZonedDateTime fromDate = ZonedDateTime
                 .ofInstant(document.getFromDate().toInstant(), ZoneId.systemDefault());
         ZonedDateTime toDate = null;
@@ -282,8 +276,7 @@ public abstract class Loader extends Step {
             TemporalAmount ta = Util.praseTemporalAmount(live);
             toDate = fromDate.plus(ta);
         } catch (DateTimeParseException e) {
-            String[] patterns = configService
-                    .getConfigArray("gotz.dateParsePattern");
+            String[] patterns = configService.getConfigArray("gotz.dateParsePattern");
             try {
                 // multiple patterns so needs DateUtils
                 Date td = DateUtils.parseDateStrictly(live, patterns);
@@ -300,7 +293,7 @@ public abstract class Loader extends Step {
         return Date.from(Instant.from(toDate));
     }
 
-    private Document getDocument(final Long id) {
+    private Document getDocument(final Long id) throws FatalException {
         // get Document with documentObject
         try {
             ORM orm = DaoFactory

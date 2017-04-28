@@ -4,13 +4,15 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
+import org.codetab.gotz.exception.FatalException;
+import org.codetab.gotz.misc.ShutdownHook;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.pool.TaskPoolService;
+import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
-import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.IStep;
 import org.slf4j.Logger;
@@ -21,7 +23,7 @@ public class GotzEngine {
     static final Logger LOGGER = LoggerFactory.getLogger(GotzEngine.class);
 
     // di items
-    private MonitorService monitorService;
+    private ActivityService activityService;
     private ConfigService configService;
     private BeanService beanService;
     private DataDefService dataDefService;
@@ -29,11 +31,39 @@ public class GotzEngine {
     private TaskPoolService taskPoolService;
     private AppenderPoolService appenderPoolService;
     private AppenderService appenderService;
+    private ShutdownHook shutdownHook;
+    private Runtime runTime;
 
+    @Inject
+    private GotzEngine() {
+
+    }
+
+    /*
+     * single thread env throws FatalException and terminates the app and multi thread env
+     * also throws FatalException but they are catched at thread level and terminates the
+     * thread
+     *
+     */
     public void start() {
+        try {
+            // single thread env
+            initSystem();
+            IStep task = createInitialTask();
 
+            // multi thread env
+            executeInitalTask(task);
+            waitForFinish();
+        } catch (FatalException e) {
+            LOGGER.error("{}", e);
+        }
+    }
+
+    private void initSystem() throws FatalException {
         LOGGER.info("Starting GotzEngine");
-        monitorService.start();
+
+        runTime.addShutdownHook(shutdownHook);
+        activityService.start();
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
@@ -49,30 +79,33 @@ public class GotzEngine {
         dataDefService.init();
         int dataDefsCount = dataDefService.getCount();
         LOGGER.info("DataDefs loaded {}", dataDefsCount);
+    }
 
-        String seederClassName = configService.getConfig("gotz.seederClass");
-        seed(seederClassName);
+    private IStep createInitialTask() throws FatalException {
+        try {
+            String seederClassName = configService.getConfig("gotz.seederClass");
+            IStep task = stepService.getStep(seederClassName);
+            task = task.instance();
+            return task;
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException e) {
+            LOGGER.error("{}", e);
+            throw new FatalException("unable to create initial task");
+        }
+    }
 
+    private void executeInitalTask(IStep task) {
+        taskPoolService.submit("seeder", task);
+    }
+
+    private void waitForFinish() {
         taskPoolService.waitForFinish();
 
         appenderService.closeAll();
         appenderPoolService.waitForFinish();
 
-        monitorService.end();
+        activityService.end();
         LOGGER.info("GotzEngine shutdown");
-
-    }
-
-    private void seed(String seederClassName) {
-        try {
-            IStep task = stepService.getStep(seederClassName);
-            task = task.instance();
-            taskPoolService.submit("seeder", task);
-        } catch (ClassNotFoundException | InstantiationException
-                | IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     private String getMode() {
@@ -87,8 +120,8 @@ public class GotzEngine {
     }
 
     @Inject
-    public void setMonitorService(MonitorService monitorService) {
-        this.monitorService = monitorService;
+    public void setActivityService(ActivityService activityService) {
+        this.activityService = activityService;
     }
 
     @Inject
@@ -124,6 +157,16 @@ public class GotzEngine {
     @Inject
     public void setAppenderService(AppenderService appenderService) {
         this.appenderService = appenderService;
+    }
+
+    @Inject
+    public void setShutdownHook(ShutdownHook shutdownHook) {
+        this.shutdownHook = shutdownHook;
+    }
+
+    @Inject
+    public void setRunTime(Runtime runTime) {
+        this.runTime = runTime;
     }
 
 }

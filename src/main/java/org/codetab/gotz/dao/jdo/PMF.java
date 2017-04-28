@@ -14,8 +14,8 @@ import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.http.annotation.GuardedBy;
 import org.apache.http.annotation.ThreadSafe;
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.shared.MonitorService;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,13 +27,7 @@ public class PMF {
     private final Logger logger = LoggerFactory.getLogger(PMF.class);
 
     private PersistenceManagerFactory factory;
-    private MonitorService monitorService;
     private ConfigService configService;
-
-    @Inject
-    void setMonitorService(MonitorService monitorService) {
-        this.monitorService = monitorService;
-    }
 
     @Inject
     public void setConfigService(ConfigService configService) {
@@ -45,7 +39,7 @@ public class PMF {
     }
 
     @GuardedBy("this")
-    public void init() {
+    public void init() throws FatalException {
         if (factory == null) {
             synchronized (this) {
                 logger.info("initialize JDO PMF");
@@ -62,7 +56,7 @@ public class PMF {
                 } catch (Exception e) {
                     logger.error("{} Exit", e.getMessage());
                     logger.trace("{}", e);
-                    monitorService.triggerFatal("Database failure");
+                    throw new FatalException("JDO Persistence Manager setup error");
                 }
             }
         }

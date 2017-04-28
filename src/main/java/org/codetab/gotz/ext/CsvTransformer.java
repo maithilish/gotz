@@ -116,7 +116,7 @@ public final class CsvTransformer extends Transformer {
 
     @Override
     public void handover() throws ClassNotFoundException, InstantiationException,
-    IllegalAccessException, InterruptedException, FieldNotFoundException {
+            IllegalAccessException, InterruptedException, FieldNotFoundException {
         List<FieldsBase> appenders = FieldsUtil.getGroupFields(getFields(), "appender");
         for (FieldsBase f : appenders) {
             List<FieldsBase> fields = FieldsUtil.asList(f);

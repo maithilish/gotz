@@ -34,7 +34,7 @@ public class LocatorSeeder extends Seeder {
 
     @Override
     public IStep instance() {
-        //Step step = new LocatorSeeder();
+        // Step step = new LocatorSeeder();
         this.setStepType("seeder");
         return this;
     }

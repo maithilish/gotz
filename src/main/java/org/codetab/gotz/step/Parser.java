@@ -17,6 +17,7 @@ import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.exception.DataDefNotFoundException;
+import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
@@ -78,7 +79,7 @@ public abstract class Parser extends Step {
             String message = "parse data " + Util.getLocatorLabel(getFields());
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            monitorService.addActivity(Type.GIVENUP, message, e);
+            activityService.addActivity(Type.GIVENUP, message, e);
         }
     }
 
@@ -252,8 +253,8 @@ public abstract class Parser extends Step {
         }
         if (persist) {
             try {
-                ORM orm = DaoFactory.getOrmType(
-                        configService.getConfig("gotz.datastore.orm"));
+                ORM orm = DaoFactory
+                        .getOrmType(configService.getConfig("gotz.datastore.orm"));
                 IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
                 dao.storeData(data);
                 data = dao.getData(data.getId());
@@ -326,7 +327,8 @@ public abstract class Parser extends Step {
         return data;
     }
 
-    private Data getDataFromStore(final Long dataDefId, final Long documentId) {
+    private Data getDataFromStore(final Long dataDefId, final Long documentId)
+            throws FatalException {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
