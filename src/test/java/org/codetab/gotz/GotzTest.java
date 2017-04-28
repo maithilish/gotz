@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -13,6 +14,9 @@ public class GotzTest {
     @Mock
     GotzEngine gotzEngine;
 
+    @InjectMocks
+    Gotz gotz;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
@@ -20,12 +24,12 @@ public class GotzTest {
 
     @Test
     public void testStart() {
-        Gotz gotz = new Gotz(gotzEngine);
-
         verifyZeroInteractions(gotzEngine);
 
+        // when
         gotz.start();
 
+        // then
         verify(gotzEngine).start();
     }
 
