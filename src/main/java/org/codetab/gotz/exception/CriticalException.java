@@ -1,12 +1,12 @@
 package org.codetab.gotz.exception;
 
-public class FatalException extends Exception {
+public class CriticalException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     private String message;
 
-    public FatalException(final String message) {
+    public CriticalException(final String message) {
         this.message = message;
     }
 

@@ -7,7 +7,6 @@ import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ILocatorDao;
-import org.codetab.gotz.exception.FatalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,7 @@ public final class DaoFactory extends org.codetab.gotz.dao.DaoFactory {
     private PMF pmf;
 
     @Inject
-    public void setPmf(PMF pmf) throws FatalException {
+    public void setPmf(PMF pmf) {
         if (pmf.getFactory() == null) {
             pmf.init();
         }

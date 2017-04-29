@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import org.codetab.gotz.exception.FatalException;
+import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Loader;
 import org.jsoup.Jsoup;
@@ -43,7 +43,7 @@ public final class JSoupHtmlLoader extends Loader {
         String key = "gotz.webClient.timeout";
         try {
             timeout = Integer.parseInt(configService.getConfig(key));
-        } catch (NumberFormatException | FatalException e) {
+        } catch (NumberFormatException | ConfigNotFoundException e) {
             // TODO add activity or update config with default
             String msg = "for config [" + key + "] using default value " + timeout;
             LOGGER.warn("{}. {}", e, msg);
@@ -56,7 +56,7 @@ public final class JSoupHtmlLoader extends Loader {
         String key = "gotz.webClient.userAgent";
         try {
             userAgent = configService.getConfig(key);
-        } catch (FatalException e) {
+        } catch (ConfigNotFoundException e) {
             String msg = "for config [" + key + "] using default value " + userAgent;
             LOGGER.warn("{}. {}", e, msg);
         }

@@ -19,7 +19,8 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.exception.FatalException;
+import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,8 @@ public class ConfigService {
     private ConfigService() {
     }
 
-    public void init(String userProvidedFile, String defaultsFile) throws FatalException {
+    public void init(String userProvidedFile, String defaultsFile)
+    {
         logger.info("Initializing Configs");
 
         configs = new CompositeConfiguration();
@@ -60,7 +62,7 @@ public class ConfigService {
             configs.addConfiguration(defaults);
         } catch (ConfigurationException e) {
             logger.error("{}. Exit", e);
-            throw new FatalException("Configure error");
+            throw new CriticalException("Configure error");
         }
 
         addRunDate();
@@ -75,20 +77,20 @@ public class ConfigService {
         logger.info("Use gotz.properties or system property to override defaults");
     }
 
-    public String getConfig(final String key) throws FatalException {
+    public String getConfig(final String key) throws ConfigNotFoundException {
         String value = configs.getString(key);
         if (value == null) {
             logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            throw new FatalException("Configure error");
+            throw new ConfigNotFoundException(key);
         }
         return value;
     }
 
-    public String[] getConfigArray(final String key) throws FatalException {
+    public String[] getConfigArray(final String key) throws ConfigNotFoundException {
         String[] values = configs.getStringArray(key);
         if (values.length == 0) {
             logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
-            throw new FatalException("config failure");
+            throw new ConfigNotFoundException(key);
         }
         return values;
     }
@@ -105,44 +107,44 @@ public class ConfigService {
         return configs.getConfiguration(index.ordinal());
     }
 
-    public Date getRunDate() throws FatalException {
-        Date runDate = null;
-        String dateStr = getConfig("gotz.runDate"); //$NON-NLS-1$
-        String patterns = getConfig("gotz.dateParsePattern"); //$NON-NLS-1$
+    public Date getRunDate() {
         try {
+            Date runDate = null;
+            String dateStr = getConfig("gotz.runDate"); //$NON-NLS-1$
+            String patterns = getConfig("gotz.dateParsePattern"); //$NON-NLS-1$
             runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
-        } catch (ParseException e) {
+            return runDate;
+        } catch (ParseException | ConfigNotFoundException e) {
             logger.error("RunDate error. {}", e); //$NON-NLS-1$
-            throw new FatalException("config failure");
+            throw new CriticalException("config failure");
         }
-        return runDate;
     }
 
-    public Date getRunDateTime() throws FatalException {
-        Date runDateTime = null;
-        String dateTimeStr = getConfig("gotz.runDateTime"); //$NON-NLS-1$
-        String patterns = getConfig("gotz.dateTimeParsePattern"); //$NON-NLS-1$
-
+    public Date getRunDateTime() {
         try {
+            Date runDateTime = null;
+            String dateTimeStr = getConfig("gotz.runDateTime"); //$NON-NLS-1$
+            String patterns = getConfig("gotz.dateTimeParsePattern"); //$NON-NLS-1$
             runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
-        } catch (ParseException e) {
+            return runDateTime;
+        } catch (ParseException | ConfigNotFoundException e) {
             logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            throw new FatalException("config failure");
+            throw new CriticalException("config failure");
         }
-        return runDateTime;
     }
 
-    public Date getHighDate() throws FatalException {
-        Date highDate = null;
-        String dateStr = getConfig("gotz.highDate"); //$NON-NLS-1$
-        String[] patterns = getConfigArray("gotz.dateTimeParsePattern"); //$NON-NLS-1$
+    public Date getHighDate() {
         try {
+            Date highDate = null;
+            String dateStr = getConfig("gotz.highDate"); //$NON-NLS-1$
+            String[] patterns = getConfigArray("gotz.dateTimeParsePattern"); //$NON-NLS-1$
             highDate = DateUtils.parseDate(dateStr, patterns);
-        } catch (ParseException e) {
+            return highDate;
+        } catch (ParseException | ConfigNotFoundException e) {
             logger.error("{}", e); //$NON-NLS-1$
-            throw new FatalException("config failure");
+            throw new CriticalException("config failure");
         }
-        return highDate;
+
     }
 
     // public boolean isTestMode() {

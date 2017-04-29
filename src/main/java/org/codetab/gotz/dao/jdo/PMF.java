@@ -14,7 +14,7 @@ import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.http.annotation.GuardedBy;
 import org.apache.http.annotation.ThreadSafe;
-import org.codetab.gotz.exception.FatalException;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -39,7 +39,7 @@ public class PMF {
     }
 
     @GuardedBy("this")
-    public void init() throws FatalException {
+    public void init() {
         if (factory == null) {
             synchronized (this) {
                 logger.info("initialize JDO PMF");
@@ -56,7 +56,7 @@ public class PMF {
                 } catch (Exception e) {
                     logger.error("{} Exit", e.getMessage());
                     logger.trace("{}", e);
-                    throw new FatalException("JDO Persistence Manager setup error");
+                    throw new CriticalException("JDO Persistence Manager setup error");
                 }
             }
         }

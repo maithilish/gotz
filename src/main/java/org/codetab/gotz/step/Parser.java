@@ -16,8 +16,9 @@ import org.apache.commons.lang3.Range;
 import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDataDao;
+import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
@@ -327,18 +328,17 @@ public abstract class Parser extends Step {
         return data;
     }
 
-    private Data getDataFromStore(final Long dataDefId, final Long documentId)
-            throws FatalException {
+    private Data getDataFromStore(final Long dataDefId, final Long documentId) {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
             IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
             Data data = dao.getData(documentId, dataDefId);
             return data;
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | ConfigNotFoundException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw e;
+            throw new CriticalException("config error");
         }
     }
 

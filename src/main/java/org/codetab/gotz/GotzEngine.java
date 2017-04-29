@@ -4,7 +4,8 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.exception.FatalException;
+import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.misc.ShutdownHook;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.pool.TaskPoolService;
@@ -40,9 +41,9 @@ public class GotzEngine {
     }
 
     /*
-     * single thread env throws FatalException and terminates the app and multi thread env
-     * also throws FatalException but they are catched at thread level and terminates the
-     * thread
+     * single thread env throws CriticalException and terminates the app and multi thread
+     * env also throws CriticalException but they are catched at thread level and
+     * terminates the thread
      *
      */
     public void start() {
@@ -54,12 +55,12 @@ public class GotzEngine {
             // multi thread env
             executeInitalTask(task);
             waitForFinish();
-        } catch (FatalException e) {
+        } catch (CriticalException e) {
             LOGGER.error("{}", e);
         }
     }
 
-    private void initSystem() throws FatalException {
+    private void initSystem() {
         LOGGER.info("Starting GotzEngine");
 
         runTime.addShutdownHook(shutdownHook);
@@ -81,16 +82,16 @@ public class GotzEngine {
         LOGGER.info("DataDefs loaded {}", dataDefsCount);
     }
 
-    private IStep createInitialTask() throws FatalException {
+    private IStep createInitialTask(){
         try {
             String seederClassName = configService.getConfig("gotz.seederClass");
             IStep task = stepService.getStep(seederClassName);
             task = task.instance();
             return task;
-        } catch (ClassNotFoundException | InstantiationException
-                | IllegalAccessException e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                | ConfigNotFoundException e) {
             LOGGER.error("{}", e);
-            throw new FatalException("unable to create initial task");
+            throw new CriticalException("unable to create initial task");
         }
     }
 

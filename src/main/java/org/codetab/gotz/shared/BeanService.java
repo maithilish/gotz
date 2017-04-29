@@ -18,7 +18,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.exception.FatalException;
+import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.ObjectFactory;
 import org.codetab.gotz.model.Wrapper;
@@ -43,7 +44,7 @@ public class BeanService {
     private BeanService() {
     }
 
-    public void init() throws FatalException {
+    public void init() {
         logger.info("initialize singleton {}", "BeanService");
         try {
             validateBeanFile();
@@ -53,7 +54,7 @@ public class BeanService {
         } catch (JAXBException | ClassNotFoundException | SAXException | IOException e) {
             logger.trace("{}", e);
             logger.error("{}", e.getLocalizedMessage());
-            throw new FatalException("initialization failure : BeanService");
+            throw new CriticalException("initialization failure : BeanService");
         }
         logger.debug("initialized singleton {}", "BeanService");
     }
@@ -82,32 +83,43 @@ public class BeanService {
     }
 
     private void validateBeanFile()
-            throws JAXBException, SAXException, IOException, FatalException {
-        String beanFile = configService.getConfig("gotz.beanFile");
-        String schemaFile = configService.getConfig("gotz.schemaFile");
-        validateSchema(beanFile, schemaFile);
+            throws JAXBException, SAXException, IOException{
+        try {
+            String beanFile = configService.getConfig("gotz.beanFile");
+            String schemaFile = configService.getConfig("gotz.schemaFile");
+            validateSchema(beanFile, schemaFile);
+        } catch (ConfigNotFoundException e) {
+            logger.error("{}", e);
+            throw new CriticalException("config error");
+        }
+
     }
 
     private List<Bean> setBeanFiles()
-            throws JAXBException, SAXException, IOException, FatalException {
-        String beanFile = configService.getConfig("gotz.beanFile");
-        String schemaFile = configService.getConfig("gotz.schemaFile");
-        String baseName = FilenameUtils.getFullPath(beanFile);
+            throws JAXBException, SAXException, IOException{
+        try {
+            String beanFile = configService.getConfig("gotz.beanFile");
+            String schemaFile = configService.getConfig("gotz.schemaFile");
+            String baseName = FilenameUtils.getFullPath(beanFile);
 
-        logger.info("initialize Bean file");
-        logger.info("using Bean configuartion file [{}]", beanFile);
+            logger.info("initialize Bean file");
+            logger.info("using Bean configuartion file [{}]", beanFile);
 
-        List<Bean> list = unmarshall(beanFile, Bean.class);
-        logger.info("configure Bean files...");
-        for (Bean bean : list) {
-            String fileName = baseName.concat(bean.getXmlFile());
-            bean.setXmlFile(fileName);
-            if (StringUtils.isEmpty(bean.getSchemaFile())) {
-                bean.setSchemaFile(schemaFile);
+            List<Bean> list = unmarshall(beanFile, Bean.class);
+            logger.info("configure Bean files...");
+            for (Bean bean : list) {
+                String fileName = baseName.concat(bean.getXmlFile());
+                bean.setXmlFile(fileName);
+                if (StringUtils.isEmpty(bean.getSchemaFile())) {
+                    bean.setSchemaFile(schemaFile);
+                }
+                logger.debug("{}", bean.toString());
             }
-            logger.debug("{}", bean.toString());
+            return list;
+        } catch (ConfigNotFoundException e) {
+            logger.error("{}", e);
+            throw new CriticalException("config error");
         }
-        return list;
     }
 
     private void validateBeanFiles() throws JAXBException, SAXException, IOException {

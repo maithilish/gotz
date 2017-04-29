@@ -21,7 +21,8 @@ import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ILocatorDao;
-import org.codetab.gotz.exception.FatalException;
+import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
@@ -146,7 +147,7 @@ public abstract class Loader extends Step {
                 LOGGER.debug("Stored {}", locator);
                 Util.logState(LOGGER, "locator", "--- Locator now stored ---",
                         locator.getFields(), locator);
-            } catch (RuntimeException e) {
+            } catch (RuntimeException | ConfigNotFoundException e) {
                 LOGGER.error("{}", e.getLocalizedMessage());
                 LOGGER.trace("", e);
                 throw e;
@@ -226,21 +227,21 @@ public abstract class Loader extends Step {
     }
 
     private Locator getLocatorFromStore(final String locName, final String locGroup)
-            throws FatalException {
+    {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
             ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();
             Locator existingLocator = dao.getLocator(locName, locGroup);
             return existingLocator;
-        } catch (RuntimeException e) {
+        } catch (ConfigNotFoundException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw e;
+            throw new CriticalException("config error");
         }
     }
 
-    private Long getLiveDocumentId() throws FatalException {
+    private Long getLiveDocumentId(){
         Long liveDocumentId = null;
         if (locator.getId() == null) {
             // new locator so no document
@@ -258,7 +259,7 @@ public abstract class Loader extends Step {
         return liveDocumentId;
     }
 
-    private Date getToDate() throws FatalException {
+    private Date getToDate(){
         ZonedDateTime fromDate = ZonedDateTime
                 .ofInstant(document.getFromDate().toInstant(), ZoneId.systemDefault());
         ZonedDateTime toDate = null;
@@ -276,12 +277,12 @@ public abstract class Loader extends Step {
             TemporalAmount ta = Util.praseTemporalAmount(live);
             toDate = fromDate.plus(ta);
         } catch (DateTimeParseException e) {
-            String[] patterns = configService.getConfigArray("gotz.dateParsePattern");
             try {
+                String[] patterns = configService.getConfigArray("gotz.dateParsePattern");
                 // multiple patterns so needs DateUtils
                 Date td = DateUtils.parseDateStrictly(live, patterns);
                 toDate = ZonedDateTime.ofInstant(td.toInstant(), ZoneId.systemDefault());
-            } catch (ParseException pe) {
+            } catch (ParseException | ConfigNotFoundException pe) {
                 LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", locator, live,
                         e);
                 TemporalAmount ta = Util.praseTemporalAmount("PT0S");
@@ -293,17 +294,17 @@ public abstract class Loader extends Step {
         return Date.from(Instant.from(toDate));
     }
 
-    private Document getDocument(final Long id) throws FatalException {
+    private Document getDocument(final Long id) {
         // get Document with documentObject
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
             IDocumentDao dao = daoFactory.getDaoFactory(orm).getDocumentDao();
             return dao.getDocument(id);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | ConfigNotFoundException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw e;
+            throw new CriticalException("config error");
         }
     }
 

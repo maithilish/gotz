@@ -15,8 +15,9 @@ import javax.inject.Singleton;
 import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDataDefDao;
+import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.FatalException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -68,7 +69,7 @@ public class DataDefService {
     private DataDefService() {
     }
 
-    public void init() throws FatalException {
+    public void init() {
         logger.info("initialize DataDefs singleton");
 
         validateDataDefs();
@@ -84,7 +85,7 @@ public class DataDefService {
         logger.debug("initialized DataDefs singleton");
     }
 
-    private void validateDataDefs() throws FatalException {
+    private void validateDataDefs()  {
         DataDefValidator validator = new DataDefValidator();
         List<DataDef> dataDefs = getDataDefsFromBeans();
         boolean valid = true;
@@ -95,11 +96,11 @@ public class DataDefService {
             }
         }
         if (!valid) {
-            throw new FatalException("invalid Datadefs");
+            throw new CriticalException("invalid Datadefs");
         }
     }
 
-    private void storeDataDefs() throws FatalException {
+    private void storeDataDefs() {
         List<DataDef> newDataDefs = getDataDefsFromBeans();
         List<DataDef> oldDataDefs = loadDataDefsFromStore();
 
@@ -151,7 +152,7 @@ public class DataDefService {
         return null;
     }
 
-    private void setDataDefsMap() throws FatalException {
+    private void setDataDefsMap() {
         // List<DataDef> newDataDefs = getDataDefsFromBeans();
         List<DataDef> storedDataDefs = loadDataDefsFromStore();
         // copyFields(newDataDefs, storedDataDefs);
@@ -162,7 +163,7 @@ public class DataDefService {
         }
     }
 
-    private List<DataDef> getDataDefsFromBeans() throws FatalException {
+    private List<DataDef> getDataDefsFromBeans() {
         List<DataDef> dataDefs = beanService.getBeans(DataDef.class);
         for (DataDef dataDef : dataDefs) {
             setDefaults(dataDef);
@@ -224,16 +225,16 @@ public class DataDefService {
         }
     }
 
-    private void setDates(final DataDef dataDef) throws FatalException {
+    private void setDates(final DataDef dataDef) {
         dataDef.setFromDate(configService.getRunDateTime());
         dataDef.setToDate(configService.getHighDate());
     }
 
-    private void resetHighDate(final DataDef dataDef) throws FatalException {
+    private void resetHighDate(final DataDef dataDef) {
         dataDef.setToDate(configService.getRunDateTime());
     }
 
-    private void storeDataDef(final DataDef dataDef) throws FatalException {
+    private void storeDataDef(final DataDef dataDef)  {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
@@ -244,14 +245,14 @@ public class DataDefService {
             if (dataDef.getId() != null) {
                 logger.debug("stored DataDef [{}] [{}]", dataDef.getId(), name);
             }
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | ConfigNotFoundException e) {
             logger.error("{}", e.getMessage());
             logger.trace("", e);
-            throw e;
+            throw new CriticalException("datadef creation error");
         }
     }
 
-    private List<DataDef> loadDataDefsFromStore() throws FatalException {
+    private List<DataDef> loadDataDefsFromStore()  {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
@@ -259,10 +260,10 @@ public class DataDefService {
             List<DataDef> dataDefs = dao.getDataDefs(configService.getRunDateTime());
             logger.debug("DataDef loaded : [{}]", dataDefs.size());
             return dataDefs;
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | ConfigNotFoundException e) {
             logger.error("{}", e.getMessage());
             logger.trace("", e);
-            throw e;
+            throw new CriticalException("datadef creation error");
         }
     }
 
