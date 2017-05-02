@@ -40,8 +40,7 @@ public class ConfigService {
     private ConfigService() {
     }
 
-    public void init(String userProvidedFile, String defaultsFile)
-    {
+    public void init(String userProvidedFile, String defaultsFile) {
         logger.info("Initializing Configs");
 
         configs = new CompositeConfiguration();
@@ -62,7 +61,7 @@ public class ConfigService {
             configs.addConfiguration(defaults);
         } catch (ConfigurationException e) {
             logger.error("{}. Exit", e);
-            throw new CriticalException("Configure error");
+            throw new CriticalException("Configure error", e);
         }
 
         addRunDate();
@@ -77,10 +76,13 @@ public class ConfigService {
         logger.info("Use gotz.properties or system property to override defaults");
     }
 
+    // when config not found, default value may be used in some cases
+    // otherwise usually exception is translated to higher level CriticalException
+    // which is unrecoverable. Hence warn is used in here instead of error
     public String getConfig(final String key) throws ConfigNotFoundException {
         String value = configs.getString(key);
         if (value == null) {
-            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
+            logger.warn("Config [{}] not found. Check prefix and key.", key);
             throw new ConfigNotFoundException(key);
         }
         return value;
@@ -89,7 +91,7 @@ public class ConfigService {
     public String[] getConfigArray(final String key) throws ConfigNotFoundException {
         String[] values = configs.getStringArray(key);
         if (values.length == 0) {
-            logger.error("{}", "Config [{}] not found. Check prefix and key.", key);
+            logger.warn("Config [{}] not found. Check prefix and key.", key);
             throw new ConfigNotFoundException(key);
         }
         return values;
@@ -116,7 +118,7 @@ public class ConfigService {
             return runDate;
         } catch (ParseException | ConfigNotFoundException e) {
             logger.error("RunDate error. {}", e); //$NON-NLS-1$
-            throw new CriticalException("config failure");
+            throw new CriticalException("config failure", e);
         }
     }
 
@@ -129,7 +131,7 @@ public class ConfigService {
             return runDateTime;
         } catch (ParseException | ConfigNotFoundException e) {
             logger.error("Run Date error. {}", e); //$NON-NLS-1$
-            throw new CriticalException("config failure");
+            throw new CriticalException("config failure", e);
         }
     }
 
@@ -142,26 +144,10 @@ public class ConfigService {
             return highDate;
         } catch (ParseException | ConfigNotFoundException e) {
             logger.error("{}", e); //$NON-NLS-1$
-            throw new CriticalException("config failure");
+            throw new CriticalException("config failure", e);
         }
 
     }
-
-    // public boolean isTestMode() {
-    // boolean testMode = false;
-    // String command = System.getProperty("sun.java.command");
-    // String surefirePath = System.getProperty("surefire.test.class.path");
-    // if (command.contains("surefire")) {
-    // testMode = true;
-    // }
-    // if (StringUtils.isNotBlank(surefirePath)) {
-    // testMode = true;
-    // }
-    // if (command.contains("junit.runner.RemoteTestRunner")) {
-    // testMode = true;
-    // }
-    // return testMode;
-    // }
 
     public boolean isTestMode() {
         StackTraceElement[] stackElements = Thread.currentThread().getStackTrace();

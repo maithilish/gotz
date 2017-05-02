@@ -1,48 +1,45 @@
 package org.codetab.gotz.shared;
 
-import static org.assertj.core.api.BDDAssertions.then;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Timer;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.StopWatch;
+import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.misc.MemoryTask;
 import org.codetab.gotz.model.Activity;
 import org.codetab.gotz.model.Activity.Type;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
-public class MonitorServiceTest {
+public class ActivityServiceTest {
 
     @Mock
     Timer timer;
-
     @Mock
     StopWatch stopWatch;
+    @Mock
+    MemoryTask memoryTask;
 
-    @Spy
-    List<Activity> activitesList = new ArrayList<>();
-
-    @Spy
-    ConfigService configService;
+    @Mock
+    List<Activity> activities;
+    @Mock
+    LongSummaryStatistics totalMemory;
+    @Mock
+    LongSummaryStatistics freeMemory;
+    @Mock
+    Runtime runtime;
 
     @InjectMocks
-    private MonitorService sut;
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+    private ActivityService activityService;
 
     @Before
     public void setUp() throws Exception {
@@ -50,82 +47,78 @@ public class MonitorServiceTest {
     }
 
     @Test
-    public void testMonitorService() throws IllegalAccessException {
-        @SuppressWarnings("unchecked")
-        List<Activity> list = (List<Activity>) FieldUtils.readDeclaredField(sut,
-                "activitesList", true);
+    public void testSingleton() {
+        DInjector dInjector = new DInjector().instance(DInjector.class);
 
-        then(list).isNotNull();
-        then(list.size()).isEqualTo(0);
+        ActivityService instanceA = dInjector.instance(ActivityService.class);
+        ActivityService instanceB = dInjector.instance(ActivityService.class);
+
+        assertThat(instanceA).isNotNull();
+        assertThat(instanceA).isSameAs(instanceB);
     }
+
 
     @Test
     public void testStart() {
-        // MemoryTask is final so can't mock
-        sut.setMemoryTask(new MemoryTask());
+        // when
+        activityService.start();
 
-        sut.start();
-
+        // then
         verify(stopWatch).start();
-        verify(timer).schedule(any(MemoryTask.class), eq(0L), eq(5000L));
+        verify(timer).schedule(memoryTask, 0L, 5000L);
     }
 
     @Test
     public void testEnd() {
+        // when
+        activityService.end();
 
-        sut.end();
-
+        // then
         verify(stopWatch).stop();
         verify(timer).cancel();
     }
 
     @Test
-    public void testTriggerFatal() throws IllegalAccessException {
-        String userProvidedFile = "gotz.properties";
-        String defaultsFile = "gotz-default.xml";
-        configService.init(userProvidedFile, defaultsFile);
-
-        try {
-            sut.triggerFatal("tmessage"); // when
-            fail("IllegalStateException should be thrown");
-        } catch (IllegalStateException e) {
-            verify(stopWatch).stop();
-            verify(timer).cancel();
-            verify(activitesList).add(any(Activity.class));
-        }
-    }
-
-    @Test
     public void testAddActivity() throws IllegalAccessException {
+        // when
+        activityService.addActivity(Type.GIVENUP, "tmessage");
 
-        then(activitesList.size()).isEqualTo(0);
-
-        sut.addActivity(Type.GIVENUP, "tmessage"); // when
-
-        then(activitesList.size()).isEqualTo(1);
-
-        Activity actual = activitesList.get(0);
-
-        then(actual.getType()).isEqualTo(Type.GIVENUP);
-        then(actual.getMessage()).isEqualTo("tmessage");
-        then(actual.getThrowable()).isNull();
+        // then
+        ArgumentCaptor<Activity> argument = ArgumentCaptor.forClass(Activity.class);
+        verify(activities).add(argument.capture());
+        assertThat(argument.getValue().getType()).isEqualTo(Type.GIVENUP);
+        assertThat(argument.getValue().getMessage()).isEqualTo("tmessage");
+        assertThat(argument.getValue().getThrowable()).isNull();
     }
 
     @Test
     public void testAddActivityWithThrowable() throws IllegalAccessException {
-
-        then(activitesList.size()).isEqualTo(0);
-
+        // given
         Throwable throwable = new Throwable("foo");
-        sut.addActivity(Type.GIVENUP, "tmessage", throwable); // when
 
-        then(activitesList.size()).isEqualTo(1);
+        // when
+        activityService.addActivity(Type.GIVENUP, "tmessage", throwable); // when
 
-        Activity actual = activitesList.get(0);
+        // then
+        ArgumentCaptor<Activity> argument = ArgumentCaptor.forClass(Activity.class);
+        verify(activities).add(argument.capture());
+        assertThat(argument.getValue().getType()).isEqualTo(Type.GIVENUP);
+        assertThat(argument.getValue().getMessage()).isEqualTo("tmessage");
+        assertThat(argument.getValue().getThrowable()).isSameAs(throwable);
+    }
 
-        then(actual.getType()).isEqualTo(Type.GIVENUP);
-        then(actual.getMessage()).isEqualTo("tmessage");
-        then(actual.getThrowable()).isSameAs(throwable);
+    @Test
+    public void testCollectMemoryStat() {
+        // given
+        given(runtime.totalMemory()).willReturn(1 * 1048576L);
+        given(runtime.freeMemory()).willReturn(2 * 1048576L);
+
+        // when
+        activityService.collectMemoryStat();
+
+        // then
+        verify(totalMemory).accept(1L);
+        verify(freeMemory).accept(2L);
     }
 
 }

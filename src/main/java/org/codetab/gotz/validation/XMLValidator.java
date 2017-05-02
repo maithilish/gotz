@@ -3,6 +3,7 @@ package org.codetab.gotz.validation;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
@@ -10,59 +11,45 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.util.Util;
+import org.codetab.gotz.util.ResourceStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-public final class XMLValidator {
+public class XMLValidator {
 
     static final Logger LOGGER = LoggerFactory.getLogger(XMLValidator.class);
 
-    private String xmlFile;
-    private String schemaFile;
+    @Inject
+    private ResourceStream resourceStream;
 
-    public String getXmlFile() {
-        return xmlFile;
+    public boolean validate(String xmlFile, String schemaFile)
+            throws JAXBException, IOException, SAXException {
+        try (InputStream xmlStream = resourceStream.getInputStream(xmlFile);
+                InputStream schemaStream = resourceStream.getInputStream(schemaFile)) {
+            validate(xmlStream, schemaStream);
+        }
+        return true;
     }
 
-    public void setXmlFile(final String xmlFile) {
-        this.xmlFile = xmlFile;
-    }
-
-    public String getSchemaFile() {
-        return schemaFile;
-    }
-
-    public void setSchemaFile(final String schemaFile) {
-        this.schemaFile = schemaFile;
-    }
-
-    public boolean validate() throws JAXBException, IOException, SAXException {
-        InputStream xmlStream = Util.getResourceAsStream(xmlFile);
-        InputStream schemaStream = Util.getResourceAsStream(schemaFile);
-
-        LOGGER.debug("validate : [{}] with [{}]", xmlFile, schemaFile);
-
-        boolean validXML = true;
+    public boolean validate(InputStream xmlStream, InputStream schemaStream)
+            throws JAXBException, IOException, SAXException {
+        LOGGER.debug("validate : [{}] with [{}]", xmlStream, schemaStream);
         try {
-            SchemaFactory sf = SchemaFactory
+            SchemaFactory schemaFactory = SchemaFactory
                     .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema = sf.newSchema(new StreamSource(schemaStream));
+            Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
             Validator validator = schema.newValidator();
             validator.setErrorHandler(new ValidationErrorHandler());
             validator.validate(new StreamSource(xmlStream));
+            LOGGER.debug("validated Bean file [{}] with [{}]", xmlStream, schemaStream);
+            return true;
         } catch (SAXException e) {
-            validXML = false;
-        }
-        if (!validXML) {
             throw new SAXException(
-                    "XML validation failed [" + xmlFile + "] [" + schemaFile + "]");
+                    "XML validation failed [" + xmlStream + "] [" + schemaStream + "]");
         }
-        LOGGER.debug("validated Bean file [{}] with [{}]", xmlFile, schemaFile);
-        return false;
     }
 
     private static class ValidationErrorHandler implements ErrorHandler {

@@ -338,7 +338,7 @@ public abstract class Parser extends Step {
         } catch (RuntimeException | ConfigNotFoundException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw new CriticalException("config error");
+            throw new CriticalException("config error",e);
         }
     }
 

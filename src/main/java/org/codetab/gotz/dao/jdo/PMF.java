@@ -56,7 +56,7 @@ public class PMF {
                 } catch (Exception e) {
                     logger.error("{} Exit", e.getMessage());
                     logger.trace("{}", e);
-                    throw new CriticalException("JDO Persistence Manager setup error");
+                    throw new CriticalException("JDO Persistence Manager setup error",e);
                 }
             }
         }

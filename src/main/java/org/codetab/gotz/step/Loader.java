@@ -237,7 +237,7 @@ public abstract class Loader extends Step {
         } catch (ConfigNotFoundException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw new CriticalException("config error");
+            throw new CriticalException("config error",e);
         }
     }
 
@@ -304,7 +304,7 @@ public abstract class Loader extends Step {
         } catch (RuntimeException | ConfigNotFoundException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw new CriticalException("config error");
+            throw new CriticalException("config error",e);
         }
     }
 

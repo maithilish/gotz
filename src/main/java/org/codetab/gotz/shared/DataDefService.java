@@ -85,7 +85,7 @@ public class DataDefService {
         logger.debug("initialized DataDefs singleton");
     }
 
-    private void validateDataDefs()  {
+    private void validateDataDefs() {
         DataDefValidator validator = new DataDefValidator();
         List<DataDef> dataDefs = getDataDefsFromBeans();
         boolean valid = true;
@@ -234,7 +234,7 @@ public class DataDefService {
         dataDef.setToDate(configService.getRunDateTime());
     }
 
-    private void storeDataDef(final DataDef dataDef)  {
+    private void storeDataDef(final DataDef dataDef) {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
@@ -248,11 +248,11 @@ public class DataDefService {
         } catch (RuntimeException | ConfigNotFoundException e) {
             logger.error("{}", e.getMessage());
             logger.trace("", e);
-            throw new CriticalException("datadef creation error");
+            throw new CriticalException("datadef creation error", e);
         }
     }
 
-    private List<DataDef> loadDataDefsFromStore()  {
+    private List<DataDef> loadDataDefsFromStore() {
         try {
             ORM orm = DaoFactory
                     .getOrmType(configService.getConfig("gotz.datastore.orm"));
@@ -263,7 +263,7 @@ public class DataDefService {
         } catch (RuntimeException | ConfigNotFoundException e) {
             logger.error("{}", e.getMessage());
             logger.trace("", e);
-            throw new CriticalException("datadef creation error");
+            throw new CriticalException("datadef creation error", e);
         }
     }
 

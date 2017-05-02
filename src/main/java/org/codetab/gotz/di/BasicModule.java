@@ -8,11 +8,14 @@ import org.codetab.gotz.Gotz;
 import org.codetab.gotz.GotzEngine;
 import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.jdo.PMF;
+import org.codetab.gotz.helper.IXoc;
+import org.codetab.gotz.helper.JaxbXoc;
 import org.codetab.gotz.model.Activity;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
+import org.codetab.gotz.util.ResourceStream;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -32,6 +35,10 @@ public class BasicModule extends AbstractModule {
         bind(PMF.class);
         bind(Timer.class);
         bind(ActivityService.class);
+        bind(ResourceStream.class);
+
+        bind(IXoc.class).to(JaxbXoc.class);
+
         bind(new TypeLiteral<List<Activity>>() {})
         .toInstance(new ArrayList<Activity>());
     }

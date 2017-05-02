@@ -22,14 +22,20 @@ public class ActivityService {
 
     private static final long MB_DIVISOR = 1048576; // mega bytes
 
+    @Inject
     private List<Activity> activities;
-    private LongSummaryStatistics totalMemory;
-    private LongSummaryStatistics freeMemory;
+    @Inject
     private Timer timer;
+    @Inject
     private StopWatch stopWatch;
+    @Inject
     private MemoryTask memoryTask;
-
+    @Inject
     private Runtime runtime;
+    @Inject
+    private LongSummaryStatistics totalMemory;
+    @Inject
+    private LongSummaryStatistics freeMemory;
 
     @Inject
     private ActivityService() {
@@ -93,40 +99,5 @@ public class ActivityService {
                 totalMemory.getMax(), totalMemory.getMin());
         logger.info("Free  : Avg {} High {} Low {}", (long)freeMemory.getAverage(),
                 freeMemory.getMax(), freeMemory.getMin());
-    }
-
-    @Inject
-    public void setRuntime(Runtime runtime) {
-        this.runtime = runtime;
-    }
-
-    @Inject
-    public void setMemoryTask(MemoryTask memoryTask) {
-        this.memoryTask = memoryTask;
-    }
-
-    @Inject
-    public void setTimer(Timer timer) {
-        this.timer = timer;
-    }
-
-    @Inject
-    public void setStopWatch(StopWatch stopWatch) {
-        this.stopWatch = stopWatch;
-    }
-
-    @Inject
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
-    }
-
-    @Inject
-    public void setTotalMemory(LongSummaryStatistics totalMemory) {
-        this.totalMemory = totalMemory;
-    }
-
-    @Inject
-    public void setFreeMemory(LongSummaryStatistics freeMemory) {
-        this.freeMemory = freeMemory;
     }
 }
