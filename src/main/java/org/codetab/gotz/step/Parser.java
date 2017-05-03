@@ -14,9 +14,8 @@ import javax.script.ScriptException;
 
 import org.apache.commons.lang3.Range;
 import org.codetab.gotz.dao.DaoFactory;
-import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDataDao;
-import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
@@ -254,12 +253,11 @@ public abstract class Parser extends Step {
         }
         if (persist) {
             try {
-                ORM orm = DaoFactory
-                        .getOrmType(configService.getConfig("gotz.datastore.orm"));
+                ORM orm = configService.getOrmType();
                 IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
                 dao.storeData(data);
                 data = dao.getData(data.getId());
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOGGER.debug("{}", e.getMessage());
                 throw e;
             }
@@ -330,12 +328,11 @@ public abstract class Parser extends Step {
 
     private Data getDataFromStore(final Long dataDefId, final Long documentId) {
         try {
-            ORM orm = DaoFactory
-                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
+            ORM orm = configService.getOrmType();
             IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
             Data data = dao.getData(documentId, dataDefId);
             return data;
-        } catch (RuntimeException | ConfigNotFoundException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
             throw new CriticalException("config error",e);

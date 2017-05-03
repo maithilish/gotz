@@ -11,6 +11,7 @@ import java.util.Date;
 import org.apache.commons.configuration2.CompositeConfiguration;
 import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.time.DateUtils;
+import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
@@ -361,6 +362,21 @@ public class ConfigServiceTest {
 
         // when
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void testGetOrmType() throws Exception {
+        // given
+        given(configs.getString("gotz.datastore.orm")).willReturn("jdo").willReturn("jDo")
+        .willReturn("jpa").willReturn("jPa")
+        .willThrow(ConfigNotFoundException.class);
+
+        // when then
+        assertThat(configService.getOrmType()).isEqualTo(ORM.JDO);
+        assertThat(configService.getOrmType()).isEqualTo(ORM.JDO);
+        assertThat(configService.getOrmType()).isEqualTo(ORM.JPA);
+        assertThat(configService.getOrmType()).isEqualTo(ORM.JPA);
+        assertThat(configService.getOrmType()).isEqualTo(ORM.JDO);
     }
 
     @Test

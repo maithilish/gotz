@@ -19,6 +19,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.util.Util;
@@ -32,7 +33,7 @@ public class ConfigService {
         SYSTEM, PROVIDED, DEFAULTS
     }
 
-    private final Logger logger = LoggerFactory.getLogger(ConfigService.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(ConfigService.class);
 
     private CompositeConfiguration configs;
 
@@ -41,7 +42,7 @@ public class ConfigService {
     }
 
     public void init(String userProvidedFile, String defaultsFile) {
-        logger.info("Initializing Configs");
+        LOGGER.info("Initializing Configs");
 
         configs = new CompositeConfiguration();
 
@@ -53,27 +54,27 @@ public class ConfigService {
             configs.addConfiguration(userProvided);
         } catch (ConfigurationException e) {
             configs.addConfiguration(new PropertiesConfiguration());
-            logger.info(e.getLocalizedMessage() + ". " + "Using default properties");
+            LOGGER.info(e.getLocalizedMessage() + ". " + "Using default properties");
         }
 
         try {
             Configuration defaults = getXMLConfigs(defaultsFile);
             configs.addConfiguration(defaults);
         } catch (ConfigurationException e) {
-            logger.error("{}. Exit", e);
+            LOGGER.error("{}. Exit", e);
             throw new CriticalException("Configure error", e);
         }
 
         addRunDate();
         addRunDateTime();
 
-        logger.trace("{}", configsAsString(ConfigIndex.SYSTEM));
-        logger.debug("{}", configsAsString(ConfigIndex.PROVIDED));
-        logger.debug("{}", configsAsString(ConfigIndex.DEFAULTS));
-        logger.debug("Initialized Configs");
+        LOGGER.trace("{}", configsAsString(ConfigIndex.SYSTEM));
+        LOGGER.debug("{}", configsAsString(ConfigIndex.PROVIDED));
+        LOGGER.debug("{}", configsAsString(ConfigIndex.DEFAULTS));
+        LOGGER.debug("Initialized Configs");
 
-        logger.info("Config precedence - SYSTEM, PROVIDED, DEFAULTS");
-        logger.info("Use gotz.properties or system property to override defaults");
+        LOGGER.info("Config precedence - SYSTEM, PROVIDED, DEFAULTS");
+        LOGGER.info("Use gotz.properties or system property to override defaults");
     }
 
     // when config not found, default value may be used in some cases
@@ -82,7 +83,7 @@ public class ConfigService {
     public String getConfig(final String key) throws ConfigNotFoundException {
         String value = configs.getString(key);
         if (value == null) {
-            logger.warn("Config [{}] not found. Check prefix and key.", key);
+            LOGGER.warn("Config [{}] not found. Check prefix and key.", key);
             throw new ConfigNotFoundException(key);
         }
         return value;
@@ -91,7 +92,7 @@ public class ConfigService {
     public String[] getConfigArray(final String key) throws ConfigNotFoundException {
         String[] values = configs.getStringArray(key);
         if (values.length == 0) {
-            logger.warn("Config [{}] not found. Check prefix and key.", key);
+            LOGGER.warn("Config [{}] not found. Check prefix and key.", key);
             throw new ConfigNotFoundException(key);
         }
         return values;
@@ -117,7 +118,7 @@ public class ConfigService {
             runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
             return runDate;
         } catch (ParseException | ConfigNotFoundException e) {
-            logger.error("RunDate error. {}", e); //$NON-NLS-1$
+            LOGGER.error("RunDate error. {}", e); //$NON-NLS-1$
             throw new CriticalException("config failure", e);
         }
     }
@@ -130,7 +131,7 @@ public class ConfigService {
             runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
             return runDateTime;
         } catch (ParseException | ConfigNotFoundException e) {
-            logger.error("Run Date error. {}", e); //$NON-NLS-1$
+            LOGGER.error("Run Date error. {}", e); //$NON-NLS-1$
             throw new CriticalException("config failure", e);
         }
     }
@@ -143,10 +144,27 @@ public class ConfigService {
             highDate = DateUtils.parseDate(dateStr, patterns);
             return highDate;
         } catch (ParseException | ConfigNotFoundException e) {
-            logger.error("{}", e); //$NON-NLS-1$
+            LOGGER.error("{}", e); //$NON-NLS-1$
             throw new CriticalException("config failure", e);
         }
 
+    }
+
+    public ORM getOrmType() {
+        ORM orm = ORM.JDO;
+        try {
+            String ormName = getConfig("gotz.datastore.orm");
+            if (StringUtils.compareIgnoreCase(ormName, "jdo") == 0) {
+                orm = ORM.JDO;
+            }
+            if (StringUtils.compareIgnoreCase(ormName, "jpa") == 0) {
+                orm = ORM.JPA;
+            }
+        } catch (ConfigNotFoundException e) {
+            LOGGER.error("{}", e.getLocalizedMessage());
+            LOGGER.trace("", e);
+        }
+        return orm;
     }
 
     public boolean isTestMode() {

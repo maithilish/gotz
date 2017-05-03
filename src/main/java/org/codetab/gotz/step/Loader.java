@@ -18,11 +18,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.dao.DaoFactory;
-import org.codetab.gotz.dao.DaoFactory.ORM;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ILocatorDao;
+import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
@@ -136,8 +135,7 @@ public abstract class Loader extends Step {
              */
             try {
                 List<FieldsBase> fields = locator.getFields();
-                ORM orm = DaoFactory
-                        .getOrmType(configService.getConfig("gotz.datastore.orm"));
+                ORM orm = configService.getOrmType();
                 ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();
                 dao.storeLocator(locator);
                 // reload locator and document
@@ -147,7 +145,7 @@ public abstract class Loader extends Step {
                 LOGGER.debug("Stored {}", locator);
                 Util.logState(LOGGER, "locator", "--- Locator now stored ---",
                         locator.getFields(), locator);
-            } catch (RuntimeException | ConfigNotFoundException e) {
+            } catch (RuntimeException e) {
                 LOGGER.error("{}", e.getLocalizedMessage());
                 LOGGER.trace("", e);
                 throw e;
@@ -226,22 +224,20 @@ public abstract class Loader extends Step {
         }
     }
 
-    private Locator getLocatorFromStore(final String locName, final String locGroup)
-    {
+    private Locator getLocatorFromStore(final String locName, final String locGroup) {
         try {
-            ORM orm = DaoFactory
-                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
+            ORM orm = configService.getOrmType();
             ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();
             Locator existingLocator = dao.getLocator(locName, locGroup);
             return existingLocator;
-        } catch (ConfigNotFoundException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw new CriticalException("config error",e);
+            throw e;
         }
     }
 
-    private Long getLiveDocumentId(){
+    private Long getLiveDocumentId() {
         Long liveDocumentId = null;
         if (locator.getId() == null) {
             // new locator so no document
@@ -259,7 +255,7 @@ public abstract class Loader extends Step {
         return liveDocumentId;
     }
 
-    private Date getToDate(){
+    private Date getToDate() {
         ZonedDateTime fromDate = ZonedDateTime
                 .ofInstant(document.getFromDate().toInstant(), ZoneId.systemDefault());
         ZonedDateTime toDate = null;
@@ -297,14 +293,13 @@ public abstract class Loader extends Step {
     private Document getDocument(final Long id) {
         // get Document with documentObject
         try {
-            ORM orm = DaoFactory
-                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
+            ORM orm = configService.getOrmType();
             IDocumentDao dao = daoFactory.getDaoFactory(orm).getDocumentDao();
             return dao.getDocument(id);
-        } catch (RuntimeException | ConfigNotFoundException e) {
+        } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw new CriticalException("config error",e);
+            throw e;
         }
     }
 
