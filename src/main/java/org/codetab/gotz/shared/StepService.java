@@ -9,19 +9,15 @@ import org.codetab.gotz.step.IStep;
 @Singleton
 public class StepService {
 
+    @Inject
     private DInjector dInjector;
 
     @Inject
     private StepService() {
     }
 
-    @Inject
-    public void setdInjector(DInjector dInjector) {
-        this.dInjector = dInjector;
-    }
-
     public IStep getStep(final String clzName) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+    InstantiationException, IllegalAccessException {
         IStep step = null;
         Class<?> stepClass = Class.forName(clzName);
         Object obj = dInjector.instance(stepClass);
