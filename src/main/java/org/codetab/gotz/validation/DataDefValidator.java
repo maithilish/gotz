@@ -11,7 +11,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.util.FieldsUtil;
 
-public final class DataDefValidator {
+public class DataDefValidator {
 
     private DataDef dataDef;
 

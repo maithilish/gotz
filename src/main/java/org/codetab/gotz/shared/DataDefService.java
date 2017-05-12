@@ -7,18 +7,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.codetab.gotz.dao.DaoFactory;
-import org.codetab.gotz.dao.DaoFactory.ORM;
-import org.codetab.gotz.dao.IDataDefDao;
-import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.helper.DataDefDefaults;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -27,10 +25,10 @@ import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
+import org.codetab.gotz.persistence.DataDefPersistence;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.validation.DataDefValidator;
@@ -42,28 +40,17 @@ public class DataDefService {
 
     private final Logger logger = LoggerFactory.getLogger(DataDefService.class);
 
-    private Map<String, DataDef> dataDefsMap;
-
+    private List<DataDef> dataDefs;
     private Map<String, Set<Set<DMember>>> memberSetsMap = new HashMap<>();
 
+    @Inject
     private BeanService beanService;
-    private ConfigService configService;
-    private DaoFactory daoFactory;
-
     @Inject
-    void setBeanService(BeanService beanService) {
-        this.beanService = beanService;
-    }
-
+    private DataDefPersistence dataDefPersistence;
     @Inject
-    public void setConfigService(ConfigService configService) {
-        this.configService = configService;
-    }
-
+    private DataDefValidator validator;
     @Inject
-    public void setDaoFactory(DaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
+    private DataDefDefaults dataDefDefaults;
 
     @Inject
     private DataDefService() {
@@ -72,9 +59,20 @@ public class DataDefService {
     public void init() {
         logger.info("initialize DataDefs singleton");
 
-        validateDataDefs();
-        storeDataDefs();
-        setDataDefsMap();
+        List<DataDef> newDataDefs = beanService.getBeans(DataDef.class);
+        setDefaults(newDataDefs);
+        validateDataDefs(newDataDefs);
+
+        dataDefs = dataDefPersistence.loadDataDefs();
+
+        boolean updates = dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
+
+        if (updates) {
+            for (DataDef dataDef : dataDefs) {
+                dataDefPersistence.storeDataDef(dataDef);
+            }
+            dataDefs = dataDefPersistence.loadDataDefs();
+        }
 
         traceDataDefs();
         try {
@@ -85,11 +83,9 @@ public class DataDefService {
         logger.debug("initialized DataDefs singleton");
     }
 
-    private void validateDataDefs() {
-        DataDefValidator validator = new DataDefValidator();
-        List<DataDef> dataDefs = getDataDefsFromBeans();
+    private void validateDataDefs(List<DataDef> newDataDefs) {
         boolean valid = true;
-        for (DataDef dataDef : dataDefs) {
+        for (DataDef dataDef : newDataDefs) {
             validator.setDataDef(dataDef);
             if (!validator.validate()) {
                 valid = false;
@@ -100,198 +96,38 @@ public class DataDefService {
         }
     }
 
-    private void storeDataDefs() {
-        List<DataDef> newDataDefs = getDataDefsFromBeans();
-        List<DataDef> oldDataDefs = loadDataDefsFromStore();
-
-        for (DataDef newDataDef : newDataDefs) {
-            String message;
-            String name = newDataDef.getName();
-            DataDef oldDataDef = getDataDef(oldDataDefs, name);
-            String saveMode = getSaveMode(oldDataDef, newDataDef);
-            switch (saveMode) {
-            case "insert":
-                message = "not in store, insert";
-                storeDataDef(newDataDef);
-                break;
-            case "update":
-                message = "changed, insert new version";
-                resetHighDate(oldDataDef); // reset to run date
-                storeDataDef(oldDataDef); // and update
-                storeDataDef(newDataDef); // insert new changes
-                break;
-            default:
-                message = "no changes";
-                break;
-            }
-            logger.info("DataDef [{}] {}", name, message);
-        }
-
-    }
-
-    private String getSaveMode(final DataDef oldDataDef, final DataDef newDataDef) {
-        String saveMode = null;
-        if (oldDataDef == null) {
-            saveMode = "insert";
-        } else {
-            if (oldDataDef.equals(newDataDef)) {
-                saveMode = ""; // default no change
-            } else {
-                saveMode = "update";
-            }
-        }
-        return saveMode;
-    }
-
-    private DataDef getDataDef(final List<DataDef> dataDefs, final String name) {
-        for (DataDef dataDef : dataDefs) {
-            if (dataDef.getName().equals(name)) {
-                return dataDef;
-            }
-        }
-        return null;
-    }
-
-    private void setDataDefsMap() {
-        // List<DataDef> newDataDefs = getDataDefsFromBeans();
-        List<DataDef> storedDataDefs = loadDataDefsFromStore();
-        // copyFields(newDataDefs, storedDataDefs);
-
-        dataDefsMap = new HashMap<String, DataDef>();
-        for (DataDef dataDef : storedDataDefs) {
-            dataDefsMap.put(dataDef.getName(), dataDef);
-        }
-    }
-
-    private List<DataDef> getDataDefsFromBeans() {
-        List<DataDef> dataDefs = beanService.getBeans(DataDef.class);
-        for (DataDef dataDef : dataDefs) {
-            setDefaults(dataDef);
-            setDates(dataDef);
-            setDefaultIndexRange(dataDef);
-        }
-        return dataDefs;
-    }
-
-    // private void copyFields(List<DataDef> srcDataDefs, List<DataDef>
-    // destDataDefs) {
-    //
-    // for (DataDef sDataDef : srcDataDefs) {
-    // for (DataDef dDataDef : destDataDefs) {
-    // if (sDataDef.getName().equals(dDataDef.getName())) {
-    // dDataDef.getFields().addAll(sDataDef.getFields());
-    // }
-    // }
-    // }
-    // }
-
-    private void setDefaults(final DataDef dataDef) {
-        for (DAxis axis : dataDef.getAxis()) {
-            if (axis.getName().equals("fact")) {
-                DMember fact = new DMember();
-                fact.setAxis(axis.getName());
-                fact.setName("fact");
-                fact.setOrder(0);
-                fact.setValue(null);
-                axis.getMember().add(fact);
-            }
-            // set member's axis name and order
-            int i = 0;
-            for (DMember member : axis.getMember()) {
-                member.setAxis(axis.getName());
-                if (member.getOrder() == null) {
-                    member.setOrder(i++);
-                }
-            }
-        }
-    }
-
-    private void setDefaultIndexRange(final DataDef dataDef) {
-        for (DAxis dAxis : dataDef.getAxis()) {
-            for (DMember dMember : dAxis.getMember()) {
-                if (!FieldsUtil.isAnyFieldDefined(dMember.getFields(), "indexRange",
-                        "breakAfter")) {
-                    Field field = new Field();
-                    field.setName("indexRange");
-                    Integer index = dMember.getIndex();
-                    if (index == null) {
-                        field.setValue("1-1");
-                    } else {
-                        field.setValue(index + "-" + index);
-                    }
-                    dMember.getFields().add(field);
-                }
-            }
-        }
-    }
-
-    private void setDates(final DataDef dataDef) {
-        dataDef.setFromDate(configService.getRunDateTime());
-        dataDef.setToDate(configService.getHighDate());
-    }
-
-    private void resetHighDate(final DataDef dataDef) {
-        dataDef.setToDate(configService.getRunDateTime());
-    }
-
-    private void storeDataDef(final DataDef dataDef) {
-        try {
-            ORM orm = DaoFactory
-                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
-            IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
-            String name = dataDef.getName();
-            logger.debug("store DataDef");
-            dao.storeDataDef(dataDef);
-            if (dataDef.getId() != null) {
-                logger.debug("stored DataDef [{}] [{}]", dataDef.getId(), name);
-            }
-        } catch (RuntimeException | ConfigNotFoundException e) {
-            logger.error("{}", e.getMessage());
-            logger.trace("", e);
-            throw new CriticalException("datadef creation error", e);
-        }
-    }
-
-    private List<DataDef> loadDataDefsFromStore() {
-        try {
-            ORM orm = DaoFactory
-                    .getOrmType(configService.getConfig("gotz.datastore.orm"));
-            IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
-            List<DataDef> dataDefs = dao.getDataDefs(configService.getRunDateTime());
-            logger.debug("DataDef loaded : [{}]", dataDefs.size());
-            return dataDefs;
-        } catch (RuntimeException | ConfigNotFoundException e) {
-            logger.error("{}", e.getMessage());
-            logger.trace("", e);
-            throw new CriticalException("datadef creation error", e);
+    private void setDefaults(List<DataDef> newDataDefs) {
+        for (DataDef dataDef : newDataDefs) {
+            dataDefDefaults.addFact(dataDef);
+            dataDefDefaults.setOrder(dataDef);
+            dataDefDefaults.setDates(dataDef);
+            dataDefDefaults.addIndexRange(dataDef);
         }
     }
 
     public DataDef getDataDef(final String name) throws DataDefNotFoundException {
-        DataDef dataDef = dataDefsMap.get(name);
-        if (dataDef == null) {
+        try {
+            return dataDefs.stream().filter(e -> e.getName().equals(name)).findFirst()
+                    .get();
+        } catch (NoSuchElementException e) {
             throw new DataDefNotFoundException(name);
         }
-        return dataDef;
     }
 
-    public Data getDataTemplate(final String dataDefName)
-            throws DataDefNotFoundException, ClassNotFoundException, IOException {
-        DataDef dataDef = getDataDef(dataDefName);
-        return getDataTemplate(dataDef);
+    public List<DataDef> getDataDefs() {
+        return dataDefs;
     }
 
     // transforms DAxis/DMember to Member/Axis
-    public Data getDataTemplate(final DataDef dataDef)
-            throws ClassNotFoundException, IOException, IllegalArgumentException {
-        if (memberSetsMap == null || memberSetsMap.get(dataDef.getName()) == null) {
-            synchronized (this) {
-                generateMemberSets(dataDef);
-            }
+    public Data getDataTemplate(final String dataDefName)
+            throws DataDefNotFoundException, ClassNotFoundException, IOException {
+        DataDef dataDef = getDataDef(dataDefName);
+        if (memberSetsMap.get(dataDefName) == null) {
+            generateMemberSets(dataDef); // synchronized
         }
         Data data = new Data();
-        data.setDataDef(dataDef.getName());
-        for (Set<DMember> members : memberSetsMap.get(dataDef.getName())) {
+        data.setDataDef(dataDefName);
+        for (Set<DMember> members : memberSetsMap.get(dataDefName)) {
             Member dataMember = new Member();
             dataMember.setName(""); // there is no name for member
             // add axis and its fields
@@ -330,7 +166,7 @@ public class DataDefService {
         return axis;
     }
 
-    private void generateMemberSets(final DataDef dataDef)
+    private synchronized void generateMemberSets(final DataDef dataDef)
             throws ClassNotFoundException, IOException {
         int axesSize = dataDef.getAxis().size();
         Set<?>[] memberSets = new HashSet<?>[axesSize];
@@ -367,7 +203,7 @@ public class DataDefService {
     }
 
     public int getCount() {
-        return dataDefsMap.size();
+        return dataDefs.size();
     }
 
     private void traceDataStructure() throws ClassNotFoundException, IOException {
@@ -376,7 +212,8 @@ public class DataDefService {
         }
         logger.trace("---- Trace data structure ----");
         logger.trace("");
-        for (String dataDefName : dataDefsMap.keySet()) {
+        for (DataDef dataDef : dataDefs) {
+            String dataDefName = dataDef.getName();
             try {
                 traceDataStructure(getDataTemplate(dataDefName));
             } catch (DataDefNotFoundException e) {
@@ -414,7 +251,7 @@ public class DataDefService {
             return;
         }
         logger.trace("--- Trace DataDefs ----");
-        for (DataDef dataDef : dataDefsMap.values()) {
+        for (DataDef dataDef : dataDefs) {
             StringBuilder sb = formattedDataDef(dataDef);
             logger.trace("{}", sb);
         }

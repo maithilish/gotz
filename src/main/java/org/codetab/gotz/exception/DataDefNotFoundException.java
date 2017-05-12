@@ -2,7 +2,7 @@ package org.codetab.gotz.exception;
 /*
  * RuntimeException : unrecoverable
  */
-public final class DataDefNotFoundException extends RuntimeException {
+public final class DataDefNotFoundException extends Exception {
 
     private static final long serialVersionUID = 1L;
 

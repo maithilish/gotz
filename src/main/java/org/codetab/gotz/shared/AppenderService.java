@@ -25,19 +25,11 @@ public class AppenderService {
 
     private final Map<String, Appender> appenders;
 
+    @Inject
     private DInjector dInjector;
-
+    @Inject
     private AppenderPoolService appenderPoolService;
 
-    @Inject
-    public void setdInjector(DInjector dInjector) {
-        this.dInjector = dInjector;
-    }
-
-    @Inject
-    public void setAppenderPoolService(AppenderPoolService appenderPoolService) {
-        this.appenderPoolService = appenderPoolService;
-    }
 
     @Inject
     private AppenderService() {

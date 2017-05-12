@@ -91,6 +91,27 @@ public final class DataDefDao implements IDataDefDao {
     }
 
     @Override
+    public DataDef getDataDef(String name, final Date date) {
+        PersistenceManager pm = getPM();
+        try {
+            String filter = "name == pname && fromDate <= pdate && toDate >= pdate";
+            String paramDecla = "String pname, java.util.Date pdate";
+            Extent<DataDef> extent = pm.getExtent(DataDef.class);
+            Query<DataDef> query = pm.newQuery(extent, filter);
+            query.declareParameters(paramDecla);
+
+            DataDef dataDef = (DataDef) query.execute(date);
+            pm.getFetchPlan().addGroup("detachFields");
+            pm.getFetchPlan().addGroup("detachAxis");
+            pm.getFetchPlan().addGroup("detachMembers");
+            pm.getFetchPlan().addGroup("detachFilters");
+            return pm.detachCopy(dataDef);
+        } finally {
+            pm.close();
+        }
+    }
+
+    @Override
     public List<DataDef> getDataDefs(final String name) {
         PersistenceManager pm = getPM();
         try {
