@@ -203,7 +203,9 @@ public abstract class Parser extends Step {
         for (Integer[] indexes : memberIndexSet) {
             boolean processed = true;
             for (int i = 0; i < AxisName.values().length; i++) {
-                if (indexes[i] != memberIndexes[i]) {
+                int index = indexes[i];
+                int memberIndex = memberIndexes[i];
+                if (index != memberIndex) {
                     processed = false;
                 }
             }

@@ -10,9 +10,9 @@ import org.codetab.gotz.dao.ILocatorDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DaoFactory extends org.codetab.gotz.dao.DaoFactory {
+public final class JdoDaoFactory extends org.codetab.gotz.dao.DaoFactory {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(DaoFactory.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(JdoDaoFactory.class);
 
     private PersistenceManagerFactory pmfactory;
 
@@ -28,7 +28,7 @@ public final class DaoFactory extends org.codetab.gotz.dao.DaoFactory {
     }
 
     @Inject
-    public DaoFactory() {
+    public JdoDaoFactory() {
     }
 
     public PersistenceManagerFactory getFactory() {

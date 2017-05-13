@@ -24,7 +24,7 @@ public abstract class Appender implements Runnable {
     /*
      *
      */
-    protected List<FieldsBase> getFields() {
+    public List<FieldsBase> getFields() {
         return fields;
     }
 

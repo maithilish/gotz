@@ -35,11 +35,19 @@ public final class FileAppender extends Appender {
 
     @Override
     public void run() {
-        PrintWriter writer = null;
+        String file = null;
         try {
-            String file = FieldsUtil.getValue(getFields(), "file");
-            FileOutputStream fos = FileUtils.openOutputStream(new File(file));
-            writer = new PrintWriter(fos);
+            file = FieldsUtil.getValue(getFields(), "file");
+        } catch (FieldNotFoundException e) {
+            String message = "file appender ";
+            LOGGER.error("{} {}", message, Util.getMessage(e));
+            LOGGER.debug("{}", e);
+            activityService.addActivity(Type.GIVENUP, message, e);
+            return;
+        }
+
+        try (FileOutputStream fos = FileUtils.openOutputStream(new File(file));
+                PrintWriter writer = new PrintWriter(fos);) {
             for (;;) {
                 Object item = queue.take();
                 if (item == Marker.EOF) {
@@ -48,13 +56,11 @@ public final class FileAppender extends Appender {
                 String str = item.toString();
                 writer.println(str);
             }
-        } catch (FieldNotFoundException | IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
             activityService.addActivity(Type.GIVENUP, message, e);
-        } finally {
-            writer.close();
         }
     }
 
