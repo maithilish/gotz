@@ -23,26 +23,19 @@ public class AppenderService {
 
     private final Logger logger = LoggerFactory.getLogger(AppenderService.class);
 
-    private final Map<String, Appender> appenders;
+    private final Map<String, Appender> appenders = new HashMap<String, Appender>();
 
     @Inject
     private DInjector dInjector;
     @Inject
     private AppenderPoolService appenderPoolService;
 
-
     @Inject
     private AppenderService() {
-        appenders = new HashMap<String, Appender>();
     }
 
-    public synchronized Appender getAppender(final String appenderName)
-            throws InterruptedException {
-        Appender appender = appenders.get(appenderName);
-        if (appender == null) {
-            throw new NullPointerException();
-        }
-        return appender;
+    public Appender getAppender(final String appenderName) {
+        return appenders.get(appenderName);
     }
 
     public synchronized void createAppender(final List<FieldsBase> fields)
@@ -53,9 +46,10 @@ public class AppenderService {
         if (appenders.containsKey(appenderName)) {
             return;
         }
-        Appender appender = null;
+
         Class<?> appenderClass = Class.forName(appenderClzName);
         Object obj = dInjector.instance(appenderClass);
+        Appender appender = null;
         if (obj instanceof Appender) {
             appender = (Appender) obj;
         } else {
@@ -69,16 +63,17 @@ public class AppenderService {
 
     public void closeAll() {
         for (String name : appenders.keySet()) {
-            try {
-                close(name);
-            } catch (InterruptedException e) {
-                logger.warn("{}", Util.getMessage(e));
-            }
+            close(name);
         }
     }
 
-    public void close(final String appenderName) throws InterruptedException {
+    public void close(final String appenderName) {
         Appender appender = getAppender(appenderName);
-        appender.append(Marker.EOF);
+        try {
+            appender.append(Marker.EOF);
+        } catch (InterruptedException e) {
+            // don't throw else closeAll fails for other appenders
+            logger.warn("{}", Util.getMessage(e));
+        }
     }
 }
