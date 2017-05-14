@@ -58,7 +58,7 @@ public class DataDef extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElements({@XmlElement(name = "field", type = Field.class),
-            @XmlElement(type = Fields.class)})
+        @XmlElement(type = Fields.class)})
     private List<FieldsBase> fields;
     @XmlElement
     private List<DAxis> axis;
@@ -82,7 +82,7 @@ public class DataDef extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     * 
+     *
      * <pre>
      * getFields().add(newItem);
      * </pre>
@@ -112,7 +112,7 @@ public class DataDef extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     * 
+     *
      * <pre>
      * getAxis().add(newItem);
      * </pre>
@@ -175,14 +175,14 @@ public class DataDef extends Base implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
-                "dnStateManager"};
+        "dnStateManager"};
         return EqualsBuilder.reflectionEquals(this, obj, excludes);
     }
 
     @Override
     public int hashCode() {
         String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
-                "dnStateManager"};
+        "dnStateManager"};
         return HashCodeBuilder.reflectionHashCode(this, excludes);
     }
 

@@ -10,10 +10,9 @@ public final class Data extends Base {
     private String dataDef;
     private long dataDefId;
     private long documentId;
-    private List<Member> members;
+    private List<Member> members = new ArrayList<Member>();
 
     public Data() {
-        members = new ArrayList<Member>();
     }
 
     public String getDataDef() {

@@ -55,7 +55,7 @@ public class DAxis extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElements({@XmlElement(name = "field", type = Field.class),
-            @XmlElement(type = Fields.class)})
+        @XmlElement(type = Fields.class)})
     private List<FieldsBase> fields;
     @XmlElement
     private Set<DMember> member = new HashSet<DMember>();
@@ -73,7 +73,7 @@ public class DAxis extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     * 
+     *
      * <pre>
      * getFields().add(newItem);
      * </pre>
@@ -103,7 +103,7 @@ public class DAxis extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     * 
+     *
      * <pre>
      * getMember().add(newItem);
      * </pre>

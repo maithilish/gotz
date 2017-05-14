@@ -19,16 +19,16 @@ public final class JdoDaoFactory extends org.codetab.gotz.dao.DaoFactory {
     private PMF pmf;
 
     @Inject
+    public JdoDaoFactory() {
+    }
+
+    @Inject
     public void setPmf(PMF pmf) {
         if (pmf.getFactory() == null) {
             pmf.init();
         }
         this.pmf = pmf;
         pmfactory = this.pmf.getFactory();
-    }
-
-    @Inject
-    public JdoDaoFactory() {
     }
 
     public PersistenceManagerFactory getFactory() {
