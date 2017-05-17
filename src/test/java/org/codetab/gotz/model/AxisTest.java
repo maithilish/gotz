@@ -1,88 +1,141 @@
 package org.codetab.gotz.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codetab.gotz.util.FieldsUtil;
+import org.junit.Before;
 import org.junit.Test;
 
 public class AxisTest {
-    @Test
-    public void testAxis() {
-        Axis axis = createAxis();
 
-        assertEquals(AxisName.ROW, axis.getName());
-        assertEquals(Integer.valueOf(1), axis.getIndex());
-        assertEquals("tmatch", axis.getMatch());
-        assertEquals(Integer.valueOf(2), axis.getOrder());
-        assertEquals("tvalue", axis.getValue());
+    private Axis axis;
+
+    @Before
+    public void setUp() throws Exception {
+        axis = new Axis();
+    }
+
+    @Test
+    public void testGetName() {
+        axis.setName(AxisName.COL);
+        assertThat(axis.getName()).isEqualTo(AxisName.COL);
+    }
+
+    @Test
+    public void testGetValue() {
+        axis.setValue("x");
+        assertThat(axis.getValue()).isEqualTo("x");
+    }
+
+    @Test
+    public void testGetMatch() {
+        axis.setMatch("x");
+        assertThat(axis.getMatch()).isEqualTo("x");
+    }
+
+    @Test
+    public void testGetIndex() {
+        axis.setIndex(1);
+        assertThat(axis.getIndex()).isEqualTo(1);
+    }
+
+    @Test
+    public void testGetOrder() {
+        axis.setOrder(2);
+        assertThat(axis.getOrder()).isEqualTo(2);
     }
 
     @Test
     public void testGetFields() {
-        Axis axis = new Axis();
-        assertEquals(0, axis.getFields().size());
+        List<FieldsBase> fields = axis.getFields();
+        assertThat(fields).isNotNull();
 
-        Field field = new Field();
-        field.setName("tname");
-        field.setValue("tvalue");
-        axis.getFields().add(field);
-
-        assertEquals(1, axis.getFields().size());
-        assertSame(field, axis.getFields().get(0));
+        // for test coverage when not null
+        assertThat(axis.getFields()).isSameAs(fields);
     }
 
     @Test
     public void testCompareTo() {
-        Axis a1 = createAxisWithField();
-        Axis a2 = createAxisWithField();
-        Axis a3 = createAxisWithField();
+        Axis a1 = new Axis();
+        Axis a2 = new Axis();
 
-        a3.setName(AxisName.COL);
+        a1.setName(AxisName.COL);
+        a2.setName(AxisName.COL);
+        assertThat(a1.compareTo(a2)).isEqualTo(0);
 
-        assertEquals(0, a1.compareTo(a2));
-        assertEquals(1, a1.compareTo(a3));
+        a1.setName(AxisName.COL);
+        a2.setName(AxisName.ROW);
+        assertThat(a1.compareTo(a2)).isEqualTo(-1);
+
+        a1.setName(AxisName.ROW);
+        a2.setName(AxisName.COL);
+        assertThat(a1.compareTo(a2)).isEqualTo(1);
     }
 
     @Test
-    public void testEqualsSymetry() {
-        Axis a1 = createAxisWithField();
-        Axis a2 = createAxisWithField();
-        Axis a3 = createAxisWithField();
-        a3.setName(AxisName.COL);
+    public void testHashCode() {
+        List<Axis> testObjects = createTestObjects();
+        Axis t1 = testObjects.get(0);
+        Axis t2 = testObjects.get(1);
 
-        assertTrue(a1.equals(a2));
-        assertTrue(a2.equals(a1));
-        assertEquals(a1.hashCode(),a2.hashCode());
+        String[] excludes = {};
+        int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
+        int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
+
+        assertThat(t1.hashCode()).isEqualTo(expectedHashT1);
+        assertThat(t2.hashCode()).isEqualTo(expectedHashT2);
+        assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
+    }
+
+    @Test
+    public void testEqualsObject() {
+        List<Axis> testObjects = createTestObjects();
+        Axis t1 = testObjects.get(0);
+        Axis t2 = testObjects.get(1);
+
+        String[] excludes = {};
+        assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
+
+        assertThat(t1).isEqualTo(t2);
+        assertThat(t2).isEqualTo(t1);
     }
 
     @Test
     public void testToString() {
-        Axis axis = createAxisWithField();
-        assertEquals(expectedToString(axis),axis.toString());
+        List<Axis> testObjects = createTestObjects();
+        Axis t1 = testObjects.get(0);
+
+        String expected = expectedString(t1);
+        assertThat(t1.toString()).isEqualTo(expected);
     }
 
-    private Axis createAxis() {
-        Axis axis = new Axis();
-        axis.setName(AxisName.ROW);
-        axis.setIndex(1);
-        axis.setMatch("tmatch");
-        axis.setOrder(2);
-        axis.setValue("tvalue");
-        return axis;
+    private List<Axis> createTestObjects(){
+        Axis t1 = new Axis();
+        t1.setName(AxisName.COL);
+        t1.setMatch("m");
+        t1.setValue("v");
+        t1.setIndex(1);
+        t1.setOrder(2);
+
+        Axis t2 = new Axis();
+        t2.setName(AxisName.COL);
+        t2.setMatch("m");
+        t2.setValue("v");
+        t2.setIndex(1);
+        t2.setOrder(2);
+
+        List<Axis> testObjects = new ArrayList<>();
+        testObjects.add(t1);
+        testObjects.add(t2);
+        return testObjects;
     }
 
-    private Axis createAxisWithField() {
-        Axis axis = createAxis();
-        Field field = new Field();
-        field.setName("tname");
-        field.setValue("tvalue");
-        axis.getFields().add(field);
-        return axis;
-    }
-
-    private String expectedToString(Axis axis) {
+    private String expectedString(Axis axis) {
         StringBuilder builder = new StringBuilder();
         builder.append("Axis [name=");
         builder.append(axis.getName());

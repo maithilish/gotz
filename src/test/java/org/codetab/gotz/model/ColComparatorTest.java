@@ -29,22 +29,6 @@ public class ColComparatorTest {
     }
 
     @Test
-    public void testCompareNull() {
-        m1.getAxes().remove(axis1);
-
-        int actual = sut.compare(m1, m2);
-
-        then(actual).isEqualTo(0);
-
-        m1.getAxes().add(axis1);
-        m2.getAxes().remove(axis2);
-
-        actual = sut.compare(m1, m2);
-
-        then(actual).isEqualTo(0);
-    }
-
-    @Test
     public void testCompare() {
         axis1.setOrder(3);
         axis2.setOrder(1);
@@ -53,6 +37,5 @@ public class ColComparatorTest {
 
         then(actual).isEqualTo(2);
     }
-
 
 }

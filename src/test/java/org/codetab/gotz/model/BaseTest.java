@@ -1,20 +1,19 @@
 package org.codetab.gotz.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.junit.Before;
 import org.junit.Test;
 
 public class BaseTest {
 
-    private EnhancedBase base;
-    private EnhancedBase base2;
-
-    class EnhancedBase extends Base{
+    class Enhanced extends Base {
         private static final long serialVersionUID = 1L;
         @SuppressWarnings("unused")
         private int dnDetachedState = 1;
@@ -24,45 +23,75 @@ public class BaseTest {
         private int dnStateManager = 3;
     }
 
-    @Before
-    public void setUp() {
-        base = new EnhancedBase();
-        base.setId(1L);
-        base.setName("tname");
+    @Test
+    public void testGetId() {
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
 
-        base2 = new EnhancedBase();
-        base2.setId(1L);
-        base2.setName("tname");
-        base2.dnDetachedState = 21;
-        base2.dnFlags = 22;
-        base2.dnStateManager = 23;
+        assertThat(t1.getId()).isEqualTo(1L);
     }
 
     @Test
-    public void testBase() {
-        assertEquals(Long.valueOf(1), base.getId());
-        assertEquals("tname", base.getName());
-    }
+    public void testGetName() {
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
 
-    @Test
-    public void testEqualsSymetry() {
-        assertTrue(base.equals(base2));
-        assertTrue(base2.equals(base));
+        assertThat(t1.getName()).isEqualTo("n");
     }
 
     @Test
     public void testHashCode() {
-        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
-        int expected = HashCodeBuilder.reflectionHashCode(base, excludes);
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
+        Enhanced t2 = testObjects.get(1);
 
-        assertEquals(expected, base.hashCode());
-        assertEquals(base.hashCode(),base2.hashCode());
+        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
+        int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
+
+        assertThat(t1.hashCode()).isEqualTo(expectedHashT1);
+        assertThat(t2.hashCode()).isEqualTo(expectedHashT2);
+        assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
+    }
+
+    @Test
+    public void testEqualsObject() {
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
+        Enhanced t2 = testObjects.get(1);
+
+        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
+
+        assertThat(t1).isEqualTo(t2);
+        assertThat(t2).isEqualTo(t1);
     }
 
     @Test
     public void testToString() {
-        String expected = ToStringBuilder.reflectionToString(base, ToStringStyle.MULTI_LINE_STYLE);
-        assertEquals(expected,base.toString());
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
+
+        String expected = ToStringBuilder.reflectionToString(t1,
+                ToStringStyle.MULTI_LINE_STYLE);
+        assertThat(t1.toString()).isEqualTo(expected);
     }
 
+    private List<Enhanced> createTestObjects() {
+        Enhanced t1 = new Enhanced();
+        t1.setId(1L);
+        t1.setName("n");
+
+        Enhanced t2 = new Enhanced();
+        t2.setId(2L);
+        t2.setName("n");
+        t2.dnDetachedState = 11;
+        t2.dnFlags = 12;
+        t2.dnStateManager = 13;
+
+        List<Enhanced> testObjects = new ArrayList<>();
+        testObjects.add(t1);
+        testObjects.add(t2);
+        return testObjects;
+    }
 }

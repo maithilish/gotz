@@ -4,22 +4,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DAxisTest {
+public class DMemberTest {
 
-    /*
-     * enhanced class to test excludes in hashcode and equals
-     */
-    class Enhanced extends DAxis {
+    // enhanced class to test excludes in hashcode and equals
+    class Enhanced extends DMember {
         private static final long serialVersionUID = 1L;
         @SuppressWarnings("unused")
         private int dnDetachedState = 1;
@@ -29,11 +25,11 @@ public class DAxisTest {
         private int dnStateManager = 3;
     }
 
-    private DAxis dAxis;
+    private DMember dMember;
 
     @Before
     public void setUp() throws Exception {
-        dAxis = new DAxis();
+        dMember = new DMember();
     }
 
     @Test
@@ -75,54 +71,62 @@ public class DAxisTest {
 
     @Test
     public void testGetFields() {
-        List<FieldsBase> fields = dAxis.getFields();
+        List<FieldsBase> fields = dMember.getFields();
         assertThat(fields).isNotNull();
 
         // for test coverage when not null
-        assertThat(dAxis.getFields()).isSameAs(fields);
+        assertThat(dMember.getFields()).isSameAs(fields);
     }
 
     @Test
-    public void testGetMember() {
-        Set<DMember> members = dAxis.getMember();
-
-        assertThat(members).isNotNull();
-
-        // for test coverage when not null
-        assertThat(dAxis.getMember()).isSameAs(members);
-    }
-
-    // for coverage
-    @Test
-    public void testGetMemberNull() throws IllegalAccessException {
-        FieldUtils.writeDeclaredField(dAxis, "member", null,true);
-
-        Set<DMember> members = dAxis.getMember();
-
-        assertThat(members).isNotNull();
+    public void testGetAxis() {
+        dMember.setAxis("x");
+        assertThat(dMember.getAxis()).isEqualTo("x");
     }
 
     @Test
-    public void testGetFilter() {
-        DFilter filter = new DFilter();
-        dAxis.setFilter(filter);
+    public void testGetIndex() {
+        dMember.setIndex(1);
+        assertThat(dMember.getIndex()).isEqualTo(1);
+    }
 
-        assertThat(dAxis.getFilter()).isSameAs(filter);
+    @Test
+    public void testGetMatch() {
+        dMember.setMatch("x");
+        assertThat(dMember.getMatch()).isEqualTo("x");
+    }
+
+
+    @Test
+    public void testGetOrder() {
+        dMember.setOrder(1);
+        assertThat(dMember.getOrder()).isEqualTo(1);
+    }
+
+    @Test
+    public void testGetValue() {
+        dMember.setValue("x");
+        assertThat(dMember.getValue()).isEqualTo("x");
     }
 
     private List<Enhanced> createTestObjects() {
-        DFilter filter = new DFilter();
-        filter.setName("f");
-
         Enhanced t1 = new Enhanced();
         t1.setId(1L);
         t1.setName("x");
-        t1.setFilter(filter);
+        t1.setAxis("a");
+        t1.setIndex(1);
+        t1.setOrder(2);
+        t1.setMatch("m");
+        t1.setValue("v");
 
         Enhanced t2 = new Enhanced();
         t2.setId(2L);
         t2.setName("x");
-        t2.setFilter(filter);
+        t2.setAxis("a");
+        t2.setIndex(1);
+        t2.setOrder(2);
+        t2.setMatch("m");
+        t2.setValue("v");
         t2.dnDetachedState = 11;
         t2.dnFlags = 12;
         t2.dnStateManager = 13;

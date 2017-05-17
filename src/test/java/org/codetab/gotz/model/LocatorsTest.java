@@ -8,22 +8,22 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Test;
 
-public class BeansTest {
+public class LocatorsTest {
 
-    // beans is just a holder and not compared with each other.
+    // locators is just a holder and not compared with each other.
     // tests for hashCode, equals are for coverage
     @Test
     public void testHashCode() {
-        Beans t1 = new Beans();
-        Beans t2 = new Beans();
+        Locators t1 = new Locators();
+        Locators t2 = new Locators();
 
         assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
     }
 
     @Test
     public void testEqualsObject() {
-        Beans t1 = new Beans();
-        Beans t2 = new Beans();
+        Locators t1 = new Locators();
+        Locators t2 = new Locators();
 
         assertThat(t1).isEqualTo(t2);
         assertThat(t2).isEqualTo(t1);
@@ -31,20 +31,39 @@ public class BeansTest {
 
     @Test
     public void testToString() {
-        Beans t1 = new Beans();
+        Locators t1 = new Locators();
         String expected = ToStringBuilder.reflectionToString(t1,
                 ToStringStyle.MULTI_LINE_STYLE);
 
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
+
     @Test
     public void testGetLocator() {
-        Beans t1 = new Beans();
-        List<Bean> list = t1.getBean();
+        Locators t1 = new Locators();
+        List<Locator> list = t1.getLocator();
 
         assertThat(list).isNotNull();
         // for coverage when not null
-        assertThat(t1.getBean()).isSameAs(list);
+        assertThat(t1.getLocator()).isSameAs(list);
+    }
+
+    @Test
+    public void testGetLocators() {
+        Locators t1 = new Locators();
+        List<Locators> list = t1.getLocators();
+
+        assertThat(list).isNotNull();
+        // for coverage when not null
+        assertThat(t1.getLocators()).isSameAs(list);
+    }
+
+    @Test
+    public void testGetGroup() {
+        Locators t1 = new Locators();
+        t1.setGroup("x");
+
+        assertThat(t1.getGroup()).isEqualTo("x");
     }
 }

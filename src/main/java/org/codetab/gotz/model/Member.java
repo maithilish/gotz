@@ -17,12 +17,8 @@ public final class Member extends Base {
     private static final long serialVersionUID = 1L;
 
     private String group;
-    private Set<Axis> axes;
+    private Set<Axis> axes = new HashSet<Axis>();
     private List<FieldsBase> fields;
-
-    public Member() {
-        axes = new HashSet<Axis>();
-    }
 
     public String getGroup() {
         return group;
@@ -48,19 +44,12 @@ public final class Member extends Base {
     }
 
     public Axis getAxis(final AxisName axisName) {
-        for (Axis axis : axes) {
-            if (axis.getName().equals(axisName)) {
-                return axis;
-            }
-        }
-        return null;
+        return axes.stream().filter(a -> a.getName().equals(axisName)).findFirst().get();
     }
 
     public Map<String, Axis> getAxisMap() {
         Map<String, Axis> axisMap = new HashMap<>();
-        for (Axis axis : axes) {
-            axisMap.put(axis.getName().toString(), axis);
-        }
+        axes.stream().forEach(a -> axisMap.put(a.getName().toString(), a));
         return axisMap;
     }
 
@@ -69,16 +58,19 @@ public final class Member extends Base {
     }
 
     public String getValue(final AxisName axisName) {
-        Axis axis = getAxis(axisName);
-        return axis.getValue();
+        return getAxis(axisName).getValue();
     }
 
     public StringBuilder traceMember() {
+        String nl = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
-        sb.append(toString());
-        for (Axis axis : axes) {
-            sb.append(axis);
-        }
+        sb.append("Member=[name=");
+        sb.append(getName());
+        sb.append(",group=");
+        sb.append(getGroup());
+        sb.append("]");
+        sb.append(nl);
+        axes.stream().forEach(sb::append);
         return sb;
     }
 

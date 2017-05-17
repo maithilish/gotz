@@ -10,17 +10,16 @@ import org.junit.Test;
 
 public class DataDefsTest {
 
-    // datadefs are just holder and not compared
+    // datadefs is just a holder and not compared with each other.
     // tests for hashCode, equals are for coverage
-
     @Test
     public void testHashCode() {
-        DataDefs d1 = new DataDefs();
-        DataDefs d2 = new DataDefs();
-        d1.getDatadef();
-        d2.getDatadef();
+        DataDefs t1 = new DataDefs();
+        DataDefs t2 = new DataDefs();
+        t1.getDatadef();
+        t2.getDatadef();
 
-        assertThat(d1.hashCode()).isEqualTo(d2.hashCode());
+        assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
     }
 
     @Test
@@ -35,13 +34,13 @@ public class DataDefsTest {
 
     @Test
     public void testEqualsObject() {
-        DataDefs d1 = new DataDefs();
-        DataDefs d2 = new DataDefs();
-        d1.getDatadef();
-        d2.getDatadef();
+        DataDefs t1 = new DataDefs();
+        DataDefs t2 = new DataDefs();
+        t1.getDatadef();
+        t2.getDatadef();
 
-        assertThat(d1).isEqualTo(d2);
-        assertThat(d2).isEqualTo(d1);
+        assertThat(t1).isEqualTo(t2);
+        assertThat(t2).isEqualTo(t1);
     }
 
     @Test

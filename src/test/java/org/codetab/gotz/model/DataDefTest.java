@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -17,7 +18,7 @@ public class DataDefTest {
 
     private DataDef dataDef;
 
-    class EnhancedDataDef extends DataDef{
+    class Enhanced extends DataDef{
         private static final long serialVersionUID = 1L;
         @SuppressWarnings("unused")
         private int dnDetachedState = 1;
@@ -69,60 +70,65 @@ public class DataDefTest {
 
     @Test
     public void testHashCode() {
-        List<EnhancedDataDef> dataDefs = createDataDefs();
-        EnhancedDataDef d1 = dataDefs.get(0);
-        EnhancedDataDef d2 = dataDefs.get(0);
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
+        Enhanced t2 = testObjects.get(1);
 
         String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
         "dnStateManager"};
-        int expectedHashD1 = HashCodeBuilder.reflectionHashCode(d1, excludes);
-        int expectedHashD2 = HashCodeBuilder.reflectionHashCode(d2, excludes);
+        int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
+        int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
 
-        assertThat(d1.hashCode()).isEqualTo(expectedHashD1);
-        assertThat(d2.hashCode()).isEqualTo(expectedHashD2);
-        assertThat(d1.hashCode()).isEqualTo(d2.hashCode());
+        assertThat(t1.hashCode()).isEqualTo(expectedHashT1);
+        assertThat(t2.hashCode()).isEqualTo(expectedHashT2);
+        assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
     }
 
     @Test
-    public void testEqualsSymetry() {
-        List<EnhancedDataDef> dataDefs = createDataDefs();
-        EnhancedDataDef d1 = dataDefs.get(0);
-        EnhancedDataDef d2 = dataDefs.get(0);
+    public void testEqualsObject() {
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
+        Enhanced t2 = testObjects.get(1);
 
-        assertThat(d1).isEqualTo(d2);
-        assertThat(d2).isEqualTo(d1);
+        String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
+        "dnStateManager"};
+        assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
+
+        assertThat(t1).isEqualTo(t2);
+        assertThat(t2).isEqualTo(t1);
     }
 
     @Test
     public void testToString() {
-        List<EnhancedDataDef> dataDefs = createDataDefs();
-        EnhancedDataDef d1 = dataDefs.get(0);
-        String expected = ToStringBuilder.reflectionToString(d1, ToStringStyle.MULTI_LINE_STYLE);
-        assertThat(d1.toString()).isEqualTo(expected);
+        List<Enhanced> testObjects = createTestObjects();
+        Enhanced t1 = testObjects.get(0);
+
+        String expected = ToStringBuilder.reflectionToString(t1, ToStringStyle.MULTI_LINE_STYLE);
+        assertThat(t1.toString()).isEqualTo(expected);
     }
 
-    private List<EnhancedDataDef> createDataDefs(){
+    private List<Enhanced> createTestObjects(){
         Date date = new Date();
 
-        EnhancedDataDef d1 = new EnhancedDataDef();
-        d1.setFromDate(date);
-        d1.setToDate(DateUtils.addMonths(date, 1));
-        d1.setId(1L);
-        d1.setName("x");
+        Enhanced t1 = new Enhanced();
+        t1.setFromDate(date);
+        t1.setToDate(DateUtils.addMonths(date, 1));
+        t1.setId(1L);
+        t1.setName("x");
 
-        EnhancedDataDef d2 = new EnhancedDataDef();
+        Enhanced t2 = new Enhanced();
 
-        d2.setFromDate(DateUtils.addMonths(date, 2));
-        d2.setToDate(DateUtils.addMonths(date, 3));
-        d2.setId(2L);
-        d2.setName("x");
-        d2.dnDetachedState=11;
-        d2.dnFlags=12;
-        d2.dnStateManager=13;
+        t2.setFromDate(DateUtils.addMonths(date, 2));
+        t2.setToDate(DateUtils.addMonths(date, 3));
+        t2.setId(2L);
+        t2.setName("x");
+        t2.dnDetachedState=11;
+        t2.dnFlags=12;
+        t2.dnStateManager=13;
 
-        List<EnhancedDataDef> list = new ArrayList<>();
-        list.add(d1);
-        list.add(d2);
-        return list;
+        List<Enhanced> testObjects = new ArrayList<>();
+        testObjects.add(t1);
+        testObjects.add(t2);
+        return testObjects;
     }
 }

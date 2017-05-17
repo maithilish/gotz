@@ -3,23 +3,21 @@ package org.codetab.gotz.model;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.reflect.FieldUtils;
+import org.codetab.gotz.util.FieldsIterator;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DAxisTest {
+public class FieldsTest {
 
-    /*
-     * enhanced class to test excludes in hashcode and equals
-     */
-    class Enhanced extends DAxis {
+    // enhanced class to test excludes in hashcode and equals
+    class Enhanced extends Fields {
         private static final long serialVersionUID = 1L;
         @SuppressWarnings("unused")
         private int dnDetachedState = 1;
@@ -29,11 +27,11 @@ public class DAxisTest {
         private int dnStateManager = 3;
     }
 
-    private DAxis dAxis;
+    private Fields fields;
 
     @Before
     public void setUp() throws Exception {
-        dAxis = new DAxis();
+        fields = new Fields();
     }
 
     @Test
@@ -74,55 +72,44 @@ public class DAxisTest {
     }
 
     @Test
+    public void testGetName() {
+        fields.setName("x");
+        assertThat(fields.getName()).isEqualTo("x");
+    }
+
+    @Test
+    public void testGetValue() {
+        fields.setValue("x");
+        assertThat(fields.getValue()).isEqualTo("x");
+    }
+
+    @Test
     public void testGetFields() {
-        List<FieldsBase> fields = dAxis.getFields();
-        assertThat(fields).isNotNull();
+        List<FieldsBase> fieldsList = fields.getFields();
+        assertThat(fieldsList).isNotNull();
 
         // for test coverage when not null
-        assertThat(dAxis.getFields()).isSameAs(fields);
+        assertThat(fields.getFields()).isSameAs(fieldsList);
     }
 
     @Test
-    public void testGetMember() {
-        Set<DMember> members = dAxis.getMember();
-
-        assertThat(members).isNotNull();
-
-        // for test coverage when not null
-        assertThat(dAxis.getMember()).isSameAs(members);
-    }
-
-    // for coverage
-    @Test
-    public void testGetMemberNull() throws IllegalAccessException {
-        FieldUtils.writeDeclaredField(dAxis, "member", null,true);
-
-        Set<DMember> members = dAxis.getMember();
-
-        assertThat(members).isNotNull();
-    }
-
-    @Test
-    public void testGetFilter() {
-        DFilter filter = new DFilter();
-        dAxis.setFilter(filter);
-
-        assertThat(dAxis.getFilter()).isSameAs(filter);
+    public void testIterator() {
+        fields.getFields();
+        Iterator<FieldsBase> i1 = fields.iterator();
+        Iterator<FieldsBase> i2 = fields.iterator();
+        assertThat(i1).isInstanceOf(FieldsIterator.class);
+        assertThat(i2).isInstanceOf(FieldsIterator.class);
+        assertThat(i1).isNotSameAs(i2);
     }
 
     private List<Enhanced> createTestObjects() {
-        DFilter filter = new DFilter();
-        filter.setName("f");
-
         Enhanced t1 = new Enhanced();
-        t1.setId(1L);
         t1.setName("x");
-        t1.setFilter(filter);
+        t1.setValue("v");
 
         Enhanced t2 = new Enhanced();
-        t2.setId(2L);
         t2.setName("x");
-        t2.setFilter(filter);
+        t2.setValue("v");
         t2.dnDetachedState = 11;
         t2.dnFlags = 12;
         t2.dnStateManager = 13;

@@ -4,22 +4,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DAxisTest {
+public class DFilterTest {
 
     /*
      * enhanced class to test excludes in hashcode and equals
      */
-    class Enhanced extends DAxis {
+    class Enhanced extends DFilter {
         private static final long serialVersionUID = 1L;
         @SuppressWarnings("unused")
         private int dnDetachedState = 1;
@@ -29,11 +27,11 @@ public class DAxisTest {
         private int dnStateManager = 3;
     }
 
-    private DAxis dAxis;
+    private DFilter dFilter;
 
     @Before
     public void setUp() throws Exception {
-        dAxis = new DAxis();
+        dFilter = new DFilter();
     }
 
     @Test
@@ -75,54 +73,29 @@ public class DAxisTest {
 
     @Test
     public void testGetFields() {
-        List<FieldsBase> fields = dAxis.getFields();
+        List<FieldsBase> fields = dFilter.getFields();
         assertThat(fields).isNotNull();
 
         // for test coverage when not null
-        assertThat(dAxis.getFields()).isSameAs(fields);
+        assertThat(dFilter.getFields()).isSameAs(fields);
     }
 
     @Test
-    public void testGetMember() {
-        Set<DMember> members = dAxis.getMember();
-
-        assertThat(members).isNotNull();
-
-        // for test coverage when not null
-        assertThat(dAxis.getMember()).isSameAs(members);
-    }
-
-    // for coverage
-    @Test
-    public void testGetMemberNull() throws IllegalAccessException {
-        FieldUtils.writeDeclaredField(dAxis, "member", null,true);
-
-        Set<DMember> members = dAxis.getMember();
-
-        assertThat(members).isNotNull();
-    }
-
-    @Test
-    public void testGetFilter() {
-        DFilter filter = new DFilter();
-        dAxis.setFilter(filter);
-
-        assertThat(dAxis.getFilter()).isSameAs(filter);
+    public void testGetAxis() {
+        dFilter.setAxis("x");
+        assertThat(dFilter.getAxis()).isEqualTo("x");
     }
 
     private List<Enhanced> createTestObjects() {
-        DFilter filter = new DFilter();
-        filter.setName("f");
-
         Enhanced t1 = new Enhanced();
         t1.setId(1L);
         t1.setName("x");
-        t1.setFilter(filter);
+        t1.setAxis("a");
 
         Enhanced t2 = new Enhanced();
         t2.setId(2L);
         t2.setName("x");
-        t2.setFilter(filter);
+        t2.setAxis("a");
         t2.dnDetachedState = 11;
         t2.dnFlags = 12;
         t2.dnStateManager = 13;
@@ -132,4 +105,5 @@ public class DAxisTest {
         testObjects.add(t2);
         return testObjects;
     }
+
 }
