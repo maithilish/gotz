@@ -8,11 +8,11 @@ public interface IStep extends Runnable {
 
     IStep instance();
 
-    void load() throws Exception;
+    void load();
 
-    void store() throws Exception;
+    void store();
 
-    void handover() throws Exception;
+    void handover();
 
     void setInput(Object input);
 

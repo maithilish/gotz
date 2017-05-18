@@ -5,6 +5,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
@@ -33,10 +35,18 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     }
 
     @Override
-    public void handover() throws Exception {
+    public void handover(){
         final long sleepMillis = 1000;
         for (Member member : getData().getMembers()) {
-            Locator locator = createLocator(member);
+            Locator locator=null;
+            try {
+                locator = createLocator(member);
+            } catch (FieldNotFoundException e) {
+                String givenUpMessage="unable to create locator";
+                LOGGER.error("{} {}", givenUpMessage ,e.getLocalizedMessage());
+                activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+                throw new StepRunException(givenUpMessage, e);
+            }
             String stepType = getStepType();
             setStepType("seeder");
             pushTask(locator, locator.getFields());
@@ -84,7 +94,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     }
 
     @Override
-    public void store() throws Exception {
+    public void store(){
         // not required - don't throw illegal oper
     }
 }

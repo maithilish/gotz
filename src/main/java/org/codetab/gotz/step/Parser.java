@@ -17,9 +17,9 @@ import org.apache.commons.lang3.Range;
 import org.codetab.gotz.dao.DaoFactory;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.ORM;
-import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -243,10 +243,18 @@ public abstract class Parser extends Step {
      * @see org.codetab.gotz.step.IStep#load()
      */
     @Override
-    public void load() throws Exception {
-        Long dataDefId = dataDefService.getDataDef(dataDefName).getId();
-        Long documentId = getDocument().getId();
-        data = getDataFromStore(dataDefId, documentId);
+    public void load() {
+        Long dataDefId;
+        try {
+            dataDefId = dataDefService.getDataDef(dataDefName).getId();
+            Long documentId = getDocument().getId();
+            data = getDataFromStore(dataDefId, documentId);
+        } catch (DataDefNotFoundException e) {
+            String givenUpMessage="unable to get datadef id";
+            LOGGER.error("{} {}", givenUpMessage ,e.getLocalizedMessage());
+            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            throw new StepRunException(givenUpMessage, e);
+        }
     }
 
     /*
@@ -255,7 +263,7 @@ public abstract class Parser extends Step {
      * @see org.codetab.gotz.step.IStep#store()
      */
     @Override
-    public void store() throws Exception {
+    public void store(){
         boolean persist = true;
         try {
             persist = FieldsUtil.isFieldTrue(getFields(), "persistdata");
@@ -283,7 +291,7 @@ public abstract class Parser extends Step {
      * @see org.codetab.gotz.step.IStep#handover()
      */
     @Override
-    public void handover() throws Exception {
+    public void handover(){
         pushTask(data, getFields());
     }
 
@@ -345,7 +353,7 @@ public abstract class Parser extends Step {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw new CriticalException("config error",e);
+            throw new StepRunException("config error",e);
         }
     }
 

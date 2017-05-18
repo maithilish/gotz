@@ -55,7 +55,7 @@ public abstract class Filter extends Step {
      * @see org.codetab.gotz.step.IStep#handover()
      */
     @Override
-    public void handover() throws Exception {
+    public void handover(){
         pushTask(data, getFields());
     }
 
@@ -86,8 +86,8 @@ public abstract class Filter extends Step {
      * @see org.codetab.gotz.step.IStep#load()
      */
     @Override
-    public void load() throws Exception {
-        throw new UnsupportedOperationException();
+    public void load(){
+        throw new RuntimeException("not supported operation");
     }
 
     /*
@@ -96,8 +96,8 @@ public abstract class Filter extends Step {
      * @see org.codetab.gotz.step.IStep#store()
      */
     @Override
-    public void store() throws Exception {
-        throw new UnsupportedOperationException();
+    public void store(){
+        throw new RuntimeException("not supported operation");
     }
 
 }

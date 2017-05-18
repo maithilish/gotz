@@ -14,7 +14,6 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.helper.JaxbXoc;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.Beans;
 import org.codetab.gotz.model.ObjectFactory;

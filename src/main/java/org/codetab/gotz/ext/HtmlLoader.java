@@ -1,7 +1,6 @@
 package org.codetab.gotz.ext;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.step.IStep;
@@ -26,8 +25,7 @@ public final class HtmlLoader extends Loader {
     }
 
     @Override
-    public Object fetchDocument(final String url)
-            throws Exception, MalformedURLException, IOException {
+    public Object fetchDocument(final String url) throws IOException {
         WebClient webClient = getWebClient();
         LOGGER.info("fetch web resource {}", url);
         try {

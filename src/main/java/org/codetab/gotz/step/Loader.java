@@ -1,7 +1,6 @@
 package org.codetab.gotz.step;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -23,6 +22,7 @@ import org.codetab.gotz.dao.ILocatorDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Field;
@@ -78,7 +78,7 @@ public abstract class Loader extends Step {
      * @see org.codetab.gotz.step.IStep#load()
      */
     @Override
-    public void load() throws Exception {
+    public void load() {
         Locator savedLocator = getLocatorFromStore(locator.getName(), locator.getGroup());
         if (savedLocator != null) {
             // update existing locator with new values
@@ -94,7 +94,15 @@ public abstract class Loader extends Step {
 
         Long liveDocumentId = getLiveDocumentId();
         if (liveDocumentId == null) {
-            Object object = fetchDocument(locator.getUrl());
+            Object object=null;
+            try {
+                object = fetchDocument(locator.getUrl());
+            } catch (IOException e) {
+                String givenUpMessage="unable to fetch document";
+                LOGGER.error("{} {}", givenUpMessage ,e.getLocalizedMessage());
+                activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+                throw new StepRunException(givenUpMessage, e);
+            }
             document = new Document();
             document.setName(locator.getName());
             document.setDocumentObject(object);
@@ -121,7 +129,7 @@ public abstract class Loader extends Step {
      * @see org.codetab.gotz.step.IStep#store()
      */
     @Override
-    public void store() throws Exception {
+    public void store() {
         boolean persist = true;
         try {
             persist = FieldsUtil.isFieldTrue(locator.getFields(), "persist");
@@ -161,22 +169,32 @@ public abstract class Loader extends Step {
      * @see org.codetab.gotz.step.IStep#handover()
      */
     @Override
-    public void handover() throws Exception {
+    public void handover() {
         // TODO test separate instance for each call
         // for each dataDef create dedicated parser
 
-        String givenUpMessage = Util.buildString("Create parser for locator [",
+        String givenUpMessage = Util.buildString("create parser for locator [",
                 locator.getName(), "] failed.");
-        List<FieldsBase> stepsFields = FieldsUtil.getGroupFields(locator.getFields(),
-                "steps");
-        List<FieldsBase> dataDefFields = FieldsUtil.getGroupFields(locator.getFields(),
-                "datadef");
-        if (dataDefFields.size() == 0) {
-            LOGGER.warn("{} {}", givenUpMessage, " No datadef field found.");
+
+        List<FieldsBase> stepsFields = null;
+        List<FieldsBase> dataDefFields = null;
+        try {
+            stepsFields = FieldsUtil.getGroupFields(locator.getFields(), "steps");
+            dataDefFields = FieldsUtil.getGroupFields(locator.getFields(), "datadef");
+        } catch (FieldNotFoundException e) {
+            LOGGER.error("{} {}", givenUpMessage, e);
+            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            throw new StepRunException(givenUpMessage, e);
         }
         for (FieldsBase dataDefField : dataDefFields) {
             if (dataDefField instanceof Fields) {
-                Fields fields = Util.deepClone(Fields.class, (Fields) dataDefField);
+                Fields fields=null;
+                try {
+                    fields = Util.deepClone(Fields.class, (Fields) dataDefField);
+                } catch (ClassNotFoundException | IOException e) {
+                    LOGGER.error("{} {}", "unable to clone fields", e.getLocalizedMessage());
+                    continue;
+                }
                 if (isDocumentLoaded()) {
                     Field field = FieldsUtil.createField("locatorName",
                             locator.getName());
@@ -311,6 +329,5 @@ public abstract class Loader extends Step {
     }
 
     // template method to be implemented by subclass
-    public abstract Object fetchDocument(String url)
-            throws Exception, MalformedURLException, IOException;
+    public abstract Object fetchDocument(String url) throws IOException;
 }

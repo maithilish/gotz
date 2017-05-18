@@ -10,6 +10,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
 import org.codetab.gotz.model.FieldsBase;
@@ -19,6 +21,7 @@ import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Transformer;
 import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,17 +118,32 @@ public final class CsvTransformer extends Transformer {
     }
 
     @Override
-    public void handover() throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, InterruptedException, FieldNotFoundException {
-        List<FieldsBase> appenders = FieldsUtil.getGroupFields(getFields(), "appender");
+    public void handover() {
+        List<FieldsBase> appenders = null;
+        try {
+            appenders = FieldsUtil.getGroupFields(getFields(), "appender");
+        } catch (FieldNotFoundException e) {
+            String message = "unable to find appender fields";
+            LOGGER.error("{} {}", message, Util.getMessage(e));
+            LOGGER.debug("{}", e);
+            activityService.addActivity(Type.GIVENUP, message, e);
+            throw new StepRunException(message, e);
+        }
         for (FieldsBase f : appenders) {
             List<FieldsBase> fields = FieldsUtil.asList(f);
-            appenderService.createAppender(fields);
-
-            String appenderName = FieldsUtil.getValue(fields, "name");
-            Appender appender = appenderService.getAppender(appenderName);
-
-            appender.append(content);
+            try {
+                appenderService.createAppender(fields);
+                String appenderName = FieldsUtil.getValue(fields, "name");
+                Appender appender = appenderService.getAppender(appenderName);
+                appender.append(content);
+            } catch (ClassNotFoundException | InstantiationException
+                    | IllegalAccessException | FieldNotFoundException
+                    | InterruptedException e) {
+                String message = "unable to append";
+                LOGGER.error("{} {}", message, Util.getMessage(e));
+                LOGGER.debug("{}", e);
+                activityService.addActivity(Type.GIVENUP, message, e);
+            }
         }
     }
 }

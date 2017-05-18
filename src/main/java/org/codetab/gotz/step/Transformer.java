@@ -1,7 +1,5 @@
 package org.codetab.gotz.step;
 
-import javax.naming.OperationNotSupportedException;
-
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.util.Util;
@@ -45,8 +43,8 @@ public abstract class Transformer extends Step {
      * @see org.codetab.gotz.step.IStep#load()
      */
     @Override
-    public void load() throws Exception {
-        throw new OperationNotSupportedException("nothing to load");
+    public void load() {
+        throw new RuntimeException("not supported operation");
     }
 
     /*
@@ -55,8 +53,8 @@ public abstract class Transformer extends Step {
      * @see org.codetab.gotz.step.IStep#store()
      */
     @Override
-    public void store() throws Exception {
-        throw new OperationNotSupportedException("nothing to store");
+    public void store() {
+        throw new RuntimeException("not supported operation");
     }
 
     /*

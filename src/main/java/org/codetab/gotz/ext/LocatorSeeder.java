@@ -136,13 +136,13 @@ public class LocatorSeeder extends Seeder {
     }
 
     @Override
-    public void store() throws Exception {
-        throw new UnsupportedOperationException();
+    public void store(){
+        throw new RuntimeException("not supported operation");
     }
 
     @Override
     public void setInput(final Object input) {
-        throw new UnsupportedOperationException();
+        throw new RuntimeException("not supported operation");
     }
 
 }
