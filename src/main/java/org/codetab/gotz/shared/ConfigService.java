@@ -78,7 +78,7 @@ public class ConfigService {
     }
 
     // when config not found, default value may be used in some cases
-    // otherwise usually exception is translated to higher level CriticalException
+    // otherwise usually exceptionRule is translated to higher level CriticalException
     // which is unrecoverable. Hence warn is used in here instead of error
     public String getConfig(final String key) throws ConfigNotFoundException {
         String value = configs.getString(key);

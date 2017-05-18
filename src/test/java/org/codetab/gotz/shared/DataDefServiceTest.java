@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.helper.DataDefDefaults;
@@ -61,6 +62,20 @@ public class DataDefServiceTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void testSingleton() {
+        // given
+        DInjector dInjector = new DInjector().instance(DInjector.class);
+
+        // when
+        DataDefService instanceA = dInjector.instance(DataDefService.class);
+        DataDefService instanceB = dInjector.instance(DataDefService.class);
+
+        // then
+        assertThat(instanceA).isNotNull();
+        assertThat(instanceA).isSameAs(instanceB);
     }
 
     @Test

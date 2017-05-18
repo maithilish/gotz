@@ -24,13 +24,13 @@ public final class FileAppender extends Appender {
 
     private static final int QUEUE_CAPACITY = 1024;
 
-    private BlockingQueue<Object> queue;
+    private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(QUEUE_CAPACITY);
 
+    @Inject
     private ActivityService activityService;
 
-    public FileAppender() {
-
-        queue = new ArrayBlockingQueue<Object>(QUEUE_CAPACITY);
+    @Inject
+    private FileAppender() {
     }
 
     @Override
@@ -69,8 +69,4 @@ public final class FileAppender extends Appender {
         queue.put(object);
     }
 
-    @Inject
-    public void setActivityService(ActivityService activityService) {
-        this.activityService = activityService;
-    }
 }

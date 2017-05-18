@@ -9,7 +9,7 @@
         <datastore>
             <name>datastore</name>
             <orm>jdo</orm>
-            <configFile>jdoconfig.properties</configFile>
+            <configFile>/jdoconfig.properties</configFile>
         </datastore>
         <poolsize>
             <seeder>6</seeder>

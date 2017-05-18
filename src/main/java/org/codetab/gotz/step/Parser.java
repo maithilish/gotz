@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -141,8 +142,13 @@ public abstract class Parser extends Step {
             throws IOException, ClassNotFoundException, NumberFormatException,
             FieldNotFoundException {
         for (AxisName axisName : AxisName.values()) {
-            Axis axis = member.getAxis(axisName);
-            if (axis == null || axis.getName().equals(AxisName.FACT)) {
+            Axis axis = null;
+            try {
+                axis = member.getAxis(axisName);
+            } catch (NoSuchElementException e) {
+                continue;
+            }
+            if (axis.getName().equals(AxisName.FACT)) {
                 continue;
             }
             if (!hasFinished(axis)) {
@@ -219,10 +225,12 @@ public abstract class Parser extends Step {
     private Integer[] getMemberIndexes(final Member member) {
         Integer[] memberIndexes = new Integer[AxisName.values().length];
         for (AxisName axisName : AxisName.values()) {
-            Axis axis = member.getAxis(axisName);
+            Axis axis = null;
             int index = 0;
-            if (axis != null) {
+            try {
+                axis = member.getAxis(axisName);
                 index = new Integer(axis.getIndex());
+            } catch (NoSuchElementException e) {
             }
             memberIndexes[axisName.ordinal()] = index;
         }

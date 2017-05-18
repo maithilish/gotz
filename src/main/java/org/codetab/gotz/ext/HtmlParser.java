@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -48,8 +49,10 @@ public abstract class HtmlParser extends Parser {
             throws ScriptException, NumberFormatException, IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
         for (AxisName axisName : AxisName.values()) {
-            Axis axis = member.getAxis(axisName);
-            if (axis == null) {
+            Axis axis = null;
+            try {
+                axis = member.getAxis(axisName);
+            } catch (NoSuchElementException e) {
                 continue;
             }
             if (axis.getIndex() == null) {
@@ -74,7 +77,7 @@ public abstract class HtmlParser extends Parser {
      */
     private String getValue(final HtmlPage page, final DataDef dataDef,
             final Member member, final Axis axis) throws ScriptException,
-            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();

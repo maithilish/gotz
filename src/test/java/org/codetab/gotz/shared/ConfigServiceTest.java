@@ -146,7 +146,7 @@ public class ConfigServiceTest {
 
         assertThat("datastore").isEqualTo(configuration.getString("gotz.datastore.name"));
         assertThat("jdo").isEqualTo(configuration.getString("gotz.datastore.orm"));
-        assertThat("jdoconfig.properties")
+        assertThat("/jdoconfig.properties")
         .isEqualTo(configuration.getString("gotz.datastore.configFile"));
 
         assertThat("6").isEqualTo(configuration.getString("gotz.poolsize.seeder"));
