@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verify;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 public class GTaskRunnerTest {
 
     @Mock
-    IStep task;
+    IStepO task;
     @Mock
     private TaskPoolService taskPoolService;
     @Mock

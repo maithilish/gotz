@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,11 +35,11 @@ public class StepServiceTest {
         Class<?> stepClass = Class.forName(clzName);
 
         //when
-        IStep step = stepService.getStep(clzName);
+        IStepO step = stepService.getStep(clzName);
 
         //then
         verify(dInjector).instance(stepClass);
-        assertThat(step).isInstanceOf(IStep.class);
+        assertThat(step).isInstanceOf(IStepO.class);
         assertThat(step.getClass()).isEqualTo(stepClass);
     }
 

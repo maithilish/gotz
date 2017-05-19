@@ -11,7 +11,7 @@ import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.step.Filter;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.codetab.gotz.util.FieldsIterator;
 import org.codetab.gotz.util.FieldsUtil;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public final class DataFilter extends Filter {
     static final Logger LOGGER = LoggerFactory.getLogger(DataFilter.class);
 
     @Override
-    public IStep instance() {
+    public IStepO instance() {
         return this;
     }
 

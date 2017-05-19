@@ -33,7 +33,7 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Parser extends Step {
+public abstract class Parser extends StepO {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
@@ -240,7 +240,7 @@ public abstract class Parser extends Step {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStep#load()
+     * @see org.codetab.gotz.step.IStepO#load()
      */
     @Override
     public void load() {
@@ -260,7 +260,7 @@ public abstract class Parser extends Step {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStep#store()
+     * @see org.codetab.gotz.step.IStepO#store()
      */
     @Override
     public void store(){
@@ -288,7 +288,7 @@ public abstract class Parser extends Step {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStep#handover()
+     * @see org.codetab.gotz.step.IStepO#handover()
      */
     @Override
     public void handover(){
@@ -298,7 +298,7 @@ public abstract class Parser extends Step {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.Step#isConsistent()
+     * @see org.codetab.gotz.step.StepO#isConsistent()
      */
     @Override
     public boolean isConsistent() {
@@ -308,7 +308,7 @@ public abstract class Parser extends Step {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStep#setInput(java.lang.Object)
+     * @see org.codetab.gotz.step.IStepO#setInput(java.lang.Object)
      */
     @Override
     public void setInput(final Object input) {

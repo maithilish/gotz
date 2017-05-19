@@ -12,7 +12,7 @@ import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class GSystemTest {
     @Mock
     private StepService stepService;
     @Mock
-    private IStep locatorSeeder;
+    private IStepO locatorSeeder;
     @Mock
     private ShutdownHook shutdownHook;
     @Mock

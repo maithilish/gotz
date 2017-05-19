@@ -11,7 +11,7 @@ import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,11 +64,11 @@ public class GSystem {
         return true;
     }
 
-    public IStep createInitialTask() {
+    public IStepO createInitialTask() {
         LOGGER.info("create inital task");
         try {
             String seederClassName = configService.getConfig("gotz.seederClass");
-            IStep task = stepService.getStep(seederClassName);
+            IStepO task = stepService.getStep(seederClassName);
             task = task.instance();
             return task;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException

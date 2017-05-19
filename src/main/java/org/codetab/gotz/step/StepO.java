@@ -22,9 +22,9 @@ import org.slf4j.LoggerFactory;
  * @author m
  *
  */
-public abstract class Step implements IStep {
+public abstract class StepO implements IStepO {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(Step.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(StepO.class);
 
     private String label = "unknown";
     private String stepType;
@@ -77,7 +77,7 @@ public abstract class Step implements IStep {
             for (FieldsBase stepTask : stepTasks) {
                 if (isConsistent()) {
                     String stepClass = stepTask.getValue();
-                    IStep task = createTask(nextStepType, stepClass, input,
+                    IStepO task = createTask(nextStepType, stepClass, input,
                             nextStepFields);
                     taskPoolService.submit(nextStepType, task);
                     LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
@@ -139,7 +139,7 @@ public abstract class Step implements IStep {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStep#isConsistent()
+     * @see org.codetab.gotz.step.IStepO#isConsistent()
      */
     @Override
     public boolean isConsistent() {
@@ -156,7 +156,7 @@ public abstract class Step implements IStep {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStep#setStepType(java.lang.String)
+     * @see org.codetab.gotz.step.IStepO#setStepType(java.lang.String)
      */
     @Override
     public void setStepType(final String stepType) {
@@ -189,11 +189,11 @@ public abstract class Step implements IStep {
      * @throws IllegalAccessException
      *             expection
      */
-    private IStep createTask(final String stepType, final String taskClassName,
+    private IStepO createTask(final String stepType, final String taskClassName,
             final Object input, final List<FieldsBase> fields)
                     throws ClassNotFoundException, InstantiationException,
                     IllegalAccessException {
-        IStep task = stepService.getStep(taskClassName).instance();
+        IStepO task = stepService.getStep(taskClassName).instance();
         task.setStepType(stepType);
         task.setInput(input);
         task.setFields(fields);

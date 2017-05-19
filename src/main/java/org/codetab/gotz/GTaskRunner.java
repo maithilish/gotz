@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class GTaskRunner {
     public GTaskRunner() {
     }
 
-    public boolean executeInitalTask(IStep task) {
+    public boolean executeInitalTask(IStepO task) {
         LOGGER.info("submit initial task to executor pool");
         taskPoolService.submit("seeder", task);
         return true;

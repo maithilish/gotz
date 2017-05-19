@@ -12,7 +12,7 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.shared.BeanService;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     }
 
     @Override
-    public IStep instance() {
+    public IStepO instance() {
         return this;
     }
 

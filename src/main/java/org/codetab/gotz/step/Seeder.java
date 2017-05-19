@@ -4,7 +4,7 @@ import org.codetab.gotz.model.Activity.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Seeder extends Step {
+public abstract class Seeder extends StepO {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Seeder.class);
 

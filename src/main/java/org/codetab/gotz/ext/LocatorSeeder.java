@@ -10,7 +10,7 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.codetab.gotz.step.Seeder;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -33,8 +33,8 @@ public class LocatorSeeder extends Seeder {
     }
 
     @Override
-    public IStep instance() {
-        // Step step = new LocatorSeeder();
+    public IStepO instance() {
+        // StepO step = new LocatorSeeder();
         this.setStepType("seeder");
         return this;
     }

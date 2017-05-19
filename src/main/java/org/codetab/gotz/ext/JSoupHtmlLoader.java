@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.codetab.gotz.step.Loader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,7 +18,7 @@ public final class JSoupHtmlLoader extends Loader {
     private static final int TIMEOUT_MILLIS = 120000;
 
     @Override
-    public IStep instance() {
+    public IStepO instance() {
         return this;
     }
 

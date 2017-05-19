@@ -18,7 +18,7 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.IStepO;
 import org.codetab.gotz.step.Transformer;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -45,10 +45,10 @@ public final class CsvTransformer extends Transformer {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStep#instance()
+     * @see org.codetab.gotz.step.IStepO#instance()
      */
     @Override
-    public IStep instance() {
+    public IStepO instance() {
         return this;
     }
 

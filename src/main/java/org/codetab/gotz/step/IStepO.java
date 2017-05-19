@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.codetab.gotz.model.FieldsBase;
 
-public interface IStep extends Runnable {
+public interface IStepO extends Runnable {
 
-    IStep instance();
+    IStepO instance();
 
     void load();
 
