@@ -4,7 +4,7 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.shared.ActivityService;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class GotzEngine {
         try {
             // single thread env
             gSystem.initSystem();
-            IStepO task = gSystem.createInitialTask();
+            Task task = gSystem.createInitialTask();
             LOGGER.info("basic system initialized");
 
             LOGGER.info("switching to multi thread environment");

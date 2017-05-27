@@ -2,6 +2,7 @@ package org.codetab.gotz.pool;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,9 +26,10 @@ public abstract class Pool {
     private static final int POOL_SIZE = 4;
     private static final int SLEEP_MILLIS = 1000;
 
-    private final Map<String, ExecutorService> executorsMap;
-    private final ArrayList<Future<?>> futures;
+    private Map<String, ExecutorService> executorsMap;
+    private List<Future<?>> futures;
 
+    @Inject
     private ConfigService configService;
 
     protected Pool() {
@@ -66,29 +68,13 @@ public abstract class Pool {
         return getNotDone() == 0;
     }
 
-    private int getNotDone() {
-        int count = 0;
-        for (Future<?> future : futures) {
-            if (!future.isDone()) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private boolean isAllTerminated() {
-        for (ExecutorService pool : executorsMap.values()) {
-            if (!pool.isTerminated()) {
-                return false;
-            }
-        }
-        return true;
+    private long getNotDone() {
+        futures.removeIf(Future::isDone);
+        return futures.stream().count();
     }
 
     public final void shutdownAll() {
-        for (ExecutorService pool : executorsMap.values()) {
-            pool.shutdown();
-        }
+        executorsMap.values().stream().forEach(ExecutorService::shutdown);
     }
 
     public void waitForFinish() {
@@ -96,7 +82,7 @@ public abstract class Pool {
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.warn("wait for finish interrupted");
             }
         }
         shutdownAll();
@@ -104,13 +90,13 @@ public abstract class Pool {
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                LOGGER.warn("wait for finish interrupted");
             }
         }
     }
 
-    @Inject
-    public void setConfigService(ConfigService configService) {
-        this.configService = configService;
+    private boolean isAllTerminated() {
+        return executorsMap.values().stream().allMatch(ExecutorService::isTerminated);
     }
+
 }

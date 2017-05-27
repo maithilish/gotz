@@ -12,7 +12,8 @@ import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.Task;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +33,9 @@ public class GSystemTest {
     @Mock
     private StepService stepService;
     @Mock
-    private IStepO locatorSeeder;
+    private IStep locatorSeeder;
+    @Mock
+    private Task task;
     @Mock
     private ShutdownHook shutdownHook;
     @Mock
@@ -91,6 +94,8 @@ public class GSystemTest {
         // given
         when(configService.getConfig("gotz.seederClass")).thenReturn(seederClass);
         when(stepService.getStep(any(String.class))).thenReturn(locatorSeeder);
+        when(locatorSeeder.instance()).thenReturn(locatorSeeder);
+        when(stepService.createTask(locatorSeeder)).thenReturn(task);
 
         // when
         gSystem.createInitialTask();
@@ -99,6 +104,7 @@ public class GSystemTest {
         verify(configService).getConfig("gotz.seederClass");
         verify(stepService).getStep(seederClass);
         verify(locatorSeeder).instance();
+        verify(stepService).createTask(locatorSeeder);
     }
 
     @Test

@@ -11,14 +11,14 @@ import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GSystem {
 
     static final Logger LOGGER = LoggerFactory.getLogger(GSystem.class);
-
 
     @Inject
     private ConfigService configService;
@@ -53,9 +53,9 @@ public class GSystem {
         try {
             String beanFile = configService.getConfig("gotz.beanFile");
             String schemaFile = configService.getConfig("gotz.schemaFile");
-            beanService.init(beanFile,schemaFile);
+            beanService.init(beanFile, schemaFile);
         } catch (ConfigNotFoundException e) {
-            throw new CriticalException("unable to initialize beanservice",e);
+            throw new CriticalException("unable to initialize beanservice", e);
         }
 
         dataDefService.init();
@@ -64,17 +64,18 @@ public class GSystem {
         return true;
     }
 
-    public IStepO createInitialTask() {
+    public Task createInitialTask() {
         LOGGER.info("create inital task");
         try {
             String seederClassName = configService.getConfig("gotz.seederClass");
-            IStepO task = stepService.getStep(seederClassName);
-            task = task.instance();
+            IStep step = stepService.getStep(seederClassName);
+            step = step.instance();
+            Task task = stepService.createTask(step);
             return task;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
                 | ConfigNotFoundException e) {
             LOGGER.error("{}", e);
-            throw new CriticalException("unable to create initial task",e);
+            throw new CriticalException("unable to create initial task", e);
         }
     }
 

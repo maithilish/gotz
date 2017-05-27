@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.shared.ActivityService;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.Task;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -17,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 public class GotzEngineTest {
 
     @Mock
-    IStepO task;
+    Task task;
     @Mock
     private ActivityService activityService;
     @Mock
