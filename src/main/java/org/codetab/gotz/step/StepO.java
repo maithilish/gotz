@@ -193,7 +193,7 @@ public abstract class StepO implements IStepO {
             final Object input, final List<FieldsBase> fields)
                     throws ClassNotFoundException, InstantiationException,
                     IllegalAccessException {
-        IStepO task = stepService.getStep(taskClassName).instance();
+        IStepO task = stepService.getStepO(taskClassName).instance();
         task.setStepType(stepType);
         task.setInput(input);
         task.setFields(fields);

@@ -33,7 +33,7 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Parser extends StepO {
+public abstract class Parser extends Step {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
 
@@ -43,55 +43,106 @@ public abstract class Parser extends StepO {
 
     private Set<Integer[]> memberIndexSet = new HashSet<>();
 
+    @Inject
     private DaoFactory daoFactory;
 
-    @Inject
-    public void setDaoFactory(DaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+    @Override
+    public boolean initialize() {
+        try {
+            dataDefName = FieldsUtil.getValue(getFields(), "datadef");
+        } catch (FieldNotFoundException e) {
+            throw new StepRunException("unable to initialize parser", e);
+        }
+        return true;
+        // locatorName = FieldsUtil.getValue(getFields(), "locatorName");
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see java.lang.Runnable#run()
+     * @see org.codetab.gotz.step.IStepO#load()
      */
     @Override
-    public void run() {
-        processStep();
+    public boolean load() {
+        Long dataDefId;
+        try {
+            dataDefId = dataDefService.getDataDef(dataDefName).getId();
+            Long documentId = getDocument().getId();
+            data = getDataFromStore(dataDefId, documentId);
+        } catch (DataDefNotFoundException e) {
+            String givenUpMessage = "unable to get datadef id";
+            LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
+            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            throw new StepRunException(givenUpMessage, e);
+        }
+        return true;
     }
 
-    // template method pattern
-    private void processStep() {
-        try {
-            initialize();
-            load();
-            if (data == null) {
-                LOGGER.info("parse data {}", Util.getLocatorLabel(getFields()));
+    @Override
+    public boolean process() {
+        if (data == null) {
+            LOGGER.info("parse data {}", Util.getLocatorLabel(getFields()));
+            try {
                 prepareData();
                 parse();
                 setConsistent(true);
-                store();
-            } else {
-                setConsistent(true);
-                LOGGER.info("found parsed data {}", Util.getLocatorLabel(getFields()));
+            } catch (ClassNotFoundException | DataDefNotFoundException | IOException
+                    | NumberFormatException | IllegalAccessException
+                    | InvocationTargetException | NoSuchMethodException | ScriptException
+                    | FieldNotFoundException e) {
+                String message = "parse data " + Util.getLocatorLabel(getFields());
+                throw new StepRunException(message, e);
             }
-            handover();
-        } catch (Exception e) {
-            String message = "parse data " + Util.getLocatorLabel(getFields());
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
+        } else {
+            setConsistent(true);
+            LOGGER.info("found parsed data {}", Util.getLocatorLabel(getFields()));
         }
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.codetab.gotz.step.IStepO#store()
+     */
+    @Override
+    public boolean store() {
+        boolean persist = true;
+        try {
+            persist = FieldsUtil.isFieldTrue(getFields(), "persistdata");
+        } catch (FieldNotFoundException e) {
+        }
+        if (persist) {
+            try {
+                ORM orm = configService.getOrmType();
+                IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
+                dao.storeData(data);
+                data = dao.getData(data.getId());
+            } catch (RuntimeException e) {
+                LOGGER.debug("{}", e.getMessage());
+                throw e;
+            }
+            LOGGER.debug("Stored {}", data);
+        } else {
+            LOGGER.debug("Persist Data [false]. Not Stored {}", data);
+        }
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.codetab.gotz.step.IStepO#handover()
+     */
+    @Override
+    public boolean handover() {
+        stepService.pushTask(this, data, getFields());
+        return true;
     }
 
     protected abstract void setValue(DataDef dataDef, Member member)
             throws ScriptException, NumberFormatException, IllegalAccessException,
             InvocationTargetException, NoSuchMethodException;
-
-    private void initialize() throws FieldNotFoundException, DataDefNotFoundException {
-        dataDefName = FieldsUtil.getValue(getFields(), "datadef");
-        // locatorName = FieldsUtil.getValue(getFields(), "locatorName");
-    }
 
     private void prepareData()
             throws DataDefNotFoundException, ClassNotFoundException, IOException {
@@ -102,20 +153,17 @@ public abstract class Parser extends StepO {
                 data);
     }
 
-    /*
-     *
-     */
-    public void parse()
-            throws DataDefNotFoundException, ScriptException, FieldNotFoundException,
-            ClassNotFoundException, IOException, NumberFormatException,
-            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        parseData();
-    }
+    //    public void parse()
+    //            throws DataDefNotFoundException, ScriptException, FieldNotFoundException,
+    //            ClassNotFoundException, IOException, NumberFormatException,
+    //            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    //        parseData();
+    //    }
 
     /*
      *
      */
-    public void parseData()
+    public void parse()
             throws DataDefNotFoundException, ScriptException, ClassNotFoundException,
             IOException, NumberFormatException, FieldNotFoundException,
             IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -240,64 +288,6 @@ public abstract class Parser extends StepO {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.IStepO#load()
-     */
-    @Override
-    public void load() {
-        Long dataDefId;
-        try {
-            dataDefId = dataDefService.getDataDef(dataDefName).getId();
-            Long documentId = getDocument().getId();
-            data = getDataFromStore(dataDefId, documentId);
-        } catch (DataDefNotFoundException e) {
-            String givenUpMessage="unable to get datadef id";
-            LOGGER.error("{} {}", givenUpMessage ,e.getLocalizedMessage());
-            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
-            throw new StepRunException(givenUpMessage, e);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.codetab.gotz.step.IStepO#store()
-     */
-    @Override
-    public void store(){
-        boolean persist = true;
-        try {
-            persist = FieldsUtil.isFieldTrue(getFields(), "persistdata");
-        } catch (FieldNotFoundException e) {
-        }
-        if (persist) {
-            try {
-                ORM orm = configService.getOrmType();
-                IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
-                dao.storeData(data);
-                data = dao.getData(data.getId());
-            } catch (RuntimeException e) {
-                LOGGER.debug("{}", e.getMessage());
-                throw e;
-            }
-            LOGGER.debug("Stored {}", data);
-        } else {
-            LOGGER.debug("Persist Data [false]. Not Stored {}", data);
-        }
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.codetab.gotz.step.IStepO#handover()
-     */
-    @Override
-    public void handover(){
-        pushTask(data, getFields());
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see org.codetab.gotz.step.StepO#isConsistent()
      */
     @Override
@@ -353,7 +343,7 @@ public abstract class Parser extends StepO {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            throw new StepRunException("config error",e);
+            throw new StepRunException("config error", e);
         }
     }
 

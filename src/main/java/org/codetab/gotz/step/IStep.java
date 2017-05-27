@@ -8,6 +8,8 @@ public interface IStep {
 
     IStep instance();
 
+    boolean initialize();
+
     boolean load();
 
     boolean store();
@@ -25,6 +27,10 @@ public interface IStep {
     void setStepType(String stepType);
 
     String getStepType();
+
+    void setStepState(StepState stepState);
+
+    StepState getStepState();
 
     void setFields(List<FieldsBase> fields);
 

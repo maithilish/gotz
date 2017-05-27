@@ -12,7 +12,7 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.shared.BeanService;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -30,12 +30,12 @@ public final class HtmlLocatorParser extends HtmlParser {
     }
 
     @Override
-    public IStepO instance() {
+    public IStep instance() {
         return this;
     }
 
     @Override
-    public void handover(){
+    public boolean handover(){
         final int sleepMillis = 1000;
         for (Member member : getData().getMembers()) {
             Locator locator = null;
@@ -49,13 +49,14 @@ public final class HtmlLocatorParser extends HtmlParser {
             }
             String stepType = getStepType();
             setStepType("seeder");
-            pushTask(locator, locator.getFields());
+            stepService.pushTask(this,locator, locator.getFields());
             setStepType(stepType);
             try {
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
             }
         }
+        return true;
     }
 
     private Locator createLocator(final Member member) throws FieldNotFoundException {
@@ -93,7 +94,8 @@ public final class HtmlLocatorParser extends HtmlParser {
     }
 
     @Override
-    public void store(){
+    public boolean store(){
         // not required - don't throw illegal operation
+        return false;
     }
 }

@@ -26,6 +26,7 @@ public abstract class Step implements IStep {
     private String stepType;
     private boolean consistent = false;
     private List<FieldsBase> fields;
+    private StepState stepState;
 
     @Inject
     protected DataDefService dataDefService;
@@ -89,5 +90,17 @@ public abstract class Step implements IStep {
     public String getStepType() {
         return stepType;
     }
+
+    @Override
+    public void setStepState(StepState stepState) {
+        this.stepState = stepState;
+    }
+
+    @Override
+    public StepState getStepState() {
+        return stepState;
+    }
+
+
 
 }

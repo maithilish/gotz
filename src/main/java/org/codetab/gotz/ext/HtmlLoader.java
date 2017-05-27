@@ -3,7 +3,7 @@ package org.codetab.gotz.ext;
 import java.io.IOException;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Loader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public final class HtmlLoader extends Loader {
     private static final int TIMEOUT_MILLIS = 120000;
 
     @Override
-    public IStepO instance() {
+    public IStep instance() {
         return this;
     }
 

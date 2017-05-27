@@ -23,6 +23,7 @@ public class Task implements Runnable {
     @Override
     public void run() {
         try {
+            step.initialize();
             step.load();
             step.process();
             step.store();

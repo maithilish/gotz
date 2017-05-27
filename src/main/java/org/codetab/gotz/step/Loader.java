@@ -34,42 +34,20 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Loader extends StepO {
+public abstract class Loader extends Step {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
 
     private Locator locator;
     private Document document;
 
+    @Inject
     private DaoFactory daoFactory;
 
-    @Inject
-    public void setDaoFactory(DaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
-    public void run() {
-        if (locator == null) {
-            LOGGER.warn("{}", "unable to run loader as Locator is not set");
-        } else {
-            try {
-                load();
-                store();
-                handover();
-            } catch (Exception e) {
-                String message = Util.buildString("load Locator[name=", locator.getName(),
-                        " group=", locator.getGroup(), "]");
-                LOGGER.error("{} {}", message, Util.getMessage(e));
-                LOGGER.debug("{}", e);
-                activityService.addActivity(Type.GIVENUP, message, e);
-            }
-        }
+    public boolean initialize() {
+        // TODO Auto-generated method stub
+        return false;
     }
 
     /*
@@ -78,7 +56,7 @@ public abstract class Loader extends StepO {
      * @see org.codetab.gotz.step.IStepO#load()
      */
     @Override
-    public void load() {
+    public boolean load() {
         Locator savedLocator = getLocatorFromStore(locator.getName(), locator.getGroup());
         if (savedLocator != null) {
             // update existing locator with new values
@@ -94,12 +72,12 @@ public abstract class Loader extends StepO {
 
         Long liveDocumentId = getLiveDocumentId();
         if (liveDocumentId == null) {
-            Object object=null;
+            Object object = null;
             try {
                 object = fetchDocument(locator.getUrl());
             } catch (IOException e) {
-                String givenUpMessage="unable to fetch document";
-                LOGGER.error("{} {}", givenUpMessage ,e.getLocalizedMessage());
+                String givenUpMessage = "unable to fetch document";
+                LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
@@ -121,6 +99,14 @@ public abstract class Loader extends StepO {
                     locator.getName(), locator.getGroup(), document.getToDate());
             LOGGER.trace("found document {}", document);
         }
+        setStepState(StepState.LOAD);
+        return true;
+    }
+
+    @Override
+    public boolean process() {
+        // TODO Auto-generated method stub
+        return false;
     }
 
     /*
@@ -129,7 +115,7 @@ public abstract class Loader extends StepO {
      * @see org.codetab.gotz.step.IStepO#store()
      */
     @Override
-    public void store() {
+    public boolean store() {
         boolean persist = true;
         try {
             persist = FieldsUtil.isFieldTrue(locator.getFields(), "persist");
@@ -161,6 +147,8 @@ public abstract class Loader extends StepO {
         } else {
             LOGGER.debug("Persist [false]. Not Stored {}", locator);
         }
+        setStepState(StepState.STORE);
+        return true;
     }
 
     /*
@@ -169,7 +157,7 @@ public abstract class Loader extends StepO {
      * @see org.codetab.gotz.step.IStepO#handover()
      */
     @Override
-    public void handover() {
+    public boolean handover() {
         // TODO test separate instance for each call
         // for each dataDef create dedicated parser
 
@@ -188,11 +176,12 @@ public abstract class Loader extends StepO {
         }
         for (FieldsBase dataDefField : dataDefFields) {
             if (dataDefField instanceof Fields) {
-                Fields fields=null;
+                Fields fields = null;
                 try {
                     fields = Util.deepClone(Fields.class, (Fields) dataDefField);
                 } catch (ClassNotFoundException | IOException e) {
-                    LOGGER.error("{} {}", "unable to clone fields", e.getLocalizedMessage());
+                    LOGGER.error("{} {}", "unable to clone fields",
+                            e.getLocalizedMessage());
                     continue;
                 }
                 if (isDocumentLoaded()) {
@@ -206,8 +195,7 @@ public abstract class Loader extends StepO {
                     List<FieldsBase> fieldsList = new ArrayList<>();
                     fieldsList.add(fields);
                     fieldsList.addAll(stepsFields);
-
-                    pushTask(document, fieldsList);
+                    stepService.pushTask(this, document, fieldsList);
                 } else {
                     LOGGER.warn("Document not loaded - Locator [{}]", locator);
                     activityService.addActivity(Type.GIVENUP,
@@ -215,6 +203,8 @@ public abstract class Loader extends StepO {
                 }
             }
         }
+        setStepState(StepState.HANDOVER);
+        return true;
     }
 
     /*

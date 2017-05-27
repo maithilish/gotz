@@ -13,6 +13,7 @@ import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Seeder;
+import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -37,6 +38,11 @@ public class LocatorSeeder extends Seeder {
     }
 
     @Override
+    public boolean initialize() {
+        return false;
+    }
+
+    @Override
     public boolean load() {
         return false;
     }
@@ -46,7 +52,13 @@ public class LocatorSeeder extends Seeder {
         initLocators();
         initFields();
         setConsistent(true);
+        setStepState(StepState.PROCESS);
         return true;
+    }
+
+    @Override
+    public boolean store() {
+        return false;
     }
 
     @Override
@@ -63,12 +75,8 @@ public class LocatorSeeder extends Seeder {
         }
         LOGGER.info("locators count [{}], queued to loader [{}].", locators.size(),
                 count);
+        setStepState(StepState.HANDOVER);
         return true;
-    }
-
-    @Override
-    public boolean store() {
-        return false;
     }
 
     @Override
@@ -154,5 +162,4 @@ public class LocatorSeeder extends Seeder {
                     locator);
         }
     }
-
 }
