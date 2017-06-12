@@ -237,4 +237,8 @@ public final class Util {
         }
     }
 
+    public static String getLocatorLabel(String name, String group) {
+        return buildString("Locator[name=", name, " group=", group, "]");
+    }
+
 }

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class DataDefPersistence {
 
-    private final Logger logger = LoggerFactory.getLogger(DataDefPersistence.class);
+    static private final Logger LOGGER = LoggerFactory.getLogger(DataDefPersistence.class);
 
     @Inject
     private ConfigService configService;
@@ -28,11 +28,11 @@ public class DataDefPersistence {
             ORM orm = configService.getOrmType();
             IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
             List<DataDef> dataDefs = dao.getDataDefs(configService.getRunDateTime());
-            logger.debug("DataDef loaded : [{}]", dataDefs.size());
+            LOGGER.debug("DataDef loaded : [{}]", dataDefs.size());
             return dataDefs;
         } catch (RuntimeException e) {
-            logger.error("{}", e.getMessage());
-            logger.trace("", e);
+            LOGGER.error("{}", e.getMessage());
+            LOGGER.trace("", e);
             throw new CriticalException("datadef creation error", e);
         }
     }
@@ -42,14 +42,14 @@ public class DataDefPersistence {
             ORM orm = configService.getOrmType();
             IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
             String name = dataDef.getName();
-            logger.debug("store DataDef");
+            LOGGER.debug("store DataDef");
             dao.storeDataDef(dataDef);
             if (dataDef.getId() != null) {
-                logger.debug("stored DataDef [{}] [{}]", dataDef.getId(), name);
+                LOGGER.debug("stored DataDef [{}] [{}]", dataDef.getId(), name);
             }
         } catch (RuntimeException e) {
-            logger.error("{}", e.getMessage());
-            logger.trace("", e);
+            LOGGER.error("{}", e.getMessage());
+            LOGGER.trace("", e);
             throw new CriticalException("datadef creation error", e);
         }
     }
@@ -74,7 +74,7 @@ public class DataDefPersistence {
                 updates = true;
                 dataDefs.add(newDataDef);
             }
-            logger.info("DataDef [{}] {}", name, message);
+            LOGGER.info("DataDef [{}] {}", name, message);
         }
         return updates;
     }

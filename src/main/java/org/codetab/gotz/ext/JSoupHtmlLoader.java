@@ -62,10 +62,4 @@ public final class JSoupHtmlLoader extends Loader {
         }
         return userAgent;
     }
-
-    @Override
-    public boolean process() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }
