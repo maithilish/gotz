@@ -1,42 +1,18 @@
 package org.codetab.gotz.step;
 
-import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Filter extends StepO {
+public abstract class Filter extends Step {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
 
     private Data data;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
-    public void run() {
-        try {
-            initialize();
-            filter();
-            setConsistent(true);
-            handover();
-        } catch (Exception e) {
-            String message = "parse data " + Util.getLocatorLabel(getFields());
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-        }
-    }
-
-    protected abstract void filter() throws Exception;
-
-    private void initialize() throws FieldNotFoundException {
-
+    public boolean initialize() {
+        return false;
     }
 
     /*
@@ -55,8 +31,10 @@ public abstract class Filter extends StepO {
      * @see org.codetab.gotz.step.IStepO#handover()
      */
     @Override
-    public void handover(){
-        pushTask(data, getFields());
+    public boolean handover() {
+        stepService.pushTask(this, data, getFields());
+        setStepState(StepState.HANDOVER);
+        return true;
     }
 
     /*
@@ -86,8 +64,8 @@ public abstract class Filter extends StepO {
      * @see org.codetab.gotz.step.IStepO#load()
      */
     @Override
-    public void load(){
-        throw new RuntimeException("not supported operation");
+    public boolean load() {
+        return false;
     }
 
     /*
@@ -96,8 +74,8 @@ public abstract class Filter extends StepO {
      * @see org.codetab.gotz.step.IStepO#store()
      */
     @Override
-    public void store(){
-        throw new RuntimeException("not supported operation");
+    public boolean store() {
+        return false;
     }
 
 }

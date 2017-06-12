@@ -18,7 +18,8 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.Transformer;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -35,12 +36,8 @@ public final class CsvTransformer extends Transformer {
 
     private StringBuilder content;
 
-    private AppenderService appenderService;
-
     @Inject
-    public void setAppenderService(AppenderService appenderService) {
-        this.appenderService = appenderService;
-    }
+    private AppenderService appenderService;
 
     /*
      * (non-Javadoc)
@@ -48,24 +45,20 @@ public final class CsvTransformer extends Transformer {
      * @see org.codetab.gotz.step.IStepO#instance()
      */
     @Override
-    public IStepO instance() {
+    public IStep instance() {
         return this;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.codetab.gotz.step.Transformer#transform()
-     */
     @Override
-    protected void transform() {
-        processStep();
+    public boolean initialize() {
+        return false;
     }
 
     /*
      *
      */
-    public void processStep() {
+    @Override
+    public boolean process() {
         content = new StringBuilder();
 
         ColComparator cc = new ColComparator();
@@ -95,6 +88,8 @@ public final class CsvTransformer extends Transformer {
             prevRow = row;
         }
         content.append(LINE_BREAK);
+        setStepState(StepState.PROCESS);
+        return true;
     }
 
     private int getColCount() {
@@ -118,7 +113,7 @@ public final class CsvTransformer extends Transformer {
     }
 
     @Override
-    public void handover() {
+    public boolean handover() {
         List<FieldsBase> appenders = null;
         try {
             appenders = FieldsUtil.getGroupFields(getFields(), "appender");
@@ -145,5 +140,7 @@ public final class CsvTransformer extends Transformer {
                 activityService.addActivity(Type.GIVENUP, message, e);
             }
         }
+        setStepState(StepState.HANDOVER);
+        return true;
     }
 }

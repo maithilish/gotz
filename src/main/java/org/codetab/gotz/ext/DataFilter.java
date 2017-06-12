@@ -4,14 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.step.Filter;
-import org.codetab.gotz.step.IStepO;
+import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsIterator;
 import org.codetab.gotz.util.FieldsUtil;
 import org.slf4j.Logger;
@@ -22,15 +26,23 @@ public final class DataFilter extends Filter {
     static final Logger LOGGER = LoggerFactory.getLogger(DataFilter.class);
 
     @Override
-    public IStepO instance() {
+    public IStep instance() {
         return this;
     }
 
     @Override
-    public void filter() throws Exception {
+    public boolean process() {
         List<Member> forRemovalMembers = new ArrayList<Member>();
-        Map<AxisName, List<FieldsBase>> filterMap = dataDefService
-                .getFilterMap(getData().getDataDef());
+        Map<AxisName, List<FieldsBase>> filterMap = null;
+        try {
+            filterMap = dataDefService
+                    .getFilterMap(getData().getDataDef());
+        } catch (IllegalArgumentException | DataDefNotFoundException e) {
+            String givenUpMessage = "unable to filter";
+            LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
+            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            throw new StepRunException(givenUpMessage, e);
+        }
         for (Member member : getData().getMembers()) {
             for (Axis axis : member.getAxes()) {
                 if (requireFilter(axis, filterMap)) {
@@ -43,6 +55,9 @@ public final class DataFilter extends Filter {
             getData().getMembers().remove(member);
         }
         dataDefService.traceDataStructure(getData());
+        setConsistent(true);
+        setStepState(StepState.PROCESS);
+        return true;
     }
 
     private boolean requireFilter(final Axis axis,
@@ -87,4 +102,5 @@ public final class DataFilter extends Filter {
         }
         return false;
     }
+
 }

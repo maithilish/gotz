@@ -12,7 +12,6 @@ import org.codetab.gotz.model.FieldComparator;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.step.IStep;
-import org.codetab.gotz.step.IStepO;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.Task;
 import org.codetab.gotz.util.FieldsUtil;
@@ -36,19 +35,6 @@ public class StepService {
     private StepService() {
     }
 
-    public IStepO getStepO(final String clzName) throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException {
-        IStepO step = null;
-        Class<?> stepClass = Class.forName(clzName);
-        Object obj = dInjector.instance(stepClass);
-        if (obj instanceof IStepO) {
-            step = (IStepO) obj;
-        } else {
-            throw new ClassCastException("Class " + clzName + " is not of type IStepO");
-        }
-        return step;
-    }
-
     public IStep getStep(final String clzName) throws ClassNotFoundException,
     InstantiationException, IllegalAccessException {
         IStep step = null;
@@ -62,22 +48,23 @@ public class StepService {
         return step;
     }
 
-    public Task createTask(final IStep step){
+    public Task createTask(final IStep step) {
         Task task = dInjector.instance(Task.class);
         task.setStep(step);
         return task;
     }
 
-    public void pushTask(Step step, final Object input, final List<FieldsBase> nextStepFields) {
+    public void pushTask(Step step, final Object input,
+            final List<FieldsBase> nextStepFields) {
         String label = null;
         try {
             label = FieldsUtil.getValue(step.getFields(), "label");
         } catch (FieldNotFoundException e1) {
         }
-        String givenUpMessage = Util.buildString("[", label, "] step [", step.getStepType(),
-                "] create next step failed");
+        String givenUpMessage = Util.buildString("[", label, "] step [",
+                step.getStepType(), "] create next step failed");
         try {
-            String nextStepType = getNextStepType(step.getFields(),step.getStepType());
+            String nextStepType = getNextStepType(step.getFields(), step.getStepType());
             List<FieldsBase> stepTasks = getStepTaskFields(nextStepFields, nextStepType);
             if (stepTasks.size() == 0) {
                 LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType, "field found");
@@ -86,13 +73,7 @@ public class StepService {
                 if (step.isConsistent()) {
                     String stepClass = stepTask.getValue();
                     Runnable task = null;
-                    try{
-                        task = createTask(nextStepType, stepClass, input,
-                                nextStepFields);
-                    }catch(Exception e){
-                        task = createTaskO(nextStepType, stepClass, input,
-                                nextStepFields);
-                    }
+                    task = createTask(nextStepType, stepClass, input, nextStepFields);
                     taskPoolService.submit(nextStepType, task);
                     LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
                             nextStepType, task.getClass(), label);
@@ -120,7 +101,8 @@ public class StepService {
         return stepTaskFields;
     }
 
-    private String getNextStepType(List<FieldsBase> fields, final String stepType) throws FieldNotFoundException {
+    private String getNextStepType(List<FieldsBase> fields, final String stepType)
+            throws FieldNotFoundException {
         List<FieldsBase> list = FieldsUtil.getGroupFields(fields, "steps");
         List<FieldsBase> steps = FieldsUtil.getFieldList(list);
         steps.sort(new FieldComparator());
@@ -163,16 +145,5 @@ public class StepService {
         step.setFields(fields);
         Task task = createTask(step);
         return task;
-    }
-
-    private IStepO createTaskO(final String stepType, final String taskClassName,
-            final Object input, final List<FieldsBase> fields)
-                    throws ClassNotFoundException, InstantiationException,
-                    IllegalAccessException {
-        IStepO step = getStepO(taskClassName).instance();
-        step.setStepType(stepType);
-        step.setInput(input);
-        step.setFields(fields);
-        return step;
     }
 }
