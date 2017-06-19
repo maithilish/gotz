@@ -3,7 +3,9 @@
 <locators xmlns="http://codetab.org/gotz">
     <locators group="quote">
         <locator name="ITC"
-            url="http://www.moneycontrol.com/india/stockpricequote/cigarettes/itc/ITC" />
+            url="http://www.moneycontrol.com/india/stockpricequote/cigarettes/itc/ITC">
+            <field name="logstate" value="true" />
+        </locator>
         <!-- <locator name="Zee" -->
         <!-- url="http://www.moneycontrol.com/india/stockpricequote/mediaentertainment/zeeentertainmententerprises/ZEE" 
             /> -->

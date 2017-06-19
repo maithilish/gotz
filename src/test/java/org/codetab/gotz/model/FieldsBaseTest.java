@@ -37,6 +37,11 @@ public class FieldsBaseTest {
             // TODO Auto-generated method stub
             return null;
         }
+        @Override
+        public String indentToString(String indent) {
+            // TODO Auto-generated method stub
+            return null;
+        }
     }
 
     @Test

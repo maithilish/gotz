@@ -23,10 +23,12 @@ public class DaoFactory {
         if (instance == null) {
             switch (orm) {
             case JDO:
-                instance = dInjector.instance(org.codetab.gotz.dao.jdo.JdoDaoFactory.class);
+                instance = dInjector
+                        .instance(org.codetab.gotz.dao.jdo.JdoDaoFactory.class);
                 break;
             default:
-                instance = dInjector.instance(org.codetab.gotz.dao.jdo.JdoDaoFactory.class);
+                instance = dInjector
+                        .instance(org.codetab.gotz.dao.jdo.JdoDaoFactory.class);
                 break;
             }
         }

@@ -39,8 +39,8 @@ public class BasicModule extends AbstractModule {
 
         bind(IXoc.class).to(JaxbXoc.class);
 
-        bind(new TypeLiteral<List<Activity>>() {})
-        .toInstance(new ArrayList<Activity>());
+        bind(new TypeLiteral<List<Activity>>() {
+        }).toInstance(new ArrayList<Activity>());
     }
 
     @Provides

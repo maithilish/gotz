@@ -3,7 +3,7 @@
 // Implementation, v2.2.11
 // See <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
 // Any modifications to this file will be lost upon recompilation of the source schema.
-// Generated on: 2017.03.12 at 11:35:17 AM IST
+// Generated on: 2017.06.18 at 07:07:54 PM IST
 //
 
 package org.codetab.gotz.model;
@@ -179,7 +179,10 @@ public class Locator extends Base implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId()).append("name", getName()).append("group", group)
+                .append("url", url).append("fields", fields)
+                .append("documents", documents).toString();
     }
 
 }

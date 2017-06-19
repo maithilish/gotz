@@ -18,7 +18,7 @@ public class DataDefTest {
 
     private DataDef dataDef;
 
-    class Enhanced extends DataDef{
+    class Enhanced extends DataDef {
         private static final long serialVersionUID = 1L;
         @SuppressWarnings("unused")
         private int dnDetachedState = 1;
@@ -103,11 +103,14 @@ public class DataDefTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = ToStringBuilder.reflectionToString(t1, ToStringStyle.MULTI_LINE_STYLE);
+        String expected = new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", t1.getId()).append("name", t1.getName())
+                .append("fromDate", t1.getFromDate()).append("toDate", t1.getToDate())
+                .append("axis", t1.getAxis()).append("fields", t1.getFields()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
-    private List<Enhanced> createTestObjects(){
+    private List<Enhanced> createTestObjects() {
         Date date = new Date();
 
         Enhanced t1 = new Enhanced();
@@ -122,9 +125,9 @@ public class DataDefTest {
         t2.setToDate(DateUtils.addMonths(date, 3));
         t2.setId(2L);
         t2.setName("x");
-        t2.dnDetachedState=11;
-        t2.dnFlags=12;
-        t2.dnStateManager=13;
+        t2.dnDetachedState = 11;
+        t2.dnFlags = 12;
+        t2.dnStateManager = 13;
 
         List<Enhanced> testObjects = new ArrayList<>();
         testObjects.add(t1);

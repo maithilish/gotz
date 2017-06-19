@@ -77,7 +77,7 @@ public abstract class HtmlParser extends Parser {
      */
     private String getValue(final HtmlPage page, final DataDef dataDef,
             final Member member, final Axis axis) throws ScriptException,
-    IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
@@ -86,8 +86,7 @@ public abstract class HtmlParser extends Parser {
             setTraceString(sb, scripts, "--- Script ---");
             scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, "-- Patched --");
-            LOGGER.trace("{}", sb);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(), sb);
+            LOGGER.trace(getMarker(), "{}", sb);
             value = queryByScript(scripts);
         } catch (FieldNotFoundException e) {
         }
@@ -97,8 +96,7 @@ public abstract class HtmlParser extends Parser {
             setTraceString(sb, queries, "--- Query ---");
             queries = FieldsUtil.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, "-- Patched --");
-            LOGGER.trace("{}", sb);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(), sb);
+            LOGGER.trace(getMarker(), "{}", sb);
             value = queryByXPath(page, queries);
         } catch (FieldNotFoundException e) {
         }
@@ -179,9 +177,7 @@ public abstract class HtmlParser extends Parser {
             DomNode node = (DomNode) o;
             String nodeTraceStr = Util.stripe(node.asXml(), numOfLines,
                     "Data Region \n-------------\n", "-------------");
-            LOGGER.trace("{}", nodeTraceStr);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(),
-                    nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
         return nodes;
     }
@@ -196,9 +192,7 @@ public abstract class HtmlParser extends Parser {
             value = childNode.getTextContent();
             String nodeTraceStr = Util.stripe(childNode.asXml(), numOfLines,
                     "Data Node \n--------\n", "--------");
-            LOGGER.trace("{}", nodeTraceStr);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(),
-                    nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
         LOGGER.trace("Text Content of the node: " + value);
         return value;

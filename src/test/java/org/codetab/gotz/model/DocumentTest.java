@@ -67,7 +67,10 @@ public class DocumentTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = ToStringBuilder.reflectionToString(t1, ToStringStyle.MULTI_LINE_STYLE);
+        String expected = new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", t1.getId()).append("name", t1.getName())
+                .append("fromDate", t1.getFromDate()).append("toDate", t1.getToDate())
+                .append("url", t1.getUrl()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
@@ -96,7 +99,6 @@ public class DocumentTest {
         document.setUrl("x");
         assertThat(document.getUrl()).isEqualTo("x");
     }
-
 
     private List<Enhanced> createTestObjects() {
         Date fromDate = new Date();

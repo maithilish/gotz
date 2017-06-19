@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.codetab.gotz.util.FieldsIterator;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +65,7 @@ public class FieldsTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = ToStringBuilder.reflectionToString(t1, ToStringStyle.MULTI_LINE_STYLE);
+        String expected = expectedString(t1, "   ");
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
@@ -118,5 +116,39 @@ public class FieldsTest {
         testObjects.add(t1);
         testObjects.add(t2);
         return testObjects;
+    }
+
+    private String expectedString(Fields f, String indent) {
+        String aindent = "   ";
+        StringBuilder builder = new StringBuilder();
+        builder.append(System.lineSeparator());
+        builder.append(indent);
+        builder.append("- fields: {name: ");
+        builder.append(f.getName());
+        builder.append(", value: ");
+        builder.append(f.getValue());
+        builder.append("}");
+        for (FieldsBase fb : f.getFields()) {
+            String str = null;
+            if (fb instanceof Field) {
+                str = expectedString((Field) fb, indent + aindent);
+            } else {
+                str = expectedString((Fields) fb, indent + aindent);
+            }
+            builder.append(str);
+        }
+        return builder.toString();
+    }
+
+    private String expectedString(Field f, String indent) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(System.lineSeparator());
+        builder.append(indent);
+        builder.append("- {name: ");
+        builder.append(f.getName());
+        builder.append(", value: ");
+        builder.append(f.getValue());
+        builder.append("}");
+        return builder.toString();
     }
 }

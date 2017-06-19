@@ -22,7 +22,7 @@ public abstract class Step implements IStep {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Step.class);
 
-    private String label = "unknown";
+    private String label = "not set";
     private String stepType;
     private boolean consistent = false;
     private List<FieldsBase> fields;
@@ -36,7 +36,6 @@ public abstract class Step implements IStep {
     protected StepService stepService;
     @Inject
     protected ActivityService activityService;
-
 
     @Override
     public final void setFields(final List<FieldsBase> fields) {
@@ -101,6 +100,8 @@ public abstract class Step implements IStep {
         return stepState;
     }
 
-
-
+    @Override
+    public String getLabel() {
+        return label;
+    }
 }

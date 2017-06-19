@@ -7,7 +7,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.codetab.gotz.util.FieldsUtil;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -136,20 +137,11 @@ public class AxisTest {
     }
 
     private String expectedString(Axis axis) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Axis [name=");
-        builder.append(axis.getName());
-        builder.append(", value=");
-        builder.append(axis.getValue());
-        builder.append(", match=");
-        builder.append(axis.getMatch());
-        builder.append(", index=");
-        builder.append(axis.getIndex());
-        builder.append(", order=");
-        builder.append(axis.getOrder());
-        builder.append(",");
-        builder.append(FieldsUtil.getFormattedFields(axis.getFields()));
-        builder.append("]");
-        return builder.toString();
+        String str = new ToStringBuilder(axis, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", axis.getName()).append("value", axis.getValue()).append("match", axis.getMatch())
+                .append("index", axis.getIndex()).append("order", axis.getOrder()).append("fields", axis.getFields())
+                .toString();
+        return System.lineSeparator() + "  " + str;
+
     }
 }

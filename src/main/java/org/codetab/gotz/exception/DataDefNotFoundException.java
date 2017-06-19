@@ -1,4 +1,5 @@
 package org.codetab.gotz.exception;
+
 /*
  * RuntimeException : unrecoverable
  */

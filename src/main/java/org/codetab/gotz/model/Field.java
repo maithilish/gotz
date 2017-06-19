@@ -3,7 +3,7 @@
 // Implementation, v2.2.11
 // See <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
 // Any modifications to this file will be lost upon recompilation of the source schema.
-// Generated on: 2017.03.12 at 11:35:17 AM IST
+// Generated on: 2017.06.18 at 07:07:54 PM IST
 //
 
 package org.codetab.gotz.model;
@@ -18,8 +18,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.codetab.gotz.util.NullIterator;
 
 /**
@@ -61,6 +59,7 @@ public class Field extends FieldsBase implements Serializable {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -82,6 +81,7 @@ public class Field extends FieldsBase implements Serializable {
      * @return possible object is {@link String }
      *
      */
+    @Override
     public String getValue() {
         return value;
     }
@@ -111,7 +111,20 @@ public class Field extends FieldsBase implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return indentToString("   ");
+    }
+
+    @Override
+    public String indentToString(String indent) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(System.lineSeparator());
+        builder.append(indent);
+        builder.append("- {name: ");
+        builder.append(name);
+        builder.append(", value: ");
+        builder.append(value);
+        builder.append("}");
+        return builder.toString();
     }
 
     @Override

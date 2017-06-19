@@ -3,7 +3,7 @@
 // Implementation, v2.2.11
 // See <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
 // Any modifications to this file will be lost upon recompilation of the source schema.
-// Generated on: 2017.03.12 at 11:35:17 AM IST
+// Generated on: 2017.06.18 at 07:07:54 PM IST
 //
 
 package org.codetab.gotz.model;
@@ -58,7 +58,7 @@ public class DataDef extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElements({@XmlElement(name = "field", type = Field.class),
-        @XmlElement(type = Fields.class)})
+            @XmlElement(type = Fields.class)})
     private List<FieldsBase> fields;
     @XmlElement
     private List<DAxis> axis;
@@ -82,7 +82,7 @@ public class DataDef extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     *
+     * 
      * <pre>
      * getFields().add(newItem);
      * </pre>
@@ -112,7 +112,7 @@ public class DataDef extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     *
+     * 
      * <pre>
      * getAxis().add(newItem);
      * </pre>
@@ -175,20 +175,23 @@ public class DataDef extends Base implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
-        "dnStateManager"};
+                "dnStateManager"};
         return EqualsBuilder.reflectionEquals(this, obj, excludes);
     }
 
     @Override
     public int hashCode() {
         String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
-        "dnStateManager"};
+                "dnStateManager"};
         return HashCodeBuilder.reflectionHashCode(this, excludes);
     }
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId()).append("name", getName())
+                .append("fromDate", fromDate).append("toDate", toDate)
+                .append("axis", axis).append("fields", fields).toString();
     }
 
 }

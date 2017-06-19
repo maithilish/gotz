@@ -63,8 +63,8 @@ public class MemberTest {
         List<Member> testObjects = createTestObjects();
         Member t1 = testObjects.get(0);
 
-        String expected = ToStringBuilder.reflectionToString(t1,
-                ToStringStyle.MULTI_LINE_STYLE);
+        String expected = new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
+                .append("axes", t1.getAxes()).append("fields", t1.getFields()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
@@ -108,7 +108,6 @@ public class MemberTest {
         exceptionRule.expect(NoSuchElementException.class);
         member.getAxis(AxisName.COL);
     }
-
 
     @Test
     public void testGetAxisMap() {

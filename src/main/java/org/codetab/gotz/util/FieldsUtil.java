@@ -327,4 +327,14 @@ public final class FieldsUtil {
         fields.add(f);
         return fields;
     }
+
+    public static boolean isPersist(List<FieldsBase> fields, String name) {
+        boolean persist = true;
+        try {
+            List<FieldsBase> persistFields = getGroupFields(fields, "persist");
+            persist = isFieldTrue(persistFields, name);
+        } catch (FieldNotFoundException e) {
+        }
+        return persist;
+    }
 }

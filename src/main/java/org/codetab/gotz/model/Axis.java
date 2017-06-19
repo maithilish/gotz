@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.codetab.gotz.util.FieldsUtil;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+import org.codetab.gotz.util.Util;
 
 public final class Axis implements Comparable<Axis>, Serializable {
 
@@ -89,21 +91,10 @@ public final class Axis implements Comparable<Axis>, Serializable {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Axis [name=");
-        builder.append(name);
-        builder.append(", value=");
-        builder.append(value);
-        builder.append(", match=");
-        builder.append(match);
-        builder.append(", index=");
-        builder.append(index);
-        builder.append(", order=");
-        builder.append(order);
-        builder.append(",");
-        builder.append(FieldsUtil.getFormattedFields(fields));
-        builder.append("]");
-        return builder.toString();
+        String str = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", name).append("value", value).append("match", match)
+                .append("index", index).append("order", order).append("fields", fields)
+                .toString();
+        return Util.buildString(Util.LINE, "  ", str);
     }
-
 }

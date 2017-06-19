@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import org.codetab.gotz.util.NullIterator;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +65,9 @@ public class FieldTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = ToStringBuilder.reflectionToString(t1, ToStringStyle.MULTI_LINE_STYLE);
+        String expected = new StringBuilder().append(System.lineSeparator()).append("   ")
+                .append("- {name: ").append(t1.getName()).append(", value: ")
+                .append(t1.getValue()).append("}").toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 

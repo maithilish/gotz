@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class DataDefPersistence {
 
-    static private final Logger LOGGER = LoggerFactory.getLogger(DataDefPersistence.class);
+    static private final Logger LOGGER = LoggerFactory
+            .getLogger(DataDefPersistence.class);
 
     @Inject
     private ConfigService configService;
@@ -60,7 +61,7 @@ public class DataDefPersistence {
             String name = newDataDef.getName();
             String message = null;
             try {
-                DataDef dataDef = getDataDef(dataDefs,name);
+                DataDef dataDef = getDataDef(dataDefs, name);
                 if (dataDef.equals(newDataDef)) {
                     message = "no changes";
                 } else {
@@ -83,8 +84,7 @@ public class DataDefPersistence {
         dataDef.setToDate(configService.getRunDateTime());
     }
 
-    private DataDef getDataDef(List<DataDef> dataDefs, String name){
-        return dataDefs.stream().filter(e -> e.getName().equals(name)).findFirst()
-                .get();
+    private DataDef getDataDef(List<DataDef> dataDefs, String name) {
+        return dataDefs.stream().filter(e -> e.getName().equals(name)).findFirst().get();
     }
 }

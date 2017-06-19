@@ -218,7 +218,7 @@ public class LocatorSeederTest {
         List<FieldsBase> fieldsList = createTestFields();
         Fields classFields = (Fields) fieldsList.get(0);
         classFields.setName("xyz");
-        FieldsBase stepFields = classFields.getFields().get(0);
+        //FieldsBase stepFields = classFields.getFields().get(0);
         FieldsBase groupFields = classFields.getFields().get(1);
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);

@@ -35,4 +35,6 @@ public interface IStep {
     void setFields(List<FieldsBase> fields);
 
     List<FieldsBase> getFields();
+
+    String getLabel();
 }

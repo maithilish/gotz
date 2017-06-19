@@ -35,8 +35,7 @@ public final class DataFilter extends Filter {
         List<Member> forRemovalMembers = new ArrayList<Member>();
         Map<AxisName, List<FieldsBase>> filterMap = null;
         try {
-            filterMap = dataDefService
-                    .getFilterMap(getData().getDataDef());
+            filterMap = dataDefService.getFilterMap(getData().getDataDef());
         } catch (IllegalArgumentException | DataDefNotFoundException e) {
             String givenUpMessage = "unable to filter";
             LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());

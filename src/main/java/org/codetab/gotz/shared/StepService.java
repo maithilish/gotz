@@ -36,7 +36,7 @@ public class StepService {
     }
 
     public IStep getStep(final String clzName) throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException {
+            InstantiationException, IllegalAccessException {
         IStep step = null;
         Class<?> stepClass = Class.forName(clzName);
         Object obj = dInjector.instance(stepClass);
@@ -56,9 +56,9 @@ public class StepService {
 
     public void pushTask(Step step, final Object input,
             final List<FieldsBase> nextStepFields) {
-        String label = null;
+        String label = step.getLabel();
         try {
-            label = FieldsUtil.getValue(step.getFields(), "label");
+            nextStepFields.add(FieldsUtil.getField(step.getFields(), "label"));
         } catch (FieldNotFoundException e1) {
         }
         String givenUpMessage = Util.buildString("[", label, "] step [",
@@ -137,8 +137,8 @@ public class StepService {
      */
     private Task createTask(final String stepType, final String taskClassName,
             final Object input, final List<FieldsBase> fields)
-                    throws ClassNotFoundException, InstantiationException,
-                    IllegalAccessException {
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
         IStep step = getStep(taskClassName).instance();
         step.setStepType(stepType);
         step.setInput(input);

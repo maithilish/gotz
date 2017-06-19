@@ -1,6 +1,7 @@
 <configuration>
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>logs/gotz.log</file>
+
+    <appender name="tracelog" class="ch.qos.logback.core.FileAppender">
+        <file>logs/trace.log</file>
         <append>false</append>
         <encoder>
             <pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n
@@ -8,9 +9,11 @@
         </encoder>
     </appender>
 
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="debuglog" class="ch.qos.logback.core.FileAppender">
+        <file>logs/debug.log</file>
+        <append>false</append>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>debug</level>
         </filter>
         <encoder>
             <pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n
@@ -18,30 +21,39 @@
         </encoder>
     </appender>
 
-    <appender name="SIFT"
-        class="ch.qos.logback.classic.sift.SiftingAppender">
-        <discriminator>
-            <key>entitytype</key>
-            <defaultValue>sift</defaultValue>
-        </discriminator>
-        <sift>
-            <appender name="FILE-${entitytype}" class="ch.qos.logback.core.FileAppender">
-                <file>logs/${entitytype}.log</file>
-                <append>false</append>
-                <layout class="ch.qos.logback.classic.PatternLayout">
-                    <pattern>%-15(%logger{0}:%line) %-8([%level]) %msg%n
-                    </pattern>
-                </layout>
-            </appender>
-        </sift>
+    <appender name="statelog" class="ch.qos.logback.core.FileAppender">
+        <file>logs/state.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n
+            </pattern>
+        </encoder>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
+                <marker>LOG_ITC_QUOTE</marker>
+                <marker>LOG_ITC_QUOTE_QUOTEPAGE</marker>
+            </evaluator>
+            <onMismatch>DENY</onMismatch>
+            <onMatch>NEUTRAL</onMatch>
+        </filter>
+    </appender>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+        <encoder>
+            <pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n
+            </pattern>
+        </encoder>
     </appender>
 
     <logger name="DataNucleus.JDO" level="OFF" />
 
     <root level="trace">
-        <!-- <appender-ref ref="FILE" /> -->
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
-        <appender-ref ref="SIFT" />
+        <appender-ref ref="console" />
+        <appender-ref ref="tracelog" />
+        <appender-ref ref="debuglog" />
+        <appender-ref ref="statelog" />
     </root>
 </configuration>

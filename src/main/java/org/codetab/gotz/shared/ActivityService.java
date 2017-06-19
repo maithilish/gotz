@@ -71,13 +71,25 @@ public class ActivityService {
             Throwable throwable = activity.getThrowable();
             String throwableClass = "";
             String throwableMessage = "";
+            String causeClass = "";
+            String causeMessage = "";
+            Throwable cause = null;
             if (throwable != null) {
                 throwableClass = throwable.getClass().getSimpleName();
                 throwableMessage = throwable.getLocalizedMessage();
+                cause = throwable.getCause();
+                if (cause != null) {
+                    causeClass = cause.getClass().getSimpleName();
+                    causeMessage = cause.getLocalizedMessage();
+                }
             }
-            logger.info("Activity type={}", activity.getType());
-            logger.info("         message={}", activity.getMessage());
-            logger.info("         {}={}", throwableClass, throwableMessage);
+            logger.info("Activity type={}, message={}", activity.getType(),
+                    activity.getMessage());
+            logger.info(" exception : {} {}", throwableClass, throwableMessage);
+            if (cause != null) {
+                logger.info(" cause     : {} {}", causeClass, causeMessage);
+            }
+
         }
         logger.info("{}  {}", "Total time:", stopWatch);
     }
@@ -95,9 +107,9 @@ public class ActivityService {
     public void logMemoryUsage() {
         logger.info("{}", "--- Memory Usage ---");
         logger.info("Max   : {}", runtime.maxMemory() / MB_DIVISOR);
-        logger.info("Total : Avg {} High {} Low {}", (long)totalMemory.getAverage(),
+        logger.info("Total : Avg {} High {} Low {}", (long) totalMemory.getAverage(),
                 totalMemory.getMax(), totalMemory.getMin());
-        logger.info("Free  : Avg {} High {} Low {}", (long)freeMemory.getAverage(),
+        logger.info("Free  : Avg {} High {} Low {}", (long) freeMemory.getAverage(),
                 freeMemory.getMax(), freeMemory.getMin());
     }
 }

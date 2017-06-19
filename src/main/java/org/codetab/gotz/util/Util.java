@@ -20,16 +20,14 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Wrapper;
-import org.slf4j.Logger;
-import org.slf4j.MDC;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 public final class Util {
+
+    final public static String LINE = System.lineSeparator();
 
     private Util() {
     }
@@ -192,25 +190,7 @@ public final class Util {
         return ta;
     }
 
-    public static void logState(final Logger logger, final String entity,
-            final String label, final List<FieldsBase> fields, final Object object) {
-        try {
-            if (FieldsUtil.isFieldTrue(fields, "logstate")) {
-                MDC.put("entitytype", entity);
-                logger.debug("{}", label);
-                if (object instanceof String || object instanceof StringBuilder) {
-                    logger.debug("{}", object);
-                } else {
-                    logger.debug("{}", getState(object));
-                }
-
-                MDC.remove("entitytype");
-            }
-        } catch (FieldNotFoundException e) {
-        }
-    }
-
-    private static StringBuilder getState(final Object object) {
+    public static StringBuilder getState(final Object object) {
         String line = System.lineSeparator();
         String json = Util.getIndentedJson(object, true);
         String className = object.getClass().getName();
@@ -224,21 +204,4 @@ public final class Util {
     public static String getMessage(final Exception e) {
         return e.getClass().getSimpleName() + ": " + e.getLocalizedMessage();
     }
-
-    public static String getLocatorLabel(final List<FieldsBase> fields) {
-        String name = "undefined";
-        String group = "undefined";
-        try {
-            name = FieldsUtil.getValue(fields, "locatorName");
-            group = FieldsUtil.getValue(fields, "locatorGroup");
-            return buildString("Locator[name=", name, " group=", group, "]");
-        } catch (FieldNotFoundException e) {
-            return buildString("Locator[name=", name, " group=", group, "]");
-        }
-    }
-
-    public static String getLocatorLabel(String name, String group) {
-        return buildString("Locator[name=", name, " group=", group, "]");
-    }
-
 }

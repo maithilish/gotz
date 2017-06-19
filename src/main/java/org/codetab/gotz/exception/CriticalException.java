@@ -16,8 +16,8 @@ public class CriticalException extends RuntimeException {
         this.message = message;
     }
 
-    public CriticalException(final String message,final Throwable cause) {
-        super(message,cause);
+    public CriticalException(final String message, final Throwable cause) {
+        super(message, cause);
         this.message = message;
         this.cause = cause;
     }

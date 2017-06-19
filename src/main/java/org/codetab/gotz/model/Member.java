@@ -86,7 +86,7 @@ public final class Member extends Base {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("axes", axes).append("fields", fields).toString();
     }
-
 }

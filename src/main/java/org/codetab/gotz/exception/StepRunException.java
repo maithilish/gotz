@@ -16,8 +16,8 @@ public class StepRunException extends RuntimeException {
         this.message = message;
     }
 
-    public StepRunException(final String message,final Throwable cause) {
-        super(message,cause);
+    public StepRunException(final String message, final Throwable cause) {
+        super(message, cause);
         this.message = message;
         this.cause = cause;
     }

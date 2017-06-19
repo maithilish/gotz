@@ -43,7 +43,6 @@ public class DataDefDefaults {
         }
     }
 
-
     public void addIndexRange(final DataDef dataDef) {
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {

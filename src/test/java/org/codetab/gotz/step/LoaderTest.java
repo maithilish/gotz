@@ -32,7 +32,6 @@ import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.util.TestUtil;
-import org.codetab.gotz.util.Util;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,6 +39,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Marker;
 
 public class LoaderTest {
 
@@ -73,13 +73,20 @@ public class LoaderTest {
     }
 
     @Test
-    public void testInitialize(){
+    public void testInitialize() throws IllegalAccessException {
+        List<Locator> locators = createTestObjects();
+        Locator locator = locators.get(0);
+        loader.setInput(locator);
+
         boolean actual = loader.initialize();
-        assertThat(actual).isFalse();
+        Marker marker = (Marker) FieldUtils.readField(loader, "marker", true);
+
+        assertThat(actual).isTrue();
+        assertThat(marker.getName()).isEqualTo("LOG_L1_G1");
     }
 
     @Test
-    public void testIsConsistent() throws IllegalAccessException{
+    public void testIsConsistent() throws IllegalAccessException {
         boolean actual = loader.isConsistent();
         assertThat(actual).isFalse();
 
@@ -96,7 +103,7 @@ public class LoaderTest {
     }
 
     @Test
-    public void testSetInput() throws IllegalAccessException{
+    public void testSetInput() throws IllegalAccessException {
         loader.setInput("xyz");
         Locator actual = (Locator) FieldUtils.readField(loader, "locator", true);
         assertThat(actual).isNull();
@@ -243,12 +250,11 @@ public class LoaderTest {
 
         Date fromDate = new Date();
         Date toDate = DateUtils.addMonths(fromDate, 1);
-        String label = Util.getLocatorLabel(locator.getName(), locator.getGroup());
         Object docObject = loader.fetchDocument(fileUrl);
 
         given(dInjector.instance(Document.class)).willReturn(document2);
         given(configService.getRunDateTime()).willReturn(fromDate);
-        given(documentHelper.getToDate(fromDate, locator.getFields(), label))
+        given(documentHelper.getToDate(eq(fromDate), eq(locator.getFields()), any(String.class)))
         .willReturn(toDate);
 
         boolean actual = loader.process();
@@ -293,8 +299,9 @@ public class LoaderTest {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
 
-        Field field = TestUtil.createField("persist", "false");
-        locator.getFields().add(field);
+        Field field = TestUtil.createField("document", "false");
+        Fields fields = TestUtil.createFields("group", "persist",field);
+        locator.getFields().add(fields);
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
@@ -505,17 +512,14 @@ public class LoaderTest {
         // expected fields
         Fields fd1 = TestUtil.createFields("datadef", "d1", f1);
         Fields fd2 = TestUtil.createFields("datadef", "d2", f2);
-        Fields fields = TestUtil.createFields("group", "datadef", fd1, fd2);
-        Field fn = TestUtil.createField("locatorName", locator.getName());
-        Field fg = TestUtil.createField("locatorGroup", locator.getGroup());
-        Field fu = TestUtil.createField("locatorUrl", locator.getUrl());
-        fields.getFields().add(fn);
-        fields.getFields().add(fg);
-        fields.getFields().add(fu);
+        Fields dataDefFields = TestUtil.createFields("group", "datadef", fd1, fd2);
 
         List<FieldsBase> expectedFields = new ArrayList<>();
-        expectedFields.add(fields);
+        expectedFields.add(dataDefFields);
         expectedFields.add(steps);
+        expectedFields.add(TestUtil.createField("locatorName", locator.getName()));
+        expectedFields.add(TestUtil.createField("locatorGroup", locator.getGroup()));
+        expectedFields.add(TestUtil.createField("locatorUrl", locator.getUrl()));
 
         boolean actual = loader.handover();
 

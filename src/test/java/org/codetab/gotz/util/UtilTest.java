@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Wrapper;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -279,24 +278,8 @@ public class UtilTest {
     }
 
     @Test
-    public void testGetLocatorLabel() {
-        String expected = "Locator[name=undefined group=undefined]";
-        String actual = Util.getLocatorLabel(null);
-        assertEquals(expected, actual);
-
-        Field f1 = FieldsUtil.createField("locatorName", "abc");
-        Field f2 = FieldsUtil.createField("locatorGroup", "xyz");
-        List<FieldsBase> fields = FieldsUtil.asList(f1);
-        fields.add(f2);
-
-        expected = "Locator[name=abc group=xyz]";
-        actual = Util.getLocatorLabel(fields);
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void testWellDefined() throws NoSuchMethodException, InvocationTargetException,
-            InstantiationException, IllegalAccessException {
+    InstantiationException, IllegalAccessException {
         assertUtilityClassWellDefined(Util.class);
     }
 

@@ -15,9 +15,11 @@ import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Seeder;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 public class LocatorSeeder extends Seeder {
 
@@ -32,7 +34,6 @@ public class LocatorSeeder extends Seeder {
 
     @Override
     public IStep instance() {
-        // StepO step = new LocatorSeeder();
         setStepType("seeder");
         return this;
     }
@@ -97,7 +98,8 @@ public class LocatorSeeder extends Seeder {
             addLabelField(locator);
         }
         for (Locator locator : locators) {
-            Util.logState(LOGGER, "locator", "initialized locator", locator.getFields(),
+            Marker marker = MarkerUtil.getMarker(locator.getName(), locator.getGroup());
+            LOGGER.trace(marker, "-- locator after initialize --{}{}", Util.LINE,
                     locator);
         }
     }
@@ -158,7 +160,8 @@ public class LocatorSeeder extends Seeder {
             }
         }
         for (Locator locator : locators) {
-            Util.logState(LOGGER, "locator", "after merging fields", locator.getFields(),
+            Marker marker = MarkerUtil.getMarker(locator.getName(), locator.getGroup());
+            LOGGER.trace(marker, "-- locators after merging fields --{}{}", Util.LINE,
                     locator);
         }
     }

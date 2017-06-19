@@ -193,9 +193,9 @@ public class ConfigService {
 
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
                 PropertiesConfiguration.class)
-                .configure(new Parameters().properties().setFileName(fileName)
-                        .setThrowExceptionOnMissing(true).setListDelimiterHandler(
-                                new DefaultListDelimiterHandler(';')));
+                        .configure(new Parameters().properties().setFileName(fileName)
+                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
+                                        new DefaultListDelimiterHandler(';')));
 
         Configuration configs = builder.getConfiguration();
         return configs;
@@ -206,9 +206,9 @@ public class ConfigService {
         FileBasedConfigurationBuilder<XMLConfiguration> builder;
         builder = new FileBasedConfigurationBuilder<XMLConfiguration>(
                 XMLConfiguration.class)
-                .configure(new Parameters().properties().setFileName(fileName)
-                        .setThrowExceptionOnMissing(true).setListDelimiterHandler(
-                                new DefaultListDelimiterHandler(';')));
+                        .configure(new Parameters().properties().setFileName(fileName)
+                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
+                                        new DefaultListDelimiterHandler(';')));
 
         Configuration configs = builder.getConfiguration();
         return configs;

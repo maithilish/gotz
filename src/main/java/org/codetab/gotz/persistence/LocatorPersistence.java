@@ -30,8 +30,7 @@ public class LocatorPersistence {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            String message = Util.buildString("unable to load ",
-                    Util.getLocatorLabel(name, group));
+            String message = Util.buildString("unable to load [", name, ":", group, "]");
             throw new StepPersistenceException(message, e);
         }
     }
@@ -58,8 +57,8 @@ public class LocatorPersistence {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            String message = Util.buildString("unable to store ",
-                    Util.getLocatorLabel(locator.getName(), locator.getGroup()));
+            String message = Util.buildString("unable to store [", locator.getName(), ":",
+                    locator.getGroup(), "]");
             throw new StepPersistenceException(message, e);
         }
     }

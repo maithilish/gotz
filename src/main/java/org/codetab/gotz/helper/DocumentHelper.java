@@ -44,8 +44,8 @@ public class DocumentHelper {
     }
 
     public Date getToDate(Date fromDate, List<FieldsBase> fields, String locatorLabel) {
-        ZonedDateTime fromDateTime = ZonedDateTime
-                .ofInstant(fromDate.toInstant(), ZoneId.systemDefault());
+        ZonedDateTime fromDateTime = ZonedDateTime.ofInstant(fromDate.toInstant(),
+                ZoneId.systemDefault());
         ZonedDateTime toDate = null;
         String live = null;
         try {
@@ -66,12 +66,14 @@ public class DocumentHelper {
                 Date td = DateUtils.parseDateStrictly(live, patterns);
                 toDate = ZonedDateTime.ofInstant(td.toInstant(), ZoneId.systemDefault());
             } catch (ParseException | ConfigNotFoundException pe) {
-                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", locatorLabel, live, e);
+                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", locatorLabel,
+                        live, e);
                 TemporalAmount ta = Util.praseTemporalAmount("PT0S");
                 toDate = fromDateTime.plus(ta);
             }
         }
-        LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live, toDate, locatorLabel);
+        LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live, toDate,
+                locatorLabel);
         return Date.from(Instant.from(toDate));
     }
 

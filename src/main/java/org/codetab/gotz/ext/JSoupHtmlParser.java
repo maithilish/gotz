@@ -79,7 +79,7 @@ public abstract class JSoupHtmlParser extends Parser {
      */
     private String getValue(final Document page, final DataDef dataDef,
             final Member member, final Axis axis) throws ScriptException,
-    IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
@@ -88,8 +88,7 @@ public abstract class JSoupHtmlParser extends Parser {
             setTraceString(sb, scripts, "--- Script ---");
             scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, "-- Patched --");
-            LOGGER.trace("{}", sb);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(), sb);
+            LOGGER.trace(getMarker(), "{}", sb);
             value = queryByScript(scripts);
         } catch (FieldNotFoundException e) {
         }
@@ -99,8 +98,7 @@ public abstract class JSoupHtmlParser extends Parser {
             setTraceString(sb, queries, "--- Query ---");
             queries = FieldsUtil.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, "-- Patched --");
-            LOGGER.trace("{}", sb);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(), sb);
+            LOGGER.trace(getMarker(), "{}", sb);
             value = queryBySelector(page, queries);
         } catch (FieldNotFoundException e) {
         }
@@ -183,9 +181,7 @@ public abstract class JSoupHtmlParser extends Parser {
         for (Element element : elements) {
             String nodeTraceStr = Util.stripe(element.outerHtml(), numOfLines,
                     "Data Region \n-------------\n", "-------------");
-            LOGGER.trace("{}", nodeTraceStr);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(),
-                    nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
         return elements;
     }
@@ -204,9 +200,7 @@ public abstract class JSoupHtmlParser extends Parser {
             }
             String nodeTraceStr = Util.stripe(element.outerHtml(), numOfLines,
                     "Data Node \n--------\n", "--------");
-            LOGGER.trace("{}", nodeTraceStr);
-            Util.logState(LOGGER, "parser-" + getDataDefName(), "", getFields(),
-                    nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
         LOGGER.trace("Text Content of the node: " + value);
         return value;

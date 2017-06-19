@@ -29,9 +29,9 @@ public class Task implements Runnable {
             step.store();
             step.handover();
         } catch (Exception e) {
-            LOGGER.warn("{}", e.getLocalizedMessage());
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, "unable to seed", e);
+            LOGGER.debug("[{}] {}", step.getLabel(), e);
+            LOGGER.error("[{}] {}", step.getLabel(), e.getLocalizedMessage());
+            activityService.addActivity(Type.GIVENUP, step.getLabel(), e);
         }
     }
 }

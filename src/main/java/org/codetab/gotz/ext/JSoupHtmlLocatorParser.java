@@ -35,21 +35,21 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     }
 
     @Override
-    public boolean handover(){
+    public boolean handover() {
         final long sleepMillis = 1000;
         for (Member member : getData().getMembers()) {
-            Locator locator=null;
+            Locator locator = null;
             try {
                 locator = createLocator(member);
             } catch (FieldNotFoundException e) {
-                String givenUpMessage="unable to create locator";
-                LOGGER.error("{} {}", givenUpMessage ,e.getLocalizedMessage());
+                String givenUpMessage = "unable to create locator";
+                LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
             String stepType = getStepType();
             setStepType("seeder");
-            stepService.pushTask(this,locator, locator.getFields());
+            stepService.pushTask(this, locator, locator.getFields());
             setStepType(stepType);
             try {
                 Thread.sleep(sleepMillis);
@@ -95,7 +95,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     }
 
     @Override
-    public boolean store(){
+    public boolean store() {
         // not required - don't throw illegal oper
         return false;
     }

@@ -36,27 +36,107 @@
               <![CDATA[
                 public abstract String getName();
                 public abstract String getValue();
-                public abstract Iterator<FieldsBase> iterator();			  
+                public abstract Iterator<FieldsBase> iterator();	
+                public abstract String indentToString(String indent);		  
               ]]>
             </ci:code>
         </jaxb:bindings>
         <jaxb:bindings node="//xs:complexType[@name='fields']">
             <ci:code>                                
               <![CDATA[
-            	@Override
-	            public Iterator<FieldsBase> iterator() {
-		               return new FieldsIterator(fields);
-	            }
+              @Override
+              public String toString() {
+                  return indentToString("   ");
+              }
+
+              @Override
+              public String indentToString(String indent) {
+                  String aindent = "   ";
+                  StringBuilder builder = new StringBuilder();
+                  builder.append(System.lineSeparator());
+                  builder.append(indent);
+                  builder.append("- fields: {name: ");
+                  builder.append(name);
+                  builder.append(", value: ");
+                  builder.append(value);
+                  builder.append("}");
+                  for (FieldsBase fb : fields) {
+                      builder.append(fb.indentToString(indent + aindent));
+                  }
+                  return builder.toString();
+              }
+              
+              @Override
+	          public Iterator<FieldsBase> iterator() {
+		          return new FieldsIterator(fields);
+	          }
               ]]>
             </ci:code>
         </jaxb:bindings>
         <jaxb:bindings node="//xs:complexType[@name='field']">
             <ci:code>                                
               <![CDATA[
-            	@Override	 
-	            public Iterator<FieldsBase> iterator() {
-		               return new NullIterator();
-	            }
+              @Override
+              public String toString() {
+                  return indentToString("   ");
+              }
+
+              @Override
+              public String indentToString(String indent) {
+                  StringBuilder builder = new StringBuilder();
+                  builder.append(System.lineSeparator());
+                  builder.append(indent);
+                  builder.append("- {name: ");
+                  builder.append(name);
+                  builder.append(", value: ");
+                  builder.append(value);
+                  builder.append("}");
+                  return builder.toString();
+              }
+              
+              @Override	 
+	          public Iterator<FieldsBase> iterator() {
+		          return new NullIterator();
+	          }
+              ]]>
+            </ci:code>
+        </jaxb:bindings>
+        <jaxb:bindings node="//xs:complexType[@name='locator']">
+            <ci:code>                                
+              <![CDATA[
+              @Override
+              public String toString() {
+                return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId()).append("name", getName()).append("group", group)
+                .append("url", url).append("fields", fields)
+                .append("documents", documents).toString();
+              }
+              ]]>
+            </ci:code>
+        </jaxb:bindings>
+        <jaxb:bindings node="//xs:complexType[@name='document']">
+            <ci:code>                                
+              <![CDATA[
+              @Override
+              public String toString() {
+                return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId()).append("name", getName())
+                .append("fromDate", fromDate).append("toDate", toDate).append("url", url)
+                .toString();
+              }
+              ]]>
+            </ci:code>
+        </jaxb:bindings>
+        <jaxb:bindings node="//xs:complexType[@name='dataDef']">
+            <ci:code>                                
+              <![CDATA[
+              @Override
+              public String toString() {
+              return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", getId()).append("name", getName())
+                .append("fromDate", fromDate).append("toDate", toDate)
+                .append("axis", axis).append("fields", fields).toString();
+              }
               ]]>
             </ci:code>
         </jaxb:bindings>

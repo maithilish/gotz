@@ -20,7 +20,6 @@ import org.codetab.gotz.util.ResourceStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 public class JaxbXoc implements IXoc {
 
     private final Logger logger = LoggerFactory.getLogger(JaxbXoc.class);
@@ -29,11 +28,12 @@ public class JaxbXoc implements IXoc {
     private ResourceStream resourceStream;
 
     @Inject
-    private JaxbXoc(){
+    private JaxbXoc() {
     }
 
     @Override
-    public <T> List<T> unmarshall(final String xmlFile, final Class<T> ofClass) throws JAXBException,IOException{
+    public <T> List<T> unmarshall(final String xmlFile, final Class<T> ofClass)
+            throws JAXBException, IOException {
         try (InputStream xmlStream = resourceStream.getInputStream(xmlFile)) {
             return unmarshall(xmlStream, ofClass);
         }

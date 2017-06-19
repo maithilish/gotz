@@ -14,13 +14,9 @@ import javax.inject.Inject;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang3.Range;
-import org.codetab.gotz.dao.DaoFactory;
-import org.codetab.gotz.dao.IDataDao;
-import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
@@ -28,10 +24,13 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 public abstract class Parser extends Step {
 
@@ -40,21 +39,24 @@ public abstract class Parser extends Step {
     private String dataDefName;
     private Document document;
     private Data data;
+    private Marker marker;
 
     private Set<Integer[]> memberIndexSet = new HashSet<>();
 
     @Inject
-    private DaoFactory daoFactory;
+    private DataPersistence dataPersistence;
 
     @Override
     public boolean initialize() {
         try {
             dataDefName = FieldsUtil.getValue(getFields(), "datadef");
+            String locatorName = FieldsUtil.getValue(getFields(), "locatorName");
+            String locatorGroup = FieldsUtil.getValue(getFields(), "locatorGroup");
+            marker = MarkerUtil.getMarker(locatorName, locatorGroup, dataDefName);
         } catch (FieldNotFoundException e) {
             throw new StepRunException("unable to initialize parser", e);
         }
         return true;
-        // locatorName = FieldsUtil.getValue(getFields(), "locatorName");
     }
 
     /*
@@ -67,21 +69,19 @@ public abstract class Parser extends Step {
         Long dataDefId;
         try {
             dataDefId = dataDefService.getDataDef(dataDefName).getId();
-            Long documentId = getDocument().getId();
-            data = getDataFromStore(dataDefId, documentId);
         } catch (DataDefNotFoundException e) {
             String givenUpMessage = "unable to get datadef id";
-            LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
             throw new StepRunException(givenUpMessage, e);
         }
+        Long documentId = getDocument().getId();
+        data = dataPersistence.loadData(dataDefId, documentId);
         return true;
     }
 
     @Override
     public boolean process() {
         if (data == null) {
-            LOGGER.info("parse data {}", Util.getLocatorLabel(getFields()));
+            LOGGER.info("parse data {}", getLabel());
             try {
                 prepareData();
                 parse();
@@ -90,12 +90,12 @@ public abstract class Parser extends Step {
                     | NumberFormatException | IllegalAccessException
                     | InvocationTargetException | NoSuchMethodException | ScriptException
                     | FieldNotFoundException e) {
-                String message = "parse data " + Util.getLocatorLabel(getFields());
+                String message = Util.buildString("unable to parse ", getLabel());
                 throw new StepRunException(message, e);
             }
         } else {
             setConsistent(true);
-            LOGGER.info("found parsed data {}", Util.getLocatorLabel(getFields()));
+            LOGGER.info("found parsed data {}", getLabel());
         }
         return true;
     }
@@ -107,21 +107,10 @@ public abstract class Parser extends Step {
      */
     @Override
     public boolean store() {
-        boolean persist = true;
-        try {
-            persist = FieldsUtil.isFieldTrue(getFields(), "persistdata");
-        } catch (FieldNotFoundException e) {
-        }
+        boolean persist = FieldsUtil.isPersist(getFields(), "data");
         if (persist) {
-            try {
-                ORM orm = configService.getOrmType();
-                IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
-                dao.storeData(data);
-                data = dao.getData(data.getId());
-            } catch (RuntimeException e) {
-                LOGGER.debug("{}", e.getMessage());
-                throw e;
-            }
+            dataPersistence.storeData(data);
+            data = dataPersistence.loadData(data.getId());
             LOGGER.debug("Stored {}", data);
         } else {
             LOGGER.debug("Persist Data [false]. Not Stored {}", data);
@@ -149,16 +138,16 @@ public abstract class Parser extends Step {
         data = dataDefService.getDataTemplate(dataDefName);
         data.setDataDefId(dataDefService.getDataDef(dataDefName).getId());
         data.setDocumentId(getDocument().getId());
-        Util.logState(LOGGER, "parser-" + dataDefName, "Data Template", getFields(),
-                data);
+        LOGGER.trace(marker, "-- data template --{}{}{}{}", Util.LINE, marker.getName(),
+                Util.LINE, data);
     }
 
-    //    public void parse()
-    //            throws DataDefNotFoundException, ScriptException, FieldNotFoundException,
-    //            ClassNotFoundException, IOException, NumberFormatException,
-    //            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-    //        parseData();
-    //    }
+    // public void parse()
+    // throws DataDefNotFoundException, ScriptException, FieldNotFoundException,
+    // ClassNotFoundException, IOException, NumberFormatException,
+    // IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    // parseData();
+    // }
 
     /*
      *
@@ -182,8 +171,8 @@ public abstract class Parser extends Step {
             pushNewMember(mStack, member);
         }
         data.setMembers(members); // replace with expanded member list
-        Util.logState(LOGGER, "parser-" + dataDefName, "Data after parse", getFields(),
-                data);
+        LOGGER.trace(marker, "-- data after parse --{}{}{}{}", Util.LINE,
+                marker.getName(), Util.LINE, data);
     }
 
     private void pushNewMember(final Deque<Member> mStack, final Member member)
@@ -229,8 +218,9 @@ public abstract class Parser extends Step {
             }
         } catch (FieldNotFoundException e) {
         } catch (NullPointerException e) {
-            throw new NullPointerException("check breakAfter value in datadef "
-                    + Util.getLocatorLabel(getFields()));
+            String message = Util.buildString("check breakAfter value in datadef ",
+                    getLabel());
+            throw new NullPointerException(message);
         }
         try {
             Integer endIndex = getEndIndex(axis.getFields());
@@ -241,8 +231,9 @@ public abstract class Parser extends Step {
         } catch (FieldNotFoundException e) {
         }
         if (noField) {
-            throw new FieldNotFoundException("breakAfter or indexRange undefined "
-                    + Util.getLocatorLabel(getFields()));
+            String message = Util.buildString("breakAfter or indexRange undefined ",
+                    getLabel());
+            throw new FieldNotFoundException(message);
         }
         return false;
     }
@@ -334,19 +325,6 @@ public abstract class Parser extends Step {
         return data;
     }
 
-    private Data getDataFromStore(final Long dataDefId, final Long documentId) {
-        try {
-            ORM orm = configService.getOrmType();
-            IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
-            Data data = dao.getData(documentId, dataDefId);
-            return data;
-        } catch (RuntimeException e) {
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
-            throw new StepRunException("config error", e);
-        }
-    }
-
     /*
      *
      */
@@ -370,5 +348,9 @@ public abstract class Parser extends Step {
      */
     protected String getDataDefName() {
         return dataDefName;
+    }
+
+    public Marker getMarker() {
+        return marker;
     }
 }
