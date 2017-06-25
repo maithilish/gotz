@@ -4,9 +4,9 @@ import org.codetab.gotz.model.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Transformer extends Step {
+public abstract class Encoder extends Step {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(Transformer.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Encoder.class);
 
     private Data data;
 

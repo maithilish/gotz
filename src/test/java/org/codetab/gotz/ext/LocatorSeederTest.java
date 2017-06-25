@@ -15,7 +15,7 @@ import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -308,9 +308,9 @@ public class LocatorSeederTest {
     }
 
     private List<FieldsBase> createTestFields(){
-        Field field = FieldsUtil.createField("debugState", "true");
-        Field step1 = FieldsUtil.createField("step", "s1");
-        Field step2 = FieldsUtil.createField("step", "s2");
+        Field field = OFieldsUtil.createField("debugState", "true");
+        Field step1 = OFieldsUtil.createField("step", "s1");
+        Field step2 = OFieldsUtil.createField("step", "s2");
 
         Fields classFields = new Fields();
         classFields.setName("class");

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
@@ -16,6 +17,7 @@ import org.codetab.gotz.step.Seeder;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +53,9 @@ public class LocatorSeeder extends Seeder {
     @Override
     public boolean process() {
         initLocators();
+        logState("locator after init");
         initFields();
+        logState("locator after merging fields");
         setConsistent(true);
         setStepState(StepState.PROCESS);
         return true;
@@ -97,20 +101,18 @@ public class LocatorSeeder extends Seeder {
         for (Locator locator : locators) {
             addLabelField(locator);
         }
-        for (Locator locator : locators) {
-            Marker marker = MarkerUtil.getMarker(locator.getName(), locator.getGroup());
-            LOGGER.trace(marker, "-- locator after initialize --{}{}", Util.LINE,
-                    locator);
-        }
     }
 
     private void initFields() {
         List<FieldsBase> fields = beanService.getBeans(FieldsBase.class);
         try {
-            FieldsBase classFields = FieldsUtil.getFieldsByValue(fields, "class",
+            List<FieldsBase> classFields = FieldsUtil.filterByValue(fields, "class",
                     Locator.class.getName());
-            List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields, "steps");
-            setFields(steps);
+            List<FieldsBase> stepsGroup = OFieldsUtil.getGroupFields(classFields,
+                    "steps");
+            List<FieldsBase> stepFields = FieldsUtil.filterByName(stepsGroup, "step");
+            setFields(stepFields);
+            mergeStepFields(classFields, stepFields);
             mergeFields(classFields);
         } catch (FieldNotFoundException e) {
         }
@@ -118,7 +120,7 @@ public class LocatorSeeder extends Seeder {
 
     private void addLabelField(final Locator locator) {
         String label = Util.buildString(locator.getName(), ":", locator.getGroup());
-        FieldsBase field = FieldsUtil.createField("label", label);
+        FieldsBase field = OFieldsUtil.createField("label", label);
         locator.getFields().add(field);
     }
 
@@ -146,23 +148,41 @@ public class LocatorSeeder extends Seeder {
         }
     }
 
-    private void mergeFields(final FieldsBase classFields) {
+    private void mergeFields(final List<FieldsBase> classFields) {
         LOGGER.info("merge fields with locators");
         for (Locator locator : locators) {
             try {
-                List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields,
+                List<Fields> groupFields = FieldsUtil.filterByGroupAsFields(classFields,
                         locator.getGroup());
-                locator.getFields().addAll(fields);
-
-                List<FieldsBase> steps = FieldsUtil.getGroupFields(classFields, "steps");
-                locator.getFields().addAll(steps);
+                locator.getFields().addAll(groupFields);
             } catch (FieldNotFoundException e) {
             }
         }
+    }
+
+    private void mergeStepFields(final List<FieldsBase> classFields,
+            final List<FieldsBase> stepFields) {
+        LOGGER.info("merge step fields with datadef fields");
+        try {
+            List<Fields> dataDefGroup = FieldsUtil.filterByGroupAsFields(classFields, "datadef");
+            for (Fields dataDefFields : dataDefGroup) {
+                for (FieldsBase step : stepFields) {
+                    if (!FieldsUtil.contains(dataDefFields, step.getName(),
+                            step.getValue())) {
+                        dataDefFields.getFields().add(step);
+                    }
+                }
+            }
+        } catch (FieldNotFoundException e) {
+            LOGGER.warn(
+                    "unable to find datadef fields in class fields, check fields xml file");
+        }
+    }
+
+    private void logState(String message) {
         for (Locator locator : locators) {
             Marker marker = MarkerUtil.getMarker(locator.getName(), locator.getGroup());
-            LOGGER.trace(marker, "-- locators after merging fields --{}{}", Util.LINE,
-                    locator);
+            LOGGER.trace(marker, "-- {} --{}{}", message, Util.LINE, locator);
         }
     }
 }

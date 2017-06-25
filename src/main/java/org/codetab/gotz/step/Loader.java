@@ -21,6 +21,7 @@ import org.codetab.gotz.persistence.DocumentPersistence;
 import org.codetab.gotz.persistence.LocatorPersistence;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,7 +124,7 @@ public abstract class Loader extends Step {
      */
     @Override
     public boolean store() {
-        boolean persist = FieldsUtil.isPersist(locator.getFields(), "document");
+        boolean persist = OFieldsUtil.isPersist(locator.getFields(), "document");
         if (persist) {
             /*
              * fields are not persistable, so need to set them from the fields.xml every
@@ -164,11 +165,11 @@ public abstract class Loader extends Step {
         String givenUpMessage = Util.buildString("create parser for locator [",
                 locator.getName(), "] failed.");
 
-        List<FieldsBase> stepsFields = null;
+        //List<FieldsBase> stepsFields = null;
         List<FieldsBase> dataDefFields = null;
         try {
-            stepsFields = FieldsUtil.getGroupFields(locator.getFields(), "steps");
-            dataDefFields = FieldsUtil.getGroupFields(locator.getFields(), "datadef");
+            //stepsFields = OFieldsUtil.getGroupFields(locator.getFields(), "steps");
+            dataDefFields = FieldsUtil.filterByGroup(locator.getFields(), "datadef");
         } catch (FieldNotFoundException e) {
             LOGGER.error("{} {}", givenUpMessage, e);
             activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
@@ -188,13 +189,13 @@ public abstract class Loader extends Step {
                 if (isDocumentLoaded()) {
                     List<FieldsBase> nextStepFields = new ArrayList<>();
                     nextStepFields.add(dataDefFieldCopy);
-                    nextStepFields.addAll(stepsFields);
+                    //nextStepFields.addAll(stepsFields);
                     nextStepFields.add(
-                            FieldsUtil.createField("locatorName", locator.getName()));
+                            OFieldsUtil.createField("locatorName", locator.getName()));
                     nextStepFields.add(
-                            FieldsUtil.createField("locatorGroup", locator.getGroup()));
+                            OFieldsUtil.createField("locatorGroup", locator.getGroup()));
                     nextStepFields
-                            .add(FieldsUtil.createField("locatorUrl", locator.getUrl()));
+                    .add(OFieldsUtil.createField("locatorUrl", locator.getUrl()));
                     stepService.pushTask(this, document, nextStepFields);
                 } else {
                     LOGGER.warn("Document not loaded - Locator [{}]", locator);

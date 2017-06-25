@@ -14,7 +14,7 @@ public class MarkerUtil {
 
     public static Marker getMarker(final List<FieldsBase> fields) {
         try {
-            if (FieldsUtil.isFieldTrue(fields, "logstate")) {
+            if (OFieldsUtil.isFieldTrue(fields, "logstate")) {
                 return LOG_STATE;
             } else {
                 return NORMAL;

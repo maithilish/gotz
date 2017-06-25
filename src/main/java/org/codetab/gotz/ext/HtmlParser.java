@@ -19,7 +19,7 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.step.Parser;
 import org.codetab.gotz.util.DataDefUtil;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,9 +82,9 @@ public abstract class HtmlParser extends Parser {
         String value = null;
         List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
         try {
-            List<FieldsBase> scripts = FieldsUtil.getGroupFields(list, "script");
+            List<FieldsBase> scripts = OFieldsUtil.getGroupFields(list, "script");
             setTraceString(sb, scripts, "--- Script ---");
-            scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
+            scripts = OFieldsUtil.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, "-- Patched --");
             LOGGER.trace(getMarker(), "{}", sb);
             value = queryByScript(scripts);
@@ -92,9 +92,9 @@ public abstract class HtmlParser extends Parser {
         }
 
         try {
-            List<FieldsBase> queries = FieldsUtil.getGroupFields(list, "query");
+            List<FieldsBase> queries = OFieldsUtil.getGroupFields(list, "query");
             setTraceString(sb, queries, "--- Query ---");
-            queries = FieldsUtil.replaceVariables(queries, member.getAxisMap());
+            queries = OFieldsUtil.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, "-- Patched --");
             LOGGER.trace(getMarker(), "{}", sb);
             value = queryByXPath(page, queries);
@@ -102,8 +102,8 @@ public abstract class HtmlParser extends Parser {
         }
 
         try {
-            List<FieldsBase> prefix = FieldsUtil.getGroupFields(list, "prefix");
-            value = FieldsUtil.prefixFieldValue(prefix, value);
+            List<FieldsBase> prefix = OFieldsUtil.getGroupFields(list, "prefix");
+            value = OFieldsUtil.prefixFieldValue(prefix, value);
         } catch (FieldNotFoundException e) {
         }
 
@@ -119,7 +119,7 @@ public abstract class HtmlParser extends Parser {
         LOGGER.trace("------Query Data------");
         LOGGER.trace("Scripts {} ", scripts);
         jsEngine.put("configs", configService);
-        String scriptStr = FieldsUtil.getValue(scripts, "script");
+        String scriptStr = OFieldsUtil.getValue(scripts, "script");
         Object value = jsEngine.eval(scriptStr);
         return ConvertUtils.convert(value);
     }
@@ -135,14 +135,14 @@ public abstract class HtmlParser extends Parser {
 
     private String queryByXPath(final HtmlPage page, final List<FieldsBase> queries)
             throws FieldNotFoundException {
-        if (FieldsUtil.fieldCount(queries) < 2) {
+        if (OFieldsUtil.fieldCount(queries) < 2) {
             LOGGER.warn("Insufficient queries in DataDef [{}]", getDataDefName());
             return null;
         }
         LOGGER.trace("------Query Data------");
         LOGGER.trace("Queries {} ", queries);
-        String regionXpathExpr = FieldsUtil.getValue(queries, "region");
-        String xpathExpr = FieldsUtil.getValue(queries, "field");
+        String regionXpathExpr = OFieldsUtil.getValue(queries, "region");
+        String xpathExpr = OFieldsUtil.getValue(queries, "field");
         String value = getByXPath(page, regionXpathExpr, xpathExpr);
         return value;
     }

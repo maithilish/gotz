@@ -17,7 +17,7 @@ import org.codetab.gotz.step.Filter;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsIterator;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +77,7 @@ public final class DataFilter extends Filter {
     private boolean requireFilter(final Axis axis, final List<FieldsBase> filters,
             final String filterGroup) {
         try {
-            List<FieldsBase> fil = FieldsUtil.getGroupFields(filters, filterGroup);
+            List<FieldsBase> fil = OFieldsUtil.getGroupFields(filters, filterGroup);
             FieldsIterator ite = new FieldsIterator(fil);
             while (ite.hasNext()) {
                 FieldsBase field = ite.next();

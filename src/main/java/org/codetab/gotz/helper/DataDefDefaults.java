@@ -8,7 +8,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 
 public class DataDefDefaults {
 
@@ -46,7 +46,7 @@ public class DataDefDefaults {
     public void addIndexRange(final DataDef dataDef) {
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {
-                if (!FieldsUtil.isAnyFieldDefined(dMember.getFields(), "indexRange",
+                if (!OFieldsUtil.isAnyFieldDefined(dMember.getFields(), "indexRange",
                         "breakAfter")) {
                     Field field = new Field();
                     field.setName("indexRange");

@@ -16,7 +16,7 @@
             <loader>4</loader>
             <parser>4</parser>
             <filter>4</filter>
-            <transformer>4</transformer>
+            <encoder>4</encoder>
             <appender>2</appender>
         </poolsize>
         <webClient>

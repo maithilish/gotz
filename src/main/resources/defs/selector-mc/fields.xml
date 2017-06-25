@@ -3,32 +3,47 @@
 <fields xmlns="http://codetab.org/gotz">
     <fields name="class" value="org.codetab.gotz.model.Locator">
         <fields name="group" value="steps">
-            <field name="seeder" value="1" />
-            <field name="loader" value="2" />
-            <field name="parser" value="3" />
-            <field name="filter" value="4" />
-            <field name="transformer" value="5" />
+            <fields name="step" value="seeder">
+                <field name="nextstep" value="loader" />
+                <field name="class" value="org.codetab.gotz.ext.LocatorSeeder" />
+                <field name="unique" value="true" />
+            </fields>
+            <fields name="step" value="loader">
+                <field name="nextstep" value="parser" />
+                <field name="class" value="org.codetab.gotz.ext.JSoupHtmlLoader" />
+                <field name="unique" value="true" />
+            </fields>
+            <fields name="step" value="parser">
+                <field name="nextstep" value="filter" />
+                <field name="class"
+                    value="org.codetab.gotz.ext.JSoupHtmlDataParser" />
+            </fields>
+            <fields name="step" value="filter">
+                <field name="nextstep" value="encoder" />
+                <field name="class" value="org.codetab.gotz.ext.DataFilter" />
+            </fields>
         </fields>
         <fields name="group" value="quote">
             <fields name="group" value="task">
-                <field name="loader" value="org.codetab.gotz.ext.JSoupHtmlLoader" />
                 <fields name="group" value="datadef">
                     <field name="datadef" value="finlocators" />
-                    <field name="parser"
-                        value="org.codetab.gotz.ext.JSoupHtmlLocatorParser" />
+                    <fields name="step" value="parser">
+                        <field name="nextstep" value="loader" />
+                        <field name="class"
+                            value="org.codetab.gotz.ext.JSoupHtmlLocatorParser" />
+                    </fields>
                 </fields>
                 <fields name="group" value="datadef">
                     <field name="datadef" value="quotePage" />
-                    <field name="parser"
-                        value="org.codetab.gotz.ext.JSoupHtmlDataParser" />
-                    <field name="filter" value="org.codetab.gotz.ext.DataFilter" />
-                    <field name="transformer"
-                        value="org.codetab.gotz.ext.CsvTransformer" />
-                    <fields name="group" value="appender">
-                        <field name="name" value="quote" />
+                    <fields name="step" value="encoder">
+                        <field name="nextstep" value="end" />
                         <field name="class"
-                            value="org.codetab.gotz.appender.FileAppender" />
-                        <field name="file" value="output/quote.txt" />
+                            value="org.codetab.gotz.ext.CsvEncoder" />
+                        <fields name="appender" value="file">
+                            <field name="class"
+                                value="org.codetab.gotz.appender.FileAppender" />
+                            <field name="file" value="output/quote.txt" />
+                        </fields>
                     </fields>
                     <fields name="group" value="persist">
                         <field name="data" value="false" />
@@ -36,16 +51,15 @@
                 </fields>
                 <fields name="group" value="datadef">
                     <field name="datadef" value="price" />
-                    <field name="parser"
-                        value="org.codetab.gotz.ext.JSoupHtmlDataParser" />
-                    <field name="filter" value="org.codetab.gotz.ext.DataFilter" />
-                    <field name="transformer"
-                        value="org.codetab.gotz.ext.CsvTransformer" />
-                    <fields name="group" value="appender">
-                        <field name="name" value="quote" />
+                    <fields name="step" value="encoder">
+                        <field name="nextstep" value="end" />
                         <field name="class"
-                            value="org.codetab.gotz.appender.FileAppender" />
-                        <field name="file" value="output/quote.txt" />
+                            value="org.codetab.gotz.ext.CsvEncoder" />
+                        <fields name="appender" value="quote">
+                            <field name="class"
+                                value="org.codetab.gotz.appender.FileAppender" />
+                            <field name="file" value="output/quote.txt" />
+                        </fields>
                     </fields>
                 </fields>
             </fields>
@@ -53,19 +67,17 @@
         </fields>
         <fields name="group" value="bs">
             <fields name="group" value="task">
-                <field name="loader" value="org.codetab.gotz.ext.JSoupHtmlLoader" />
                 <fields name="group" value="datadef">
                     <field name="datadef" value="bs" />
-                    <field name="parser"
-                        value="org.codetab.gotz.ext.JSoupHtmlDataParser" />
-                    <field name="filter" value="org.codetab.gotz.ext.DataFilter" />
-                    <field name="transformer"
-                        value="org.codetab.gotz.ext.CsvTransformer" />
-                    <fields name="group" value="appender">
-                        <field name="name" value="bs" />
+                    <fields name="step" value="encoder">
+                        <field name="nextstep" value="end" />
                         <field name="class"
-                            value="org.codetab.gotz.appender.FileAppender" />
-                        <field name="file" value="output/bs.txt" />
+                            value="org.codetab.gotz.ext.CsvEncoder" />
+                        <fields name="appender" value="bs">
+                            <field name="class"
+                                value="org.codetab.gotz.appender.FileAppender" />
+                            <field name="file" value="output/bs.txt" />
+                        </fields>
                     </fields>
                 </fields>
             </fields>
@@ -73,21 +85,18 @@
         </fields>
         <fields name="group" value="pl">
             <fields name="group" value="task">
-                <field name="loader" value="org.codetab.gotz.ext.JSoupHtmlLoader" />
                 <fields name="group" value="datadef">
                     <field name="datadef" value="pl" />
-                    <field name="parser"
-                        value="org.codetab.gotz.ext.JSoupHtmlDataParser" />
-                    <field name="filter" value="org.codetab.gotz.ext.DataFilter" />
-                    <field name="transformer"
-                        value="org.codetab.gotz.ext.CsvTransformer" />
-                    <fields name="group" value="appender">
-                        <field name="name" value="pl" />
+                    <fields name="step" value="encoder">
+                        <field name="nextstep" value="end" />
                         <field name="class"
-                            value="org.codetab.gotz.appender.FileAppender" />
-                        <field name="file" value="output/pl.txt" />
+                            value="org.codetab.gotz.ext.CsvEncoder" />
+                        <fields name="appender" value="pl">
+                            <field name="class"
+                                value="org.codetab.gotz.appender.FileAppender" />
+                            <field name="file" value="output/pl.txt" />
+                        </fields>
                     </fields>
-
                 </fields>
             </fields>
             <field name="live" value="P6M" />

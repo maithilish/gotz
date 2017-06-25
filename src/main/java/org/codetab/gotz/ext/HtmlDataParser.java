@@ -10,7 +10,7 @@ public final class HtmlDataParser extends HtmlParser {
 
     @Override
     public IStep instance() {
-        return new HtmlDataParser();
+        return this;
     }
 
 }
