@@ -143,7 +143,7 @@ public class UtilTest {
     @Test
     public void testGetgetJson() {
         String expected = "{\"name\":\"x\",\"value\":\"y\"}";
-        Field field = FieldsUtil.createField("x", "y");
+        Field field = OFieldsUtil.createField("x", "y");
         String actual = Util.getJson(field, false);
 
         assertEquals(expected, actual);
@@ -155,7 +155,7 @@ public class UtilTest {
         String line = System.lineSeparator();
         String expected = Util.buildString("{", line, "  \"name\": \"x\",", line,
                 "  \"value\": \"y\"", line, "}");
-        Field field = FieldsUtil.createField("x", "y");
+        Field field = OFieldsUtil.createField("x", "y");
         String actual = Util.getJson(field, true);
 
         assertEquals(expected, actual);
@@ -164,7 +164,7 @@ public class UtilTest {
     @Test
     public void testGetgetIndentedJson() {
         String expected = "\t\t\t{\"name\":\"x\",\"value\":\"y\"}";
-        Field field = FieldsUtil.createField("x", "y");
+        Field field = OFieldsUtil.createField("x", "y");
         String actual = Util.getIndentedJson(field, false);
 
         assertEquals(expected, actual);
@@ -178,7 +178,7 @@ public class UtilTest {
         String expected = Util.buildString(indent, "{", line, indent,
                 "  \"name\": \"x\",", line, indent, "  \"value\": \"y\"", line, indent,
                 "}");
-        Field field = FieldsUtil.createField("x", "y");
+        Field field = OFieldsUtil.createField("x", "y");
         String actual = Util.getIndentedJson(field, true);
 
         assertEquals(expected, actual);

@@ -4,10 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
@@ -15,6 +19,8 @@ import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.StepService;
+import org.codetab.gotz.testutil.TestJaxbHelper;
+import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.util.FieldsUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,7 +119,6 @@ public class LocatorSeederTest {
         assertThat(locator3.getGroup()).isEqualTo("gx");
     }
 
-
     @Test
     public void testProcessExtractLocators() throws IllegalAccessException {
         // given
@@ -163,11 +168,12 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testProcessInitFieldsSetSteps() throws IllegalAccessException {
-        List<Locators> locators = createTestObjects();
+    public void testProcessInitFieldsSetSteps() throws IllegalAccessException,
+    JAXBException, IOException, FieldNotFoundException {
+        List<Locators> locators = createTestObjects2();
         List<FieldsBase> fieldsList = createTestFields();
-        Fields classFields = (Fields) fieldsList.get(0);
-        FieldsBase stepFields = classFields.getFields().get(0);
+        List<FieldsBase> stepFields = FieldsUtil.filterByName(fieldsList, "steps",
+                "step");
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
         given(beanService.getBeans(FieldsBase.class)).willReturn(fieldsList);
@@ -176,21 +182,22 @@ public class LocatorSeederTest {
         locatorSeeder.process();
 
         // then
-        assertThat(locatorSeeder.getFields().get(0)).isEqualTo(stepFields);
+        assertThat(locatorSeeder.getFields()).isEqualTo(stepFields);
     }
 
     @Test
-    public void testProcessInitFieldsMergeFields() throws IllegalAccessException {
+    public void testProcessInitFieldsMergeFields() throws IllegalAccessException,
+    JAXBException, IOException, FieldNotFoundException {
         // given
-        List<Locators> locators = createTestObjects();
+        List<Locators> locators = createTestObjects2();
         Locator locator1 = locators.get(0).getLocator().get(0);
-        Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator2 = locators.get(1).getLocator().get(0);
 
         List<FieldsBase> fieldsList = createTestFields();
-        Fields classFields = (Fields) fieldsList.get(0);
-        FieldsBase stepFields = classFields.getFields().get(0);
-        FieldsBase groupFields = classFields.getFields().get(1);
+        List<FieldsBase> classFields = FieldsUtil.filterByValue(fieldsList, "class",
+                Locator.class.getName());
+        List<FieldsBase> stepFields = FieldsUtil.filterByName(fieldsList, "steps",
+                "step");
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
         given(beanService.getBeans(FieldsBase.class)).willReturn(fieldsList);
@@ -198,17 +205,39 @@ public class LocatorSeederTest {
         // when
         locatorSeeder.process();
 
+        List<Fields> dataDefGroup = FieldsUtil.filterByGroupAsFields(classFields,
+                "datadef");
+        for (Fields dataDefFields : dataDefGroup) {
+            for (FieldsBase step : stepFields) {
+                if (!FieldsUtil.contains(dataDefFields, step.getName(),
+                        step.getValue())) {
+                    dataDefFields.getFields().add(step);
+                }
+            }
+        }
+
         // then
-        assertThat(locator1.getFields()).contains(groupFields);
-        assertThat(locator2.getFields()).contains(groupFields);
-        assertThat(locator3.getFields()).contains(groupFields);
-        assertThat(locator1.getFields()).contains(stepFields);
-        assertThat(locator2.getFields()).contains(stepFields);
-        assertThat(locator3.getFields()).contains(stepFields);
+        List<FieldsBase> locatorGroupFields = new ArrayList<>();
+        Field label = TestUtil.createField("label",
+                locator1.getName() + ":" + locator1.getGroup());
+        locatorGroupFields.add(label);
+        locatorGroupFields
+        .addAll(FieldsUtil.filterByGroup(classFields, locator1.getGroup()));
+        assertThat(locator1.getFields()).isEqualTo(locatorGroupFields);
+
+
+        locatorGroupFields = new ArrayList<>();
+        label = TestUtil.createField("label",
+                locator2.getName() + ":" + locator2.getGroup());
+        locatorGroupFields.add(label);
+        locatorGroupFields
+        .addAll(FieldsUtil.filterByGroup(classFields, locator2.getGroup()));
+        assertThat(locator2.getFields()).isEqualTo(locatorGroupFields);
     }
 
     @Test
-    public void testProcessInitFieldsMergeFieldsWhenClassFieldIsNull() throws IllegalAccessException {
+    public void testProcessInitFieldsMergeFieldsWhenClassFieldIsNull()
+            throws IllegalAccessException, JAXBException, IOException {
         // given
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
@@ -218,7 +247,7 @@ public class LocatorSeederTest {
         List<FieldsBase> fieldsList = createTestFields();
         Fields classFields = (Fields) fieldsList.get(0);
         classFields.setName("xyz");
-        //FieldsBase stepFields = classFields.getFields().get(0);
+        // FieldsBase stepFields = classFields.getFields().get(0);
         FieldsBase groupFields = classFields.getFields().get(1);
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
@@ -235,7 +264,6 @@ public class LocatorSeederTest {
         assertThat(locator2.getFields()).doesNotContain(groupFields);
         assertThat(locator3.getFields()).doesNotContain(groupFields);
     }
-
 
     @Test
     public void testHandover() throws IllegalAccessException {
@@ -307,31 +335,17 @@ public class LocatorSeederTest {
         return locators;
     }
 
-    private List<FieldsBase> createTestFields(){
-        Field field = FieldsUtil.createField("debugState", "true");
-        Field step1 = FieldsUtil.createField("step", "s1");
-        Field step2 = FieldsUtil.createField("step", "s2");
+    private List<FieldsBase> createTestFields() throws JAXBException, IOException {
+        TestJaxbHelper jh = new TestJaxbHelper();
+        List<FieldsBase> fields = jh.unmarshall(
+                "/testdefs/locatorseeder/locatorfields1.xml", FieldsBase.class);
+        return fields;
+    }
 
-        Fields classFields = new Fields();
-        classFields.setName("class");
-        classFields.setValue("org.codetab.gotz.model.Locator");
-
-        Fields stepFields = new Fields();
-        stepFields.setName("group");
-        stepFields.setValue("steps");
-        stepFields.getFields().add(step1);
-        stepFields.getFields().add(step2);
-
-        Fields groupFields = new Fields();
-        groupFields.setName("group");
-        groupFields.setValue("g1");
-        groupFields.getFields().add(field);
-
-        classFields.getFields().add(stepFields);
-        classFields.getFields().add(groupFields);
-
-        List<FieldsBase> list = new ArrayList<>();
-        list.add(classFields);
-        return list;
+    private List<Locators> createTestObjects2() throws JAXBException, IOException {
+        TestJaxbHelper jh = new TestJaxbHelper();
+        List<Locators> locators = jh.unmarshall("/testdefs/locatorseeder/locator1.xml",
+                Locators.class);
+        return locators;
     }
 }

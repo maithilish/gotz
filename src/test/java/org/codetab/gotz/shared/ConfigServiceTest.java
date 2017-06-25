@@ -153,7 +153,7 @@ public class ConfigServiceTest {
         assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.loader"));
         assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.parser"));
         assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.filter"));
-        assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.transformer"));
+        assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.encoder"));
         assertThat("2").isEqualTo(configuration.getString("gotz.poolsize.appender"));
 
         assertThat("120000").isEqualTo(configuration.getString("gotz.webClient.timeout"));

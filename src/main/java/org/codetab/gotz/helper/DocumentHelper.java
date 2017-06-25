@@ -18,7 +18,7 @@ import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class DocumentHelper {
         ZonedDateTime toDate = null;
         String live = null;
         try {
-            live = FieldsUtil.getValue(fields, "live");
+            live = OFieldsUtil.getValue(fields, "live");
         } catch (FieldNotFoundException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e, locatorLabel);
         }

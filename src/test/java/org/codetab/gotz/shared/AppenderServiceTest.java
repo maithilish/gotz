@@ -64,7 +64,7 @@ public class AppenderServiceTest {
         field.setValue("org.codetab.gotz.appender.FileAppender");
         fields.add(field);
 
-        appenderService.createAppender(fields);
+        appenderService.createAppender("x",fields);
 
         Appender appender = appenderService.getAppender("x");
 
@@ -86,7 +86,7 @@ public class AppenderServiceTest {
         field.setValue("org.codetab.gotz.appender.FileAppender");
         fields.add(field);
 
-        appenderService.createAppender(fields);
+        appenderService.createAppender("x",fields);
 
         Appender appender = appenderService.getAppender("x");
 
@@ -95,7 +95,7 @@ public class AppenderServiceTest {
 
         // change class name to trigger error
         ((Field) fields.get(1)).setValue("xyz");
-        appenderService.createAppender(fields);
+        appenderService.createAppender("x",fields);
     }
 
     @Test
@@ -113,7 +113,7 @@ public class AppenderServiceTest {
         fields.add(field);
 
         exceptionRule.expect(ClassCastException.class);
-        appenderService.createAppender(fields);
+        appenderService.createAppender("x",fields);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppenderSynchronized() {
         Method method = MethodUtils.getMatchingMethod(AppenderService.class,
-                "createAppender", List.class);
+                "createAppender", String.class,List.class);
         assertThat(method).isNotNull();
         assertThat(Modifier.isSynchronized(method.getModifiers())).isTrue();
     }

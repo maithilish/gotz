@@ -25,7 +25,7 @@ import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.persistence.DataPersistence;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -49,9 +49,9 @@ public abstract class Parser extends Step {
     @Override
     public boolean initialize() {
         try {
-            dataDefName = FieldsUtil.getValue(getFields(), "datadef");
-            String locatorName = FieldsUtil.getValue(getFields(), "locatorName");
-            String locatorGroup = FieldsUtil.getValue(getFields(), "locatorGroup");
+            dataDefName = OFieldsUtil.getValue(getFields(), "datadef");
+            String locatorName = OFieldsUtil.getValue(getFields(), "locatorName");
+            String locatorGroup = OFieldsUtil.getValue(getFields(), "locatorGroup");
             marker = MarkerUtil.getMarker(locatorName, locatorGroup, dataDefName);
         } catch (FieldNotFoundException e) {
             throw new StepRunException("unable to initialize parser", e);
@@ -107,7 +107,7 @@ public abstract class Parser extends Step {
      */
     @Override
     public boolean store() {
-        boolean persist = FieldsUtil.isPersist(getFields(), "data");
+        boolean persist = OFieldsUtil.isPersist(getFields(), "data");
         if (persist) {
             dataPersistence.storeData(data);
             data = dataPersistence.loadData(data.getId());
@@ -210,7 +210,7 @@ public abstract class Parser extends Step {
             throws NumberFormatException, FieldNotFoundException {
         boolean noField = true;
         try {
-            String breakAfter = FieldsUtil.getValue(axis.getFields(), "breakAfter");
+            String breakAfter = OFieldsUtil.getValue(axis.getFields(), "breakAfter");
             noField = false;
             String value = axis.getValue().trim();
             if (value.equals(breakAfter)) {
@@ -330,7 +330,7 @@ public abstract class Parser extends Step {
      */
     protected Integer getStartIndex(final List<FieldsBase> fields)
             throws NumberFormatException, FieldNotFoundException {
-        Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
+        Range<Integer> indexRange = OFieldsUtil.getRange(fields, "indexRange");
         return indexRange.getMinimum();
     }
 
@@ -339,7 +339,7 @@ public abstract class Parser extends Step {
      */
     protected Integer getEndIndex(final List<FieldsBase> fields)
             throws NumberFormatException, FieldNotFoundException {
-        Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
+        Range<Integer> indexRange = OFieldsUtil.getRange(fields, "indexRange");
         return indexRange.getMaximum();
     }
 

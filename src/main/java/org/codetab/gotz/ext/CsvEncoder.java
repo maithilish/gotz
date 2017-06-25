@@ -1,5 +1,6 @@
 package org.codetab.gotz.ext;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -18,23 +19,24 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.shared.AppenderService;
+import org.codetab.gotz.step.Encoder;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.step.Transformer;
 import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CsvTransformer extends Transformer {
+public final class CsvEncoder extends Encoder {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(CsvTransformer.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(CsvEncoder.class);
 
     static final int ITEM_COL_SIZE = 30;
     static final int FACT_COL_SIZE = 10;
-    static final String LINE_BREAK = System.getProperty("line.separator");
+    static final String LINE_BREAK = Util.LINE;
 
-    private StringBuilder content;
+    private final List<String> appenderNames = new ArrayList<>();
 
     @Inject
     private AppenderService appenderService;
@@ -51,7 +53,31 @@ public final class CsvTransformer extends Transformer {
 
     @Override
     public boolean initialize() {
-        return false;
+        try {
+            List<FieldsBase> appenders = FieldsUtil.filterByName(getFields(), "appender");
+            for (FieldsBase appender : appenders) {
+                List<FieldsBase> fields = OFieldsUtil.asList(appender);
+                try {
+                    String appenderName = appender.getValue();
+                    appenderService.createAppender(appenderName, fields);
+                    appenderNames.add(appenderName);
+                } catch (ClassNotFoundException | InstantiationException
+                        | IllegalAccessException | FieldNotFoundException e) {
+                    String message = "unable to append";
+                    LOGGER.error("{} {}", message, Util.getMessage(e));
+                    LOGGER.debug("{}", e);
+                    activityService.addActivity(Type.GIVENUP, message, e);
+                }
+            }
+        } catch (FieldNotFoundException e) {
+            String message = "unable to find appender fields";
+            LOGGER.error("{} {}", message, Util.getMessage(e));
+            LOGGER.debug("{}", e);
+            activityService.addActivity(Type.GIVENUP, message, e);
+            throw new StepRunException(message, e);
+        }
+        setStepState(StepState.INIT);
+        return true;
     }
 
     /*
@@ -59,7 +85,7 @@ public final class CsvTransformer extends Transformer {
      */
     @Override
     public boolean process() {
-        content = new StringBuilder();
+        StringBuilder content = new StringBuilder();
 
         ColComparator cc = new ColComparator();
         Collections.sort(getData().getMembers(), cc);
@@ -88,6 +114,12 @@ public final class CsvTransformer extends Transformer {
             prevRow = row;
         }
         content.append(LINE_BREAK);
+        try {
+            doAppend(content.toString());
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         setStepState(StepState.PROCESS);
         return true;
     }
@@ -112,35 +144,15 @@ public final class CsvTransformer extends Transformer {
         return header;
     }
 
+    private void doAppend(String content) throws InterruptedException {
+        for (String appenderName : appenderNames) {
+            Appender appender = appenderService.getAppender(appenderName);
+            appender.append(content);
+        }
+    }
+
     @Override
     public boolean handover() {
-        List<FieldsBase> appenders = null;
-        try {
-            appenders = FieldsUtil.getGroupFields(getFields(), "appender");
-        } catch (FieldNotFoundException e) {
-            String message = "unable to find appender fields";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
-        }
-        for (FieldsBase f : appenders) {
-            List<FieldsBase> fields = FieldsUtil.asList(f);
-            try {
-                appenderService.createAppender(fields);
-                String appenderName = FieldsUtil.getValue(fields, "name");
-                Appender appender = appenderService.getAppender(appenderName);
-                appender.append(content);
-            } catch (ClassNotFoundException | InstantiationException
-                    | IllegalAccessException | FieldNotFoundException
-                    | InterruptedException e) {
-                String message = "unable to append";
-                LOGGER.error("{} {}", message, Util.getMessage(e));
-                LOGGER.debug("{}", e);
-                activityService.addActivity(Type.GIVENUP, message, e);
-            }
-        }
-        setStepState(StepState.HANDOVER);
-        return true;
+        return false;
     }
 }

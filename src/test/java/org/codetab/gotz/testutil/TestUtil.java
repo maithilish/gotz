@@ -1,4 +1,4 @@
-package org.codetab.gotz.util;
+package org.codetab.gotz.testutil;
 
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Fields;

@@ -8,12 +8,14 @@ import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,10 +49,10 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
-            String stepType = getStepType();
-            setStepType("seeder");
+            // String stepType = getStepType();
+            // setStepType("seeder");
             stepService.pushTask(this, locator, locator.getFields());
-            setStepType(stepType);
+            // setStepType(stepType);
             try {
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
@@ -61,7 +63,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
 
     private Locator createLocator(final Member member) throws FieldNotFoundException {
         Locator locator = new Locator();
-        locator.setName(FieldsUtil.getValue(getFields(), "locatorName"));
+        locator.setName(OFieldsUtil.getValue(getFields(), "locatorName"));
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
             String message = Util.buildString(
@@ -72,8 +74,19 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             locator.setGroup(member.getGroup());
             List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
             locator.getFields().addAll(groupFields);
-            List<FieldsBase> stepFields = getGroupFields("steps");
-            locator.getFields().addAll(stepFields);
+            List<FieldsBase> stepsGroup = getGroupFields("steps");
+            List<FieldsBase> stepFields = FieldsUtil.filterByName(stepsGroup, "step");
+
+            List<Fields> dataDefGroup = FieldsUtil
+                    .filterByGroupAsFields(locator.getFields(), "datadef");
+            for (Fields dataDefFields : dataDefGroup) {
+                for (FieldsBase step : stepFields) {
+                    if (!FieldsUtil.contains(dataDefFields, step.getName(),
+                            step.getValue())) {
+                        dataDefFields.getFields().add(step);
+                    }
+                }
+            }
             if (member.getFields() != null) {
                 locator.getFields().addAll(member.getFields());
             }
@@ -85,10 +98,10 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     private List<FieldsBase> getGroupFields(final String group)
             throws FieldNotFoundException {
         List<FieldsBase> fieldsBeans = beanService.getBeans(FieldsBase.class);
-        FieldsBase classFields = FieldsUtil.getFieldsByValue(fieldsBeans, "class",
+        FieldsBase classFields = OFieldsUtil.getFieldsByValue(fieldsBeans, "class",
                 Locator.class.getName());
         if (classFields != null) {
-            List<FieldsBase> fields = FieldsUtil.getGroupFields(classFields, group);
+            List<FieldsBase> fields = OFieldsUtil.getGroupFields(classFields, group);
             return fields;
         }
         return null;

@@ -9,7 +9,7 @@ import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 
 public class DataDefValidator {
 
@@ -29,7 +29,7 @@ public class DataDefValidator {
         boolean valid = true;
         for (List<FieldsBase> fc : getAllFields()) {
             try {
-                FieldsUtil.getRange(fc, "indexRange");
+                OFieldsUtil.getRange(fc, "indexRange");
             } catch (NumberFormatException e) {
                 valid = false;
             } catch (FieldNotFoundException e) {

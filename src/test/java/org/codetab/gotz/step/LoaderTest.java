@@ -31,7 +31,7 @@ import org.codetab.gotz.persistence.LocatorPersistence;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.util.TestUtil;
+import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -495,10 +495,6 @@ public class LoaderTest {
         locator.getFields().clear();
         Document document = locator.getDocuments().get(0);
 
-        Field step = TestUtil.createField("step1", "x");
-        Fields steps = TestUtil.createFields("group", "steps", step);
-        locator.getFields().add(steps);
-
         Field f1 = TestUtil.createField("f1", "x1");
         Field f2 = TestUtil.createField("f2", "x2");
         Fields dataDef1 = TestUtil.createFields("datadef", "d1", f1);
@@ -516,7 +512,6 @@ public class LoaderTest {
 
         List<FieldsBase> expectedFields = new ArrayList<>();
         expectedFields.add(dataDefFields);
-        expectedFields.add(steps);
         expectedFields.add(TestUtil.createField("locatorName", locator.getName()));
         expectedFields.add(TestUtil.createField("locatorGroup", locator.getGroup()));
         expectedFields.add(TestUtil.createField("locatorUrl", locator.getUrl()));

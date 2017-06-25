@@ -3,9 +3,7 @@
 <locators xmlns="http://codetab.org/gotz">
     <locators group="html">
         <locator name="taxes"
-            url="file://orange/data/workspace/ngotz/src/main/resources/defs/simple/html/taxes.html">
-            <field name="live" value="PT1M" />
-            <field name="logstate" value="true" />
+            url="file://orange/data/workspace/gotz/src/main/resources/defs/simple/html/taxes.html">
         </locator>
     </locators>
 </locators>
