@@ -19,13 +19,9 @@ import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.StepService;
-<<<<<<< HEAD
 import org.codetab.gotz.testutil.TestJaxbHelper;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.util.FieldsUtil;
-=======
-import org.codetab.gotz.util.OFieldsUtil;
->>>>>>> b6ac52adb529518ac6573bb0a584b2caed829651
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;

@@ -33,7 +33,7 @@
                                 value="org.codetab.gotz.appender.FileAppender" />
                             <field name="file" value="output/tax.txt" />
                         </fields>
-                    </fields>                    
+                    </fields>
                     <fields name="group" value="persist">
                         <field name="data" value="false" />
                     </fields>

@@ -1,28 +1,17 @@
 package org.codetab.gotz.ext;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import javax.inject.Inject;
-
-import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
-import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Encoder;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -31,15 +20,6 @@ import org.slf4j.LoggerFactory;
 public final class CsvEncoder extends Encoder {
 
     static final Logger LOGGER = LoggerFactory.getLogger(CsvEncoder.class);
-
-    static final int ITEM_COL_SIZE = 30;
-    static final int FACT_COL_SIZE = 10;
-    static final String LINE_BREAK = Util.LINE;
-
-    private final List<String> appenderNames = new ArrayList<>();
-
-    @Inject
-    private AppenderService appenderService;
 
     /*
      * (non-Javadoc)
@@ -51,104 +31,55 @@ public final class CsvEncoder extends Encoder {
         return this;
     }
 
-    @Override
-    public boolean initialize() {
-        try {
-            List<FieldsBase> appenders = FieldsUtil.filterByName(getFields(), "appender");
-            for (FieldsBase appender : appenders) {
-                List<FieldsBase> fields = OFieldsUtil.asList(appender);
-                try {
-                    String appenderName = appender.getValue();
-                    appenderService.createAppender(appenderName, fields);
-                    appenderNames.add(appenderName);
-                } catch (ClassNotFoundException | InstantiationException
-                        | IllegalAccessException | FieldNotFoundException e) {
-                    String message = "unable to append";
-                    LOGGER.error("{} {}", message, Util.getMessage(e));
-                    LOGGER.debug("{}", e);
-                    activityService.addActivity(Type.GIVENUP, message, e);
-                }
-            }
-        } catch (FieldNotFoundException e) {
-            String message = "unable to find appender fields";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
-        }
-        setStepState(StepState.INIT);
-        return true;
-    }
-
     /*
      *
      */
     @Override
     public boolean process() {
-        StringBuilder content = new StringBuilder();
+        /*
+         * don't append Marker.EOF here as other tasks may use same appender. During
+         * shutdown, GTaskRunner.waitForFinish calls AppenderService.closeAll which
+         * appends Marker.EOF for each appender.
+         */
+        String locatorName = null;
+        String locatorGroup = null;
+        try {
+            locatorName = OFieldsUtil.getValue(getFields(), "locatorName");
+            locatorGroup = OFieldsUtil.getValue(getFields(), "locatorGroup");
+        } catch (FieldNotFoundException e) {
+            String message = "unable to get locator name and group";
+            LOGGER.error("{} {}", message, Util.getMessage(e));
+            LOGGER.debug("{}", e);
+            activityService.addActivity(Type.GIVENUP, message, e);
+            throw new StepRunException(message, e);
+        }
 
         ColComparator cc = new ColComparator();
         Collections.sort(getData().getMembers(), cc);
         RowComparator rc = new RowComparator();
         Collections.sort(getData().getMembers(), rc);
-        String prevRow = null;
 
-        content.append(getHeader());
         for (Member member : getData().getMembers()) {
+            StringBuilder builder = new StringBuilder();
+
+            String col = member.getValue(AxisName.COL);
             String row = member.getValue(AxisName.ROW);
             String fact = member.getValue(AxisName.FACT);
 
-            if (prevRow == null) {
-                content.append(StringUtils.rightPad(row, ITEM_COL_SIZE));
-                content.append(" |");
-            } else {
-                if (!prevRow.equals(row)) {
-                    content.append(LINE_BREAK);
-                    content.append(StringUtils.rightPad(row, ITEM_COL_SIZE));
-                    content.append(" |");
-                } else {
-                    content.append(" |");
-                }
-            }
-            content.append(StringUtils.leftPad(fact, FACT_COL_SIZE));
-            prevRow = row;
-        }
-        content.append(LINE_BREAK);
-        try {
-            doAppend(content.toString());
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            builder.append(locatorName);
+            builder.append(" |");
+            builder.append(locatorGroup);
+            builder.append(" |");
+            builder.append(col);
+            builder.append(" |");
+            builder.append(row);
+            builder.append(" |");
+            builder.append(fact);
+
+            doAppend(builder.toString());
         }
         setStepState(StepState.PROCESS);
         return true;
-    }
-
-    private int getColCount() {
-        Set<String> cols = new HashSet<String>();
-        for (Member member : getData().getMembers()) {
-            cols.add(member.getValue(AxisName.COL));
-        }
-        return cols.size();
-    }
-
-    private String getHeader() {
-        String header = StringUtils.rightPad("item", ITEM_COL_SIZE);
-        int colCount = getColCount();
-        for (int c = 0; c < colCount; c++) {
-            header += " |";
-            String col = getData().getMembers().get(c).getValue(AxisName.COL);
-            header += StringUtils.leftPad(col, FACT_COL_SIZE);
-        }
-        header += LINE_BREAK;
-        return header;
-    }
-
-    private void doAppend(String content) throws InterruptedException {
-        for (String appenderName : appenderNames) {
-            Appender appender = appenderService.getAppender(appenderName);
-            appender.append(content);
-        }
     }
 
     @Override

@@ -69,12 +69,18 @@ public class FieldsUtil {
         return list;
     }
 
+    public static List<FieldsBase> filterByName(final List<FieldsBase> fields,
+            final String group, final String name) throws FieldNotFoundException {
+        List<FieldsBase> groupFields = filterByGroup(fields, group);
+        return filterByName(groupFields, name);
+    }
+
     public static List<FieldsBase> filterChildrenByName(final List<FieldsBase> fields,
             final String name) throws FieldNotFoundException {
         List<FieldsBase> list = new ArrayList<>();
-        for(FieldsBase fb : fields){
-            if(fb instanceof Fields){
-                for(FieldsBase f : ((Fields) fb).getFields()){
+        for (FieldsBase fb : fields) {
+            if (fb instanceof Fields) {
+                for (FieldsBase f : ((Fields) fb).getFields()) {
                     if (StringUtils.equals(f.getName(), name)) {
                         list.add(f);
                     }
