@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<locators xmlns="http://codetab.org/gotz">
+    <locators group="bs">
+        <locator name="ITC"
+            url="src/test/resources/itest/mc/bs/itc-bs.html">
+        </locator>
+    </locators>
+</locators>

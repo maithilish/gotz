@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+
+<locators xmlns="http://codetab.org/gotz">
+    <locators group="html">
+        <locator name="taxes"
+            url="src/test/resources/itest/simple/taxes.html">
+        </locator>
+    </locators>
+</locators>

@@ -105,6 +105,20 @@ xjc -Xinject-code -extension                \
     src/main/resources/schema/picks.xsd
 
 
+Integration Tests
+-----------------
+
+mvn clean integration-test -Dtest=zzz.java -DfailIfNoTests=false
+
+this ensures 
+ - all tests are compiled
+ - test resources are copied
+ - unit tests are skipped  (as no such file named zzz.java)
+ - build is not failed because of failure of unit tests 
+ - *IT.java tests are run 
+
+
+
 
  
   

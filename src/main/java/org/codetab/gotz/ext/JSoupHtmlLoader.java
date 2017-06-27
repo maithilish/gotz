@@ -2,7 +2,9 @@ package org.codetab.gotz.ext;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.step.IStep;
@@ -24,6 +26,7 @@ public final class JSoupHtmlLoader extends Loader {
 
     @Override
     public Object fetchDocument(final String url) throws IOException {
+        // TODO handle relative files
         LOGGER.info("fetch web resource {}", url);
         Document doc;
         if (UrlValidator.getInstance().isValid(url)) {
@@ -31,7 +34,8 @@ public final class JSoupHtmlLoader extends Loader {
                     .get();
             LOGGER.debug("fetched web resource {}", url);
         } else {
-            File file = new File(url);
+            URL fileURL = new URL(new URL("file:"), url);
+            File file = FileUtils.toFile(fileURL);
             doc = Jsoup.parse(file, null);
             LOGGER.debug("fetched file resource {}", url);
         }

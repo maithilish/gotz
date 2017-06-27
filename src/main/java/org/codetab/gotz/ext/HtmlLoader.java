@@ -1,7 +1,9 @@
 package org.codetab.gotz.ext;
 
 import java.io.IOException;
+import java.net.URL;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Loader;
@@ -26,11 +28,19 @@ public final class HtmlLoader extends Loader {
 
     @Override
     public Object fetchDocument(final String url) throws IOException {
+        // TODO handle relative files
         WebClient webClient = getWebClient();
         LOGGER.info("fetch web resource {}", url);
+        HtmlPage htmlPage = null;
         try {
-            HtmlPage htmlPage = webClient.getPage(url);
-            LOGGER.debug("fetched web resource {}", url);
+            if (UrlValidator.getInstance().isValid(url)) {
+                htmlPage = webClient.getPage(url);
+                LOGGER.debug("fetched web resource {}", url);
+            }else{
+                URL fileURL = new URL(new URL("file:"), url);
+                htmlPage = webClient.getPage(fileURL);
+                LOGGER.debug("fetched file resource {}", url);
+            }
             return htmlPage;
         } finally {
             webClient.setRefreshHandler(new ImmediateRefreshHandler());
