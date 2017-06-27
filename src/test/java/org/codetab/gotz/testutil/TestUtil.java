@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.codetab.gotz.it.HouseTaxIT;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
@@ -35,7 +34,7 @@ public class TestUtil {
 
     public static List<String> readFileAsList(String fileName) {
         try {
-            InputStream is = HouseTaxIT.class.getResourceAsStream(fileName);
+            InputStream is = GotzIT.class.getResourceAsStream(fileName);
             return IOUtils.readLines(is, "UTF-8");
         } catch (IOException e) {
             return new ArrayList<String>();
