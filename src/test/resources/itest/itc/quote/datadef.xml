@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+    <datadef name="finlocators">
+        <field name="type" value="locator" />
+        <fields name="member" value="bs">
+            <field name="group" value="bs" />
+        </fields>
+        <fields name="member" value="pl">
+            <field name="group" value="pl" />
+        </fields>
+        <axis name="col">
+            <fields name="group" value="script">
+                <field name="script" value="configs.getRunDateTime()" />
+            </fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <fields name="group" value="query">
+                <field name="region"
+                    value="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul" />
+                <field name="field" value="li:nth-child(%{row.index}) > a[href]" />
+            </fields>
+            <member name="bs" index="2" />
+            <member name="pl" index="3" />
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region"
+                    value="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul" />
+                <field name="field" value="li:nth-child(%{row.index}) > a[href]" />
+                <field name="attribute" value="href" />
+            </fields>
+            <fields name="group" value="prefix">
+                <field name="prefix" value="http://www.moneycontrol.com" />
+            </fields>
+        </axis>
+    </datadef>
+    <datadef name="bs">
+        <axis name="col">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Sources Of Funds)" />
+                <field name="field"
+                    value="tr:nth-child(1) > td:nth-child(%{col.index})" />
+            </fields>
+            <member name="year">
+                <field name="indexRange" value="2-6" />
+                <!-- <field name="breakAfter" value="Mar '16" /> -->
+            </member>
+        </axis>
+        <axis name="row">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Sources Of Funds)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+            </fields>
+            <member name="item" index="5">
+                <!-- <field name="indexRange" value="1-34" /> -->
+                <field name="breakAfter" value="Book Value (Rs)" />
+            </member>
+            <filter axis="row">
+                <fields name="group" value="value">
+                    <field name="blank" value="" />
+                    <field name="f1" value="Sources Of Funds" />
+                    <field name="f2" value="Application Of Funds" />
+                </fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Sources Of Funds)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
+            </fields>
+        </axis>
+    </datadef>
+    <datadef name="pl">
+        <axis name="col">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Employee Cost)" />
+                <field name="field"
+                    value="tr:nth-child(1) > td:nth-child(%{col.index})" />
+            </fields>
+            <member name="year">
+                <field name="indexRange" value="2-6" />
+            </member>
+        </axis>
+        <axis name="row">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Employee Cost)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+            </fields>
+            <member name="item" index="6">
+                <!-- <field name="indexRange" value="1-37" /> -->
+                <field name="breakAfter" value="Book Value (Rs)" />
+            </member>
+            <filter axis="row">
+                <fields name="group" value="value">
+                    <field name="blank" value="" />
+                    <field name="f1" value="Expenditure" />
+                    <field name="f2" value="Per share data (annualised)" />
+                </fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Employee Cost)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
+            </fields>
+        </axis>
+    </datadef>
+    <datadef name="quotePage">
+        <axis name="col">
+            <fields name="group" value="script">
+                <field name="script" value="configs.getRunDateTime()" />
+            </fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <fields name="group" value="query">
+                <field name="region" value="div#mktdet_2" />
+                <field name="field" value="div:containsOwn(%{row.match})" />
+            </fields>
+            <member name="MC" match="MARKET CAP" />
+            <member name="EPS" match="EPS (TTM)" />
+            <member name="PE" match="P/E" />
+            <member name="PC" match="P/C" />
+            <member name="BV" match="BOOK VALUE" />
+            <member name="PB" match="PRICE/BOOK" />
+            <member name="DIV" match="DIV (%)" />
+            <member name="DY" match="DIV YIELD" />
+            <member name="FV" match="FACE VALUE" />
+            <member name="IND PE" match="INDUSTRY P/E" />
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="div#mktdet_2" />
+                <field name="field" value="div:containsOwn(%{row.match}) + div" />
+            </fields>
+        </axis>
+    </datadef>
+    <datadef name="price">
+        <axis name="col">
+            <fields name="group" value="script">
+                <field name="script" value="configs.getRunDateTime()" />
+            </fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <member name="Price" value="Price" />
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="div#Nse_Prc_tick_div" />
+                <field name="field" value="*" />
+            </fields>
+        </axis>
+    </datadef>
+</datadefs>
+
+

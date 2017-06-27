@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+    <datadef name="pl">
+        <axis name="col">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Employee Cost)" />
+                <field name="field"
+                    value="tr:nth-child(1) > td:nth-child(%{col.index})" />
+            </fields>
+            <member name="year">
+                <field name="indexRange" value="2-6" />
+            </member>
+        </axis>
+        <axis name="row">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Employee Cost)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+            </fields>
+            <member name="item" index="6">
+                <!-- <field name="indexRange" value="1-37" /> -->
+                <field name="breakAfter" value="Book Value (Rs)" />
+            </member>
+            <filter axis="row">
+                <fields name="group" value="value">
+                    <field name="blank" value="" />
+                    <field name="f1" value="Expenditure" />
+                    <field name="f2" value="Per share data (annualised)" />
+                </fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="table:contains(Employee Cost)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
+            </fields>
+        </axis>
+    </datadef>
+</datadefs>
+
+

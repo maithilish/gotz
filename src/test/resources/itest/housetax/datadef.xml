@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+    <datadef name="taxtable">            
+        <axis name="col">
+            <fields name="group" value="query">
+                <field name="region" value="//table" />
+                <field name="field" value="*//tr[1]/th[%{col.index}+1]" />
+            </fields>
+            <member name="year">
+                <!-- <field name="indexRange" value="1-1" /> -->
+                <field name="breakAfter" value="2017" />
+            </member>
+        </axis>
+        <axis name="row">
+            <fields name="group" value="query">
+                <field name="region" value="//table" />
+                <field name="field" value="*//tr[%{row.index}+1]/td[1]" />
+            </fields>
+            <member name="item">
+                <!-- <field name="indexRange" value="1-1" /> -->
+                <field name="breakAfter" value="GF" />
+            </member>
+            <filter axis="row">
+                <fields name="group" value="value">
+                    <field name="blank" value="" />
+                </fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="//table" />
+                <field name="field"
+                    value="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
+            </fields>
+        </axis>
+    </datadef>
+</datadefs>                
