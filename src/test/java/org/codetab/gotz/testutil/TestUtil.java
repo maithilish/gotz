@@ -34,7 +34,7 @@ public class TestUtil {
 
     public static List<String> readFileAsList(String fileName) {
         try {
-            InputStream is = GotzIT.class.getResourceAsStream(fileName);
+            InputStream is = TestUtil.class.getResourceAsStream(fileName);
             return IOUtils.readLines(is, "UTF-8");
         } catch (IOException e) {
             return new ArrayList<String>();
