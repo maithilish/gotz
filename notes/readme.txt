@@ -118,6 +118,21 @@ this ensures
  - *IT.java tests are run 
 
 
+Eclipse CheckStyle 
+------------------
+
+copy Sun checks to Gotz Checks and configure
+ - Module Group Javadoc comments - disable all modules
+ - class design - disable Design for extension 
+
+in project properties select Gotz Checks module and activate cs
+
+For formatter, select checkstyle from project context menu and select Formatter profile 
+which creates Eclipse-cs Gotz formatter profile
+
+To edit it in preferences -> Java -> Code Style -> Formatter
+  - Line wrapping - scroll down to Expressions - assignment and set line wrap policy to
+    wrap where necessary
 
 
  
