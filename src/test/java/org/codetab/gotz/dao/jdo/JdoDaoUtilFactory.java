@@ -11,7 +11,8 @@ import org.slf4j.LoggerFactory;
 
 public final class JdoDaoUtilFactory extends DaoUtilFactory {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(JdoDaoUtilFactory.class);
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(JdoDaoUtilFactory.class);
 
     private PersistenceManagerFactory pmf;
 

@@ -64,10 +64,12 @@ public class JaxbXocTest {
     }
 
     @Test
-    public void testUnmarshallFromStream() throws FileNotFoundException, JAXBException {
+    public void testUnmarshallFromStream()
+            throws FileNotFoundException, JAXBException {
         // given
         ResourceStream rs = new ResourceStream();
-        InputStream xmlStream = rs.getInputStream("/testdefs/beanservice/bean.xml");
+        InputStream xmlStream =
+                rs.getInputStream("/testdefs/beanservice/bean.xml");
 
         // when
         List<Bean> acutalBeans = jaxbXoc.unmarshall(xmlStream, Bean.class);
@@ -81,7 +83,8 @@ public class JaxbXocTest {
     public void testMarshall() throws JAXBException, IOException {
         // given
         ResourceStream rs = new ResourceStream();
-        InputStream xmlStream = rs.getInputStream("/testdefs/beanservice/bean.xml");
+        InputStream xmlStream =
+                rs.getInputStream("/testdefs/beanservice/bean.xml");
         String expected = IOUtils.toString(xmlStream, "UTF-8");
         expected = StringUtils.deleteWhitespace(expected);
 

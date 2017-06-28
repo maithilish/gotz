@@ -47,8 +47,8 @@ public final class LocatorDao implements ILocatorDao {
                 return locators.get(0);
             default:
                 throw new IllegalStateException(
-                        "found multiple locators for [name][group] [" + name + "]["
-                                + group + "]");
+                        "found multiple locators for [name][group] [" + name
+                                + "][" + group + "]");
             }
         } finally {
             pm.close();

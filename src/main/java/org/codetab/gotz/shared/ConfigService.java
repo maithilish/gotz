@@ -54,7 +54,8 @@ public class ConfigService {
             configs.addConfiguration(userProvided);
         } catch (ConfigurationException e) {
             configs.addConfiguration(new PropertiesConfiguration());
-            LOGGER.info(e.getLocalizedMessage() + ". " + "Using default properties");
+            LOGGER.info(e.getLocalizedMessage() + ". "
+                    + "Using default properties");
         }
 
         try {
@@ -74,11 +75,13 @@ public class ConfigService {
         LOGGER.debug("Initialized Configs");
 
         LOGGER.info("Config precedence - SYSTEM, PROVIDED, DEFAULTS");
-        LOGGER.info("Use gotz.properties or system property to override defaults");
+        LOGGER.info(
+                "Use gotz.properties or system property to override defaults");
     }
 
     // when config not found, default value may be used in some cases
-    // otherwise usually exceptionRule is translated to higher level CriticalException
+    // otherwise usually exceptionRule is translated to higher level
+    // CriticalException
     // which is unrecoverable. Hence warn is used in here instead of error
     public String getConfig(final String key) throws ConfigNotFoundException {
         String value = configs.getString(key);
@@ -89,7 +92,8 @@ public class ConfigService {
         return value;
     }
 
-    public String[] getConfigArray(final String key) throws ConfigNotFoundException {
+    public String[] getConfigArray(final String key)
+            throws ConfigNotFoundException {
         String[] values = configs.getStringArray(key);
         if (values.length == 0) {
             LOGGER.warn("Config [{}] not found. Check prefix and key.", key);
@@ -115,7 +119,7 @@ public class ConfigService {
             Date runDate = null;
             String dateStr = getConfig("gotz.runDate"); //$NON-NLS-1$
             String patterns = getConfig("gotz.dateParsePattern"); //$NON-NLS-1$
-            runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
+            runDate = DateUtils.parseDate(dateStr, new String[] { patterns });
             return runDate;
         } catch (ParseException | ConfigNotFoundException e) {
             LOGGER.error("RunDate error. {}", e); //$NON-NLS-1$
@@ -128,7 +132,8 @@ public class ConfigService {
             Date runDateTime = null;
             String dateTimeStr = getConfig("gotz.runDateTime"); //$NON-NLS-1$
             String patterns = getConfig("gotz.dateTimeParsePattern"); //$NON-NLS-1$
-            runDateTime = DateUtils.parseDate(dateTimeStr, new String[] {patterns});
+            runDateTime =
+                    DateUtils.parseDate(dateTimeStr, new String[] { patterns });
             return runDateTime;
         } catch (ParseException | ConfigNotFoundException e) {
             LOGGER.error("Run Date error. {}", e); //$NON-NLS-1$
@@ -168,11 +173,15 @@ public class ConfigService {
     }
 
     public boolean isTestMode() {
-        StackTraceElement[] stackElements = Thread.currentThread().getStackTrace();
-        StackTraceElement stackElement = stackElements[stackElements.length - 1];
+        StackTraceElement[] stackElements =
+                Thread.currentThread().getStackTrace();
+        StackTraceElement stackElement =
+                stackElements[stackElements.length - 1];
         String mainClass = stackElement.getClassName();
-        String eclipseTestRunner = "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner";
-        String mavenTestRunner = "org.apache.maven.surefire.booter.ForkedBooter";
+        String eclipseTestRunner =
+                "org.eclipse.jdt.internal.junit.runner.RemoteTestRunner";
+        String mavenTestRunner =
+                "org.apache.maven.surefire.booter.ForkedBooter";
         if (mainClass.equals(mavenTestRunner)) {
             return true;
         }
@@ -183,7 +192,8 @@ public class ConfigService {
     }
 
     public boolean isDevMode() {
-        return StringUtils.equalsIgnoreCase(configs.getString("gotz.mode"), "dev");
+        return StringUtils.equalsIgnoreCase(configs.getString("gotz.mode"),
+                "dev");
     }
 
     // private methods
@@ -191,23 +201,29 @@ public class ConfigService {
     private Configuration getPropertiesConfigs(String fileName)
             throws ConfigurationException {
 
-        FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
-                PropertiesConfiguration.class)
-                        .configure(new Parameters().properties().setFileName(fileName)
-                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
-                                        new DefaultListDelimiterHandler(';')));
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
+                new FileBasedConfigurationBuilder<PropertiesConfiguration>(
+                        PropertiesConfiguration.class)
+                                .configure(new Parameters().properties()
+                                        .setFileName(fileName)
+                                        .setThrowExceptionOnMissing(true)
+                                        .setListDelimiterHandler(
+                                                new DefaultListDelimiterHandler(
+                                                        ';')));
 
         Configuration configs = builder.getConfiguration();
         return configs;
     }
 
-    private Configuration getXMLConfigs(String fileName) throws ConfigurationException {
+    private Configuration getXMLConfigs(String fileName)
+            throws ConfigurationException {
 
         FileBasedConfigurationBuilder<XMLConfiguration> builder;
         builder = new FileBasedConfigurationBuilder<XMLConfiguration>(
-                XMLConfiguration.class)
-                        .configure(new Parameters().properties().setFileName(fileName)
-                                .setThrowExceptionOnMissing(true).setListDelimiterHandler(
+                XMLConfiguration.class).configure(
+                        new Parameters().properties().setFileName(fileName)
+                                .setThrowExceptionOnMissing(true)
+                                .setListDelimiterHandler(
                                         new DefaultListDelimiterHandler(';')));
 
         Configuration configs = builder.getConfiguration();
@@ -228,8 +244,10 @@ public class ConfigService {
         Date runDateTime = new Date();
         String runDateTimeStr = configs.getString("gotz.runDateTime"); //$NON-NLS-1$
         if (runDateTimeStr == null) {
-            String dateTimeFormat = configs.getString("gotz.dateTimeParsePattern");
-            runDateTimeStr = DateFormatUtils.format(runDateTime, dateTimeFormat);
+            String dateTimeFormat =
+                    configs.getString("gotz.dateTimeParsePattern");
+            runDateTimeStr =
+                    DateFormatUtils.format(runDateTime, dateTimeFormat);
         }
         configs.addProperty("gotz.runDateTime", runDateTimeStr); //$NON-NLS-1$
     }

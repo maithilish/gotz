@@ -37,8 +37,8 @@ public class BeanFiles {
         this.schemaFile = schemaFile;
     }
 
-    public boolean validateBeanFile()
-            throws JAXBException, IOException, SAXException, ConfigNotFoundException {
+    public boolean validateBeanFile() throws JAXBException, IOException,
+            SAXException, ConfigNotFoundException {
         logger.info("initialize Bean file");
 
         logger.info("using Bean configuartion file [{}]", beanFile);
@@ -46,7 +46,8 @@ public class BeanFiles {
         return xmlValidator.validate(beanFile, schemaFile);
     }
 
-    public List<Bean> getBeanFiles() throws JAXBException, IOException, SAXException {
+    public List<Bean> getBeanFiles()
+            throws JAXBException, IOException, SAXException {
         baseName = FilenameUtils.getFullPath(beanFile);
         List<Bean> list = unmarshalBeanFile(beanFile, Bean.class);
         logger.info("configure Bean files...");

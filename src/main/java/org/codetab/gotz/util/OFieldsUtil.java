@@ -23,13 +23,14 @@ public final class OFieldsUtil {
     }
 
     /*
-     * models hold List<FieldsBase> and FieldsBase may be Field or Fields for convince
-     * List<FieldsBase> is called as fields instead of fieldsBaseList or fieldsBases
+     * models hold List<FieldsBase> and FieldsBase may be Field or Fields for
+     * convince List<FieldsBase> is called as fields instead of fieldsBaseList
+     * or fieldsBases
      */
 
     // return first matching field value
-    public static String getValue(final List<FieldsBase> fields, final String name)
-            throws FieldNotFoundException {
+    public static String getValue(final List<FieldsBase> fields,
+            final String name) throws FieldNotFoundException {
         if (fields == null) {
             throw new FieldNotFoundException(name);
         }
@@ -55,17 +56,19 @@ public final class OFieldsUtil {
         throw new FieldNotFoundException(name);
     }
 
-    public static int getIntValue(final List<FieldsBase> fields, final String name)
-            throws FieldNotFoundException {
+    public static int getIntValue(final List<FieldsBase> fields,
+            final String name) throws FieldNotFoundException {
         return Integer.parseInt(getValue(fields, name));
     }
 
     public static Range<Integer> getRange(final List<FieldsBase> fields,
-            final String name) throws FieldNotFoundException, NumberFormatException {
+            final String name)
+            throws FieldNotFoundException, NumberFormatException {
         String value = getValue(fields, name);
         String[] tokens = StringUtils.split(value, '-');
         if (tokens.length < 1 || tokens.length > 2) {
-            NumberFormatException e = new NumberFormatException("Invalid Range " + value);
+            NumberFormatException e =
+                    new NumberFormatException("Invalid Range " + value);
             throw e;
         }
         Integer min = 0, max = 0;
@@ -86,8 +89,9 @@ public final class OFieldsUtil {
         return Range.between(min, max);
     }
 
-    public static boolean isFieldTrue(final List<FieldsBase> fields, final String group,
-            final String name) throws FieldNotFoundException {
+    public static boolean isFieldTrue(final List<FieldsBase> fields,
+            final String group, final String name)
+            throws FieldNotFoundException {
         List<FieldsBase> fc = OFieldsUtil.getGroupFields(fields, group);
         if (StringUtils.equalsIgnoreCase(getValue(fc, name), "true")) {
             return true;
@@ -95,8 +99,8 @@ public final class OFieldsUtil {
         return false;
     }
 
-    public static boolean isFieldTrue(final List<FieldsBase> fields, final String name)
-            throws FieldNotFoundException {
+    public static boolean isFieldTrue(final List<FieldsBase> fields,
+            final String name) throws FieldNotFoundException {
         FieldsBase field = getField(fields, name);
         if (StringUtils.equalsIgnoreCase(field.getValue(), "true")) {
             return true;
@@ -145,8 +149,8 @@ public final class OFieldsUtil {
         return allFieldsDefined;
     }
 
-    public static Field getField(final List<FieldsBase> fields, final String name)
-            throws FieldNotFoundException {
+    public static Field getField(final List<FieldsBase> fields,
+            final String name) throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
             FieldsBase f = ite.next();
@@ -228,7 +232,8 @@ public final class OFieldsUtil {
             }
         }
         if (groupFields.size() == 0) {
-            throw new FieldNotFoundException("name [group] value [" + group + "]");
+            throw new FieldNotFoundException(
+                    "name [group] value [" + group + "]");
         }
         return groupFields;
     }
@@ -247,13 +252,15 @@ public final class OFieldsUtil {
             }
         }
         if (groupFields.size() == 0) {
-            throw new FieldNotFoundException("name [group] value [" + group + "]");
+            throw new FieldNotFoundException(
+                    "name [group] value [" + group + "]");
         }
         return groupFields;
     }
 
     public static FieldsBase getFieldsByValue(final List<FieldsBase> fields,
-            final String name, final String value) throws FieldNotFoundException {
+            final String name, final String value)
+            throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
             FieldsBase f = ite.next();
@@ -264,7 +271,8 @@ public final class OFieldsUtil {
                 }
             }
         }
-        throw new FieldNotFoundException("name [" + name + "] value [" + value + "]");
+        throw new FieldNotFoundException(
+                "name [" + name + "] value [" + value + "]");
     }
 
     public static String prefixFieldValue(final List<FieldsBase> prefixes,
@@ -326,9 +334,10 @@ public final class OFieldsUtil {
         return sb.toString();
     }
 
-    public static List<FieldsBase> replaceVariables(final List<FieldsBase> fields,
-            final Map<String, ?> map) throws IllegalAccessException,
-    InvocationTargetException, NoSuchMethodException {
+    public static List<FieldsBase> replaceVariables(
+            final List<FieldsBase> fields, final Map<String, ?> map)
+            throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
         Iterator<FieldsBase> ite = new FieldsIterator(fields);
         List<FieldsBase> patchedFields = new ArrayList<>();
         while (ite.hasNext()) {
@@ -336,7 +345,8 @@ public final class OFieldsUtil {
             if (field instanceof Field) {
                 String str = field.getValue();
                 Map<String, String> valueMap = getValueMap(str, map);
-                String patchedStr = StrSubstitutor.replace(str, valueMap, "%{", "}");
+                String patchedStr =
+                        StrSubstitutor.replace(str, valueMap, "%{", "}");
                 Field patchedField = new Field();
                 patchedField.setName(field.getName());
                 patchedField.setValue(patchedStr);
@@ -346,9 +356,9 @@ public final class OFieldsUtil {
         return patchedFields;
     }
 
-    static Map<String, String> getValueMap(final String str, final Map<String, ?> map)
-            throws IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
+    static Map<String, String> getValueMap(final String str,
+            final Map<String, ?> map) throws IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
         String[] keys = StringUtils.substringsBetween(str, "%{", "}");
         if (keys == null) {
             return null;

@@ -37,9 +37,9 @@ public final class CsvEncoder extends Encoder {
     @Override
     public boolean process() {
         /*
-         * don't append Marker.EOF here as other tasks may use same appender. During
-         * shutdown, GTaskRunner.waitForFinish calls AppenderService.closeAll which
-         * appends Marker.EOF for each appender.
+         * don't append Marker.EOF here as other tasks may use same appender.
+         * During shutdown, GTaskRunner.waitForFinish calls
+         * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
         String locatorName = null;
         String locatorGroup = null;

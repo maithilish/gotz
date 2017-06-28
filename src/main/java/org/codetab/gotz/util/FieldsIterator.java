@@ -27,22 +27,22 @@ public final class FieldsIterator implements Iterator<FieldsBase> {
         return !stack.isEmpty();
     }
 
-    //    @Override
-    //    public FieldsBase next() {
-    //        if (stack.isEmpty()) {
-    //            throw new NoSuchElementException();
-    //        }
-    //        FieldsBase nextFb = stack.pop();
-    //        if (nextFb != null) {
-    //            if (nextFb instanceof Fields) {
-    //                Fields fields = (Fields) nextFb;
-    //                for (FieldsBase nestedFb : fields.getFields()) {
-    //                    stack.add(nestedFb);
-    //                }
-    //            }
-    //        }
-    //        return nextFb;
-    //    }
+    // @Override
+    // public FieldsBase next() {
+    // if (stack.isEmpty()) {
+    // throw new NoSuchElementException();
+    // }
+    // FieldsBase nextFb = stack.pop();
+    // if (nextFb != null) {
+    // if (nextFb instanceof Fields) {
+    // Fields fields = (Fields) nextFb;
+    // for (FieldsBase nestedFb : fields.getFields()) {
+    // stack.add(nestedFb);
+    // }
+    // }
+    // }
+    // return nextFb;
+    // }
 
     @Override
     public FieldsBase next() {

@@ -10,7 +10,8 @@ public class ResourceStream {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ResourceStream.class);
 
-    public InputStream getInputStream(String fileName) throws FileNotFoundException {
+    public InputStream getInputStream(String fileName)
+            throws FileNotFoundException {
         InputStream stream = ResourceStream.class.getResourceAsStream(fileName);
         if (stream == null) {
             throw new FileNotFoundException(fileName);

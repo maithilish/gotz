@@ -48,11 +48,13 @@ public final class DataDefDao implements IDataDefDao {
             pm.getFetchPlan().addGroup("detachFilters");
 
             @SuppressWarnings("unchecked")
-            List<DataDef> dataDefs = (List<DataDef>) query.execute(dataDef.getName());
+            List<DataDef> dataDefs =
+                    (List<DataDef>) query.execute(dataDef.getName());
             if (dataDefs.size() > 0) {
                 DataDef lastDataDef = dataDefs.get(dataDefs.size() - 1);
                 if (!dataDef.equals(lastDataDef)) {
-                    Date toDate = DateUtils.addMilliseconds(dataDef.getFromDate(), -1);
+                    Date toDate = DateUtils
+                            .addMilliseconds(dataDef.getFromDate(), -1);
                     lastDataDef.setToDate(toDate);
                     pm.makePersistent(dataDef);
                 }
@@ -91,10 +93,11 @@ public final class DataDefDao implements IDataDefDao {
     }
 
     @Override
-    public DataDef getDataDef(String name, final Date date) {
+    public DataDef getDataDef(final String name, final Date date) {
         PersistenceManager pm = getPM();
         try {
-            String filter = "name == pname && fromDate <= pdate && toDate >= pdate";
+            String filter =
+                    "name == pname && fromDate <= pdate && toDate >= pdate";
             String paramDecla = "String pname, java.util.Date pdate";
             Extent<DataDef> extent = pm.getExtent(DataDef.class);
             Query<DataDef> query = pm.newQuery(extent, filter);

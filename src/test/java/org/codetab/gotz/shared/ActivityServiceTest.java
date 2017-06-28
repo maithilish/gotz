@@ -57,7 +57,6 @@ public class ActivityServiceTest {
         assertThat(instanceA).isSameAs(instanceB);
     }
 
-
     @Test
     public void testStart() {
         // when
@@ -84,7 +83,8 @@ public class ActivityServiceTest {
         activityService.addActivity(Type.GIVENUP, "tmessage");
 
         // then
-        ArgumentCaptor<Activity> argument = ArgumentCaptor.forClass(Activity.class);
+        ArgumentCaptor<Activity> argument =
+                ArgumentCaptor.forClass(Activity.class);
         verify(activities).add(argument.capture());
         assertThat(argument.getValue().getType()).isEqualTo(Type.GIVENUP);
         assertThat(argument.getValue().getMessage()).isEqualTo("tmessage");
@@ -100,7 +100,8 @@ public class ActivityServiceTest {
         activityService.addActivity(Type.GIVENUP, "tmessage", throwable); // when
 
         // then
-        ArgumentCaptor<Activity> argument = ArgumentCaptor.forClass(Activity.class);
+        ArgumentCaptor<Activity> argument =
+                ArgumentCaptor.forClass(Activity.class);
         verify(activities).add(argument.capture());
         assertThat(argument.getValue().getType()).isEqualTo(Type.GIVENUP);
         assertThat(argument.getValue().getMessage()).isEqualTo("tmessage");

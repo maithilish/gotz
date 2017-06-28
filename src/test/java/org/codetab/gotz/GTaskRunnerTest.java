@@ -32,7 +32,7 @@ public class GTaskRunnerTest {
     }
 
     @Test
-    public void testExecuteInitalTask(){
+    public void testExecuteInitalTask() {
         // given
 
         // when
@@ -43,7 +43,7 @@ public class GTaskRunnerTest {
     }
 
     @Test
-    public void testWaitForFinish(){
+    public void testWaitForFinish() {
         // given
 
         // when

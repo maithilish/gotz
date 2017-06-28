@@ -69,7 +69,8 @@ public class LoaderTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        fileUrl = "target/test-classes/testdefs/datadefservice/valid-v1/bean.xml";
+        fileUrl =
+                "target/test-classes/testdefs/datadefservice/valid-v1/bean.xml";
     }
 
     @Test
@@ -105,7 +106,8 @@ public class LoaderTest {
     @Test
     public void testSetInput() throws IllegalAccessException {
         loader.setInput("xyz");
-        Locator actual = (Locator) FieldUtils.readField(loader, "locator", true);
+        Locator actual =
+                (Locator) FieldUtils.readField(loader, "locator", true);
         assertThat(actual).isNull();
 
         Locator locator = new Locator();
@@ -123,11 +125,13 @@ public class LoaderTest {
         newLocator.setUrl(fileUrl);
 
         loader.setInput(newLocator);
-        given(locatorPersistence.loadLocator("l1", "g1")).willReturn(savedLocator);
+        given(locatorPersistence.loadLocator("l1", "g1"))
+                .willReturn(savedLocator);
 
         boolean actual = loader.load();
 
-        Locator locator = (Locator) FieldUtils.readField(loader, "locator", true);
+        Locator locator =
+                (Locator) FieldUtils.readField(loader, "locator", true);
 
         assertThat(loader.getStepState()).isEqualTo(StepState.LOAD);
         assertThat(actual).isTrue();
@@ -138,7 +142,8 @@ public class LoaderTest {
 
         assertThat(newLocator.getFields().size()).isEqualTo(1);
         assertThat(savedLocator.getFields().size()).isEqualTo(2);
-        assertThat(savedLocator.getFields()).containsAll(newLocator.getFields());
+        assertThat(savedLocator.getFields())
+                .containsAll(newLocator.getFields());
     }
 
     @Test
@@ -153,7 +158,8 @@ public class LoaderTest {
         given(locatorPersistence.loadLocator("l1", "g1")).willReturn(null);
 
         boolean actual = loader.load();
-        Locator locator = (Locator) FieldUtils.readField(loader, "locator", true);
+        Locator locator =
+                (Locator) FieldUtils.readField(loader, "locator", true);
 
         assertThat(loader.getStepState()).isEqualTo(StepState.LOAD);
         assertThat(actual).isTrue();
@@ -165,7 +171,7 @@ public class LoaderTest {
         assertThat(newLocator.getFields().size()).isEqualTo(1);
         assertThat(locator2.getFields().size()).isEqualTo(1);
         assertThat(newLocator.getFields())
-        .doesNotContainAnyElementsOf(locator2.getFields());
+                .doesNotContainAnyElementsOf(locator2.getFields());
     }
 
     @Test
@@ -177,8 +183,10 @@ public class LoaderTest {
         Document document = documents.get(0);
         Long documentId = document.getId();
 
-        given(documentHelper.getActiveDocumentId(documents)).willReturn(documentId);
-        given(documentPersistence.loadDocument(documentId)).willReturn(document);
+        given(documentHelper.getActiveDocumentId(documents))
+                .willReturn(documentId);
+        given(documentPersistence.loadDocument(documentId))
+                .willReturn(document);
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
@@ -222,8 +230,10 @@ public class LoaderTest {
         Document document = documents.get(0);
         Long documentId = document.getId();
 
-        given(documentHelper.getActiveDocumentId(documents)).willReturn(documentId);
-        given(documentPersistence.loadDocument(documentId)).willReturn(document);
+        given(documentHelper.getActiveDocumentId(documents))
+                .willReturn(documentId);
+        given(documentPersistence.loadDocument(documentId))
+                .willReturn(document);
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
@@ -237,7 +247,8 @@ public class LoaderTest {
     }
 
     @Test
-    public void testProcessNoActiveDocument() throws IllegalAccessException, IOException {
+    public void testProcessNoActiveDocument()
+            throws IllegalAccessException, IOException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
         locator.setUrl(fileUrl);
@@ -254,8 +265,8 @@ public class LoaderTest {
 
         given(dInjector.instance(Document.class)).willReturn(document2);
         given(configService.getRunDateTime()).willReturn(fromDate);
-        given(documentHelper.getToDate(eq(fromDate), eq(locator.getFields()), any(String.class)))
-        .willReturn(toDate);
+        given(documentHelper.getToDate(eq(fromDate), eq(locator.getFields()),
+                any(String.class))).willReturn(toDate);
 
         boolean actual = loader.process();
 
@@ -286,8 +297,8 @@ public class LoaderTest {
         try {
             loader.process();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
-                    any(IOException.class));
+            verify(activityService).addActivity(eq(Type.GIVENUP),
+                    any(String.class), any(IOException.class));
         }
 
         exceptionRule.expect(StepRunException.class);
@@ -300,7 +311,7 @@ public class LoaderTest {
         Locator locator = locators.get(0);
 
         Field field = TestUtil.createField("document", "false");
-        Fields fields = TestUtil.createFields("group", "persist",field);
+        Fields fields = TestUtil.createFields("group", "persist", field);
         locator.getFields().add(fields);
 
         FieldUtils.writeField(loader, "locator", locator, true);
@@ -325,8 +336,10 @@ public class LoaderTest {
         FieldUtils.writeField(loader, "locator", locator1, true);
         FieldUtils.writeField(loader, "document", document1, true);
 
-        given(locatorPersistence.loadLocator(locator1.getId())).willReturn(locator2);
-        given(documentPersistence.loadDocument(document1.getId())).willReturn(document2);
+        given(locatorPersistence.loadLocator(locator1.getId()))
+                .willReturn(locator2);
+        given(documentPersistence.loadDocument(document1.getId()))
+                .willReturn(document2);
 
         boolean actual = loader.store();
 
@@ -336,9 +349,10 @@ public class LoaderTest {
         verify(locatorPersistence).storeLocator(locator1);
         assertThat(locator2.getFields()).containsAll(locator1.getFields());
 
-        Locator actualLocator = (Locator) FieldUtils.readField(loader, "locator", true);
-        Document actualDocument = (Document) FieldUtils.readField(loader, "document",
-                true);
+        Locator actualLocator =
+                (Locator) FieldUtils.readField(loader, "locator", true);
+        Document actualDocument =
+                (Document) FieldUtils.readField(loader, "document", true);
 
         assertThat(actualLocator).isSameAs(locator2);
         assertThat(actualDocument).isSameAs(document2);
@@ -358,8 +372,10 @@ public class LoaderTest {
         Field field = TestUtil.createField("persist", "true");
         locator1.getFields().add(field);
 
-        given(locatorPersistence.loadLocator(locator1.getId())).willReturn(locator2);
-        given(documentPersistence.loadDocument(document1.getId())).willReturn(document2);
+        given(locatorPersistence.loadLocator(locator1.getId()))
+                .willReturn(locator2);
+        given(documentPersistence.loadDocument(document1.getId()))
+                .willReturn(document2);
 
         boolean actual = loader.store();
 
@@ -369,9 +385,10 @@ public class LoaderTest {
         verify(locatorPersistence).storeLocator(locator1);
         assertThat(locator2.getFields()).containsAll(locator1.getFields());
 
-        Locator actualLocator = (Locator) FieldUtils.readField(loader, "locator", true);
-        Document actualDocument = (Document) FieldUtils.readField(loader, "document",
-                true);
+        Locator actualLocator =
+                (Locator) FieldUtils.readField(loader, "locator", true);
+        Document actualDocument =
+                (Document) FieldUtils.readField(loader, "document", true);
 
         assertThat(actualLocator).isSameAs(locator2);
         assertThat(actualDocument).isSameAs(document2);
@@ -385,13 +402,13 @@ public class LoaderTest {
         FieldUtils.writeField(loader, "locator", locator, true);
 
         given(locatorPersistence.loadLocator(locator.getId()))
-        .willThrow(RuntimeException.class);
+                .willThrow(RuntimeException.class);
 
         try {
             loader.store();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
-                    any(RuntimeException.class));
+            verify(activityService).addActivity(eq(Type.GIVENUP),
+                    any(String.class), any(RuntimeException.class));
         }
 
         exceptionRule.expect(StepRunException.class);
@@ -408,8 +425,8 @@ public class LoaderTest {
         try {
             loader.handover();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
-                    any(FieldNotFoundException.class));
+            verify(activityService).addActivity(eq(Type.GIVENUP),
+                    any(String.class), any(FieldNotFoundException.class));
         }
 
         exceptionRule.expect(StepRunException.class);
@@ -430,8 +447,8 @@ public class LoaderTest {
         try {
             loader.handover();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
-                    any(FieldNotFoundException.class));
+            verify(activityService).addActivity(eq(Type.GIVENUP),
+                    any(String.class), any(FieldNotFoundException.class));
         }
 
         exceptionRule.expect(StepRunException.class);
@@ -439,7 +456,8 @@ public class LoaderTest {
     }
 
     @Test
-    public void testHandoverDataDefIsFieldInstance() throws IllegalAccessException {
+    public void testHandoverDataDefIsFieldInstance()
+            throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
 
@@ -449,7 +467,8 @@ public class LoaderTest {
 
         Field dataDef1 = TestUtil.createField("datadef", "d1");
         Field dataDef2 = TestUtil.createField("datadef", "d2");
-        Fields dataDefs = TestUtil.createFields("group", "datadef", dataDef1, dataDef2);
+        Fields dataDefs =
+                TestUtil.createFields("group", "datadef", dataDef1, dataDef2);
         locator.getFields().add(dataDefs);
 
         FieldUtils.writeField(loader, "locator", locator, true);
@@ -474,7 +493,8 @@ public class LoaderTest {
         Field dataDef1 = TestUtil.createField("datadef", "d1");
         Field f1 = TestUtil.createField("f1", "x1");
         Fields dataDef2 = TestUtil.createFields("datadef", "d2", f1);
-        Fields dataDefs = TestUtil.createFields("group", "datadef", dataDef1, dataDef2);
+        Fields dataDefs =
+                TestUtil.createFields("group", "datadef", dataDef1, dataDef2);
         locator.getFields().add(dataDefs);
 
         FieldUtils.writeField(loader, "locator", locator, true);
@@ -484,7 +504,8 @@ public class LoaderTest {
         assertThat(loader.getStepState()).isEqualTo(StepState.HANDOVER);
         assertThat(actual).isTrue();
 
-        verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class));
+        verify(activityService).addActivity(eq(Type.GIVENUP),
+                any(String.class));
         verifyZeroInteractions(stepService);
     }
 
@@ -499,7 +520,8 @@ public class LoaderTest {
         Field f2 = TestUtil.createField("f2", "x2");
         Fields dataDef1 = TestUtil.createFields("datadef", "d1", f1);
         Fields dataDef2 = TestUtil.createFields("datadef", "d2", f2);
-        Fields dataDefs = TestUtil.createFields("group", "datadef", dataDef1, dataDef2);
+        Fields dataDefs =
+                TestUtil.createFields("group", "datadef", dataDef1, dataDef2);
         locator.getFields().add(dataDefs);
 
         FieldUtils.writeField(loader, "locator", locator, true);
@@ -508,13 +530,17 @@ public class LoaderTest {
         // expected fields
         Fields fd1 = TestUtil.createFields("datadef", "d1", f1);
         Fields fd2 = TestUtil.createFields("datadef", "d2", f2);
-        Fields dataDefFields = TestUtil.createFields("group", "datadef", fd1, fd2);
+        Fields dataDefFields =
+                TestUtil.createFields("group", "datadef", fd1, fd2);
 
         List<FieldsBase> expectedFields = new ArrayList<>();
         expectedFields.add(dataDefFields);
-        expectedFields.add(TestUtil.createField("locatorName", locator.getName()));
-        expectedFields.add(TestUtil.createField("locatorGroup", locator.getGroup()));
-        expectedFields.add(TestUtil.createField("locatorUrl", locator.getUrl()));
+        expectedFields
+                .add(TestUtil.createField("locatorName", locator.getName()));
+        expectedFields
+                .add(TestUtil.createField("locatorGroup", locator.getGroup()));
+        expectedFields
+                .add(TestUtil.createField("locatorUrl", locator.getUrl()));
 
         boolean actual = loader.handover();
 

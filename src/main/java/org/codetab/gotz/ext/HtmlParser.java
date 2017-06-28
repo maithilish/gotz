@@ -41,13 +41,15 @@ public abstract class HtmlParser extends Parser {
     /*
      * (non-Javadoc)
      *
-     * @see org.codetab.gotz.step.Parser#setValue(org.codetab.gotz.model.DataDef,
+     * @see
+     * org.codetab.gotz.step.Parser#setValue(org.codetab.gotz.model.DataDef,
      * org.codetab.gotz.model.Member)
      */
     @Override
     protected void setValue(final DataDef dataDef, final Member member)
-            throws ScriptException, NumberFormatException, IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException {
+            throws ScriptException, NumberFormatException,
+            IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;
             try {
@@ -65,7 +67,8 @@ public abstract class HtmlParser extends Parser {
                 axis.setIndex(startIndex);
             }
             if (isDocumentLoaded() && axis.getValue() == null) {
-                HtmlPage documentObject = (HtmlPage) getDocument().getDocumentObject();
+                HtmlPage documentObject =
+                        (HtmlPage) getDocument().getDocumentObject();
                 String value = getValue(documentObject, dataDef, member, axis);
                 axis.setValue(value);
             }
@@ -76,15 +79,19 @@ public abstract class HtmlParser extends Parser {
      *
      */
     private String getValue(final HtmlPage page, final DataDef dataDef,
-            final Member member, final Axis axis) throws ScriptException,
-            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+            final Member member, final Axis axis)
+            throws ScriptException, IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
-        List<FieldsBase> list = DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
+        List<FieldsBase> list =
+                DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
         try {
-            List<FieldsBase> scripts = OFieldsUtil.getGroupFields(list, "script");
+            List<FieldsBase> scripts =
+                    OFieldsUtil.getGroupFields(list, "script");
             setTraceString(sb, scripts, "--- Script ---");
-            scripts = OFieldsUtil.replaceVariables(scripts, member.getAxisMap());
+            scripts =
+                    OFieldsUtil.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, "-- Patched --");
             LOGGER.trace(getMarker(), "{}", sb);
             value = queryByScript(scripts);
@@ -92,9 +99,11 @@ public abstract class HtmlParser extends Parser {
         }
 
         try {
-            List<FieldsBase> queries = OFieldsUtil.getGroupFields(list, "query");
+            List<FieldsBase> queries =
+                    OFieldsUtil.getGroupFields(list, "query");
             setTraceString(sb, queries, "--- Query ---");
-            queries = OFieldsUtil.replaceVariables(queries, member.getAxisMap());
+            queries =
+                    OFieldsUtil.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, "-- Patched --");
             LOGGER.trace(getMarker(), "{}", sb);
             value = queryByXPath(page, queries);
@@ -102,7 +111,8 @@ public abstract class HtmlParser extends Parser {
         }
 
         try {
-            List<FieldsBase> prefix = OFieldsUtil.getGroupFields(list, "prefix");
+            List<FieldsBase> prefix =
+                    OFieldsUtil.getGroupFields(list, "prefix");
             value = OFieldsUtil.prefixFieldValue(prefix, value);
         } catch (FieldNotFoundException e) {
         }
@@ -129,14 +139,16 @@ public abstract class HtmlParser extends Parser {
         ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
         jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
         if (jsEngine == null) {
-            throw new NullPointerException("No script engine found for JavaScript");
+            throw new NullPointerException(
+                    "No script engine found for JavaScript");
         }
     }
 
-    private String queryByXPath(final HtmlPage page, final List<FieldsBase> queries)
-            throws FieldNotFoundException {
+    private String queryByXPath(final HtmlPage page,
+            final List<FieldsBase> queries) throws FieldNotFoundException {
         if (OFieldsUtil.fieldCount(queries) < 2) {
-            LOGGER.warn("Insufficient queries in DataDef [{}]", getDataDefName());
+            LOGGER.warn("Insufficient queries in DataDef [{}]",
+                    getDataDefName());
             return null;
         }
         LOGGER.trace("------Query Data------");
@@ -158,10 +170,11 @@ public abstract class HtmlParser extends Parser {
         return value;
     }
 
-    private List<?> getRegionNodes(final HtmlPage page, final String xpathExpr) {
+    private List<?> getRegionNodes(final HtmlPage page,
+            final String xpathExpr) {
         /*
-         * regional nodes are cached in HashMap for performance. Map is flushed in
-         * loadObject method.
+         * regional nodes are cached in HashMap for performance. Map is flushed
+         * in loadObject method.
          */
         final int numOfLines = 5;
         Integer hash = xpathExpr.hashCode();
@@ -172,7 +185,8 @@ public abstract class HtmlParser extends Parser {
             nodes = page.getByXPath(xpathExpr);
             nodeMap.put(hash, nodes);
         }
-        LOGGER.trace("Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
+        LOGGER.trace(
+                "Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
         for (Object o : nodes) {
             DomNode node = (DomNode) o;
             String nodeTraceStr = Util.stripe(node.asXml(), numOfLines,
@@ -198,8 +212,8 @@ public abstract class HtmlParser extends Parser {
         return value;
     }
 
-    private void setTraceString(final StringBuilder sb, final List<FieldsBase> fields,
-            final String header) {
+    private void setTraceString(final StringBuilder sb,
+            final List<FieldsBase> fields, final String header) {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }

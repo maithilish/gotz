@@ -62,7 +62,8 @@ public class LocatorSeederTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator3 =
+                locators.get(0).getLocators().get(0).getLocator().get(0);
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
 
@@ -81,7 +82,8 @@ public class LocatorSeederTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator3 =
+                locators.get(0).getLocators().get(0).getLocator().get(0);
 
         locator1.setGroup("gx");
 
@@ -102,7 +104,8 @@ public class LocatorSeederTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator3 =
+                locators.get(0).getLocators().get(0).getLocator().get(0);
 
         // set group of child locators
         Locators locs = locators.get(0).getLocators().get(0);
@@ -125,7 +128,8 @@ public class LocatorSeederTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator3 =
+                locators.get(0).getLocators().get(0).getLocator().get(0);
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
 
@@ -134,8 +138,8 @@ public class LocatorSeederTest {
 
         // then
         @SuppressWarnings("unchecked")
-        List<Locator> actual = (List<Locator>) FieldUtils.readDeclaredField(locatorSeeder,
-                "locators", true);
+        List<Locator> actual = (List<Locator>) FieldUtils
+                .readDeclaredField(locatorSeeder, "locators", true);
         assertThat(actual.size()).isEqualTo(3);
         assertThat(actual).contains(locator1);
         assertThat(actual).contains(locator2);
@@ -148,7 +152,8 @@ public class LocatorSeederTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator3 =
+                locators.get(0).getLocators().get(0).getLocator().get(0);
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
 
@@ -169,11 +174,11 @@ public class LocatorSeederTest {
 
     @Test
     public void testProcessInitFieldsSetSteps() throws IllegalAccessException,
-    JAXBException, IOException, FieldNotFoundException {
+            JAXBException, IOException, FieldNotFoundException {
         List<Locators> locators = createTestObjects2();
         List<FieldsBase> fieldsList = createTestFields();
-        List<FieldsBase> stepFields = FieldsUtil.filterByName(fieldsList, "steps",
-                "step");
+        List<FieldsBase> stepFields =
+                FieldsUtil.filterByName(fieldsList, "steps", "step");
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
         given(beanService.getBeans(FieldsBase.class)).willReturn(fieldsList);
@@ -186,18 +191,19 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testProcessInitFieldsMergeFields() throws IllegalAccessException,
-    JAXBException, IOException, FieldNotFoundException {
+    public void testProcessInitFieldsMergeFields()
+            throws IllegalAccessException, JAXBException, IOException,
+            FieldNotFoundException {
         // given
         List<Locators> locators = createTestObjects2();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(1).getLocator().get(0);
 
         List<FieldsBase> fieldsList = createTestFields();
-        List<FieldsBase> classFields = FieldsUtil.filterByValue(fieldsList, "class",
-                Locator.class.getName());
-        List<FieldsBase> stepFields = FieldsUtil.filterByName(fieldsList, "steps",
-                "step");
+        List<FieldsBase> classFields = FieldsUtil.filterByValue(fieldsList,
+                "class", Locator.class.getName());
+        List<FieldsBase> stepFields =
+                FieldsUtil.filterByName(fieldsList, "steps", "step");
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
         given(beanService.getBeans(FieldsBase.class)).willReturn(fieldsList);
@@ -205,8 +211,8 @@ public class LocatorSeederTest {
         // when
         locatorSeeder.process();
 
-        List<Fields> dataDefGroup = FieldsUtil.filterByGroupAsFields(classFields,
-                "datadef");
+        List<Fields> dataDefGroup =
+                FieldsUtil.filterByGroupAsFields(classFields, "datadef");
         for (Fields dataDefFields : dataDefGroup) {
             for (FieldsBase step : stepFields) {
                 if (!FieldsUtil.contains(dataDefFields, step.getName(),
@@ -221,17 +227,16 @@ public class LocatorSeederTest {
         Field label = TestUtil.createField("label",
                 locator1.getName() + ":" + locator1.getGroup());
         locatorGroupFields.add(label);
-        locatorGroupFields
-        .addAll(FieldsUtil.filterByGroup(classFields, locator1.getGroup()));
+        locatorGroupFields.addAll(
+                FieldsUtil.filterByGroup(classFields, locator1.getGroup()));
         assertThat(locator1.getFields()).isEqualTo(locatorGroupFields);
-
 
         locatorGroupFields = new ArrayList<>();
         label = TestUtil.createField("label",
                 locator2.getName() + ":" + locator2.getGroup());
         locatorGroupFields.add(label);
-        locatorGroupFields
-        .addAll(FieldsUtil.filterByGroup(classFields, locator2.getGroup()));
+        locatorGroupFields.addAll(
+                FieldsUtil.filterByGroup(classFields, locator2.getGroup()));
         assertThat(locator2.getFields()).isEqualTo(locatorGroupFields);
     }
 
@@ -242,7 +247,8 @@ public class LocatorSeederTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator3 =
+                locators.get(0).getLocators().get(0).getLocator().get(0);
 
         List<FieldsBase> fieldsList = createTestFields();
         Fields classFields = (Fields) fieldsList.get(0);
@@ -271,7 +277,8 @@ public class LocatorSeederTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        Locator locator3 = locators.get(0).getLocators().get(0).getLocator().get(0);
+        Locator locator3 =
+                locators.get(0).getLocators().get(0).getLocator().get(0);
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
 
@@ -335,17 +342,19 @@ public class LocatorSeederTest {
         return locators;
     }
 
-    private List<FieldsBase> createTestFields() throws JAXBException, IOException {
+    private List<FieldsBase> createTestFields()
+            throws JAXBException, IOException {
         TestJaxbHelper jh = new TestJaxbHelper();
         List<FieldsBase> fields = jh.unmarshall(
                 "/testdefs/locatorseeder/locatorfields1.xml", FieldsBase.class);
         return fields;
     }
 
-    private List<Locators> createTestObjects2() throws JAXBException, IOException {
+    private List<Locators> createTestObjects2()
+            throws JAXBException, IOException {
         TestJaxbHelper jh = new TestJaxbHelper();
-        List<Locators> locators = jh.unmarshall("/testdefs/locatorseeder/locator1.xml",
-                Locators.class);
+        List<Locators> locators = jh.unmarshall(
+                "/testdefs/locatorseeder/locator1.xml", Locators.class);
         return locators;
     }
 }

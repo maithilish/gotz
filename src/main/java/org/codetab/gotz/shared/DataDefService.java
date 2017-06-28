@@ -65,7 +65,8 @@ public class DataDefService {
 
         dataDefs = dataDefPersistence.loadDataDefs();
 
-        boolean updates = dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
+        boolean updates =
+                dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
 
         if (updates) {
             for (DataDef dataDef : dataDefs) {
@@ -105,10 +106,11 @@ public class DataDefService {
         }
     }
 
-    public DataDef getDataDef(final String name) throws DataDefNotFoundException {
+    public DataDef getDataDef(final String name)
+            throws DataDefNotFoundException {
         try {
-            return dataDefs.stream().filter(e -> e.getName().equals(name)).findFirst()
-                    .get();
+            return dataDefs.stream().filter(e -> e.getName().equals(name))
+                    .findFirst().get();
         } catch (NoSuchElementException e) {
             throw new DataDefNotFoundException(name);
         }
@@ -120,7 +122,8 @@ public class DataDefService {
 
     // transforms DAxis/DMember to Member/Axis
     public Data getDataTemplate(final String dataDefName)
-            throws DataDefNotFoundException, ClassNotFoundException, IOException {
+            throws DataDefNotFoundException, ClassNotFoundException,
+            IOException {
         DataDef dataDef = getDataDef(dataDefName);
         if (memberSetsMap.get(dataDefName) == null) {
             generateMemberSets(dataDef); // synchronized
@@ -137,14 +140,15 @@ public class DataDefService {
                 try {
                     // fields from DMember level are added in createAxis()
                     // fields from datadef level are added here
-                    FieldsBase fields = OFieldsUtil.getFieldsByValue(dataDef.getFields(),
-                            "member", dMember.getName());
+                    FieldsBase fields = OFieldsUtil.getFieldsByValue(
+                            dataDef.getFields(), "member", dMember.getName());
                     dataMember.getFields().add(fields);
                 } catch (FieldNotFoundException e) {
                 }
             }
             try {
-                String group = OFieldsUtil.getValue(dataMember.getFields(), "group");
+                String group =
+                        OFieldsUtil.getValue(dataMember.getFields(), "group");
                 dataMember.setGroup(group);
             } catch (FieldNotFoundException e) {
             }
@@ -206,7 +210,8 @@ public class DataDefService {
         return dataDefs.size();
     }
 
-    private void traceDataStructure() throws ClassNotFoundException, IOException {
+    private void traceDataStructure()
+            throws ClassNotFoundException, IOException {
         if (!logger.isTraceEnabled()) {
             return;
         }

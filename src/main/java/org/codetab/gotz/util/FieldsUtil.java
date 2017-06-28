@@ -12,8 +12,8 @@ import org.codetab.gotz.model.FieldsBase;
 
 public class FieldsUtil {
 
-    public static Field getField(final List<FieldsBase> fields, final String name)
-            throws FieldNotFoundException {
+    public static Field getField(final List<FieldsBase> fields,
+            final String name) throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
             FieldsBase f = ite.next();
@@ -24,8 +24,8 @@ public class FieldsUtil {
         throw new FieldNotFoundException("Name [" + name + "]");
     }
 
-    public static Fields getFields(final List<FieldsBase> fields, final String name)
-            throws FieldNotFoundException {
+    public static Fields getFields(final List<FieldsBase> fields,
+            final String name) throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
             FieldsBase f = ite.next();
@@ -37,7 +37,8 @@ public class FieldsUtil {
     }
 
     public static List<FieldsBase> filterByValue(final List<FieldsBase> fields,
-            final String name, final String value) throws FieldNotFoundException {
+            final String name, final String value)
+            throws FieldNotFoundException {
         List<FieldsBase> list = new ArrayList<>();
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
@@ -48,7 +49,8 @@ public class FieldsUtil {
             }
         }
         if (list.size() == 0) {
-            throw new FieldNotFoundException("name [" + name + "] value [" + value + "]");
+            throw new FieldNotFoundException(
+                    "name [" + name + "] value [" + value + "]");
         }
         return list;
     }
@@ -70,13 +72,15 @@ public class FieldsUtil {
     }
 
     public static List<FieldsBase> filterByName(final List<FieldsBase> fields,
-            final String group, final String name) throws FieldNotFoundException {
+            final String group, final String name)
+            throws FieldNotFoundException {
         List<FieldsBase> groupFields = filterByGroup(fields, group);
         return filterByName(groupFields, name);
     }
 
-    public static List<FieldsBase> filterChildrenByName(final List<FieldsBase> fields,
-            final String name) throws FieldNotFoundException {
+    public static List<FieldsBase> filterChildrenByName(
+            final List<FieldsBase> fields, final String name)
+            throws FieldNotFoundException {
         List<FieldsBase> list = new ArrayList<>();
         for (FieldsBase fb : fields) {
             if (fb instanceof Fields) {
@@ -105,13 +109,15 @@ public class FieldsUtil {
             }
         }
         if (groupFields.size() == 0) {
-            throw new FieldNotFoundException("name [group] value [" + group + "]");
+            throw new FieldNotFoundException(
+                    "name [group] value [" + group + "]");
         }
         return groupFields;
     }
 
-    public static List<Fields> filterByGroupAsFields(final List<FieldsBase> fields,
-            final String group) throws FieldNotFoundException {
+    public static List<Fields> filterByGroupAsFields(
+            final List<FieldsBase> fields, final String group)
+            throws FieldNotFoundException {
         List<Fields> groupFields = new ArrayList<>();
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
@@ -124,14 +130,15 @@ public class FieldsUtil {
             }
         }
         if (groupFields.size() == 0) {
-            throw new FieldNotFoundException("name [group] value [" + group + "]");
+            throw new FieldNotFoundException(
+                    "name [group] value [" + group + "]");
         }
         return groupFields;
     }
 
     // contains field or fields with matching name/value
-    public static boolean contains(final List<FieldsBase> fields, final String name,
-            String value) {
+    public static boolean contains(final List<FieldsBase> fields,
+            final String name, String value) {
         if (fields == null) {
             return false;
         }
@@ -146,7 +153,8 @@ public class FieldsUtil {
     }
 
     // contains field or fields with matching name/value
-    public static boolean contains(final Fields fields, final String name, String value) {
+    public static boolean contains(final Fields fields, final String name,
+            String value) {
         if (fields == null) {
             return false;
         }

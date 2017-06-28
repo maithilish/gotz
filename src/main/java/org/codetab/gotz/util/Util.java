@@ -41,7 +41,8 @@ public final class Util {
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(obj);
 
-        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        ByteArrayInputStream bais =
+                new ByteArrayInputStream(baos.toByteArray());
         ObjectInputStream ois = new ObjectInputStream(bais);
         return ofClass.cast(ois.readObject());
     }
@@ -57,13 +58,14 @@ public final class Util {
 
     public static Set<Set<Object>> cartesianProduct(final Set<?>... sets) {
         if (sets.length < 2) {
-            throw new IllegalArgumentException(
-                    buildString("Can't have a product of fewer than two sets (has ",
-                            String.valueOf(sets.length), " sets)"));
+            throw new IllegalArgumentException(buildString(
+                    "Can't have a product of fewer than two sets (has ",
+                    String.valueOf(sets.length), " sets)"));
         }
         for (Set<?> set : sets) {
             if (set.size() == 0) {
-                throw new IllegalArgumentException("argument contains a empty set");
+                throw new IllegalArgumentException(
+                        "argument contains a empty set");
             }
         }
         return cartesianProduct(0, sets);
@@ -120,7 +122,8 @@ public final class Util {
         if (StringUtils.endsWith(string, "\n")) {
             n++;
         }
-        return string.substring(StringUtils.lastOrdinalIndexOf(string, "\n", n) + 1);
+        return string
+                .substring(StringUtils.lastOrdinalIndexOf(string, "\n", n) + 1);
     }
 
     public static String getJson(final Object obj, final boolean prettyPrint) {
@@ -135,7 +138,8 @@ public final class Util {
         return json;
     }
 
-    public static String getIndentedJson(final Object obj, final boolean prettyPrint) {
+    public static String getIndentedJson(final Object obj,
+            final boolean prettyPrint) {
         String json = getJson(obj, prettyPrint);
         String indentedJson = json.replaceAll("(?m)^", Util.logIndent());
         return indentedJson;
@@ -150,14 +154,15 @@ public final class Util {
     }
 
     /*
-     * to marshal/unmarshal a list with a JAXB, we need to create a wrapper object to hold
-     * the list such as list of datadefs, locators etc. It is cumbersome to create
-     * multiple wrapper objects and to avoid this generic list wrapper is useful. See -
-     * blog.bdoughan.com jaxb list wrapper
+     * to marshal/unmarshal a list with a JAXB, we need to create a wrapper
+     * object to hold the list such as list of datadefs, locators etc. It is
+     * cumbersome to create multiple wrapper objects and to avoid this generic
+     * list wrapper is useful. See - blog.bdoughan.com jaxb list wrapper
      */
-    public static List<Object> unmarshal(final Unmarshaller um, final String xmlFile)
-            throws JAXBException, FileNotFoundException {
-        StreamSource xmlSource = new StreamSource(Util.getResourceAsStream(xmlFile));
+    public static List<Object> unmarshal(final Unmarshaller um,
+            final String xmlFile) throws JAXBException, FileNotFoundException {
+        StreamSource xmlSource =
+                new StreamSource(Util.getResourceAsStream(xmlFile));
         Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
         return wrapper.getAny();
     }
@@ -166,7 +171,8 @@ public final class Util {
             throws FileNotFoundException {
         InputStream stream = Util.class.getResourceAsStream(resource);
         if (stream == null) {
-            throw new FileNotFoundException("Resource [" + resource + "] not found");
+            throw new FileNotFoundException(
+                    "Resource [" + resource + "] not found");
         }
         return stream;
     }

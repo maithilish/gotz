@@ -38,7 +38,6 @@ public class LocatorsTest {
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
-
     @Test
     public void testGetLocator() {
         Locators t1 = new Locators();

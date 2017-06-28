@@ -62,16 +62,16 @@ public class PMFTest {
     }
 
     @Test
-    public void testInit() throws IOException, NoSuchMethodException, SecurityException,
-    IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-    ConfigNotFoundException {
+    public void testInit() throws IOException, NoSuchMethodException,
+            SecurityException, IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, ConfigNotFoundException {
 
         given(configService.getConfig("gotz.datastore.configFile"))
-        .willReturn("/jdoconfig.properties");
+                .willReturn("/jdoconfig.properties");
 
         pmf.init();
 
-        InOrder inOrder = inOrder(configService,resourceStream,jdoProperties);
+        InOrder inOrder = inOrder(configService, resourceStream, jdoProperties);
         inOrder.verify(configService).getConfig("gotz.datastore.configFile");
         inOrder.verify(resourceStream).getInputStream("/jdoconfig.properties");
         inOrder.verify(jdoProperties).load(any(InputStream.class));
@@ -80,42 +80,44 @@ public class PMFTest {
     }
 
     @Test
-    public void testInitMultiple() throws IOException, NoSuchMethodException, SecurityException,
-    IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-    ConfigNotFoundException {
+    public void testInitMultiple() throws IOException, NoSuchMethodException,
+            SecurityException, IllegalAccessException, IllegalArgumentException,
+            InvocationTargetException, ConfigNotFoundException {
 
         given(configService.getConfig("gotz.datastore.configFile"))
-        .willReturn("/jdoconfig.properties");
+                .willReturn("/jdoconfig.properties");
 
         pmf.init();
 
-        InOrder inOrder = inOrder(configService,resourceStream,jdoProperties);
+        InOrder inOrder = inOrder(configService, resourceStream, jdoProperties);
         inOrder.verify(configService).getConfig("gotz.datastore.configFile");
         inOrder.verify(resourceStream).getInputStream("/jdoconfig.properties");
         inOrder.verify(jdoProperties).load(any(InputStream.class));
 
         assertThat(pmf.getFactory()).isNotNull();
 
-        verifyNoMoreInteractions(configService,resourceStream);
+        verifyNoMoreInteractions(configService, resourceStream);
 
         pmf.init();
 
-        verifyNoMoreInteractions(configService,resourceStream);
+        verifyNoMoreInteractions(configService, resourceStream);
     }
 
     @Test
-    public void testInitThrowConfigNotFoundException() throws ConfigNotFoundException {
+    public void testInitThrowConfigNotFoundException()
+            throws ConfigNotFoundException {
         given(configService.getConfig("gotz.datastore.configFile"))
-        .willThrow(ConfigNotFoundException.class);
+                .willThrow(ConfigNotFoundException.class);
 
         exceptionRule.expect(CriticalException.class);
         pmf.init();
     }
 
     @Test
-    public void testInitThrowFileNotFoundException() throws FileNotFoundException  {
+    public void testInitThrowFileNotFoundException()
+            throws FileNotFoundException {
         given(resourceStream.getInputStream("/jdoconfig.properties"))
-        .willThrow(FileNotFoundException.class);
+                .willThrow(FileNotFoundException.class);
 
         exceptionRule.expect(CriticalException.class);
         pmf.init();

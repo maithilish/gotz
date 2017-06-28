@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 @ThreadSafe
 @Singleton
-public class PMF {
+public final class PMF {
 
     private final Logger logger = LoggerFactory.getLogger(PMF.class);
 
@@ -45,21 +45,27 @@ public class PMF {
                 logger.info("initialize JDO PMF");
                 String configFile;
                 try {
-                    configFile = configService.getConfig("gotz.datastore.configFile");
+                    configFile = configService
+                            .getConfig("gotz.datastore.configFile");
                 } catch (ConfigNotFoundException e) {
-                    throw new CriticalException("JDO Persistence Manager setup error", e);
+                    throw new CriticalException(
+                            "JDO Persistence Manager setup error", e);
                 }
-                try (InputStream propStream = resourceStream.getInputStream(configFile)) {
+                try (InputStream propStream =
+                        resourceStream.getInputStream(configFile)) {
                     jdoProperties.load(propStream);
-                    factory = JDOHelper.getPersistenceManagerFactory(jdoProperties);
+                    factory = JDOHelper
+                            .getPersistenceManagerFactory(jdoProperties);
 
                     logger.info("JDO PersistenceManagerFactory created");
-                    logger.debug("PMF Properties {}", pmfPropertiesString(jdoProperties));
+                    logger.debug("PMF Properties {}",
+                            pmfPropertiesString(jdoProperties));
                     logger.debug("initialized JDO PMF");
                 } catch (Exception e) {
                     logger.error("{}", e.getMessage());
                     logger.trace("{}", e);
-                    throw new CriticalException("JDO Persistence Manager setup error", e);
+                    throw new CriticalException(
+                            "JDO Persistence Manager setup error", e);
                 }
             }
         }

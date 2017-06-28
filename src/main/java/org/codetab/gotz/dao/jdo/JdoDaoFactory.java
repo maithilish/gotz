@@ -23,7 +23,7 @@ public final class JdoDaoFactory extends org.codetab.gotz.dao.DaoFactory {
     }
 
     @Inject
-    public void setPmf(PMF pmf) {
+    public void setPmf(final PMF pmf) {
         if (pmf.getFactory() == null) {
             pmf.init();
         }

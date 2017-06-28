@@ -52,8 +52,10 @@ public class ConfigServiceTest {
         assertThat(ConfigIndex.PROVIDED).isEqualTo(ConfigIndex.values()[1]);
         assertThat(ConfigIndex.DEFAULTS).isEqualTo(ConfigIndex.values()[2]);
         assertThat(ConfigIndex.SYSTEM).isEqualTo(ConfigIndex.valueOf("SYSTEM"));
-        assertThat(ConfigIndex.PROVIDED).isEqualTo(ConfigIndex.valueOf("PROVIDED"));
-        assertThat(ConfigIndex.DEFAULTS).isEqualTo(ConfigIndex.valueOf("DEFAULTS"));
+        assertThat(ConfigIndex.PROVIDED)
+                .isEqualTo(ConfigIndex.valueOf("PROVIDED"));
+        assertThat(ConfigIndex.DEFAULTS)
+                .isEqualTo(ConfigIndex.valueOf("DEFAULTS"));
     }
 
     @Test
@@ -97,7 +99,7 @@ public class ConfigServiceTest {
     @Test
     public void testGetConfigArray() throws ConfigNotFoundException {
         // given
-        String[] array = {"x", "y"};
+        String[] array = { "x", "y" };
         given(configs.getStringArray("xyz")).willReturn(array);
 
         // when
@@ -128,45 +130,55 @@ public class ConfigServiceTest {
         configService.init(userProvidedFile, defaultsFile);
 
         // when
-        Configuration configuration = configService
-                .getConfiguration(ConfigIndex.DEFAULTS);
+        Configuration configuration =
+                configService.getConfiguration(ConfigIndex.DEFAULTS);
 
         // then
         int expectedSize = DEFAULT_CONFIGS_COUNT;
         assertThat(expectedSize).isEqualTo(configuration.size());
 
         assertThat("gotz/properties/property")
-        .isEqualTo(configuration.getString("gotz.propertyPattern"));
+                .isEqualTo(configuration.getString("gotz.propertyPattern"));
 
-        assertThat("/bean.xml").isEqualTo(configuration.getString("gotz.beanFile"));
+        assertThat("/bean.xml")
+                .isEqualTo(configuration.getString("gotz.beanFile"));
         assertThat("/schema/gotz.xsd")
-        .isEqualTo(configuration.getString("gotz.schemaFile"));
+                .isEqualTo(configuration.getString("gotz.schemaFile"));
         assertThat("org.codetab.gotz.ext.LocatorSeeder")
-        .isEqualTo(configuration.getString("gotz.seederClass"));
+                .isEqualTo(configuration.getString("gotz.seederClass"));
 
-        assertThat("datastore").isEqualTo(configuration.getString("gotz.datastore.name"));
-        assertThat("jdo").isEqualTo(configuration.getString("gotz.datastore.orm"));
-        assertThat("/jdoconfig.properties")
-        .isEqualTo(configuration.getString("gotz.datastore.configFile"));
+        assertThat("datastore")
+                .isEqualTo(configuration.getString("gotz.datastore.name"));
+        assertThat("jdo")
+                .isEqualTo(configuration.getString("gotz.datastore.orm"));
+        assertThat("/jdoconfig.properties").isEqualTo(
+                configuration.getString("gotz.datastore.configFile"));
 
-        assertThat("6").isEqualTo(configuration.getString("gotz.poolsize.seeder"));
-        assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.loader"));
-        assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.parser"));
-        assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.filter"));
-        assertThat("4").isEqualTo(configuration.getString("gotz.poolsize.encoder"));
-        assertThat("2").isEqualTo(configuration.getString("gotz.poolsize.appender"));
+        assertThat("6")
+                .isEqualTo(configuration.getString("gotz.poolsize.seeder"));
+        assertThat("4")
+                .isEqualTo(configuration.getString("gotz.poolsize.loader"));
+        assertThat("4")
+                .isEqualTo(configuration.getString("gotz.poolsize.parser"));
+        assertThat("4")
+                .isEqualTo(configuration.getString("gotz.poolsize.filter"));
+        assertThat("4")
+                .isEqualTo(configuration.getString("gotz.poolsize.encoder"));
+        assertThat("2")
+                .isEqualTo(configuration.getString("gotz.poolsize.appender"));
 
-        assertThat("120000").isEqualTo(configuration.getString("gotz.webClient.timeout"));
+        assertThat("120000")
+                .isEqualTo(configuration.getString("gotz.webClient.timeout"));
         assertThat("Mozilla/5.0")
-        .isEqualTo(configuration.getString("gotz.webClient.userAgent"));
+                .isEqualTo(configuration.getString("gotz.webClient.userAgent"));
 
         assertThat("31-12-2099 23:59:59.999")
-        .isEqualTo(configuration.getString("gotz.highDate"));
-        String[] dateTimePatterns = {"dd-MM-yyyy HH:mm:ss.SSS",
-        "dd/MM/yyyy HH:mm:ss.SSS"};
+                .isEqualTo(configuration.getString("gotz.highDate"));
+        String[] dateTimePatterns =
+                { "dd-MM-yyyy HH:mm:ss.SSS", "dd/MM/yyyy HH:mm:ss.SSS" };
         assertArrayEquals(dateTimePatterns,
                 configuration.getStringArray("gotz.dateTimeParsePattern"));
-        String[] datePatterns = {"dd-MM-yyyy", "dd/MM/yyyy"};
+        String[] datePatterns = { "dd-MM-yyyy", "dd/MM/yyyy" };
         assertArrayEquals(datePatterns,
                 configuration.getStringArray("gotz.dateParsePattern"));
     }
@@ -185,12 +197,14 @@ public class ConfigServiceTest {
         // given
         configService.init("xyz", "gotz-default.xml");
         // when
-        Configuration defaults = configService.getConfiguration(ConfigIndex.DEFAULTS);
+        Configuration defaults =
+                configService.getConfiguration(ConfigIndex.DEFAULTS);
         // then
         assertThat(defaults.size()).isEqualTo(DEFAULT_CONFIGS_COUNT);
 
         // when
-        Configuration userProvided = configService.getConfiguration(ConfigIndex.PROVIDED);
+        Configuration userProvided =
+                configService.getConfiguration(ConfigIndex.PROVIDED);
         // then
         assertThat(userProvided.size()).isEqualTo(0);
     }
@@ -204,53 +218,61 @@ public class ConfigServiceTest {
         configService.init("gotz-provided-test.properties", "gotz-default.xml");
 
         // when
-        Configuration configuration = configService
-                .getConfiguration(ConfigIndex.PROVIDED);
+        Configuration configuration =
+                configService.getConfiguration(ConfigIndex.PROVIDED);
 
         // then
         assertThat(configuration.size()).isEqualTo(USER_PROVIDED_CONFIGS_COUNT);
 
         assertThat("user-gotz/properties/property")
-        .isEqualTo(configuration.getString("gotz.propertyPattern"));
+                .isEqualTo(configuration.getString("gotz.propertyPattern"));
 
-        assertThat("user-/bean.xml").isEqualTo(configuration.getString("gotz.beanFile"));
+        assertThat("user-/bean.xml")
+                .isEqualTo(configuration.getString("gotz.beanFile"));
         assertThat("user-/schema/gotz.xsd")
-        .isEqualTo(configuration.getString("gotz.schemaFile"));
+                .isEqualTo(configuration.getString("gotz.schemaFile"));
         assertThat("user-org.codetab.gotz.ext.LocatorSeeder")
-        .isEqualTo(configuration.getString("gotz.seederClass"));
+                .isEqualTo(configuration.getString("gotz.seederClass"));
 
         assertThat("user-datastore")
-        .isEqualTo(configuration.getString("gotz.datastore.name"));
-        assertThat("user-jdo").isEqualTo(configuration.getString("gotz.datastore.orm"));
-        assertThat("user-jdoconfig.properties")
-        .isEqualTo(configuration.getString("gotz.datastore.configFile"));
+                .isEqualTo(configuration.getString("gotz.datastore.name"));
+        assertThat("user-jdo")
+                .isEqualTo(configuration.getString("gotz.datastore.orm"));
+        assertThat("user-jdoconfig.properties").isEqualTo(
+                configuration.getString("gotz.datastore.configFile"));
 
-        assertThat("user-6").isEqualTo(configuration.getString("gotz.poolsize.seeder"));
-        assertThat("user-4").isEqualTo(configuration.getString("gotz.poolsize.loader"));
-        assertThat("user-4").isEqualTo(configuration.getString("gotz.poolsize.parser"));
-        assertThat("user-4").isEqualTo(configuration.getString("gotz.poolsize.filter"));
+        assertThat("user-6")
+                .isEqualTo(configuration.getString("gotz.poolsize.seeder"));
         assertThat("user-4")
-        .isEqualTo(configuration.getString("gotz.poolsize.transformer"));
-        assertThat("user-2").isEqualTo(configuration.getString("gotz.poolsize.appender"));
+                .isEqualTo(configuration.getString("gotz.poolsize.loader"));
+        assertThat("user-4")
+                .isEqualTo(configuration.getString("gotz.poolsize.parser"));
+        assertThat("user-4")
+                .isEqualTo(configuration.getString("gotz.poolsize.filter"));
+        assertThat("user-4").isEqualTo(
+                configuration.getString("gotz.poolsize.transformer"));
+        assertThat("user-2")
+                .isEqualTo(configuration.getString("gotz.poolsize.appender"));
 
         assertThat("user-120000")
-        .isEqualTo(configuration.getString("gotz.webClient.timeout"));
+                .isEqualTo(configuration.getString("gotz.webClient.timeout"));
         assertThat("user-Mozilla/5.0")
-        .isEqualTo(configuration.getString("gotz.webClient.userAgent"));
+                .isEqualTo(configuration.getString("gotz.webClient.userAgent"));
 
         assertThat("12-31-2060 23:59:59.999")
-        .isEqualTo(configuration.getString("gotz.highDate"));
-        String[] dateTimePatterns = {"MM-dd-yyyy HH:mm:ss.SSS",
-        "MM/dd/yyyy HH:mm:ss.SSS"};
+                .isEqualTo(configuration.getString("gotz.highDate"));
+        String[] dateTimePatterns =
+                { "MM-dd-yyyy HH:mm:ss.SSS", "MM/dd/yyyy HH:mm:ss.SSS" };
         assertArrayEquals(dateTimePatterns,
                 configuration.getStringArray("gotz.dateTimeParsePattern"));
-        String[] datePatterns = {"MM-dd-yyyy", "MM/dd/yyyy"};
+        String[] datePatterns = { "MM-dd-yyyy", "MM/dd/yyyy" };
         assertArrayEquals(datePatterns,
                 configuration.getStringArray("gotz.dateParsePattern"));
 
-        assertThat("03-30-2017").isEqualTo(configuration.getString("gotz.runDate"));
+        assertThat("03-30-2017")
+                .isEqualTo(configuration.getString("gotz.runDate"));
         assertThat("03-31-2017 01:02:03.004")
-        .isEqualTo(configuration.getString("gotz.runDateTime"));
+                .isEqualTo(configuration.getString("gotz.runDateTime"));
     }
 
     /*
@@ -263,33 +285,38 @@ public class ConfigServiceTest {
         configService.init("gotz-provided-test.properties", "gotz-default.xml");
 
         // when
-        Configuration configuration = configService
-                .getConfiguration(ConfigIndex.PROVIDED);
+        Configuration configuration =
+                configService.getConfiguration(ConfigIndex.PROVIDED);
 
         Date userHighDate = configService.getHighDate();
-        Date expectedDate = DateUtils.parseDate(configuration.getString("gotz.highDate"),
+        Date expectedDate = DateUtils.parseDate(
+                configuration.getString("gotz.highDate"),
                 configuration.getStringArray("gotz.dateTimeParsePattern"));
 
         // then
         assertThat(expectedDate).isEqualTo(userHighDate);
 
         Date userRunDate = configService.getRunDate();
-        expectedDate = DateUtils.parseDate(configuration.getString("gotz.runDate"),
-                configuration.getStringArray("gotz.dateParsePattern"));
+        expectedDate =
+                DateUtils.parseDate(configuration.getString("gotz.runDate"),
+                        configuration.getStringArray("gotz.dateParsePattern"));
         assertThat(expectedDate).isEqualTo(userRunDate);
 
         Date userRunDateTime = configService.getRunDateTime();
-        expectedDate = DateUtils.parseDate(configuration.getString("gotz.runDateTime"),
+        expectedDate = DateUtils.parseDate(
+                configuration.getString("gotz.runDateTime"),
                 configuration.getStringArray("gotz.dateTimeParsePattern"));
         assertThat(expectedDate).isEqualTo(userRunDateTime);
     }
 
     @Test
-    public void testGetRunDate() throws ConfigNotFoundException, ParseException {
+    public void testGetRunDate()
+            throws ConfigNotFoundException, ParseException {
         // given
         configService.init("xyz", "gotz-default.xml");
         String runDate = configService.getConfig("gotz.runDate");
-        String[] patterns = configService.getConfigArray("gotz.dateParsePattern");
+        String[] patterns =
+                configService.getConfigArray("gotz.dateParsePattern");
         Date expected = DateUtils.parseDate(runDate, patterns);
 
         // when
@@ -303,9 +330,9 @@ public class ConfigServiceTest {
     public void testGetRunDateInvalidPattern() throws Exception {
         // given
         configService.init("xyz", "gotz-default.xml");
-        Configuration configuration = configService
-                .getConfiguration(ConfigIndex.DEFAULTS);
-        String[] invalidPattern = {"ddMMYYYY"};
+        Configuration configuration =
+                configService.getConfiguration(ConfigIndex.DEFAULTS);
+        String[] invalidPattern = { "ddMMYYYY" };
         configuration.setProperty("gotz.dateParsePattern", invalidPattern);
 
         // then
@@ -319,7 +346,8 @@ public class ConfigServiceTest {
     public void testGetRunDateTime() throws Exception {
         // given
         configService.init("xyz", "gotz-default.xml");
-        String runDate = configService.getConfigs().getString("gotz.runDateTime");
+        String runDate =
+                configService.getConfigs().getString("gotz.runDateTime");
         String[] patterns = configService.getConfigs()
                 .getStringArray("gotz.dateTimeParsePattern");
         Date expected = DateUtils.parseDate(runDate, patterns);
@@ -335,10 +363,10 @@ public class ConfigServiceTest {
     public void testGetRunDateTimeInvalidPattern() throws Exception {
         // given
         configService.init("xyz", "gotz-default.xml");
-        Configuration configuration = configService
-                .getConfiguration(ConfigIndex.DEFAULTS);
+        Configuration configuration =
+                configService.getConfiguration(ConfigIndex.DEFAULTS);
 
-        String[] invalidPattern = {"ddMMYYYY"};
+        String[] invalidPattern = { "ddMMYYYY" };
         configuration.setProperty("gotz.dateTimeParsePattern", invalidPattern);
 
         // then
@@ -367,9 +395,9 @@ public class ConfigServiceTest {
     @Test
     public void testGetOrmType() throws Exception {
         // given
-        given(configs.getString("gotz.datastore.orm")).willReturn("jdo").willReturn("jDo")
-        .willReturn("jpa").willReturn("jPa")
-        .willThrow(ConfigNotFoundException.class);
+        given(configs.getString("gotz.datastore.orm")).willReturn("jdo")
+                .willReturn("jDo").willReturn("jpa").willReturn("jPa")
+                .willThrow(ConfigNotFoundException.class);
 
         // when then
         assertThat(configService.getOrmType()).isEqualTo(ORM.JDO);
@@ -383,9 +411,9 @@ public class ConfigServiceTest {
     public void testGetHighDateInvalidPattern() throws Exception {
         // given
         configService.init("xyz", "gotz-default.xml");
-        Configuration configuration = configService
-                .getConfiguration(ConfigIndex.DEFAULTS);
-        String[] invalidPattern = {"ddMMYYYY"};
+        Configuration configuration =
+                configService.getConfiguration(ConfigIndex.DEFAULTS);
+        String[] invalidPattern = { "ddMMYYYY" };
         configuration.setProperty("gotz.dateTimeParsePattern", invalidPattern);
 
         // then
@@ -404,8 +432,8 @@ public class ConfigServiceTest {
     public void testIsDevMode() {
         // given
         configService.init("xyz", "gotz-default.xml");
-        Configuration configuration = configService
-                .getConfiguration(ConfigIndex.DEFAULTS);
+        Configuration configuration =
+                configService.getConfiguration(ConfigIndex.DEFAULTS);
         assertThat(configService.isDevMode()).isFalse();
         configuration.setProperty("gotz.mode", "dev");
 

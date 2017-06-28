@@ -39,11 +39,12 @@ public class BeanService {
             List<Bean> files = beanFiles.getBeanFiles();
             beanFiles.validateBeanFiles(files);
             beans = unmarshallBeanFiles(files);
-        } catch (ConfigNotFoundException | JAXBException | SAXException | IOException
-                | ClassNotFoundException e) {
+        } catch (ConfigNotFoundException | JAXBException | SAXException
+                | IOException | ClassNotFoundException e) {
             logger.trace("{}", e);
             logger.error("{}", e.getLocalizedMessage());
-            throw new CriticalException("initialization failure : BeanService", e);
+            throw new CriticalException("initialization failure : BeanService",
+                    e);
         }
         logger.debug("initialized singleton {}", "BeanService");
     }
@@ -59,7 +60,8 @@ public class BeanService {
                     T deepClone = Util.deepClone(ofClass, ofClass.cast(bean));
                     list.add(deepClone);
                 } catch (ClassNotFoundException | IOException e) {
-                    logger.error("unable to get deep Clone of bean. {}", e.getMessage());
+                    logger.error("unable to get deep Clone of bean. {}",
+                            e.getMessage());
                     logger.trace("", e);
                 }
             }
@@ -72,12 +74,14 @@ public class BeanService {
     }
 
     private List<Object> unmarshallBeanFiles(List<Bean> beans)
-            throws ClassNotFoundException, JAXBException, IOException, SAXException {
+            throws ClassNotFoundException, JAXBException, IOException,
+            SAXException {
         logger.info("unmarshall bean files...");
         List<Object> list = new ArrayList<>();
         for (Bean bean : beans) {
             Class<?> ofClass = Class.forName(bean.getClassName());
-            List<?> objs = beanFiles.unmarshalBeanFile(bean.getXmlFile(), ofClass);
+            List<?> objs =
+                    beanFiles.unmarshalBeanFile(bean.getXmlFile(), ofClass);
             list.addAll(objs);
         }
         return list;

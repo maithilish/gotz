@@ -59,11 +59,11 @@ public class GotzEngineTest {
         gotzEngine.start();
 
         // then
-        InOrder inOrder = inOrder(gSystem,activityService);
+        InOrder inOrder = inOrder(gSystem, activityService);
         inOrder.verify(activityService).start();
         inOrder.verify(gSystem).initSystem();
         inOrder.verify(activityService).end();
-        verifyNoMoreInteractions(gSystem,gTaskRunner,activityService);
+        verifyNoMoreInteractions(gSystem, gTaskRunner, activityService);
     }
 
 }

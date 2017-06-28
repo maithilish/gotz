@@ -25,8 +25,8 @@ import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.persistence.DataPersistence;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
+import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +50,12 @@ public abstract class Parser extends Step {
     public boolean initialize() {
         try {
             dataDefName = OFieldsUtil.getValue(getFields(), "datadef");
-            String locatorName = OFieldsUtil.getValue(getFields(), "locatorName");
-            String locatorGroup = OFieldsUtil.getValue(getFields(), "locatorGroup");
-            marker = MarkerUtil.getMarker(locatorName, locatorGroup, dataDefName);
+            String locatorName =
+                    OFieldsUtil.getValue(getFields(), "locatorName");
+            String locatorGroup =
+                    OFieldsUtil.getValue(getFields(), "locatorGroup");
+            marker = MarkerUtil.getMarker(locatorName, locatorGroup,
+                    dataDefName);
         } catch (FieldNotFoundException e) {
             throw new StepRunException("unable to initialize parser", e);
         }
@@ -86,11 +89,13 @@ public abstract class Parser extends Step {
                 prepareData();
                 parse();
                 setConsistent(true);
-            } catch (ClassNotFoundException | DataDefNotFoundException | IOException
-                    | NumberFormatException | IllegalAccessException
-                    | InvocationTargetException | NoSuchMethodException | ScriptException
+            } catch (ClassNotFoundException | DataDefNotFoundException
+                    | IOException | NumberFormatException
+                    | IllegalAccessException | InvocationTargetException
+                    | NoSuchMethodException | ScriptException
                     | FieldNotFoundException e) {
-                String message = Util.buildString("unable to parse ", getLabel());
+                String message =
+                        Util.buildString("unable to parse ", getLabel());
                 throw new StepRunException(message, e);
             }
         } else {
@@ -130,32 +135,34 @@ public abstract class Parser extends Step {
     }
 
     protected abstract void setValue(DataDef dataDef, Member member)
-            throws ScriptException, NumberFormatException, IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException;
+            throws ScriptException, NumberFormatException,
+            IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException;
 
-    private void prepareData()
-            throws DataDefNotFoundException, ClassNotFoundException, IOException {
+    private void prepareData() throws DataDefNotFoundException,
+            ClassNotFoundException, IOException {
         data = dataDefService.getDataTemplate(dataDefName);
         data.setDataDefId(dataDefService.getDataDef(dataDefName).getId());
         data.setDocumentId(getDocument().getId());
-        LOGGER.trace(marker, "-- data template --{}{}{}{}", Util.LINE, marker.getName(),
-                Util.LINE, data);
+        LOGGER.trace(marker, "-- data template --{}{}{}{}", Util.LINE,
+                marker.getName(), Util.LINE, data);
     }
 
     // public void parse()
     // throws DataDefNotFoundException, ScriptException, FieldNotFoundException,
     // ClassNotFoundException, IOException, NumberFormatException,
-    // IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    // IllegalAccessException, InvocationTargetException, NoSuchMethodException
+    // {
     // parseData();
     // }
 
     /*
      *
      */
-    public void parse()
-            throws DataDefNotFoundException, ScriptException, ClassNotFoundException,
-            IOException, NumberFormatException, FieldNotFoundException,
-            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    public void parse() throws DataDefNotFoundException, ScriptException,
+            ClassNotFoundException, IOException, NumberFormatException,
+            FieldNotFoundException, IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
         DataDef dataDef = dataDefService.getDataDef(dataDefName);
         Deque<Member> mStack = new ArrayDeque<>();
         for (Member member : data.getMembers()) {
@@ -189,7 +196,8 @@ public abstract class Parser extends Step {
                 continue;
             }
             if (!hasFinished(axis)) {
-                Integer[] nextMemberIndexes = nextMemberIndexes(member, axisName);
+                Integer[] nextMemberIndexes =
+                        nextMemberIndexes(member, axisName);
                 if (!alreadyProcessed(nextMemberIndexes)) {
                     Member newMember = Util.deepClone(Member.class, member);
                     Axis newAxis = newMember.getAxis(axisName);
@@ -210,7 +218,8 @@ public abstract class Parser extends Step {
             throws NumberFormatException, FieldNotFoundException {
         boolean noField = true;
         try {
-            String breakAfter = OFieldsUtil.getValue(axis.getFields(), "breakAfter");
+            String breakAfter =
+                    OFieldsUtil.getValue(axis.getFields(), "breakAfter");
             noField = false;
             String value = axis.getValue().trim();
             if (value.equals(breakAfter)) {
@@ -218,8 +227,8 @@ public abstract class Parser extends Step {
             }
         } catch (FieldNotFoundException e) {
         } catch (NullPointerException e) {
-            String message = Util.buildString("check breakAfter value in datadef ",
-                    getLabel());
+            String message = Util.buildString(
+                    "check breakAfter value in datadef ", getLabel());
             throw new NullPointerException(message);
         }
         try {
@@ -231,14 +240,15 @@ public abstract class Parser extends Step {
         } catch (FieldNotFoundException e) {
         }
         if (noField) {
-            String message = Util.buildString("breakAfter or indexRange undefined ",
-                    getLabel());
+            String message = Util.buildString(
+                    "breakAfter or indexRange undefined ", getLabel());
             throw new FieldNotFoundException(message);
         }
         return false;
     }
 
-    private Integer[] nextMemberIndexes(final Member member, final AxisName axisName) {
+    private Integer[] nextMemberIndexes(final Member member,
+            final AxisName axisName) {
         Integer[] indexes = getMemberIndexes(member);
         indexes[axisName.ordinal()] = indexes[axisName.ordinal()] + 1;
         return indexes;

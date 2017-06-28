@@ -38,14 +38,15 @@ public class StepService {
     }
 
     public IStep getStep(final String clzName) throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException {
+            InstantiationException, IllegalAccessException {
         IStep step = null;
         Class<?> stepClass = Class.forName(clzName);
         Object obj = dInjector.instance(stepClass);
         if (obj instanceof IStep) {
             step = (IStep) obj;
         } else {
-            throw new ClassCastException("Class " + clzName + " is not of type IStep");
+            throw new ClassCastException(
+                    "Class " + clzName + " is not of type IStep");
         }
         return step;
     }
@@ -67,24 +68,27 @@ public class StepService {
         String givenUpMessage = Util.buildString("[", label, "] step [",
                 step.getStepType(), "] create next step failed");
         try {
-            String nextStepType = getNextStepType(step.getFields(), step.getStepType());
-            List<FieldsBase> stepClasses = getNextStepClasses(nextStepFields,
-                    nextStepType);
+            String nextStepType =
+                    getNextStepType(step.getFields(), step.getStepType());
+            List<FieldsBase> stepClasses =
+                    getNextStepClasses(nextStepFields, nextStepType);
             if (stepClasses.size() == 0) {
-                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType, "field found");
+                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType,
+                        "field found");
             }
             for (FieldsBase stepClassField : stepClasses) {
                 if (step.isConsistent()) {
                     String stepClassName = stepClassField.getValue();
                     Runnable task = null;
-                    task = createTask(nextStepType, stepClassName, input, nextStepFields);
+                    task = createTask(nextStepType, stepClassName, input,
+                            nextStepFields);
                     taskPoolService.submit(nextStepType, task);
                     LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
                             nextStepType, task.getClass(), label);
                 } else {
                     LOGGER.warn("step inconsistent, entity [{}]", label);
-                    activityService.addActivity(Type.GIVENUP,
-                            Util.buildString(givenUpMessage, ", step inconsistent"));
+                    activityService.addActivity(Type.GIVENUP, Util.buildString(
+                            givenUpMessage, ", step inconsistent"));
                 }
             }
         } catch (Exception e) {
@@ -102,19 +106,23 @@ public class StepService {
         } catch (FieldNotFoundException e) {
             list = FieldsUtil.filterByGroup(fields, "datadef");
         }
-        List<FieldsBase> step = FieldsUtil.filterByValue(list, "step", stepType);
-        List<FieldsBase> stepClasses = FieldsUtil.filterChildrenByName(step, "class");
+        List<FieldsBase> step =
+                FieldsUtil.filterByValue(list, "step", stepType);
+        List<FieldsBase> stepClasses =
+                FieldsUtil.filterChildrenByName(step, "class");
         try {
             FieldsUtil.getField(step, "unique");
-            stepClasses = stepClasses.stream().distinct().collect(Collectors.toList());
+            stepClasses = stepClasses.stream().distinct()
+                    .collect(Collectors.toList());
         } catch (FieldNotFoundException e) {
         }
         return stepClasses;
     }
 
-    public String getNextStepType(List<FieldsBase> fields, final String stepType)
-            throws FieldNotFoundException {
-        FieldsBase step = OFieldsUtil.getFieldsByValue(fields, "step", stepType);
+    public String getNextStepType(List<FieldsBase> fields,
+            final String stepType) throws FieldNotFoundException {
+        FieldsBase step =
+                OFieldsUtil.getFieldsByValue(fields, "step", stepType);
         Field nextStep = OFieldsUtil.getField(step, "nextstep");
         return nextStep.getValue();
     }
@@ -140,8 +148,8 @@ public class StepService {
      */
     private Task createTask(final String stepType, final String taskClassName,
             final Object input, final List<FieldsBase> fields)
-                    throws ClassNotFoundException, InstantiationException,
-                    IllegalAccessException {
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
         IStep step = getStep(taskClassName).instance();
         step.setStepType(stepType);
         step.setInput(input);

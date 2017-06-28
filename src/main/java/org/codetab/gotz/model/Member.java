@@ -44,7 +44,8 @@ public final class Member extends Base {
     }
 
     public Axis getAxis(final AxisName axisName) {
-        return axes.stream().filter(a -> a.getName().equals(axisName)).findFirst().get();
+        return axes.stream().filter(a -> a.getName().equals(axisName))
+                .findFirst().get();
     }
 
     public Map<String, Axis> getAxisMap() {

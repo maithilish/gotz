@@ -1,8 +1,8 @@
 package org.codetab.gotz.exception;
 
 /*
- * checked exceptionRule : recoverable, when field is not found then default value may be
- * used
+ * checked exceptionRule : recoverable, when field is not found then default
+ * value may be used
  */
 public final class FieldNotFoundException extends Exception {
 

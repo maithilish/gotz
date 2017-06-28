@@ -38,7 +38,8 @@ public class FieldTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        String[] excludes =
+                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
         int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
         int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
 
@@ -53,7 +54,8 @@ public class FieldTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        String[] excludes =
+                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
         assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
 
         assertThat(t1).isEqualTo(t2);
@@ -65,9 +67,10 @@ public class FieldTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = new StringBuilder().append(System.lineSeparator()).append("   ")
-                .append("- {name: ").append(t1.getName()).append(", value: ")
-                .append(t1.getValue()).append("}").toString();
+        String expected = new StringBuilder().append(System.lineSeparator())
+                .append("   ").append("- {name: ").append(t1.getName())
+                .append(", value: ").append(t1.getValue()).append("}")
+                .toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 

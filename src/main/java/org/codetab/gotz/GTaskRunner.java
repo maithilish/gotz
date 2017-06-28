@@ -24,12 +24,16 @@ public class GTaskRunner {
     public GTaskRunner() {
     }
 
-    public boolean executeInitalTask(Task task) {
+    /*
+     */
+    public boolean executeInitalTask(final Task task) {
         LOGGER.info("submit initial task to executor pool");
         taskPoolService.submit("seeder", task);
         return true;
     }
 
+    /*
+     */
     public boolean waitForFinish() {
         taskPoolService.waitForFinish();
         appenderService.closeAll();

@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 
 public class DocumentPersistence {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(DocumentPersistence.class);
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(DocumentPersistence.class);
 
     @Inject
     private ConfigService configService;

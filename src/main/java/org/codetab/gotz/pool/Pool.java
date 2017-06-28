@@ -46,18 +46,21 @@ public abstract class Pool {
                 String ps = configService.getConfig(key);
                 poolSize = Integer.valueOf(ps);
             } catch (NumberFormatException | ConfigNotFoundException e) {
-                LOGGER.warn("unable to get pool size for [{}], defaults to {}. {}", key,
-                        POOL_SIZE, e);
+                LOGGER.warn(
+                        "unable to get pool size for [{}], defaults to {}. {}",
+                        key, POOL_SIZE, e);
             }
             executor = Executors.newFixedThreadPool(poolSize);
-            LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName, poolSize);
+            LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName,
+                    poolSize);
             executorsMap.put(poolName, executor);
         }
         return executor;
     }
 
     @GuardedBy("this")
-    public synchronized boolean submit(final String poolName, final Runnable task) {
+    public synchronized boolean submit(final String poolName,
+            final Runnable task) {
         ExecutorService pool = getPool(poolName);
         Future<?> future = pool.submit(task);
         return futures.add(future);
@@ -96,7 +99,8 @@ public abstract class Pool {
     }
 
     private boolean isAllTerminated() {
-        return executorsMap.values().stream().allMatch(ExecutorService::isTerminated);
+        return executorsMap.values().stream()
+                .allMatch(ExecutorService::isTerminated);
     }
 
 }

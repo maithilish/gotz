@@ -76,7 +76,6 @@ public class ObjectFactoryTest {
         assertThat(actual).isNotSameAs(of.createLocators(value));
     }
 
-
     @Test
     public void testCreateDocument() {
         Document actual = of.createDocument();

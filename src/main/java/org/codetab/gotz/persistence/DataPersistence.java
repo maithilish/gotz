@@ -15,7 +15,8 @@ import org.slf4j.LoggerFactory;
 
 public class DataPersistence {
 
-    static private final Logger LOGGER = LoggerFactory.getLogger(DataPersistence.class);
+    static private final Logger LOGGER =
+            LoggerFactory.getLogger(DataPersistence.class);
 
     @Inject
     private ConfigService configService;
@@ -29,8 +30,8 @@ public class DataPersistence {
             Data data = dao.getData(documentId, dataDefId);
             return data;
         } catch (RuntimeException e) {
-            String message = Util.buildString("unable to load data,", "dataDefId=",
-                    String.valueOf(dataDefId), ",documentId=",
+            String message = Util.buildString("unable to load data,",
+                    "dataDefId=", String.valueOf(dataDefId), ",documentId=",
                     String.valueOf(documentId));
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
@@ -59,7 +60,8 @@ public class DataPersistence {
             IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
             dao.storeData(data);
         } catch (RuntimeException e) {
-            String message = Util.buildString("unable to store data", data.getName());
+            String message =
+                    Util.buildString("unable to store data", data.getName());
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
             throw new StepPersistenceException(message, e);

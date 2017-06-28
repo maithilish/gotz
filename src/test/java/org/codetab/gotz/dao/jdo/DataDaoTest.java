@@ -100,7 +100,8 @@ public class DataDaoTest {
         Data data = createData();
         dataDao.storeData(data);
 
-        Data actualData = dataDao.getData(data.getDocumentId(), data.getDataDefId());
+        Data actualData =
+                dataDao.getData(data.getDocumentId(), data.getDataDefId());
 
         assertEquals(data.getId(), actualData.getId());
         assertEquals(data.getName(), actualData.getName());

@@ -115,7 +115,7 @@ public class AxisTest {
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
-    private List<Axis> createTestObjects(){
+    private List<Axis> createTestObjects() {
         Axis t1 = new Axis();
         t1.setName(AxisName.COL);
         t1.setMatch("m");
@@ -138,9 +138,11 @@ public class AxisTest {
 
     private String expectedString(Axis axis) {
         String str = new ToStringBuilder(axis, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("name", axis.getName()).append("value", axis.getValue()).append("match", axis.getMatch())
-                .append("index", axis.getIndex()).append("order", axis.getOrder()).append("fields", axis.getFields())
-                .toString();
+                .append("name", axis.getName()).append("value", axis.getValue())
+                .append("match", axis.getMatch())
+                .append("index", axis.getIndex())
+                .append("order", axis.getOrder())
+                .append("fields", axis.getFields()).toString();
         return System.lineSeparator() + "  " + str;
 
     }

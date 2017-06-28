@@ -34,7 +34,6 @@ public class DataTest {
         assertThat(data.getDataDefId()).isEqualTo(10L);
     }
 
-
     @Test
     public void testGetDocumentId() {
         data.setDocumentId(20L);

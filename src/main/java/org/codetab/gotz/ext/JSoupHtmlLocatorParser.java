@@ -22,7 +22,8 @@ import org.slf4j.LoggerFactory;
 
 public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
 
     private BeanService beanService;
 
@@ -61,7 +62,8 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
         return true;
     }
 
-    private Locator createLocator(final Member member) throws FieldNotFoundException {
+    private Locator createLocator(final Member member)
+            throws FieldNotFoundException {
         Locator locator = new Locator();
         locator.setName(OFieldsUtil.getValue(getFields(), "locatorName"));
         locator.setUrl(member.getValue(AxisName.FACT));
@@ -75,7 +77,8 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
             locator.getFields().addAll(groupFields);
             List<FieldsBase> stepsGroup = getGroupFields("steps");
-            List<FieldsBase> stepFields = FieldsUtil.filterByName(stepsGroup, "step");
+            List<FieldsBase> stepFields =
+                    FieldsUtil.filterByName(stepsGroup, "step");
 
             List<Fields> dataDefGroup = FieldsUtil
                     .filterByGroupAsFields(locator.getFields(), "datadef");
@@ -98,10 +101,11 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     private List<FieldsBase> getGroupFields(final String group)
             throws FieldNotFoundException {
         List<FieldsBase> fieldsBeans = beanService.getBeans(FieldsBase.class);
-        FieldsBase classFields = OFieldsUtil.getFieldsByValue(fieldsBeans, "class",
-                Locator.class.getName());
+        FieldsBase classFields = OFieldsUtil.getFieldsByValue(fieldsBeans,
+                "class", Locator.class.getName());
         if (classFields != null) {
-            List<FieldsBase> fields = OFieldsUtil.getGroupFields(classFields, group);
+            List<FieldsBase> fields =
+                    OFieldsUtil.getGroupFields(classFields, group);
             return fields;
         }
         return null;

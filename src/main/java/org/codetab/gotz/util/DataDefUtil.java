@@ -9,7 +9,8 @@ public final class DataDefUtil {
     private DataDefUtil() {
     }
 
-    public static DAxis getAxis(final DataDef dataDef, final AxisName axisName) {
+    public static DAxis getAxis(final DataDef dataDef,
+            final AxisName axisName) {
         String axisNameStr = axisName.toString();
         for (DAxis dAxis : dataDef.getAxis()) {
             if (dAxis.getName().equalsIgnoreCase(axisNameStr)) {

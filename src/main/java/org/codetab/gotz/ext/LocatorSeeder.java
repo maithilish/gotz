@@ -78,8 +78,8 @@ public class LocatorSeeder extends Seeder {
             } catch (InterruptedException e) {
             }
         }
-        LOGGER.info("locators count [{}], queued to loader [{}].", locators.size(),
-                count);
+        LOGGER.info("locators count [{}], queued to loader [{}].",
+                locators.size(), count);
         setStepState(StepState.HANDOVER);
         return true;
     }
@@ -106,11 +106,12 @@ public class LocatorSeeder extends Seeder {
     private void initFields() {
         List<FieldsBase> fields = beanService.getBeans(FieldsBase.class);
         try {
-            List<FieldsBase> classFields = FieldsUtil.filterByValue(fields, "class",
-                    Locator.class.getName());
-            List<FieldsBase> stepsGroup = OFieldsUtil.getGroupFields(classFields,
-                    "steps");
-            List<FieldsBase> stepFields = FieldsUtil.filterByName(stepsGroup, "step");
+            List<FieldsBase> classFields = FieldsUtil.filterByValue(fields,
+                    "class", Locator.class.getName());
+            List<FieldsBase> stepsGroup =
+                    OFieldsUtil.getGroupFields(classFields, "steps");
+            List<FieldsBase> stepFields =
+                    FieldsUtil.filterByName(stepsGroup, "step");
             setFields(stepFields);
             mergeStepFields(classFields, stepFields);
             mergeFields(classFields);
@@ -119,7 +120,8 @@ public class LocatorSeeder extends Seeder {
     }
 
     private void addLabelField(final Locator locator) {
-        String label = Util.buildString(locator.getName(), ":", locator.getGroup());
+        String label =
+                Util.buildString(locator.getName(), ":", locator.getGroup());
         FieldsBase field = OFieldsUtil.createField("label", label);
         locator.getFields().add(field);
     }
@@ -152,8 +154,8 @@ public class LocatorSeeder extends Seeder {
         LOGGER.info("merge fields with locators");
         for (Locator locator : locators) {
             try {
-                List<Fields> groupFields = FieldsUtil.filterByGroupAsFields(classFields,
-                        locator.getGroup());
+                List<Fields> groupFields = FieldsUtil
+                        .filterByGroupAsFields(classFields, locator.getGroup());
                 locator.getFields().addAll(groupFields);
             } catch (FieldNotFoundException e) {
             }
@@ -164,7 +166,8 @@ public class LocatorSeeder extends Seeder {
             final List<FieldsBase> stepFields) {
         LOGGER.info("merge step fields with datadef fields");
         try {
-            List<Fields> dataDefGroup = FieldsUtil.filterByGroupAsFields(classFields, "datadef");
+            List<Fields> dataDefGroup =
+                    FieldsUtil.filterByGroupAsFields(classFields, "datadef");
             for (Fields dataDefFields : dataDefGroup) {
                 for (FieldsBase step : stepFields) {
                     if (!FieldsUtil.contains(dataDefFields, step.getName(),
@@ -181,7 +184,8 @@ public class LocatorSeeder extends Seeder {
 
     private void logState(String message) {
         for (Locator locator : locators) {
-            Marker marker = MarkerUtil.getMarker(locator.getName(), locator.getGroup());
+            Marker marker =
+                    MarkerUtil.getMarker(locator.getName(), locator.getGroup());
             LOGGER.trace(marker, "-- {} --{}{}", message, Util.LINE, locator);
         }
     }

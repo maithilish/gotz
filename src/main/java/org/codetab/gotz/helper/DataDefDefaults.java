@@ -46,8 +46,8 @@ public class DataDefDefaults {
     public void addIndexRange(final DataDef dataDef) {
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {
-                if (!OFieldsUtil.isAnyFieldDefined(dMember.getFields(), "indexRange",
-                        "breakAfter")) {
+                if (!OFieldsUtil.isAnyFieldDefined(dMember.getFields(),
+                        "indexRange", "breakAfter")) {
                     Field field = new Field();
                     field.setName("indexRange");
                     Integer index = dMember.getIndex();

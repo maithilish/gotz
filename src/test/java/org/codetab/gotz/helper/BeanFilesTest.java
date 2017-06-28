@@ -54,16 +54,16 @@ public class BeanFilesTest {
         // then
         String actualBeanFile = (String) FieldUtils.readDeclaredField(beanFiles,
                 "beanFile", true);
-        String actualSchemaFile = (String) FieldUtils.readDeclaredField(beanFiles,
-                "schemaFile", true);
+        String actualSchemaFile = (String) FieldUtils
+                .readDeclaredField(beanFiles, "schemaFile", true);
 
         assertThat(actualBeanFile).isEqualTo(beanFile);
         assertThat(actualSchemaFile).isEqualTo(schemaFile);
     }
 
     @Test
-    public void testValidateBeanFile()
-            throws ConfigNotFoundException, JAXBException, IOException, SAXException {
+    public void testValidateBeanFile() throws ConfigNotFoundException,
+            JAXBException, IOException, SAXException {
         // given
         String beanFile = "x.xml";
         String schemaFile = "x.xsd";
@@ -77,7 +77,8 @@ public class BeanFilesTest {
     }
 
     @Test
-    public void testValidateBeanFiles() throws JAXBException, SAXException, IOException {
+    public void testValidateBeanFiles()
+            throws JAXBException, SAXException, IOException {
         // given
         List<Bean> testBeanFiles = getTestBeanFiles();
 
@@ -93,7 +94,8 @@ public class BeanFilesTest {
     }
 
     @Test
-    public void testGetBeanFiles() throws JAXBException, IOException, SAXException {
+    public void testGetBeanFiles()
+            throws JAXBException, IOException, SAXException {
         // given
         String beanFile = "/org/example/x.xml";
         String schemaFile = "/com/example/x.xsd";
@@ -102,7 +104,7 @@ public class BeanFilesTest {
         List<Bean> testBeanFiles = getTestBeanFiles();
 
         given(xoc.unmarshall(any(String.class), eq(Bean.class)))
-        .willReturn(testBeanFiles);
+                .willReturn(testBeanFiles);
 
         // when
         List<Bean> actualBeanFiles = beanFiles.getBeanFiles();
@@ -126,7 +128,7 @@ public class BeanFilesTest {
         // given
         String xmlFile = "x.xml";
         List<Bean> beans = new ArrayList<>();
-        given(xoc.unmarshall(xmlFile,Bean.class)).willReturn(beans);
+        given(xoc.unmarshall(xmlFile, Bean.class)).willReturn(beans);
 
         // when
         List<Bean> actual = beanFiles.unmarshalBeanFile(xmlFile, Bean.class);

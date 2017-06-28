@@ -47,7 +47,8 @@ public abstract class Filter extends Step {
         if (input instanceof Data) {
             this.data = (Data) input;
         } else {
-            LOGGER.error("input is not instance of Data {}", input.getClass().toString());
+            LOGGER.error("input is not instance of Data {}",
+                    input.getClass().toString());
         }
     }
 

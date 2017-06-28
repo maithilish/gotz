@@ -23,15 +23,17 @@ public class HouseTaxIT {
         GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);
         gotzEngine.start();
 
-        AppenderService appenderService = dInjector.instance(AppenderService.class);
+        AppenderService appenderService =
+                dInjector.instance(AppenderService.class);
         Appender ap = appenderService.getAppender("list");
         ListAppender listAppender = null;
         if (ap instanceof ListAppender) {
             listAppender = (ListAppender) ap;
         }
 
-        List<String> actual = listAppender.getList();
-        List<String> expected = TestUtil.readFileAsList("/itest/housetax/expected.txt");
+        List<Object> actual = listAppender.getList();
+        List<String> expected =
+                TestUtil.readFileAsList("/itest/housetax/expected.txt");
 
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).containsAll(expected);

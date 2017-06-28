@@ -153,8 +153,8 @@ public class UtilTest {
     public void testGetgetJsonPrettyPrint() {
 
         String line = System.lineSeparator();
-        String expected = Util.buildString("{", line, "  \"name\": \"x\",", line,
-                "  \"value\": \"y\"", line, "}");
+        String expected = Util.buildString("{", line, "  \"name\": \"x\",",
+                line, "  \"value\": \"y\"", line, "}");
         Field field = OFieldsUtil.createField("x", "y");
         String actual = Util.getJson(field, true);
 
@@ -176,8 +176,8 @@ public class UtilTest {
         String line = System.lineSeparator();
         String indent = "\t\t\t";
         String expected = Util.buildString(indent, "{", line, indent,
-                "  \"name\": \"x\",", line, indent, "  \"value\": \"y\"", line, indent,
-                "}");
+                "  \"name\": \"x\",", line, indent, "  \"value\": \"y\"", line,
+                indent, "}");
         Field field = OFieldsUtil.createField("x", "y");
         String actual = Util.getIndentedJson(field, true);
 
@@ -238,7 +238,8 @@ public class UtilTest {
         str = Util.stripe("line1\nline2\nline3\nline4", 1, null, null);
         assertEquals(2, StringUtils.countMatches(str, "\n")); // head 1 dots 1
 
-        str = Util.stripe("line1\nline2\nline3\nline4\nline5\nline6", 2, null, null);
+        str = Util.stripe("line1\nline2\nline3\nline4\nline5\nline6", 2, null,
+                null);
         assertEquals(4, StringUtils.countMatches(str, "\n")); // head 2 dots 1
         // tail 1
     }
@@ -278,15 +279,17 @@ public class UtilTest {
     }
 
     @Test
-    public void testWellDefined() throws NoSuchMethodException, InvocationTargetException,
-    InstantiationException, IllegalAccessException {
+    public void testWellDefined()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
         assertUtilityClassWellDefined(Util.class);
     }
 
     public static void assertUtilityClassWellDefined(final Class<?> clazz)
             throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
-        Assert.assertTrue("class must be final", Modifier.isFinal(clazz.getModifiers()));
+        Assert.assertTrue("class must be final",
+                Modifier.isFinal(clazz.getModifiers()));
         Assert.assertEquals("There must be only one constructor", 1,
                 clazz.getDeclaredConstructors().length);
         final Constructor<?> constructor = clazz.getDeclaredConstructor();

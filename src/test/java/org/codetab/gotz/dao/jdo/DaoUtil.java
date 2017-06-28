@@ -31,7 +31,7 @@ public class DaoUtil implements IDaoUtil {
     }
 
     @Override
-    public PersistenceManagerFactory getPersistenceManagerFactory(){
+    public PersistenceManagerFactory getPersistenceManagerFactory() {
         return pmf;
     }
 
@@ -41,8 +41,8 @@ public class DaoUtil implements IDaoUtil {
         String query = null;
         String driver = pmf.getConnectionDriverName().toLowerCase();
         if (driver.contains("hsqldb")) {
-            query = MessageFormat.format("alter table {0} drop constraint {1}", table,
-                    constraint);
+            query = MessageFormat.format("alter table {0} drop constraint {1}",
+                    table, constraint);
         }
         executeQuery(pmf, query);
     }
@@ -63,8 +63,8 @@ public class DaoUtil implements IDaoUtil {
         Properties jdoProperties = new Properties();
 
         String propFileName = "jdoconfig.properties";
-        InputStream inputStream = PMF.class.getClassLoader()
-                .getResourceAsStream(propFileName);
+        InputStream inputStream =
+                PMF.class.getClassLoader().getResourceAsStream(propFileName);
 
         jdoProperties.load(inputStream);
         inputStream.close();
@@ -74,19 +74,19 @@ public class DaoUtil implements IDaoUtil {
 
     @Override
     public void deleteSchemaForClasses(HashSet<String> schemaClasses) {
-        PersistenceNucleusContext ctx = ((JDOPersistenceManagerFactory) pmf)
-                .getNucleusContext();
-        SchemaAwareStoreManager storeManager = ((SchemaAwareStoreManager) ctx
-                .getStoreManager());
+        PersistenceNucleusContext ctx =
+                ((JDOPersistenceManagerFactory) pmf).getNucleusContext();
+        SchemaAwareStoreManager storeManager =
+                ((SchemaAwareStoreManager) ctx.getStoreManager());
         storeManager.deleteSchemaForClasses(schemaClasses, new Properties());
     }
 
     @Override
     public void createSchemaForClasses(HashSet<String> schemaClasses) {
-        PersistenceNucleusContext ctx = ((JDOPersistenceManagerFactory) pmf)
-                .getNucleusContext();
-        SchemaAwareStoreManager storeManager = ((SchemaAwareStoreManager) ctx
-                .getStoreManager());
+        PersistenceNucleusContext ctx =
+                ((JDOPersistenceManagerFactory) pmf).getNucleusContext();
+        SchemaAwareStoreManager storeManager =
+                ((SchemaAwareStoreManager) ctx.getStoreManager());
         storeManager.createSchemaForClasses(schemaClasses, new Properties());
     }
 

@@ -18,9 +18,10 @@ public final class ListAppender extends Appender {
 
     private static final int QUEUE_CAPACITY = 1024;
 
-    private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(QUEUE_CAPACITY);
+    private BlockingQueue<Object> queue =
+            new ArrayBlockingQueue<Object>(QUEUE_CAPACITY);
 
-    private List<String> list = new ArrayList<>();
+    private List<Object> list = new ArrayList<>();
 
     @Inject
     private ActivityService activityService;
@@ -38,8 +39,7 @@ public final class ListAppender extends Appender {
                 if (item == Marker.EOF) {
                     break;
                 }
-                String str = item.toString();
-                list.add(str);
+                list.add(item);
             } catch (InterruptedException e) {
                 String message = "list appender";
                 LOGGER.debug("{}", e);
@@ -54,7 +54,7 @@ public final class ListAppender extends Appender {
         queue.put(object);
     }
 
-    public List<String> getList(){
+    public List<Object> getList() {
         return list;
     }
 }

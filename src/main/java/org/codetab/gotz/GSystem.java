@@ -37,6 +37,9 @@ public class GSystem {
     public GSystem() {
     }
 
+    /*
+     *
+     */
     public boolean initSystem() {
         LOGGER.info("initialize basic system");
         runTime.addShutdownHook(shutdownHook);
@@ -64,16 +67,20 @@ public class GSystem {
         return true;
     }
 
+    /*
+     *
+     */
     public Task createInitialTask() {
         LOGGER.info("create inital task");
         try {
-            String seederClassName = configService.getConfig("gotz.seederClass");
+            String seederClassName =
+                    configService.getConfig("gotz.seederClass");
             IStep step = stepService.getStep(seederClassName);
             step = step.instance();
             Task task = stepService.createTask(step);
             return task;
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                | ConfigNotFoundException e) {
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException | ConfigNotFoundException e) {
             LOGGER.error("{}", e);
             throw new CriticalException("unable to create initial task", e);
         }

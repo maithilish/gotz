@@ -16,7 +16,8 @@ public final class Activity {
         this.message = message;
     }
 
-    public Activity(final Type type, final String message, final Throwable throwable) {
+    public Activity(final Type type, final String message,
+            final Throwable throwable) {
         super();
         this.type = type;
         this.message = message;

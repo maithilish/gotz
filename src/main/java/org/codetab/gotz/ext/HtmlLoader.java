@@ -36,7 +36,7 @@ public final class HtmlLoader extends Loader {
             if (UrlValidator.getInstance().isValid(url)) {
                 htmlPage = webClient.getPage(url);
                 LOGGER.debug("fetched web resource {}", url);
-            }else{
+            } else {
                 URL fileURL = new URL(new URL("file:"), url);
                 htmlPage = webClient.getPage(fileURL);
                 LOGGER.debug("fetched file resource {}", url);
@@ -55,7 +55,8 @@ public final class HtmlLoader extends Loader {
             timeout = Integer.parseInt(configService.getConfig(key));
         } catch (NumberFormatException | ConfigNotFoundException e) {
             // TODO add activity or update config with default
-            String msg = "for config [" + key + "] using default value " + timeout;
+            String msg =
+                    "for config [" + key + "] using default value " + timeout;
             LOGGER.warn("{}. {}", e, msg);
         }
 

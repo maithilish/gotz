@@ -40,7 +40,8 @@ public class DocumentTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        String[] excludes =
+                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
         int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
         int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
 
@@ -55,7 +56,8 @@ public class DocumentTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        String[] excludes =
+                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
         assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
 
         assertThat(t1).isEqualTo(t2);
@@ -67,10 +69,12 @@ public class DocumentTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", t1.getId()).append("name", t1.getName())
-                .append("fromDate", t1.getFromDate()).append("toDate", t1.getToDate())
-                .append("url", t1.getUrl()).toString();
+        String expected =
+                new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
+                        .append("id", t1.getId()).append("name", t1.getName())
+                        .append("fromDate", t1.getFromDate())
+                        .append("toDate", t1.getToDate())
+                        .append("url", t1.getUrl()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 

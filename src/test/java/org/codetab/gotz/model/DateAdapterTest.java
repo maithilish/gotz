@@ -14,7 +14,7 @@ public class DateAdapterTest {
     @Test
     public void testParseDate() throws ParseException {
         // given
-        String xsdDateStr = DateFormatUtils.format(new Date(),"yyyy-MM-ddZZ");
+        String xsdDateStr = DateFormatUtils.format(new Date(), "yyyy-MM-ddZZ");
         Date expected = DateUtils.parseDate(xsdDateStr, "yyyy-MM-ddZZ");
 
         // when
@@ -25,7 +25,7 @@ public class DateAdapterTest {
     }
 
     @Test
-    public void testParseDateNull(){
+    public void testParseDateNull() {
         // given
         String xsdDateStr = null;
 
@@ -38,7 +38,7 @@ public class DateAdapterTest {
 
     @Test
     public void testPrintDate() throws ParseException {
-        String xsdDateStr = DateFormatUtils.format(new Date(),"yyyy-MM-ddZZ");
+        String xsdDateStr = DateFormatUtils.format(new Date(), "yyyy-MM-ddZZ");
         Date date = DateUtils.parseDate(xsdDateStr, "yyyy-MM-ddZZ");
 
         // when
@@ -58,6 +58,5 @@ public class DateAdapterTest {
         // then
         assertThat(actual).isNull();
     }
-
 
 }

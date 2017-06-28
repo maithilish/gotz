@@ -58,8 +58,8 @@ public class BeanServiceTest {
     }
 
     @Test
-    public void testInit()
-            throws JAXBException, IOException, SAXException, ConfigNotFoundException {
+    public void testInit() throws JAXBException, IOException, SAXException,
+            ConfigNotFoundException {
         String beanFile = "x.xml";
         String schemaFile = "x.xsd";
 
@@ -80,8 +80,8 @@ public class BeanServiceTest {
     }
 
     @Test
-    public void testInitThrowsCriticalException()
-            throws JAXBException, IOException, SAXException, ConfigNotFoundException {
+    public void testInitThrowsCriticalException() throws JAXBException,
+            IOException, SAXException, ConfigNotFoundException {
         String beanFile = "x.xml";
         String schemaFile = "x.xsd";
 
@@ -98,8 +98,10 @@ public class BeanServiceTest {
         List<Bean> files = getTestBeanFiles();
 
         given(beanFiles.getBeanFiles()).willReturn(files);
-        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class)).willReturn(locators);
-        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class)).willReturn(dataDefs);
+        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class))
+                .willReturn(locators);
+        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class))
+                .willReturn(dataDefs);
 
         beanService.init("x", "y");
 
@@ -111,14 +113,17 @@ public class BeanServiceTest {
     }
 
     @Test
-    public void testGetBeansDeepClone() throws JAXBException, IOException, SAXException {
+    public void testGetBeansDeepClone()
+            throws JAXBException, IOException, SAXException {
         List<Locator> locators = getTestLocators();
         List<DataDef> dataDefs = getTestDataDefs();
         List<Bean> files = getTestBeanFiles();
 
         given(beanFiles.getBeanFiles()).willReturn(files);
-        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class)).willReturn(locators);
-        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class)).willReturn(dataDefs);
+        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class))
+                .willReturn(locators);
+        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class))
+                .willReturn(dataDefs);
 
         beanService.init("x", "y");
 
@@ -144,7 +149,6 @@ public class BeanServiceTest {
         assertThat(actualDataDef).isNotSameAs(expectedDataDef);
     }
 
-
     @Test
     public void testGetCount() throws JAXBException, IOException, SAXException {
         List<Locator> locators = getTestLocators();
@@ -152,8 +156,10 @@ public class BeanServiceTest {
         List<Bean> files = getTestBeanFiles();
 
         given(beanFiles.getBeanFiles()).willReturn(files);
-        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class)).willReturn(locators);
-        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class)).willReturn(dataDefs);
+        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class))
+                .willReturn(locators);
+        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class))
+                .willReturn(dataDefs);
 
         beanService.init("x", "y");
 
@@ -182,7 +188,7 @@ public class BeanServiceTest {
         return beans;
     }
 
-    private List<Locator> getTestLocators(){
+    private List<Locator> getTestLocators() {
         List<Locator> list = new ArrayList<>();
         Locator locator = new Locator();
         locator.setName("la");
@@ -194,7 +200,7 @@ public class BeanServiceTest {
         return list;
     }
 
-    private List<DataDef> getTestDataDefs(){
+    private List<DataDef> getTestDataDefs() {
         List<DataDef> list = new ArrayList<>();
         DataDef dataDef = new DataDef();
         dataDef.setName("d1");

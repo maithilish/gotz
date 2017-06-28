@@ -8,15 +8,15 @@ import java.util.Properties;
 
 import javax.jdo.PersistenceManagerFactory;
 
-
 public interface IDaoUtil {
 
     Properties getDbConfig() throws IOException;
 
-    void executeQuery(PersistenceManagerFactory pmf, String query) throws SQLException;
-
-    void dropConstraint(PersistenceManagerFactory pmf, String table, String constraint)
+    void executeQuery(PersistenceManagerFactory pmf, String query)
             throws SQLException;
+
+    void dropConstraint(PersistenceManagerFactory pmf, String table,
+            String constraint) throws SQLException;
 
     void deleteSchemaForClasses(HashSet<String> schemaClasses);
 

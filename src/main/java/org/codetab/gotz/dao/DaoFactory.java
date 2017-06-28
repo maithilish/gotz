@@ -6,6 +6,10 @@ import org.codetab.gotz.di.DInjector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @author m
+ *
+ */
 public class DaoFactory {
 
     static final Logger LOGGER = LoggerFactory.getLogger(DaoFactory.class);
@@ -19,6 +23,9 @@ public class DaoFactory {
     public DaoFactory() {
     }
 
+    /*
+     *
+     */
     public DaoFactory getDaoFactory(final ORM orm) {
         if (instance == null) {
             switch (orm) {
@@ -35,19 +42,35 @@ public class DaoFactory {
         return instance;
     }
 
+    /*
+     *
+     */
     public ILocatorDao getLocatorDao() {
-        throw new UnsupportedOperationException("subclass should override this method");
+        throw new UnsupportedOperationException(
+                "subclass should override this method");
     }
 
+    /*
+     *
+     */
     public IDocumentDao getDocumentDao() {
-        throw new UnsupportedOperationException("subclass should override this method");
+        throw new UnsupportedOperationException(
+                "subclass should override this method");
     }
 
+    /*
+     *
+     */
     public IDataDefDao getDataDefDao() {
-        throw new UnsupportedOperationException("subclass should override this method");
+        throw new UnsupportedOperationException(
+                "subclass should override this method");
     }
 
+    /*
+     *
+     */
     public IDataDao getDataDao() {
-        throw new UnsupportedOperationException("subclass should override this method");
+        throw new UnsupportedOperationException(
+                "subclass should override this method");
     }
 }

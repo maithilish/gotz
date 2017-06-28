@@ -38,7 +38,8 @@ public class DataDefUtilTest {
     }
 
     @Test
-    public void testWellDefined() throws NoSuchMethodException, InvocationTargetException,
+    public void testWellDefined()
+            throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
         assertUtilityClassWellDefined(DataDefUtil.class);
     }
@@ -46,7 +47,8 @@ public class DataDefUtilTest {
     public static void assertUtilityClassWellDefined(final Class<?> clazz)
             throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
-        Assert.assertTrue("class must be final", Modifier.isFinal(clazz.getModifiers()));
+        Assert.assertTrue("class must be final",
+                Modifier.isFinal(clazz.getModifiers()));
         Assert.assertEquals("There must be only one constructor", 1,
                 clazz.getDeclaredConstructors().length);
         final Constructor<?> constructor = clazz.getDeclaredConstructor();

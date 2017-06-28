@@ -40,8 +40,8 @@ public class JaxbXoc implements IXoc {
     }
 
     @Override
-    public <T> List<T> unmarshall(final InputStream xmlStream, final Class<T> ofClass)
-            throws JAXBException {
+    public <T> List<T> unmarshall(final InputStream xmlStream,
+            final Class<T> ofClass) throws JAXBException {
         String packageName = ofClass.getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(packageName);
         Unmarshaller um = jc.createUnmarshaller();

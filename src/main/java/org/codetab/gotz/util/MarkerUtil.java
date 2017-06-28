@@ -9,7 +9,8 @@ import org.slf4j.MarkerFactory;
 
 public class MarkerUtil {
 
-    private static final Marker LOG_STATE = MarkerFactory.getMarker("LOG_STATE");
+    private static final Marker LOG_STATE =
+            MarkerFactory.getMarker("LOG_STATE");
     private static final Marker NORMAL = MarkerFactory.getMarker("NORMAL");
 
     public static Marker getMarker(final List<FieldsBase> fields) {
@@ -25,17 +26,18 @@ public class MarkerUtil {
     }
 
     public static Marker getMarker(final String name, final String group) {
-        String markerName = Util.buildString("LOG", "_", name.toUpperCase(), "_",
-                group.toUpperCase());
+        String markerName = Util.buildString("LOG", "_", name.toUpperCase(),
+                "_", group.toUpperCase());
         return MarkerFactory.getMarker(markerName);
     }
 
     public static Marker getMarker(final String name, final String group,
             final String dataDef) {
-        String markerName = Util.buildString("LOG", "_", name.toUpperCase(), "_",
-                group.toUpperCase());
+        String markerName = Util.buildString("LOG", "_", name.toUpperCase(),
+                "_", group.toUpperCase());
         if (dataDef != null) {
-            markerName = Util.buildString(markerName, "_", dataDef.toUpperCase());
+            markerName =
+                    Util.buildString(markerName, "_", dataDef.toUpperCase());
         }
         return MarkerFactory.getMarker(markerName);
     }

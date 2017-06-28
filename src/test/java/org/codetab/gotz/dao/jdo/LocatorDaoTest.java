@@ -198,8 +198,8 @@ public class LocatorDaoTest {
         Locator locator = createLocator();
         locatorDao.storeLocator(locator);
 
-        Locator actualLocator = locatorDao.getLocator(locator.getName(),
-                locator.getGroup());
+        Locator actualLocator =
+                locatorDao.getLocator(locator.getName(), locator.getGroup());
         assertEquals(locator.getId(), actualLocator.getId());
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
@@ -252,8 +252,8 @@ public class LocatorDaoTest {
         locatorDao.storeLocator(locator);
         locatorDao.storeLocator(locator2);
 
-        Locator actualLocator = locatorDao.getLocator(locator.getName(),
-                locator.getGroup());
+        Locator actualLocator =
+                locatorDao.getLocator(locator.getName(), locator.getGroup());
         assertEquals(locator.getId(), actualLocator.getId());
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
@@ -282,8 +282,8 @@ public class LocatorDaoTest {
 
         locatorDao.storeLocator(locator);
 
-        Locator actualLocator = locatorDao.getLocator(locator.getName(),
-                locator.getGroup());
+        Locator actualLocator =
+                locatorDao.getLocator(locator.getName(), locator.getGroup());
         assertEquals(locator.getId(), actualLocator.getId());
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());

@@ -14,7 +14,8 @@ import org.slf4j.LoggerFactory;
 
 public class LocatorPersistence {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(LocatorPersistence.class);
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(LocatorPersistence.class);
 
     @Inject
     private ConfigService configService;
@@ -30,7 +31,8 @@ public class LocatorPersistence {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            String message = Util.buildString("unable to load [", name, ":", group, "]");
+            String message =
+                    Util.buildString("unable to load [", name, ":", group, "]");
             throw new StepPersistenceException(message, e);
         }
     }
@@ -57,8 +59,8 @@ public class LocatorPersistence {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            String message = Util.buildString("unable to store [", locator.getName(), ":",
-                    locator.getGroup(), "]");
+            String message = Util.buildString("unable to store [",
+                    locator.getName(), ":", locator.getGroup(), "]");
             throw new StepPersistenceException(message, e);
         }
     }

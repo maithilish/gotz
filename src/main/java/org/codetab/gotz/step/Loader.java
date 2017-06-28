@@ -61,15 +61,18 @@ public abstract class Loader extends Step {
         Locator savedLocator = locatorPersistence.loadLocator(locator.getName(),
                 locator.getGroup());
         if (savedLocator == null) {
-            LOGGER.debug("{} : {}", "using locator read from file : ", getLabel());
+            LOGGER.debug("{} : {}", "using locator read from file : ",
+                    getLabel());
         } else {
             // update existing locator with new values
             savedLocator.getFields().addAll(locator.getFields());
             savedLocator.setUrl(locator.getUrl());
             // switch locator to persisted locator (detached locator)
             locator = savedLocator;
-            LOGGER.debug("{} : {}", "using locator loaded from datastore : ", getLabel());
-            LOGGER.trace(marker, "-- Locator loaded --{}{}", Util.LINE, locator);
+            LOGGER.debug("{} : {}", "using locator loaded from datastore : ",
+                    getLabel());
+            LOGGER.trace(marker, "-- Locator loaded --{}{}", Util.LINE,
+                    locator);
         }
         setStepState(StepState.LOAD);
         return true;
@@ -79,7 +82,8 @@ public abstract class Loader extends Step {
     public boolean process() {
         Long activeDocumentId = null;
         if (locator.getId() != null) {
-            activeDocumentId = documentHelper.getActiveDocumentId(locator.getDocuments());
+            activeDocumentId =
+                    documentHelper.getActiveDocumentId(locator.getDocuments());
         }
         if (activeDocumentId == null) {
             Object object = null;
@@ -93,8 +97,8 @@ public abstract class Loader extends Step {
             }
             Date fromDate = configService.getRunDateTime();
 
-            Date toDate = documentHelper.getToDate(fromDate, locator.getFields(),
-                    getLabel());
+            Date toDate = documentHelper.getToDate(fromDate,
+                    locator.getFields(), getLabel());
             document = dInjector.instance(Document.class);
             document.setName(locator.getName());
             document.setDocumentObject(object);
@@ -103,14 +107,18 @@ public abstract class Loader extends Step {
             document.setUrl(locator.getUrl());
             locator.getDocuments().add(document);
             setConsistent(true);
-            LOGGER.info("create new document. Locator[name={} group={} toDate={}]",
-                    locator.getName(), locator.getGroup(), document.getToDate());
+            LOGGER.info(
+                    "create new document. Locator[name={} group={} toDate={}]",
+                    locator.getName(), locator.getGroup(),
+                    document.getToDate());
             LOGGER.trace("create new document {}", document);
         } else {
             document = documentPersistence.loadDocument(activeDocumentId);
             setConsistent(true);
-            LOGGER.info("use stored document. Locator[name={} group={} toDate={}]",
-                    locator.getName(), locator.getGroup(), document.getToDate());
+            LOGGER.info(
+                    "use stored document. Locator[name={} group={} toDate={}]",
+                    locator.getName(), locator.getGroup(),
+                    document.getToDate());
             LOGGER.trace("found document {}", document);
         }
         setStepState(StepState.PROCESS);
@@ -124,11 +132,12 @@ public abstract class Loader extends Step {
      */
     @Override
     public boolean store() {
-        boolean persist = OFieldsUtil.isPersist(locator.getFields(), "document");
+        boolean persist =
+                OFieldsUtil.isPersist(locator.getFields(), "document");
         if (persist) {
             /*
-             * fields are not persistable, so need to set them from the fields.xml every
-             * time
+             * fields are not persistable, so need to set them from the
+             * fields.xml every time
              */
             try {
                 List<FieldsBase> fields = locator.getFields();
@@ -138,7 +147,8 @@ public abstract class Loader extends Step {
                 locator.getFields().addAll(fields);
                 document = documentPersistence.loadDocument(document.getId());
                 LOGGER.debug("Stored {}", locator);
-                LOGGER.trace(marker, "-- Locator stored --{}{}", Util.LINE, locator);
+                LOGGER.trace(marker, "-- Locator stored --{}{}", Util.LINE,
+                        locator);
             } catch (RuntimeException e) {
                 String givenUpMessage = "unable to store";
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
@@ -165,11 +175,13 @@ public abstract class Loader extends Step {
         String givenUpMessage = Util.buildString("create parser for locator [",
                 locator.getName(), "] failed.");
 
-        //List<FieldsBase> stepsFields = null;
+        // List<FieldsBase> stepsFields = null;
         List<FieldsBase> dataDefFields = null;
         try {
-            //stepsFields = OFieldsUtil.getGroupFields(locator.getFields(), "steps");
-            dataDefFields = FieldsUtil.filterByGroup(locator.getFields(), "datadef");
+            // stepsFields = OFieldsUtil.getGroupFields(locator.getFields(),
+            // "steps");
+            dataDefFields =
+                    FieldsUtil.filterByGroup(locator.getFields(), "datadef");
         } catch (FieldNotFoundException e) {
             LOGGER.error("{} {}", givenUpMessage, e);
             activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
@@ -179,8 +191,8 @@ public abstract class Loader extends Step {
             if (dataDefField instanceof Fields) {
                 Fields dataDefFieldCopy = null;
                 try {
-                    dataDefFieldCopy = Util.deepClone(Fields.class,
-                            (Fields) dataDefField);
+                    dataDefFieldCopy =
+                            Util.deepClone(Fields.class, (Fields) dataDefField);
                 } catch (ClassNotFoundException | IOException e) {
                     LOGGER.error("{} {}", "unable to clone fields",
                             e.getLocalizedMessage());
@@ -189,13 +201,13 @@ public abstract class Loader extends Step {
                 if (isDocumentLoaded()) {
                     List<FieldsBase> nextStepFields = new ArrayList<>();
                     nextStepFields.add(dataDefFieldCopy);
-                    //nextStepFields.addAll(stepsFields);
-                    nextStepFields.add(
-                            OFieldsUtil.createField("locatorName", locator.getName()));
-                    nextStepFields.add(
-                            OFieldsUtil.createField("locatorGroup", locator.getGroup()));
-                    nextStepFields
-                    .add(OFieldsUtil.createField("locatorUrl", locator.getUrl()));
+                    // nextStepFields.addAll(stepsFields);
+                    nextStepFields.add(OFieldsUtil.createField("locatorName",
+                            locator.getName()));
+                    nextStepFields.add(OFieldsUtil.createField("locatorGroup",
+                            locator.getGroup()));
+                    nextStepFields.add(OFieldsUtil.createField("locatorUrl",
+                            locator.getUrl()));
                     stepService.pushTask(this, document, nextStepFields);
                 } else {
                     LOGGER.warn("Document not loaded - Locator [{}]", locator);

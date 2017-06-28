@@ -41,7 +41,7 @@ public class TestUtil {
         }
     }
 
-    public static void writeListToFile(List<String> list, String fileName)
+    public static void writeListToFile(List<Object> list, String fileName)
             throws IOException {
         try (Writer wr = new FileWriter(fileName)) {
             IOUtils.writeLines(list, null, wr);

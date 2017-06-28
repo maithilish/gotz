@@ -53,7 +53,8 @@ public class ActivityTest {
         assertThat(act.toString()).isEqualTo(expected);
     }
 
-    private String getExprectedString(Type type, String message, Throwable throwable) {
+    private String getExprectedString(Type type, String message,
+            Throwable throwable) {
         StringBuilder sb = new StringBuilder();
         sb.append("Activity [type=");
         sb.append(type);

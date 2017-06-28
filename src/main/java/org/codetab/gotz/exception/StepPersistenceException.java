@@ -16,7 +16,8 @@ public class StepPersistenceException extends RuntimeException {
         this.message = message;
     }
 
-    public StepPersistenceException(final String message, final Throwable cause) {
+    public StepPersistenceException(final String message,
+            final Throwable cause) {
         super(message, cause);
         this.message = message;
         this.cause = cause;

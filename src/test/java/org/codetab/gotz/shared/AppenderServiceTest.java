@@ -51,8 +51,9 @@ public class AppenderServiceTest {
     }
 
     @Test
-    public void testCreateAppender() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException, FieldNotFoundException {
+    public void testCreateAppender()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, FieldNotFoundException {
         List<FieldsBase> fields = new ArrayList<>();
         Field field = new Field();
         field.setName("name");
@@ -64,7 +65,7 @@ public class AppenderServiceTest {
         field.setValue("org.codetab.gotz.appender.FileAppender");
         fields.add(field);
 
-        appenderService.createAppender("x",fields);
+        appenderService.createAppender("x", fields);
 
         Appender appender = appenderService.getAppender("x");
 
@@ -73,8 +74,9 @@ public class AppenderServiceTest {
     }
 
     @Test
-    public void testCreateAppenderAlreadyExists() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException, FieldNotFoundException {
+    public void testCreateAppenderAlreadyExists()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, FieldNotFoundException {
         List<FieldsBase> fields = new ArrayList<>();
         Field field = new Field();
         field.setName("name");
@@ -86,7 +88,7 @@ public class AppenderServiceTest {
         field.setValue("org.codetab.gotz.appender.FileAppender");
         fields.add(field);
 
-        appenderService.createAppender("x",fields);
+        appenderService.createAppender("x", fields);
 
         Appender appender = appenderService.getAppender("x");
 
@@ -95,12 +97,13 @@ public class AppenderServiceTest {
 
         // change class name to trigger error
         ((Field) fields.get(1)).setValue("xyz");
-        appenderService.createAppender("x",fields);
+        appenderService.createAppender("x", fields);
     }
 
     @Test
-    public void testCreateAppenderExpectException() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException, FieldNotFoundException {
+    public void testCreateAppenderExpectException()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, FieldNotFoundException {
         List<FieldsBase> fields = new ArrayList<>();
         Field field = new Field();
         field.setName("name");
@@ -113,31 +116,35 @@ public class AppenderServiceTest {
         fields.add(field);
 
         exceptionRule.expect(ClassCastException.class);
-        appenderService.createAppender("x",fields);
+        appenderService.createAppender("x", fields);
     }
 
     @Test
-    public void testCloseAll() throws IllegalAccessException, InterruptedException {
+    public void testCloseAll()
+            throws IllegalAccessException, InterruptedException {
         Map<String, Appender> appenders = new HashMap<String, Appender>();
         appenders.put("x", appender1);
         appenders.put("y", appender2);
 
-        FieldUtils.writeDeclaredField(appenderService, "appenders", appenders, true);
+        FieldUtils.writeDeclaredField(appenderService, "appenders", appenders,
+                true);
 
         appenderService.closeAll();
 
-        InOrder inOrder = inOrder(appender1,appender2);
+        InOrder inOrder = inOrder(appender1, appender2);
         inOrder.verify(appender1).append(Marker.EOF);
         inOrder.verify(appender2).append(Marker.EOF);
     }
 
     @Test
-    public void testClose() throws IllegalAccessException, InterruptedException {
+    public void testClose()
+            throws IllegalAccessException, InterruptedException {
         Map<String, Appender> appenders = new HashMap<String, Appender>();
         appenders.put("x", appender1);
         appenders.put("y", appender2);
 
-        FieldUtils.writeDeclaredField(appenderService, "appenders", appenders, true);
+        FieldUtils.writeDeclaredField(appenderService, "appenders", appenders,
+                true);
 
         appenderService.close("x");
 
@@ -147,7 +154,7 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppenderSynchronized() {
         Method method = MethodUtils.getMatchingMethod(AppenderService.class,
-                "createAppender", String.class,List.class);
+                "createAppender", String.class, List.class);
         assertThat(method).isNotNull();
         assertThat(Modifier.isSynchronized(method.getModifiers())).isTrue();
     }

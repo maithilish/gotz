@@ -14,7 +14,7 @@ import org.junit.Test;
 
 public class BeanTest {
 
-    class Enhanced extends Bean{
+    class Enhanced extends Bean {
         private static final long serialVersionUID = 1L;
         @SuppressWarnings("unused")
         private int id = 5;
@@ -34,25 +34,25 @@ public class BeanTest {
     }
 
     @Test
-    public void testGetName(){
+    public void testGetName() {
         bean.setName("x");
         assertThat(bean.getName()).isEqualTo("x");
     }
 
     @Test
-    public void testGetXmlFile(){
+    public void testGetXmlFile() {
         bean.setXmlFile("x");
         assertThat(bean.getXmlFile()).isEqualTo("x");
     }
 
     @Test
-    public void testGetSchemaFile(){
+    public void testGetSchemaFile() {
         bean.setSchemaFile("x");
         assertThat(bean.getSchemaFile()).isEqualTo("x");
     }
 
     @Test
-    public void testGetClassName(){
+    public void testGetClassName() {
         bean.setClassName("x");
         assertThat(bean.getClassName()).isEqualTo("x");
     }
@@ -63,8 +63,8 @@ public class BeanTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
-        "dnStateManager"};
+        String[] excludes = { "id", "fromDate", "toDate", "dnDetachedState",
+                "dnFlags", "dnStateManager" };
         int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
         int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
 
@@ -79,8 +79,8 @@ public class BeanTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState", "dnFlags",
-        "dnStateManager"};
+        String[] excludes = { "id", "fromDate", "toDate", "dnDetachedState",
+                "dnFlags", "dnStateManager" };
         assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
 
         assertThat(t1).isEqualTo(t2);
@@ -92,11 +92,12 @@ public class BeanTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = ToStringBuilder.reflectionToString(t1, ToStringStyle.MULTI_LINE_STYLE);
+        String expected = ToStringBuilder.reflectionToString(t1,
+                ToStringStyle.MULTI_LINE_STYLE);
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
-    private List<Enhanced> createTestObjects(){
+    private List<Enhanced> createTestObjects() {
         Enhanced t1 = new Enhanced();
         t1.setName("n");
         t1.setClassName("c");
@@ -109,9 +110,9 @@ public class BeanTest {
         t2.setSchemaFile("s");
         t2.setXmlFile("x");
         t2.id = 15;
-        t2.dnDetachedState=11;
-        t2.dnFlags=12;
-        t2.dnStateManager=13;
+        t2.dnDetachedState = 11;
+        t2.dnFlags = 12;
+        t2.dnStateManager = 13;
 
         List<Enhanced> testObjects = new ArrayList<>();
         testObjects.add(t1);

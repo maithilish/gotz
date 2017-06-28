@@ -19,13 +19,10 @@ public class GotzEngine {
     @Inject
     private GTaskRunner gTaskRunner;
 
-    @Inject
-    private GotzEngine() {
-    }
-
     /*
-     * single thread env throws CriticalException and terminates the app and multi thread
-     * env may also throw CriticalException but they terminates just the executing thread
+     * single thread env throws CriticalException and terminates the app and
+     * multi thread env may also throw CriticalException but they terminates
+     * just the executing thread
      *
      */
     public void start() {

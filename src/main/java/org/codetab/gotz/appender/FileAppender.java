@@ -24,7 +24,8 @@ public final class FileAppender extends Appender {
 
     private static final int QUEUE_CAPACITY = 1024;
 
-    private BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(QUEUE_CAPACITY);
+    private BlockingQueue<Object> queue =
+            new ArrayBlockingQueue<Object>(QUEUE_CAPACITY);
 
     @Inject
     private ActivityService activityService;

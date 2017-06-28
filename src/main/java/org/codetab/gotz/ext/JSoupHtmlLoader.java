@@ -30,8 +30,8 @@ public final class JSoupHtmlLoader extends Loader {
         LOGGER.info("fetch web resource {}", url);
         Document doc;
         if (UrlValidator.getInstance().isValid(url)) {
-            doc = Jsoup.connect(url).userAgent(getUserAgent()).timeout(getTimeout())
-                    .get();
+            doc = Jsoup.connect(url).userAgent(getUserAgent())
+                    .timeout(getTimeout()).get();
             LOGGER.debug("fetched web resource {}", url);
         } else {
             URL fileURL = new URL(new URL("file:"), url);
@@ -49,19 +49,22 @@ public final class JSoupHtmlLoader extends Loader {
             timeout = Integer.parseInt(configService.getConfig(key));
         } catch (NumberFormatException | ConfigNotFoundException e) {
             // TODO add activity or update config with default
-            String msg = "for config [" + key + "] using default value " + timeout;
+            String msg =
+                    "for config [" + key + "] using default value " + timeout;
             LOGGER.warn("{}. {}", e, msg);
         }
         return timeout;
     }
 
     private String getUserAgent() {
-        String userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1";
+        String userAgent =
+                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1";
         String key = "gotz.webClient.userAgent";
         try {
             userAgent = configService.getConfig(key);
         } catch (ConfigNotFoundException e) {
-            String msg = "for config [" + key + "] using default value " + userAgent;
+            String msg =
+                    "for config [" + key + "] using default value " + userAgent;
             LOGGER.warn("{}. {}", e, msg);
         }
         return userAgent;

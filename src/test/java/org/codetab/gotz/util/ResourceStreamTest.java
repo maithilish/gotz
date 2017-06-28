@@ -27,7 +27,7 @@ public class ResourceStreamTest {
     }
 
     @Test
-    public void testGetInputStream() throws IOException{
+    public void testGetInputStream() throws IOException {
         // given
         String file = "/gotz-default.xml";
         InputStream expected = ResourceStream.class.getResourceAsStream(file);
@@ -40,7 +40,7 @@ public class ResourceStreamTest {
     }
 
     @Test
-    public void testGetInputStreamShouldThrowException() throws IOException{
+    public void testGetInputStreamShouldThrowException() throws IOException {
         // given
         exception.expect(FileNotFoundException.class);
 

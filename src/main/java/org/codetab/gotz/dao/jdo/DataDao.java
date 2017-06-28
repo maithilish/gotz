@@ -63,8 +63,8 @@ public final class DataDao implements IDataDao {
                 return data.get(0);
             default:
                 throw new IllegalStateException(
-                        "found multiple data for [documentId][dataDefId] [" + documentId
-                                + "][" + dataDefId + "]");
+                        "found multiple data for [documentId][dataDefId] ["
+                                + documentId + "][" + dataDefId + "]");
             }
         } finally {
             pm.close();

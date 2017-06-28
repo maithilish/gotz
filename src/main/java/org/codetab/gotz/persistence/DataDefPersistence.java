@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 public class DataDefPersistence {
 
-    static private final Logger LOGGER = LoggerFactory
-            .getLogger(DataDefPersistence.class);
+    static private final Logger LOGGER =
+            LoggerFactory.getLogger(DataDefPersistence.class);
 
     @Inject
     private ConfigService configService;
@@ -28,7 +28,8 @@ public class DataDefPersistence {
         try {
             ORM orm = configService.getOrmType();
             IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
-            List<DataDef> dataDefs = dao.getDataDefs(configService.getRunDateTime());
+            List<DataDef> dataDefs =
+                    dao.getDataDefs(configService.getRunDateTime());
             LOGGER.debug("DataDef loaded : [{}]", dataDefs.size());
             return dataDefs;
         } catch (RuntimeException e) {
@@ -55,7 +56,8 @@ public class DataDefPersistence {
         }
     }
 
-    public boolean markForUpdation(List<DataDef> dataDefs, List<DataDef> newDataDefs) {
+    public boolean markForUpdation(List<DataDef> dataDefs,
+            List<DataDef> newDataDefs) {
         boolean updates = false;
         for (DataDef newDataDef : newDataDefs) {
             String name = newDataDef.getName();
@@ -85,6 +87,7 @@ public class DataDefPersistence {
     }
 
     private DataDef getDataDef(List<DataDef> dataDefs, String name) {
-        return dataDefs.stream().filter(e -> e.getName().equals(name)).findFirst().get();
+        return dataDefs.stream().filter(e -> e.getName().equals(name))
+                .findFirst().get();
     }
 }

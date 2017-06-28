@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory;
 
 public final class CsvRecordEncoder extends Encoder {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(CsvRecordEncoder.class);
+    static final Logger LOGGER =
+            LoggerFactory.getLogger(CsvRecordEncoder.class);
 
     static final int ITEM_COL_SIZE = 30;
     static final int FACT_COL_SIZE = 10;
@@ -40,9 +41,9 @@ public final class CsvRecordEncoder extends Encoder {
     @Override
     public boolean process() {
         /*
-         * don't append Marker.EOF here as other tasks may use same appender. During
-         * shutdown, GTaskRunner.waitForFinish calls AppenderService.closeAll which
-         * appends Marker.EOF for each appender.
+         * don't append Marker.EOF here as other tasks may use same appender.
+         * During shutdown, GTaskRunner.waitForFinish calls
+         * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
         StringBuilder builder = new StringBuilder();
 

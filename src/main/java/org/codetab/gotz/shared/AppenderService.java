@@ -21,9 +21,11 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class AppenderService {
 
-    private final Logger logger = LoggerFactory.getLogger(AppenderService.class);
+    private final Logger logger =
+            LoggerFactory.getLogger(AppenderService.class);
 
-    private final Map<String, Appender> appenders = new HashMap<String, Appender>();
+    private final Map<String, Appender> appenders =
+            new HashMap<String, Appender>();
 
     @Inject
     private DInjector dInjector;
@@ -39,8 +41,9 @@ public class AppenderService {
     }
 
     public synchronized void createAppender(final String appenderName,
-            final List<FieldsBase> fields) throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException, FieldNotFoundException {
+            final List<FieldsBase> fields)
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, FieldNotFoundException {
         String appenderClzName = OFieldsUtil.getValue(fields, "class");
         if (appenders.containsKey(appenderName)) {
             return;

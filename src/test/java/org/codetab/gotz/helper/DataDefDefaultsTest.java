@@ -110,7 +110,6 @@ public class DataDefDefaultsTest {
         m3.setOrder(10);
         m3.getFields().add(field);
 
-
         assertThat(colAxis.getMember().size()).isEqualTo(2);
         assertThat(colAxis.getMember()).contains(m1);
         assertThat(colAxis.getMember()).contains(m2);
@@ -131,7 +130,6 @@ public class DataDefDefaultsTest {
 
         DataDef dataDef = new DataDef();
         dataDef.getAxis().add(colAxis);
-
 
         // when
         dataDefDefaults.addIndexRange(dataDef);
@@ -199,7 +197,6 @@ public class DataDefDefaultsTest {
         assertThat(colAxis.getMember()).contains(m1);
     }
 
-
     @Test
     public void testSetDates() {
         // given
@@ -220,8 +217,8 @@ public class DataDefDefaultsTest {
     }
 
     private DAxis getAxis(DataDef dataDef, String axisName) {
-        return dataDef.getAxis().stream().filter(d -> d.getName().equals(axisName))
-                .findFirst().get();
+        return dataDef.getAxis().stream()
+                .filter(d -> d.getName().equals(axisName)).findFirst().get();
     }
 
     private DataDef createTestDataDef() {

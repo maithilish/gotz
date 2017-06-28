@@ -59,7 +59,7 @@ public class DataDefPersistenceTest {
 
         List<DataDef> actual = dataDefPersistence.loadDataDefs();
 
-        InOrder inOrder = inOrder(configService,daoFactory,dataDefDao);
+        InOrder inOrder = inOrder(configService, daoFactory, dataDefDao);
         inOrder.verify(configService).getOrmType();
         inOrder.verify(daoFactory).getDaoFactory(ORM.JDO);
         inOrder.verify(daoFactory).getDataDefDao();
@@ -71,7 +71,8 @@ public class DataDefPersistenceTest {
     @Test
     public void testLoadDataDefsShouldThrowException() {
         given(configService.getOrmType()).willReturn(ORM.JDO);
-        given(daoFactory.getDaoFactory(ORM.JDO)).willThrow(RuntimeException.class);
+        given(daoFactory.getDaoFactory(ORM.JDO))
+                .willThrow(RuntimeException.class);
 
         expected.expect(CriticalException.class);
         dataDefPersistence.loadDataDefs();
@@ -86,7 +87,7 @@ public class DataDefPersistenceTest {
 
         dataDefPersistence.storeDataDef(dataDef);
 
-        InOrder inOrder = inOrder(configService,daoFactory,dataDefDao);
+        InOrder inOrder = inOrder(configService, daoFactory, dataDefDao);
         inOrder.verify(configService).getOrmType();
         inOrder.verify(daoFactory).getDaoFactory(ORM.JDO);
         inOrder.verify(daoFactory).getDataDefDao();
@@ -97,14 +98,15 @@ public class DataDefPersistenceTest {
     public void testStoreDataDefShouldThrowException() {
         DataDef dataDef = new DataDef();
         given(configService.getOrmType()).willReturn(ORM.JDO);
-        given(daoFactory.getDaoFactory(ORM.JDO)).willThrow(RuntimeException.class);
+        given(daoFactory.getDaoFactory(ORM.JDO))
+                .willThrow(RuntimeException.class);
 
         expected.expect(CriticalException.class);
         dataDefPersistence.storeDataDef(dataDef);
     }
 
     @Test
-    public void testMarkForUpdationNoChanges(){
+    public void testMarkForUpdationNoChanges() {
         DAxis axis = new DAxis();
         axis.setName("col");
 
@@ -132,14 +134,15 @@ public class DataDefPersistenceTest {
         newDataDefs.add(newDataDefX);
         newDataDefs.add(newDataDefY);
 
-        boolean updates = dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
+        boolean updates =
+                dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
 
         assertThat(updates).isEqualTo(false);
         assertThat(dataDefs.size()).isEqualTo(2);
     }
 
     @Test
-    public void testMarkForUpdationItemNew(){
+    public void testMarkForUpdationItemNew() {
         DataDef dataDefX = new DataDef();
         dataDefX.setName("x");
         DataDef dataDefY = new DataDef();
@@ -151,7 +154,8 @@ public class DataDefPersistenceTest {
 
         List<DataDef> dataDefs = new ArrayList<>();
 
-        boolean updates = dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
+        boolean updates =
+                dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
 
         assertThat(updates).isEqualTo(true);
         assertThat(dataDefs).contains(dataDefX);
@@ -159,7 +163,7 @@ public class DataDefPersistenceTest {
     }
 
     @Test
-    public void testMarkForUpdationItemChanged(){
+    public void testMarkForUpdationItemChanged() {
 
         Date runDate = new Date();
         Date highDate = DateUtils.addYears(runDate, 50);
@@ -192,7 +196,8 @@ public class DataDefPersistenceTest {
 
         given(configService.getRunDateTime()).willReturn(runDate);
 
-        boolean updates = dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
+        boolean updates =
+                dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
 
         assertThat(updates).isEqualTo(true);
         assertThat(dataDefs).contains(dataDefX);

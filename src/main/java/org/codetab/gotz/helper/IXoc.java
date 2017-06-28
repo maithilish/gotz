@@ -16,6 +16,7 @@ public interface IXoc {
     <T> List<T> unmarshall(String xmlFile, Class<T> ofClass)
             throws JAXBException, IOException;
 
-    StringWriter marshall(final JAXBElement<?> e, final Object o) throws JAXBException;
+    StringWriter marshall(final JAXBElement<?> e, final Object o)
+            throws JAXBException;
 
 }

@@ -32,7 +32,8 @@ public abstract class Encoder extends Step {
     @Override
     public boolean initialize() {
         try {
-            List<FieldsBase> appenders = FieldsUtil.filterByName(getFields(), "appender");
+            List<FieldsBase> appenders =
+                    FieldsUtil.filterByName(getFields(), "appender");
             for (FieldsBase appender : appenders) {
                 List<FieldsBase> fields = OFieldsUtil.asList(appender);
                 try {
@@ -110,7 +111,7 @@ public abstract class Encoder extends Step {
         return data;
     }
 
-    protected void doAppend(Object obj){
+    protected void doAppend(Object obj) {
         for (String appenderName : appenderNames) {
             Appender appender = appenderService.getAppender(appenderName);
             try {

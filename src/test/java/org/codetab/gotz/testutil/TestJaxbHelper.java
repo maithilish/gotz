@@ -20,9 +20,10 @@ import org.codetab.gotz.util.ResourceStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TestJaxbHelper{
+public class TestJaxbHelper {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestJaxbHelper.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(TestJaxbHelper.class);
 
     public <T> List<T> unmarshall(final String xmlFile, final Class<T> ofClass)
             throws JAXBException, IOException {
@@ -31,9 +32,8 @@ public class TestJaxbHelper{
         }
     }
 
-
-    public <T> List<T> unmarshall(final InputStream xmlStream, final Class<T> ofClass)
-            throws JAXBException {
+    public <T> List<T> unmarshall(final InputStream xmlStream,
+            final Class<T> ofClass) throws JAXBException {
         String packageName = ofClass.getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(packageName);
         Unmarshaller um = jc.createUnmarshaller();
@@ -62,7 +62,8 @@ public class TestJaxbHelper{
         return result;
     }
 
-    public InputStream getInputStream(String fileName) throws FileNotFoundException {
+    public InputStream getInputStream(String fileName)
+            throws FileNotFoundException {
         InputStream stream = ResourceStream.class.getResourceAsStream(fileName);
         if (stream == null) {
             throw new FileNotFoundException(fileName);

@@ -4,12 +4,12 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.di.DInjector;
 
-public class Gotz {
+public final class Gotz {
 
     private GotzEngine gotzEngine;
 
     @Inject
-    public Gotz(GotzEngine gotzEngine) {
+    public Gotz(final GotzEngine gotzEngine) {
         this.gotzEngine = gotzEngine;
     }
 

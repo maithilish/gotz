@@ -40,7 +40,8 @@ public class WrapperTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        String[] excludes =
+                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
         int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
         int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
 
@@ -55,7 +56,8 @@ public class WrapperTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        String[] excludes =
+                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
         assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
 
         assertThat(t1).isEqualTo(t2);
@@ -67,10 +69,10 @@ public class WrapperTest {
         List<Enhanced> testObjects = createTestObjects();
         Enhanced t1 = testObjects.get(0);
 
-        String expected = ToStringBuilder.reflectionToString(t1, ToStringStyle.MULTI_LINE_STYLE);
+        String expected = ToStringBuilder.reflectionToString(t1,
+                ToStringStyle.MULTI_LINE_STYLE);
         assertThat(t1.toString()).isEqualTo(expected);
     }
-
 
     @Test
     public void testGetAny() {
@@ -86,7 +88,7 @@ public class WrapperTest {
 
         Enhanced t2 = new Enhanced();
         t2.getAny().add("x");
-        t2.id=15;
+        t2.id = 15;
         t2.dnDetachedState = 11;
         t2.dnFlags = 12;
         t2.dnStateManager = 13;

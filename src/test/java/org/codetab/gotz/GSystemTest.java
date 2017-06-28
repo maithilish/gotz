@@ -53,11 +53,13 @@ public class GSystemTest {
     }
 
     @Test
-    public void testInitSystem() throws ClassNotFoundException, InstantiationException,
-    IllegalAccessException, ConfigNotFoundException {
+    public void testInitSystem()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, ConfigNotFoundException {
         // given
         when(configService.getConfig("gotz.beanFile")).thenReturn("bean.xml");
-        when(configService.getConfig("gotz.schemaFile")).thenReturn("schema.xsd");
+        when(configService.getConfig("gotz.schemaFile"))
+                .thenReturn("schema.xsd");
 
         // when
         gSystem.initSystem();
@@ -74,11 +76,12 @@ public class GSystemTest {
     }
 
     @Test
-    public void testInitSystemShouldCatchFatal() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException, ConfigNotFoundException {
+    public void testInitSystemShouldCatchFatal()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, ConfigNotFoundException {
         // given
         given(configService.getConfig("gotz.beanFile"))
-        .willThrow(ConfigNotFoundException.class);
+                .willThrow(ConfigNotFoundException.class);
 
         expect.expect(CriticalException.class);
 
@@ -87,12 +90,14 @@ public class GSystemTest {
     }
 
     @Test
-    public void testCreateInitialTask() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException, ConfigNotFoundException {
+    public void testCreateInitialTask()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, ConfigNotFoundException {
         String seederClass = "org.codetab.gotz.ext.LocatorSeeder";
 
         // given
-        when(configService.getConfig("gotz.seederClass")).thenReturn(seederClass);
+        when(configService.getConfig("gotz.seederClass"))
+                .thenReturn(seederClass);
         when(stepService.getStep(any(String.class))).thenReturn(locatorSeeder);
         when(locatorSeeder.instance()).thenReturn(locatorSeeder);
         when(stepService.createTask(locatorSeeder)).thenReturn(task);
@@ -108,13 +113,15 @@ public class GSystemTest {
     }
 
     @Test
-    public void testCreateTaskShouldCatchFatal() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException, ConfigNotFoundException {
+    public void testCreateTaskShouldCatchFatal()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, ConfigNotFoundException {
         // given
         String seederClass = "org.codetab.gotz.ext.XYZ";
-        given(configService.getConfig("gotz.seederClass")).willReturn(seederClass);
+        given(configService.getConfig("gotz.seederClass"))
+                .willReturn(seederClass);
         given(stepService.getStep(any(String.class)))
-        .willThrow(ClassNotFoundException.class);
+                .willThrow(ClassNotFoundException.class);
 
         expect.expect(CriticalException.class);
 

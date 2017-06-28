@@ -29,41 +29,44 @@ public class StepServiceTest {
     }
 
     @Test
-    public void testGetStep() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        //given
+    public void testGetStep() throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
+        // given
         String clzName = "org.codetab.gotz.ext.HtmlLoader";
         Class<?> stepClass = Class.forName(clzName);
 
-        //when
+        // when
         IStep step = stepService.getStep(clzName);
 
-        //then
+        // then
         verify(dInjector).instance(stepClass);
         assertThat(step).isInstanceOf(IStep.class);
         assertThat(step.getClass()).isEqualTo(stepClass);
     }
 
     @Test
-    public void testGetStepClassCastException() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        //given
+    public void testGetStepClassCastException() throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
+        // given
         String clzName = "org.codetab.gotz.model.Locator";
 
         expected.expect(ClassCastException.class);
 
-        //when
+        // when
         stepService.getStep(clzName);
     }
 
     @Test
-    public void testGetStepClassNotFoundException() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
-        //given
+    public void testGetStepClassNotFoundException()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
+        // given
         String clzName = "org.codetab.gotz.XYZ";
 
         expected.expect(ClassNotFoundException.class);
 
-        //when
+        // when
         stepService.getStep(clzName);
     }
-
 
 }

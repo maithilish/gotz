@@ -18,7 +18,8 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ActivityService {
 
-    private final Logger logger = LoggerFactory.getLogger(ActivityService.class);
+    private final Logger logger =
+            LoggerFactory.getLogger(ActivityService.class);
 
     private static final long MB_DIVISOR = 1048576; // mega bytes
 
@@ -107,9 +108,11 @@ public class ActivityService {
     public void logMemoryUsage() {
         logger.info("{}", "--- Memory Usage ---");
         logger.info("Max   : {}", runtime.maxMemory() / MB_DIVISOR);
-        logger.info("Total : Avg {} High {} Low {}", (long) totalMemory.getAverage(),
-                totalMemory.getMax(), totalMemory.getMin());
-        logger.info("Free  : Avg {} High {} Low {}", (long) freeMemory.getAverage(),
-                freeMemory.getMax(), freeMemory.getMin());
+        logger.info("Total : Avg {} High {} Low {}",
+                (long) totalMemory.getAverage(), totalMemory.getMax(),
+                totalMemory.getMin());
+        logger.info("Free  : Avg {} High {} Low {}",
+                (long) freeMemory.getAverage(), freeMemory.getMax(),
+                freeMemory.getMin());
     }
 }
