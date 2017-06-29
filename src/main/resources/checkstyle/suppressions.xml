@@ -5,23 +5,21 @@
 "http://checkstyle.sourceforge.net/dtds/suppressions_1_1.dtd">
 
 <suppressions>
-	<suppress files="Adapter1.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Base.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Bean.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Beans.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="DataDef.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="DataDefs.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="DAxis.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="DFilter.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="DMember.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Document.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Field.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Fields.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="FieldsBase.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Locator.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Locators.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="ObjectFactory.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Wrapper.java" checks="[a-zA-Z0-9]*" />
-	<suppress files="Step.java" id="allowProtected" />
+    <suppress files="Adapter1.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Base.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Bean.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Beans.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="DataDef.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="DataDefs.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="DAxis.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="DFilter.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="DMember.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Document.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Field.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Fields.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="FieldsBase.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Locator.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Locators.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="ObjectFactory.java" checks="[a-zA-Z0-9]*" />
+    <suppress files="Wrapper.java" checks="[a-zA-Z0-9]*" />
 </suppressions>
-

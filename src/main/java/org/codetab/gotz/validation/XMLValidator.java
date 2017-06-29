@@ -35,7 +35,8 @@ public class XMLValidator {
         return true;
     }
 
-    public boolean validate(final InputStream xmlStream, final InputStream schemaStream)
+    public boolean validate(final InputStream xmlStream,
+            final InputStream schemaStream)
             throws JAXBException, IOException, SAXException {
         LOGGER.debug("validate : [{}] with [{}]", xmlStream, schemaStream);
         try {

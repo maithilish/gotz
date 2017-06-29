@@ -63,7 +63,7 @@ public final class OFieldsUtil {
 
     public static Range<Integer> getRange(final List<FieldsBase> fields,
             final String name)
-                    throws FieldNotFoundException, NumberFormatException {
+            throws FieldNotFoundException, NumberFormatException {
         String value = getValue(fields, name);
         String[] tokens = StringUtils.split(value, '-');
         if (tokens.length < 1 || tokens.length > 2) {
@@ -91,7 +91,7 @@ public final class OFieldsUtil {
 
     public static boolean isFieldTrue(final List<FieldsBase> fields,
             final String group, final String name)
-                    throws FieldNotFoundException {
+            throws FieldNotFoundException {
         List<FieldsBase> fc = OFieldsUtil.getGroupFields(fields, group);
         if (StringUtils.equalsIgnoreCase(getValue(fc, name), "true")) {
             return true;
@@ -260,7 +260,7 @@ public final class OFieldsUtil {
 
     public static FieldsBase getFieldsByValue(final List<FieldsBase> fields,
             final String name, final String value)
-                    throws FieldNotFoundException {
+            throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
             FieldsBase f = ite.next();
@@ -336,8 +336,8 @@ public final class OFieldsUtil {
 
     public static List<FieldsBase> replaceVariables(
             final List<FieldsBase> fields, final Map<String, ?> map)
-                    throws IllegalAccessException, InvocationTargetException,
-                    NoSuchMethodException {
+            throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException {
         Iterator<FieldsBase> ite = new FieldsIterator(fields);
         List<FieldsBase> patchedFields = new ArrayList<>();
         while (ite.hasNext()) {
@@ -358,7 +358,7 @@ public final class OFieldsUtil {
 
     static Map<String, String> getValueMap(final String str,
             final Map<String, ?> map) throws IllegalAccessException,
-    InvocationTargetException, NoSuchMethodException {
+            InvocationTargetException, NoSuchMethodException {
         String[] keys = StringUtils.substringsBetween(str, "%{", "}");
         if (keys == null) {
             return null;
@@ -382,7 +382,8 @@ public final class OFieldsUtil {
         return fields;
     }
 
-    public static boolean isPersist(final List<FieldsBase> fields, final String name) {
+    public static boolean isPersist(final List<FieldsBase> fields,
+            final String name) {
         boolean persist = true;
         try {
             List<FieldsBase> persistFields = getGroupFields(fields, "persist");

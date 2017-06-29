@@ -26,8 +26,7 @@
                     <field name="datadef" value="taxtable" />
                     <fields name="step" value="encoder">
                         <field name="nextstep" value="end" />
-                        <field name="class"
-                            value="org.codetab.gotz.ext.CsvEncoder" />
+                        <field name="class" value="org.codetab.gotz.ext.CsvEncoder" />
                         <fields name="appender" value="file">
                             <field name="class"
                                 value="org.codetab.gotz.appender.FileAppender" />
@@ -42,4 +41,4 @@
             </fields>
         </fields>
     </fields>
-</fields>      
+</fields>

@@ -104,7 +104,6 @@ public abstract class Encoder extends Step {
         }
     }
 
-
     protected Data getData() {
         return data;
     }

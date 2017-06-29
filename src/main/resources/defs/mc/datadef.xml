@@ -28,8 +28,7 @@
             <fields name="group" value="query">
                 <field name="region"
                     value="//ul//*[count(*)=0 and contains(.,'Balance Sheet')]/ancestor::ul[1]" />
-                <field name="field"
-                    value="*//a[contains(.,'%{row.match}')]/@href" />
+                <field name="field" value="*//a[contains(.,'%{row.match}')]/@href" />
             </fields>
             <fields name="group" value="prefix">
                 <field name="prefix" value="http://www.moneycontrol.com" />

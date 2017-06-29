@@ -41,7 +41,7 @@ public final class FieldsUtil {
 
     public static List<FieldsBase> filterByValue(final List<FieldsBase> fields,
             final String name, final String value)
-                    throws FieldNotFoundException {
+            throws FieldNotFoundException {
         List<FieldsBase> list = new ArrayList<>();
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
@@ -76,14 +76,14 @@ public final class FieldsUtil {
 
     public static List<FieldsBase> filterByName(final List<FieldsBase> fields,
             final String group, final String name)
-                    throws FieldNotFoundException {
+            throws FieldNotFoundException {
         List<FieldsBase> groupFields = filterByGroup(fields, group);
         return filterByName(groupFields, name);
     }
 
     public static List<FieldsBase> filterChildrenByName(
             final List<FieldsBase> fields, final String name)
-                    throws FieldNotFoundException {
+            throws FieldNotFoundException {
         List<FieldsBase> list = new ArrayList<>();
         for (FieldsBase fb : fields) {
             if (fb instanceof Fields) {
@@ -120,7 +120,7 @@ public final class FieldsUtil {
 
     public static List<Fields> filterByGroupAsFields(
             final List<FieldsBase> fields, final String group)
-                    throws FieldNotFoundException {
+            throws FieldNotFoundException {
         List<Fields> groupFields = new ArrayList<>();
         FieldsIterator ite = new FieldsIterator(fields);
         while (ite.hasNext()) {

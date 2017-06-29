@@ -1,7 +1,6 @@
 <?xml version='1.0'?>
 
-<afieldslist xmlns="http://codetab.org/gotz"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<afieldslist xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
     <afields className="org.codetab.gotz.model.Locator">
         <afield name="loader" value="org.codetab.gotz.dev.SimpleCsvLoader"

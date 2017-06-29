@@ -155,6 +155,9 @@ To edit it in preferences -> Java -> Code Style -> Formatter
   - Line wrapping - scroll down to Expressions - assignment and set line wrap policy to
     wrap where necessary
     
+for xml file change format options in perferences -> XML -> XML file -> Editor
+      
+    
 
 
 

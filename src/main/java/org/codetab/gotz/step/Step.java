@@ -28,17 +28,21 @@ public abstract class Step implements IStep {
     private List<FieldsBase> fields;
     private StepState stepState;
 
-    //CHECKSTYLE:OFF
     @Inject
+    @SuppressWarnings("checkstyle:visibilitymodifier")
     protected DataDefService dataDefService;
-    @Inject
-    protected ConfigService configService;
-    @Inject
-    protected StepService stepService;
-    @Inject
-    protected ActivityService activityService;
-    //CHECKSTYLE:ON
 
+    @Inject
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected ConfigService configService;
+
+    @Inject
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected StepService stepService;
+
+    @Inject
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected ActivityService activityService;
 
     @Override
     public final void setFields(final List<FieldsBase> fields) {
