@@ -27,7 +27,7 @@ import com.google.gson.GsonBuilder;
 
 public final class Util {
 
-    final public static String LINE = System.lineSeparator();
+    public static final String LINE = System.lineSeparator();
 
     private Util() {
     }

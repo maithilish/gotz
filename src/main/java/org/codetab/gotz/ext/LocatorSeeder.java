@@ -29,7 +29,8 @@ public class LocatorSeeder extends Seeder {
 
     private static final long SLEEP_MILLIS = 1000;
 
-    private List<Locator> locators = new ArrayList<>();
+    // cs - don't name locators as it hides field
+    private List<Locator> locatorList = new ArrayList<>();
 
     @Inject
     private BeanService beanService;
@@ -70,7 +71,7 @@ public class LocatorSeeder extends Seeder {
     public boolean handover() {
         LOGGER.info("push locators to loader taskpool");
         int count = 0;
-        for (Locator locator : locators) {
+        for (Locator locator : locatorList) {
             stepService.pushTask(this, locator, locator.getFields());
             count++;
             try {
@@ -79,7 +80,7 @@ public class LocatorSeeder extends Seeder {
             }
         }
         LOGGER.info("locators count [{}], queued to loader [{}].",
-                locators.size(), count);
+                locatorList.size(), count);
         setStepState(StepState.HANDOVER);
         return true;
     }
@@ -98,7 +99,7 @@ public class LocatorSeeder extends Seeder {
         for (Locators locators : list) {
             extractLocator(locators);
         }
-        for (Locator locator : locators) {
+        for (Locator locator : locatorList) {
             addLabelField(locator);
         }
     }
@@ -131,7 +132,7 @@ public class LocatorSeeder extends Seeder {
             extractLocator(locs);
         }
         for (Locator locator : locatorsList.getLocator()) {
-            locators.add(locator);
+            locatorList.add(locator);
         }
     }
 
@@ -152,7 +153,7 @@ public class LocatorSeeder extends Seeder {
 
     private void mergeFields(final List<FieldsBase> classFields) {
         LOGGER.info("merge fields with locators");
-        for (Locator locator : locators) {
+        for (Locator locator : locatorList) {
             try {
                 List<Fields> groupFields = FieldsUtil
                         .filterByGroupAsFields(classFields, locator.getGroup());
@@ -182,8 +183,8 @@ public class LocatorSeeder extends Seeder {
         }
     }
 
-    private void logState(String message) {
-        for (Locator locator : locators) {
+    private void logState(final String message) {
+        for (Locator locator : locatorList) {
             Marker marker =
                     MarkerUtil.getMarker(locator.getName(), locator.getGroup());
             LOGGER.trace(marker, "-- {} --{}{}", message, Util.LINE, locator);

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class AppenderService {
 
-    private final Logger logger =
+    private static final Logger LOGGER =
             LoggerFactory.getLogger(AppenderService.class);
 
     private final Map<String, Appender> appenders =
@@ -75,7 +75,7 @@ public class AppenderService {
             appender.append(Marker.EOF);
         } catch (InterruptedException e) {
             // don't throw else closeAll fails for other appenders
-            logger.warn("{}", Util.getMessage(e));
+            LOGGER.warn("{}", Util.getMessage(e));
         }
     }
 }

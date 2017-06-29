@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class DataDefPersistence {
 
-    static private final Logger LOGGER =
+    private static final Logger LOGGER =
             LoggerFactory.getLogger(DataDefPersistence.class);
 
     @Inject
@@ -56,8 +56,8 @@ public class DataDefPersistence {
         }
     }
 
-    public boolean markForUpdation(List<DataDef> dataDefs,
-            List<DataDef> newDataDefs) {
+    public boolean markForUpdation(final List<DataDef> dataDefs,
+            final List<DataDef> newDataDefs) {
         boolean updates = false;
         for (DataDef newDataDef : newDataDefs) {
             String name = newDataDef.getName();
@@ -86,7 +86,8 @@ public class DataDefPersistence {
         dataDef.setToDate(configService.getRunDateTime());
     }
 
-    private DataDef getDataDef(List<DataDef> dataDefs, String name) {
+    private DataDef getDataDef(final List<DataDef> dataDefs,
+            final String name) {
         return dataDefs.stream().filter(e -> e.getName().equals(name))
                 .findFirst().get();
     }

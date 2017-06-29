@@ -6,16 +6,13 @@ import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Field;
-import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.OFieldsUtil;
 
 public class DataDefDefaults {
 
     @Inject
-    BeanService beanService;
-    @Inject
-    ConfigService configService;
+    private ConfigService configService;
 
     public void addFact(final DataDef dataDef) {
         for (DAxis axis : dataDef.getAxis()) {

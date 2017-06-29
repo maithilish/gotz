@@ -30,7 +30,7 @@ public class DocumentHelper {
     @Inject
     private ConfigService configService;
 
-    public Long getActiveDocumentId(List<Document> documents) {
+    public Long getActiveDocumentId(final List<Document> documents) {
         Long activeDocumentId = null;
         for (Document r : documents) {
             Date toDate = r.getToDate();
@@ -43,8 +43,8 @@ public class DocumentHelper {
         return activeDocumentId;
     }
 
-    public Date getToDate(Date fromDate, List<FieldsBase> fields,
-            String locatorLabel) {
+    public Date getToDate(final Date fromDate, final List<FieldsBase> fields,
+            final String locatorLabel) {
         ZonedDateTime fromDateTime = ZonedDateTime
                 .ofInstant(fromDate.toInstant(), ZoneId.systemDefault());
         ZonedDateTime toDate = null;

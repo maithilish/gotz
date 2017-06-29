@@ -27,10 +27,6 @@ public class JaxbXoc implements IXoc {
     @Inject
     private ResourceStream resourceStream;
 
-    @Inject
-    private JaxbXoc() {
-    }
-
     @Override
     public <T> List<T> unmarshall(final String xmlFile, final Class<T> ofClass)
             throws JAXBException, IOException {

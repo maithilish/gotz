@@ -25,7 +25,7 @@ public class PassThroughEncoder extends Step {
     static final Logger LOGGER =
             LoggerFactory.getLogger(PassThroughEncoder.class);
 
-    protected Object obj;
+    private Object obj;
 
     private final List<String> appenderNames = new ArrayList<>();
 
@@ -109,7 +109,7 @@ public class PassThroughEncoder extends Step {
     }
 
     @Override
-    public void setInput(Object input) {
+    public void setInput(final Object input) {
         this.obj = input;
     }
 }

@@ -51,7 +51,7 @@ public class LocatorPersistence {
         }
     }
 
-    public void storeLocator(Locator locator) {
+    public void storeLocator(final Locator locator) {
         try {
             ORM orm = configService.getOrmType();
             ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();

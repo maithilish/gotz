@@ -84,7 +84,7 @@ public class DataDefService {
         logger.debug("initialized DataDefs singleton");
     }
 
-    private void validateDataDefs(List<DataDef> newDataDefs) {
+    private void validateDataDefs(final List<DataDef> newDataDefs) {
         boolean valid = true;
         for (DataDef dataDef : newDataDefs) {
             validator.setDataDef(dataDef);
@@ -97,7 +97,7 @@ public class DataDefService {
         }
     }
 
-    private void setDefaults(List<DataDef> newDataDefs) {
+    private void setDefaults(final List<DataDef> newDataDefs) {
         for (DataDef dataDef : newDataDefs) {
             dataDefDefaults.addFact(dataDef);
             dataDefDefaults.setOrder(dataDef);

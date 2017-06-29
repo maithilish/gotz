@@ -118,14 +118,35 @@ this ensures
  - *IT.java tests are run 
 
 
-Eclipse CheckStyle 
+Eclipse CheckStyle
 ------------------
 
-copy Sun checks to Gotz Checks and configure
- - Module Group Javadoc comments - disable all modules
- - class design - disable Design for extension 
+go to preferences - checkstyle and scroll to right end
+click new and enter
+ - type - External Configuration
+ - name - Gotz Checks
+ - location - /orange/data/workspace/gotz/src/main/resources/checkstyle/gotz_checks.xml
+
+this will create new config and select it in project checkstyle setup 
+ 
+
+(earlier method or to modify Gotz Checks)
+copy Sun checks to Gotz Checks and configure Module Groups
+ - Javadoc comments - disable all modules
+ - Class design - disable Design for extension (forces for javadoc for extension) 
+ - Class design - disable Final Class 
+   (forces class singleton with private constructor to be final 
+     and final class can't be mocked)
 
 in project properties select Gotz Checks module and activate cs
+
+for suppressions configure
+ - group filters - suppression filter and set file to
+   /orange/data/workspace/gotz/src/main/resources/checkstyle/suppressions.xml
+ 
+ !! abs path is required relative path not allowed
+ !! enable Purge Checkstyles caches button in toolbar, purge cache after 
+    any changes to suppressions.xml
 
 For formatter, select checkstyle from project context menu and select Formatter profile 
 which creates Eclipse-cs Gotz formatter profile
@@ -133,6 +154,8 @@ which creates Eclipse-cs Gotz formatter profile
 To edit it in preferences -> Java -> Code Style -> Formatter
   - Line wrapping - scroll down to Expressions - assignment and set line wrap policy to
     wrap where necessary
+    
+
 
 
  

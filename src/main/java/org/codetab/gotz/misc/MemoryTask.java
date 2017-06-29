@@ -20,7 +20,7 @@ public class MemoryTask extends TimerTask {
     }
 
     @Inject
-    public void setActivityService(ActivityService activityService) {
+    public void setActivityService(final ActivityService activityService) {
         this.activityService = activityService;
     }
 

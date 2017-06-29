@@ -7,11 +7,14 @@ import org.codetab.gotz.model.FieldsBase;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-public class MarkerUtil {
+public final class MarkerUtil {
 
     private static final Marker LOG_STATE =
             MarkerFactory.getMarker("LOG_STATE");
     private static final Marker NORMAL = MarkerFactory.getMarker("NORMAL");
+
+    private MarkerUtil() {
+    }
 
     public static Marker getMarker(final List<FieldsBase> fields) {
         try {

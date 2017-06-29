@@ -33,7 +33,8 @@ public class ConfigService {
         SYSTEM, PROVIDED, DEFAULTS
     }
 
-    private final Logger LOGGER = LoggerFactory.getLogger(ConfigService.class);
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(ConfigService.class);
 
     private CompositeConfiguration configs;
 
@@ -41,7 +42,7 @@ public class ConfigService {
     private ConfigService() {
     }
 
-    public void init(String userProvidedFile, String defaultsFile) {
+    public void init(final String userProvidedFile, final String defaultsFile) {
         LOGGER.info("Initializing Configs");
 
         configs = new CompositeConfiguration();
@@ -119,7 +120,7 @@ public class ConfigService {
             Date runDate = null;
             String dateStr = getConfig("gotz.runDate"); //$NON-NLS-1$
             String patterns = getConfig("gotz.dateParsePattern"); //$NON-NLS-1$
-            runDate = DateUtils.parseDate(dateStr, new String[] { patterns });
+            runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
             return runDate;
         } catch (ParseException | ConfigNotFoundException e) {
             LOGGER.error("RunDate error. {}", e); //$NON-NLS-1$
@@ -133,7 +134,7 @@ public class ConfigService {
             String dateTimeStr = getConfig("gotz.runDateTime"); //$NON-NLS-1$
             String patterns = getConfig("gotz.dateTimeParsePattern"); //$NON-NLS-1$
             runDateTime =
-                    DateUtils.parseDate(dateTimeStr, new String[] { patterns });
+                    DateUtils.parseDate(dateTimeStr, new String[] {patterns});
             return runDateTime;
         } catch (ParseException | ConfigNotFoundException e) {
             LOGGER.error("Run Date error. {}", e); //$NON-NLS-1$
@@ -198,7 +199,7 @@ public class ConfigService {
 
     // private methods
 
-    private Configuration getPropertiesConfigs(String fileName)
+    private Configuration getPropertiesConfigs(final String fileName)
             throws ConfigurationException {
 
         FileBasedConfigurationBuilder<PropertiesConfiguration> builder =
@@ -210,12 +211,10 @@ public class ConfigService {
                                         .setListDelimiterHandler(
                                                 new DefaultListDelimiterHandler(
                                                         ';')));
-
-        Configuration configs = builder.getConfiguration();
-        return configs;
+        return builder.getConfiguration();
     }
 
-    private Configuration getXMLConfigs(String fileName)
+    private Configuration getXMLConfigs(final String fileName)
             throws ConfigurationException {
 
         FileBasedConfigurationBuilder<XMLConfiguration> builder;
@@ -226,8 +225,7 @@ public class ConfigService {
                                 .setListDelimiterHandler(
                                         new DefaultListDelimiterHandler(';')));
 
-        Configuration configs = builder.getConfiguration();
-        return configs;
+        return builder.getConfiguration();
     }
 
     private void addRunDate() {

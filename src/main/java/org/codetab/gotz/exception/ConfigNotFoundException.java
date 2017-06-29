@@ -10,7 +10,7 @@ public class ConfigNotFoundException extends Exception {
 
     private String key;
 
-    public ConfigNotFoundException(String key) {
+    public ConfigNotFoundException(final String key) {
         this.key = key;
     }
 

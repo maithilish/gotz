@@ -16,11 +16,11 @@ public class DInjector {
     }
 
     @Inject
-    public DInjector(Injector injector) {
+    public DInjector(final Injector injector) {
         this.injector = injector;
     }
 
-    public <T> T instance(Class<T> clz) {
+    public <T> T instance(final Class<T> clz) {
         return injector.getInstance(clz);
     }
 }

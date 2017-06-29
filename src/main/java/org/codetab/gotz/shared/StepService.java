@@ -57,7 +57,7 @@ public class StepService {
         return task;
     }
 
-    public void pushTask(Step step, final Object input,
+    public void pushTask(final Step step, final Object input,
             final List<FieldsBase> nextStepFields) {
         try {
             nextStepFields.add(FieldsUtil.getField(step.getFields(), "label"));
@@ -119,7 +119,7 @@ public class StepService {
         return stepClasses;
     }
 
-    public String getNextStepType(List<FieldsBase> fields,
+    public String getNextStepType(final List<FieldsBase> fields,
             final String stepType) throws FieldNotFoundException {
         FieldsBase step =
                 OFieldsUtil.getFieldsByValue(fields, "step", stepType);

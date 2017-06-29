@@ -28,13 +28,10 @@ public class BeanFiles {
     private String schemaFile;
     private String baseName;
 
-    @Inject
-    private BeanFiles() {
-    }
-
-    public void setFiles(String beanFile, String schemaFile) {
-        this.beanFile = beanFile;
-        this.schemaFile = schemaFile;
+    public void setFiles(final String beanFileName,
+            final String schemaFileName) {
+        this.beanFile = beanFileName;
+        this.schemaFile = schemaFileName;
     }
 
     public boolean validateBeanFile() throws JAXBException, IOException,
@@ -62,7 +59,7 @@ public class BeanFiles {
         return list;
     }
 
-    public boolean validateBeanFiles(List<Bean> beanFiles)
+    public boolean validateBeanFiles(final List<Bean> beanFiles)
             throws JAXBException, SAXException, IOException {
         logger.info("validate Bean files...");
         for (Bean bean : beanFiles) {
@@ -71,8 +68,8 @@ public class BeanFiles {
         return true;
     }
 
-    public <T> List<T> unmarshalBeanFile(String beanFile, Class<T> clz)
-            throws JAXBException, IOException {
-        return xoc.unmarshall(beanFile, clz);
+    public <T> List<T> unmarshalBeanFile(final String fileName,
+            final Class<T> clz) throws JAXBException, IOException {
+        return xoc.unmarshall(fileName, clz);
     }
 }

@@ -28,6 +28,7 @@ public abstract class Step implements IStep {
     private List<FieldsBase> fields;
     private StepState stepState;
 
+    //CHECKSTYLE:OFF
     @Inject
     protected DataDefService dataDefService;
     @Inject
@@ -36,6 +37,8 @@ public abstract class Step implements IStep {
     protected StepService stepService;
     @Inject
     protected ActivityService activityService;
+    //CHECKSTYLE:ON
+
 
     @Override
     public final void setFields(final List<FieldsBase> fields) {
@@ -91,7 +94,7 @@ public abstract class Step implements IStep {
     }
 
     @Override
-    public void setStepState(StepState stepState) {
+    public void setStepState(final StepState stepState) {
         this.stepState = stepState;
     }
 

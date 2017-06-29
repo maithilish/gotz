@@ -11,10 +11,13 @@ import org.slf4j.LoggerFactory;
 public class ShutdownHook extends Thread {
 
     private final Logger logger = LoggerFactory.getLogger(ShutdownHook.class);
+
+    @Inject
     private ActivityService activityService;
 
     @Inject
-    private ShutdownHook() {
+    public ShutdownHook() {
+        // cs - if private then class has to be final which is unable to mock
         logger.info("shutdownhook created");
     }
 
@@ -22,10 +25,5 @@ public class ShutdownHook extends Thread {
     public synchronized void start() {
         activityService.logActivities();
         activityService.logMemoryUsage();
-    }
-
-    @Inject
-    public void setActivityService(ActivityService activityService) {
-        this.activityService = activityService;
     }
 }

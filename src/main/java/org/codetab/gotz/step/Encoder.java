@@ -22,7 +22,7 @@ public abstract class Encoder extends Step {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Encoder.class);
 
-    protected Data data;
+    private Data data;
 
     private final List<String> appenderNames = new ArrayList<>();
 
@@ -104,14 +104,12 @@ public abstract class Encoder extends Step {
         }
     }
 
-    /*
-     *
-     */
+
     protected Data getData() {
         return data;
     }
 
-    protected void doAppend(Object obj) {
+    protected void doAppend(final Object obj) {
         for (String appenderName : appenderNames) {
             Appender appender = appenderService.getAppender(appenderName);
             try {

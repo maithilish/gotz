@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class ActivityService {
 
-    private final Logger logger =
+    private static final Logger LOGGER =
             LoggerFactory.getLogger(ActivityService.class);
 
     private static final long MB_DIVISOR = 1048576; // mega bytes
@@ -64,9 +64,9 @@ public class ActivityService {
     }
 
     public void logActivities() {
-        logger.info("{}", "--- Summary ---");
+        LOGGER.info("{}", "--- Summary ---");
         if (activities.size() == 0) {
-            logger.info("no issues");
+            LOGGER.info("no issues");
         }
         for (Activity activity : activities) {
             Throwable throwable = activity.getThrowable();
@@ -84,34 +84,34 @@ public class ActivityService {
                     causeMessage = cause.getLocalizedMessage();
                 }
             }
-            logger.info("Activity type={}, message={}", activity.getType(),
+            LOGGER.info("Activity type={}, message={}", activity.getType(),
                     activity.getMessage());
-            logger.info(" exception : {} {}", throwableClass, throwableMessage);
+            LOGGER.info(" exception : {} {}", throwableClass, throwableMessage);
             if (cause != null) {
-                logger.info(" cause     : {} {}", causeClass, causeMessage);
+                LOGGER.info(" cause     : {} {}", causeClass, causeMessage);
             }
 
         }
-        logger.info("{}  {}", "Total time:", stopWatch);
+        LOGGER.info("{}  {}", "Total time:", stopWatch);
     }
 
     public void collectMemoryStat() {
         long mm = runtime.maxMemory() / MB_DIVISOR;
         long fm = runtime.freeMemory() / MB_DIVISOR;
         long tm = runtime.totalMemory() / MB_DIVISOR;
-        logger.debug("{} {} {} {}", new Date(), mm, tm, fm);
+        LOGGER.debug("{} {} {} {}", new Date(), mm, tm, fm);
 
         freeMemory.accept(fm);
         totalMemory.accept(tm);
     }
 
     public void logMemoryUsage() {
-        logger.info("{}", "--- Memory Usage ---");
-        logger.info("Max   : {}", runtime.maxMemory() / MB_DIVISOR);
-        logger.info("Total : Avg {} High {} Low {}",
+        LOGGER.info("{}", "--- Memory Usage ---");
+        LOGGER.info("Max   : {}", runtime.maxMemory() / MB_DIVISOR);
+        LOGGER.info("Total : Avg {} High {} Low {}",
                 (long) totalMemory.getAverage(), totalMemory.getMax(),
                 totalMemory.getMin());
-        logger.info("Free  : Avg {} High {} Low {}",
+        LOGGER.info("Free  : Avg {} High {} Low {}",
                 (long) freeMemory.getAverage(), freeMemory.getMax(),
                 freeMemory.getMin());
     }

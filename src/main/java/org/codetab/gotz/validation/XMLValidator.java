@@ -25,7 +25,7 @@ public class XMLValidator {
     @Inject
     private ResourceStream resourceStream;
 
-    public boolean validate(String xmlFile, String schemaFile)
+    public boolean validate(final String xmlFile, final String schemaFile)
             throws JAXBException, IOException, SAXException {
         try (InputStream xmlStream = resourceStream.getInputStream(xmlFile);
                 InputStream schemaStream =
@@ -35,7 +35,7 @@ public class XMLValidator {
         return true;
     }
 
-    public boolean validate(InputStream xmlStream, InputStream schemaStream)
+    public boolean validate(final InputStream xmlStream, final InputStream schemaStream)
             throws JAXBException, IOException, SAXException {
         LOGGER.debug("validate : [{}] with [{}]", xmlStream, schemaStream);
         try {

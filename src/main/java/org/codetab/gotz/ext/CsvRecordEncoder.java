@@ -48,13 +48,13 @@ public final class CsvRecordEncoder extends Encoder {
         StringBuilder builder = new StringBuilder();
 
         ColComparator cc = new ColComparator();
-        Collections.sort(data.getMembers(), cc);
+        Collections.sort(getData().getMembers(), cc);
         RowComparator rc = new RowComparator();
-        Collections.sort(data.getMembers(), rc);
+        Collections.sort(getData().getMembers(), rc);
         String prevRow = null;
 
         builder.append(getHeader());
-        for (Member member : data.getMembers()) {
+        for (Member member : getData().getMembers()) {
             String row = member.getValue(AxisName.ROW);
             String fact = member.getValue(AxisName.FACT);
 
@@ -81,7 +81,7 @@ public final class CsvRecordEncoder extends Encoder {
 
     private int getColCount() {
         Set<String> cols = new HashSet<String>();
-        for (Member member : data.getMembers()) {
+        for (Member member : getData().getMembers()) {
             cols.add(member.getValue(AxisName.COL));
         }
         return cols.size();
@@ -92,7 +92,7 @@ public final class CsvRecordEncoder extends Encoder {
         int colCount = getColCount();
         for (int c = 0; c < colCount; c++) {
             header += " |";
-            String col = data.getMembers().get(c).getValue(AxisName.COL);
+            String col = getData().getMembers().get(c).getValue(AxisName.COL);
             header += StringUtils.leftPad(col, FACT_COL_SIZE);
         }
         header += LINE_BREAK;

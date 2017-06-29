@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class DataPersistence {
 
-    static private final Logger LOGGER =
+    private static final Logger LOGGER =
             LoggerFactory.getLogger(DataPersistence.class);
 
     @Inject

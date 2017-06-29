@@ -16,7 +16,7 @@ public class Task implements Runnable {
     @Inject
     private ActivityService activityService;
 
-    public void setStep(IStep step) {
+    public void setStep(final IStep step) {
         this.step = step;
     }
 

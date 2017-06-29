@@ -28,7 +28,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     private BeanService beanService;
 
     @Inject
-    void setBeanService(BeanService beanService) {
+    void setBeanService(final BeanService beanService) {
         this.beanService = beanService;
     }
 
