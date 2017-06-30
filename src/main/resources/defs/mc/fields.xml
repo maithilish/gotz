@@ -32,8 +32,8 @@
                 <fields name="group" value="datadef">
                     <field name="datadef" value="bs" />
                     <field name="parser" value="org.codetab.gotz.ext.HtmlDataParser" />
-                    <field name="filter" value="org.codetab.gotz.ext.DataFilter" />
-                    <field name="transformer" value="org.codetab.gotz.ext.CsvEncoder" />
+                    <field name="filter" value="org.codetab.gotz.steps.DataFilter" />
+                    <field name="transformer" value="org.codetab.gotz.step.CsvEncoder" />
                     <field name="appender" value="org.codetab.gotz.appender.FileAppender" />
                     <field name="logstate" value="true" />
                 </fields>
@@ -48,8 +48,8 @@
                 <fields name="group" value="datadef">
                     <field name="datadef" value="pl" />
                     <field name="parser" value="org.codetab.gotz.ext.HtmlDataParser" />
-                    <field name="filter" value="org.codetab.gotz.ext.DataFilter" />
-                    <field name="transformer" value="org.codetab.gotz.ext.CsvEncoder" />
+                    <field name="filter" value="org.codetab.gotz.steps.DataFilter" />
+                    <field name="transformer" value="org.codetab.gotz.steps.CsvEncoder" />
                     <field name="appender" value="org.codetab.gotz.appender.FileAppender" />
                     <field name="logstate" value="true" />
                 </fields>

@@ -4,21 +4,21 @@
     <fields name="class" value="org.codetab.gotz.model.Locator">
         <fields name="group" value="steps">
             <fields name="step" value="seeder">
-                <field name="class" value="org.codetab.gotz.ext.LocatorSeeder" />
+                <field name="class" value="org.codetab.gotz.steps.LocatorSeeder" />
                 <field name="nextstep" value="loader" />
                 <field name="unique" value="true" />
             </fields>
             <fields name="step" value="loader">
-                <field name="class" value="org.codetab.gotz.ext.JSoupHtmlLoader" />
+                <field name="class" value="org.codetab.gotz.steps.JSoupHtmlLoader" />
                 <field name="nextstep" value="parser" />
                 <field name="unique" value="true" />
             </fields>
             <fields name="step" value="parser">
-                <field name="class" value="org.codetab.gotz.ext.JSoupHtmlDataParser" />
+                <field name="class" value="org.codetab.gotz.steps.JSoupHtmlDataParser" />
                 <field name="nextstep" value="filter" />
             </fields>
             <fields name="step" value="filter">
-                <field name="class" value="org.codetab.gotz.ext.DataFilter" />
+                <field name="class" value="org.codetab.gotz.steps.DataFilter" />
                 <field name="nextstep" value="encoder" />
             </fields>
         </fields>
@@ -28,7 +28,7 @@
                     <field name="datadef" value="bs" />
                     <fields name="step" value="encoder">
                         <field name="nextstep" value="end" />
-                        <field name="class" value="org.codetab.gotz.ext.CsvEncoder" />
+                        <field name="class" value="org.codetab.gotz.steps.CsvEncoder" />
                         <fields name="appender" value="list">
                             <field name="class"
                                 value="org.codetab.gotz.appender.ListAppender" />

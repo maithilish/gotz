@@ -1,4 +1,4 @@
-package org.codetab.gotz.ext;
+package org.codetab.gotz.steps;
 
 import org.codetab.gotz.step.IStep;
 import org.slf4j.Logger;

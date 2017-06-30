@@ -1,12 +1,14 @@
-package org.codetab.gotz.step;
+package org.codetab.gotz.stepbase;
 
 import org.codetab.gotz.model.Data;
+import org.codetab.gotz.step.Step;
+import org.codetab.gotz.step.StepState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Filter extends Step {
+public abstract class BaseFilter extends Step {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(Filter.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseFilter.class);
 
     private Data data;
 

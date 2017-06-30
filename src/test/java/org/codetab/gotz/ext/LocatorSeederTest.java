@@ -19,6 +19,7 @@ import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.StepService;
+import org.codetab.gotz.steps.LocatorSeeder;
 import org.codetab.gotz.testutil.TestJaxbHelper;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.util.FieldsUtil;
@@ -139,7 +140,7 @@ public class LocatorSeederTest {
         // then
         @SuppressWarnings("unchecked")
         List<Locator> actual = (List<Locator>) FieldUtils
-        .readDeclaredField(locatorSeeder, "locatorList", true);
+                .readDeclaredField(locatorSeeder, "locatorList", true);
 
         assertThat(actual.size()).isEqualTo(3);
         assertThat(actual).contains(locator1);
@@ -175,7 +176,7 @@ public class LocatorSeederTest {
 
     @Test
     public void testProcessInitFieldsSetSteps() throws IllegalAccessException,
-    JAXBException, IOException, FieldNotFoundException {
+            JAXBException, IOException, FieldNotFoundException {
         List<Locators> locators = createTestObjects2();
         List<FieldsBase> fieldsList = createTestFields();
         List<FieldsBase> stepFields =

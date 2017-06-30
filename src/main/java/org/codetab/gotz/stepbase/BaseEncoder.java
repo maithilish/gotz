@@ -1,4 +1,4 @@
-package org.codetab.gotz.ext;
+package org.codetab.gotz.stepbase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +9,9 @@ import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
+import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsUtil;
@@ -20,22 +20,16 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PassThroughEncoder extends Step {
+public abstract class BaseEncoder extends Step {
 
-    static final Logger LOGGER =
-            LoggerFactory.getLogger(PassThroughEncoder.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseEncoder.class);
 
-    private Object obj;
+    private Data data;
 
     private final List<String> appenderNames = new ArrayList<>();
 
     @Inject
     private AppenderService appenderService;
-
-    @Override
-    public IStep instance() {
-        return this;
-    }
 
     @Override
     public boolean initialize() {
@@ -67,8 +61,56 @@ public class PassThroughEncoder extends Step {
         return true;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.codetab.gotz.step.IStepO#load()
+     */
     @Override
-    public boolean process() {
+    public boolean load() {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.codetab.gotz.step.IStepO#store()
+     */
+    @Override
+    public boolean store() {
+        return false;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.codetab.gotz.step.StepO#isConsistent()
+     */
+    @Override
+    public boolean isConsistent() {
+        return (super.isConsistent() && data != null);
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.codetab.gotz.step.IStepO#setInput(java.lang.Object)
+     */
+    @Override
+    public void setInput(final Object input) {
+        if (input instanceof Data) {
+            data = (Data) input;
+        } else {
+            LOGGER.error("input is not instance of Data type. {}",
+                    input.getClass().toString());
+        }
+    }
+
+    protected Data getData() {
+        return data;
+    }
+
+    protected void doAppend(final Object obj) {
         for (String appenderName : appenderNames) {
             Appender appender = appenderService.getAppender(appenderName);
             try {
@@ -81,35 +123,5 @@ public class PassThroughEncoder extends Step {
                 throw new StepRunException(message, e);
             }
         }
-        setStepState(StepState.PROCESS);
-        return true;
-    }
-
-    @Override
-    public boolean isConsistent() {
-        return (super.isConsistent() && obj != null);
-    }
-
-    @Override
-    public boolean load() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean store() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean handover() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void setInput(final Object input) {
-        this.obj = input;
     }
 }

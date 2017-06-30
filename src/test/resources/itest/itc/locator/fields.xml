@@ -4,12 +4,12 @@
     <fields name="class" value="org.codetab.gotz.model.Locator">
         <fields name="group" value="steps">
             <fields name="step" value="seeder">
-                <field name="class" value="org.codetab.gotz.ext.LocatorSeeder" />
+                <field name="class" value="org.codetab.gotz.steps.LocatorSeeder" />
                 <field name="nextstep" value="loader" />
                 <field name="unique" value="true" />
             </fields>
             <fields name="step" value="loader">
-                <field name="class" value="org.codetab.gotz.ext.JSoupHtmlLoader" />
+                <field name="class" value="org.codetab.gotz.steps.JSoupHtmlLoader" />
                 <field name="nextstep" value="parser" />
                 <field name="unique" value="true" />
             </fields>
@@ -20,13 +20,13 @@
                     <field name="datadef" value="finlocators" />
                     <fields name="step" value="parser">
                         <field name="class"
-                            value="org.codetab.gotz.ext.JSoupHtmlLocatorParser" />
+                            value="org.codetab.gotz.steps.JSoupHtmlLocatorParser" />
                         <field name="nextstep" value="encoder" />
                     </fields>
                     <fields name="step" value="encoder">
                         <field name="nextstep" value="end" />
                         <field name="class"
-                            value="org.codetab.gotz.ext.PassThroughEncoder" />
+                            value="org.codetab.gotz.steps.PassThroughEncoder" />
                         <fields name="appender" value="list">
                             <field name="class"
                                 value="org.codetab.gotz.appender.ListAppender" />

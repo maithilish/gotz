@@ -65,8 +65,8 @@ public class MemberTest {
 
         String expected =
                 new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
-                .append("axes", t1.getAxes())
-                .append("fields", t1.getFields()).toString();
+                        .append("axes", t1.getAxes())
+                        .append("fields", t1.getFields()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
@@ -171,7 +171,7 @@ public class MemberTest {
         member.addAxis(row);
 
         assertThat(member.traceMember().toString())
-        .isEqualTo(traceString(member));
+                .isEqualTo(traceString(member));
     }
 
     private List<Member> createTestObjects() {

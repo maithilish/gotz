@@ -1,4 +1,4 @@
-package org.codetab.gotz.ext;
+package org.codetab.gotz.steps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,8 +13,8 @@ import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.step.IStep;
-import org.codetab.gotz.step.Seeder;
 import org.codetab.gotz.step.StepState;
+import org.codetab.gotz.stepbase.BaseSeeder;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.OFieldsUtil;
@@ -23,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
-public class LocatorSeeder extends Seeder {
+public class LocatorSeeder extends BaseSeeder {
 
     static final Logger LOGGER = LoggerFactory.getLogger(LocatorSeeder.class);
 

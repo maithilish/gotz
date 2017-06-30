@@ -6,7 +6,7 @@ import java.net.URL;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.step.IStep;
-import org.codetab.gotz.step.Loader;
+import org.codetab.gotz.stepbase.BaseLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +16,7 @@ import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public final class HtmlLoader extends Loader {
+public final class HtmlLoader extends BaseLoader {
 
     static final Logger LOGGER = LoggerFactory.getLogger(HtmlLoader.class);
     private static final int TIMEOUT_MILLIS = 120000;

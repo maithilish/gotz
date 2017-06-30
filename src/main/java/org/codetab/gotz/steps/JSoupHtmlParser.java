@@ -1,4 +1,4 @@
-package org.codetab.gotz.ext;
+package org.codetab.gotz.steps;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.step.Parser;
+import org.codetab.gotz.stepbase.BaseParser;
 import org.codetab.gotz.util.DataDefUtil;
 import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -28,7 +28,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class JSoupHtmlParser extends Parser {
+public abstract class JSoupHtmlParser extends BaseParser {
 
     static final Logger LOGGER = LoggerFactory.getLogger(JSoupHtmlParser.class);
 

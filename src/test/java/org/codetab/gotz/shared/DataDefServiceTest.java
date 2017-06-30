@@ -86,7 +86,7 @@ public class DataDefServiceTest {
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
         given(validator.validate()).willReturn(true);
         given(dataDefPersistence.markForUpdation(dataDefs, dataDefs))
-        .willReturn(false);
+                .willReturn(false);
 
         // when
         dataDefService.init();
@@ -124,7 +124,7 @@ public class DataDefServiceTest {
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
         given(validator.validate()).willReturn(true);
         given(dataDefPersistence.markForUpdation(dataDefs, dataDefs))
-        .willReturn(true);
+                .willReturn(true);
 
         // when
         dataDefService.init();
@@ -184,7 +184,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testGetDataTemplate() throws ClassNotFoundException,
-    DataDefNotFoundException, IOException {
+            DataDefNotFoundException, IOException {
         List<DataDef> dataDefs = createTestDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -227,19 +227,19 @@ public class DataDefServiceTest {
 
     @Test
     public void testMemberSets() throws ClassNotFoundException,
-    DataDefNotFoundException, IOException, IllegalAccessException {
+            DataDefNotFoundException, IOException, IllegalAccessException {
 
         @SuppressWarnings("unchecked")
         Map<String, Set<Set<DMember>>> memberSetsMap =
-        (Map<String, Set<Set<DMember>>>) FieldUtils.readDeclaredField(
-                dataDefService, "memberSetsMap", true);
+                (Map<String, Set<Set<DMember>>>) FieldUtils.readDeclaredField(
+                        dataDefService, "memberSetsMap", true);
 
         assertThat(memberSetsMap).isNotNull();
     }
 
     @Test
     public void testGetDataTemplateMemberFields() throws ClassNotFoundException,
-    DataDefNotFoundException, IOException {
+            DataDefNotFoundException, IOException {
         List<DataDef> dataDefs = createTestDataDefs();
         DataDef dataDef = dataDefs.get(0);
 
@@ -259,7 +259,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testGetDataTemplateNoFields() throws ClassNotFoundException,
-    DataDefNotFoundException, IOException {
+            DataDefNotFoundException, IOException {
         List<DataDef> dataDefs = createTestDataDefs();
         DataDef dataDef = dataDefs.get(0);
         dataDef.getFields().clear();
@@ -411,8 +411,8 @@ public class DataDefServiceTest {
         return dFilter;
     }
 
-    private Axis createAxis(final AxisName name, final String value, final String match,
-            final int index, final int order) {
+    private Axis createAxis(final AxisName name, final String value,
+            final String match, final int index, final int order) {
         Axis axis = new Axis();
         axis.setName(name);
         axis.setValue(value);

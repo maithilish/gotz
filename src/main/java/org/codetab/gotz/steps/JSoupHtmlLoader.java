@@ -1,4 +1,4 @@
-package org.codetab.gotz.ext;
+package org.codetab.gotz.steps;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,13 +8,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.step.IStep;
-import org.codetab.gotz.step.Loader;
+import org.codetab.gotz.stepbase.BaseLoader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class JSoupHtmlLoader extends Loader {
+public final class JSoupHtmlLoader extends BaseLoader {
 
     static final Logger LOGGER = LoggerFactory.getLogger(JSoupHtmlLoader.class);
     private static final int TIMEOUT_MILLIS = 120000;

@@ -30,7 +30,7 @@ public class StepServiceTest {
 
     @Test
     public void testGetStep() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException {
+            InstantiationException, IllegalAccessException {
         // given
         String clzName = "org.codetab.gotz.ext.HtmlLoader";
         Class<?> stepClass = Class.forName(clzName);
@@ -46,7 +46,7 @@ public class StepServiceTest {
 
     @Test
     public void testGetStepClassCastException() throws ClassNotFoundException,
-    InstantiationException, IllegalAccessException {
+            InstantiationException, IllegalAccessException {
         // given
         String clzName = "org.codetab.gotz.model.Locator";
 

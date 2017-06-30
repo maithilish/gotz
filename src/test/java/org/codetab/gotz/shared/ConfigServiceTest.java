@@ -144,7 +144,7 @@ public class ConfigServiceTest {
                 .isEqualTo(configuration.getString("gotz.beanFile"));
         assertThat("/schema/gotz.xsd")
                 .isEqualTo(configuration.getString("gotz.schemaFile"));
-        assertThat("org.codetab.gotz.ext.LocatorSeeder")
+        assertThat("org.codetab.gotz.steps.LocatorSeeder")
                 .isEqualTo(configuration.getString("gotz.seederClass"));
 
         assertThat("datastore")

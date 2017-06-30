@@ -1,4 +1,4 @@
-package org.codetab.gotz.step;
+package org.codetab.gotz.stepbase;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +19,8 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.persistence.DocumentPersistence;
 import org.codetab.gotz.persistence.LocatorPersistence;
+import org.codetab.gotz.step.Step;
+import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.OFieldsUtil;
@@ -27,9 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
-public abstract class Loader extends Step {
+public abstract class BaseLoader extends Step {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(Loader.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseLoader.class);
 
     private Locator locator;
     private Document document;

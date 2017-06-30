@@ -1,4 +1,4 @@
-package org.codetab.gotz.step;
+package org.codetab.gotz.stepbase;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +25,7 @@ import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.persistence.DataPersistence;
+import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -32,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
-public abstract class Parser extends Step {
+public abstract class BaseParser extends Step {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(Parser.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseParser.class);
 
     private String dataDefName;
     private Document document;

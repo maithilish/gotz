@@ -5,7 +5,7 @@
         <fields name="group" value="steps">
             <fields name="step" value="seeder">
                 <field name="nextstep" value="loader" />
-                <field name="class" value="org.codetab.gotz.ext.LocatorSeeder" />
+                <field name="class" value="org.codetab.gotz.steps.LocatorSeeder" />
             </fields>
             <fields name="step" value="loader">
                 <field name="nextstep" value="parser" />
@@ -17,7 +17,7 @@
             </fields>
             <fields name="step" value="filter">
                 <field name="nextstep" value="encoder" />
-                <field name="class" value="org.codetab.gotz.ext.DataFilter" />
+                <field name="class" value="org.codetab.gotz.steps.DataFilter" />
             </fields>
         </fields>
         <fields name="group" value="html">
@@ -26,7 +26,7 @@
                     <field name="datadef" value="taxtable" />
                     <fields name="step" value="encoder">
                         <field name="nextstep" value="end" />
-                        <field name="class" value="org.codetab.gotz.ext.CsvEncoder" />
+                        <field name="class" value="org.codetab.gotz.steps.CsvEncoder" />
                         <fields name="appender" value="file">
                             <field name="class"
                                 value="org.codetab.gotz.appender.FileAppender" />

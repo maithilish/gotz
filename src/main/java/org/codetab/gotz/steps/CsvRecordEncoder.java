@@ -1,4 +1,4 @@
-package org.codetab.gotz.ext;
+package org.codetab.gotz.steps;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,14 +9,14 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
-import org.codetab.gotz.step.Encoder;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
+import org.codetab.gotz.stepbase.BaseEncoder;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CsvRecordEncoder extends Encoder {
+public final class CsvRecordEncoder extends BaseEncoder {
 
     static final Logger LOGGER =
             LoggerFactory.getLogger(CsvRecordEncoder.class);

@@ -1,4 +1,4 @@
-package org.codetab.gotz.step;
+package org.codetab.gotz.steps;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,7 +18,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.ext.JSoupHtmlLoader;
 import org.codetab.gotz.helper.DocumentHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
@@ -31,6 +30,7 @@ import org.codetab.gotz.persistence.LocatorPersistence;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.StepService;
+import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;

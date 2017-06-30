@@ -1,4 +1,4 @@
-package org.codetab.gotz.ext;
+package org.codetab.gotz.steps;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,15 +13,15 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.step.Filter;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
+import org.codetab.gotz.stepbase.BaseFilter;
 import org.codetab.gotz.util.FieldsIterator;
 import org.codetab.gotz.util.OFieldsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class DataFilter extends Filter {
+public final class DataFilter extends BaseFilter {
 
     static final Logger LOGGER = LoggerFactory.getLogger(DataFilter.class);
 

@@ -32,7 +32,7 @@ public class AppenderPoolServiceTest {
     private ConfigService configService;
 
     @Spy
-    private  Map<String, ExecutorService> executorsMap;
+    private Map<String, ExecutorService> executorsMap;
 
     @Spy
     private List<Future<?>> futures;

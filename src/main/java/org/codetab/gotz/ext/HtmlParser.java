@@ -17,7 +17,7 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.step.Parser;
+import org.codetab.gotz.stepbase.BaseParser;
 import org.codetab.gotz.util.DataDefUtil;
 import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public abstract class HtmlParser extends Parser {
+public abstract class HtmlParser extends BaseParser {
 
     static final Logger LOGGER = LoggerFactory.getLogger(HtmlParser.class);
 
