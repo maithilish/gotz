@@ -33,7 +33,7 @@ import org.mockito.Spy;
 public class AppenderServiceTest {
 
     @Spy
-    DInjector dInjector;
+    private DInjector dInjector;
     @Mock
     private AppenderPoolService appenderPoolService;
     @Mock

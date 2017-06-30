@@ -1,41 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
-	<datadef name="finlocators">
-		<field name="type" value="locator" />
-		<fields name="member" value="bs">
-			<field name="group" value="quote" />
-		</fields>
-		<fields name="member" value="pl">
-			<field name="group" value="quote" />
-		</fields>
-		<axis name="col">
-			<fields name="group" value="script">
-				<field name="script" value="configs.getRunDateTime()" />
-			</fields>
-			<member name="date" />
-		</axis>
-		<axis name="row">
-			<fields name="group" value="query">
-				<field name="region"
-					value="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul" />
-				<field name="field" value="li:nth-child(%{row.index}) > a[href]" />
-			</fields>
-			<member name="bs" index="2" />
-			<member name="pl" index="3" />
-		</axis>
-		<axis name="fact">
-			<fields name="group" value="query">
-				<field name="region"
-					value="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul" />
-				<field name="field" value="li:nth-child(%{row.index}) > a[href]" />
-				<field name="attribute" value="href" />
-			</fields>
-			<fields name="group" value="prefix">
-				<field name="prefix" value="http://www.moneycontrol.com" />
-			</fields>
-		</axis>
-	</datadef>
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+    <datadef name="finlocators">
+        <field name="type" value="locator" />
+        <fields name="member" value="bs">
+            <field name="group" value="quote" />
+        </fields>
+        <fields name="member" value="pl">
+            <field name="group" value="quote" />
+        </fields>
+        <axis name="col">
+            <fields name="group" value="script">
+                <field name="script" value="configs.getRunDateTime()" />
+            </fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <fields name="group" value="query">
+                <field name="region"
+                    value="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul" />
+                <field name="field" value="li:nth-child(%{row.index}) > a[href]" />
+            </fields>
+            <member name="bs" index="2" />
+            <member name="pl" index="3" />
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region"
+                    value="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul" />
+                <field name="field" value="li:nth-child(%{row.index}) > a[href]" />
+                <field name="attribute" value="href" />
+            </fields>
+            <fields name="group" value="prefix">
+                <field name="prefix" value="http://www.moneycontrol.com" />
+            </fields>
+        </axis>
+    </datadef>
 </datadefs>
 
 

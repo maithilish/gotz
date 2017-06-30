@@ -99,7 +99,7 @@ public class ConfigServiceTest {
     @Test
     public void testGetConfigArray() throws ConfigNotFoundException {
         // given
-        String[] array = { "x", "y" };
+        String[] array = {"x", "y"};
         given(configs.getStringArray("xyz")).willReturn(array);
 
         // when
@@ -175,10 +175,10 @@ public class ConfigServiceTest {
         assertThat("31-12-2099 23:59:59.999")
                 .isEqualTo(configuration.getString("gotz.highDate"));
         String[] dateTimePatterns =
-                { "dd-MM-yyyy HH:mm:ss.SSS", "dd/MM/yyyy HH:mm:ss.SSS" };
+                {"dd-MM-yyyy HH:mm:ss.SSS", "dd/MM/yyyy HH:mm:ss.SSS"};
         assertArrayEquals(dateTimePatterns,
                 configuration.getStringArray("gotz.dateTimeParsePattern"));
-        String[] datePatterns = { "dd-MM-yyyy", "dd/MM/yyyy" };
+        String[] datePatterns = {"dd-MM-yyyy", "dd/MM/yyyy"};
         assertArrayEquals(datePatterns,
                 configuration.getStringArray("gotz.dateParsePattern"));
     }
@@ -262,10 +262,10 @@ public class ConfigServiceTest {
         assertThat("12-31-2060 23:59:59.999")
                 .isEqualTo(configuration.getString("gotz.highDate"));
         String[] dateTimePatterns =
-                { "MM-dd-yyyy HH:mm:ss.SSS", "MM/dd/yyyy HH:mm:ss.SSS" };
+                {"MM-dd-yyyy HH:mm:ss.SSS", "MM/dd/yyyy HH:mm:ss.SSS"};
         assertArrayEquals(dateTimePatterns,
                 configuration.getStringArray("gotz.dateTimeParsePattern"));
-        String[] datePatterns = { "MM-dd-yyyy", "MM/dd/yyyy" };
+        String[] datePatterns = {"MM-dd-yyyy", "MM/dd/yyyy"};
         assertArrayEquals(datePatterns,
                 configuration.getStringArray("gotz.dateParsePattern"));
 
@@ -332,7 +332,7 @@ public class ConfigServiceTest {
         configService.init("xyz", "gotz-default.xml");
         Configuration configuration =
                 configService.getConfiguration(ConfigIndex.DEFAULTS);
-        String[] invalidPattern = { "ddMMYYYY" };
+        String[] invalidPattern = {"ddMMYYYY"};
         configuration.setProperty("gotz.dateParsePattern", invalidPattern);
 
         // then
@@ -366,7 +366,7 @@ public class ConfigServiceTest {
         Configuration configuration =
                 configService.getConfiguration(ConfigIndex.DEFAULTS);
 
-        String[] invalidPattern = { "ddMMYYYY" };
+        String[] invalidPattern = {"ddMMYYYY"};
         configuration.setProperty("gotz.dateTimeParsePattern", invalidPattern);
 
         // then
@@ -413,7 +413,7 @@ public class ConfigServiceTest {
         configService.init("xyz", "gotz-default.xml");
         Configuration configuration =
                 configService.getConfiguration(ConfigIndex.DEFAULTS);
-        String[] invalidPattern = { "ddMMYYYY" };
+        String[] invalidPattern = {"ddMMYYYY"};
         configuration.setProperty("gotz.dateTimeParsePattern", invalidPattern);
 
         // then

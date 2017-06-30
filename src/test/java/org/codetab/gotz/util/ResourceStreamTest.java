@@ -18,7 +18,7 @@ public class ResourceStreamTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    ResourceStream resourceStream;
+    private  ResourceStream resourceStream;
 
     @Before
     public void setUp() throws Exception {

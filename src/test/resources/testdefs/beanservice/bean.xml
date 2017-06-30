@@ -3,6 +3,6 @@
 <beans xmlns="http://codetab.org/gotz">
     <bean name="locator" className="org.codetab.gotz.model.Locator"
         xmlFile="locator.xml" />
-    <bean name="fields" className="org.codetab.gotz.model.Fields"
-        xmlFile="fields.xml" schemaFile="/schema/gotz.xsd" />
+    <bean name="fields" className="org.codetab.gotz.model.Fields" xmlFile="fields.xml"
+        schemaFile="/schema/gotz.xsd" />
 </beans>

@@ -42,7 +42,7 @@ public class GSystemTest {
     private Runtime runTime;
 
     @InjectMocks
-    GSystem gSystem;
+    private GSystem gSystem;
 
     @Rule
     public ExpectedException expect = ExpectedException.none();

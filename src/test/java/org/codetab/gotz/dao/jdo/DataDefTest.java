@@ -266,8 +266,9 @@ public class DataDefTest {
     }
 
     private DataDef createDataDef() {
+        int days = 10;
         Date fromDate = DateUtils.addDays(new Date(), -1);
-        Date toDate = DateUtils.addDays(fromDate, 10);
+        Date toDate = DateUtils.addDays(fromDate, days);
 
         DataDef dataDef = new DataDef();
         dataDef.setName("testdatadef");

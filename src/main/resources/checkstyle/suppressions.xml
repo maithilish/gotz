@@ -5,6 +5,7 @@
 "http://checkstyle.sourceforge.net/dtds/suppressions_1_1.dtd">
 
 <suppressions>
+    <!-- disable all check for jaxb xjc generated model files  -->
     <suppress files="Adapter1.java" checks="[a-zA-Z0-9]*" />
     <suppress files="Base.java" checks="[a-zA-Z0-9]*" />
     <suppress files="Bean.java" checks="[a-zA-Z0-9]*" />
@@ -22,4 +23,7 @@
     <suppress files="Locators.java" checks="[a-zA-Z0-9]*" />
     <suppress files="ObjectFactory.java" checks="[a-zA-Z0-9]*" />
     <suppress files="Wrapper.java" checks="[a-zA-Z0-9]*" />
+
+    <!-- disable magicnumber check for test java files  -->
+    <suppress files=".*Test.java" checks="MagicNumber" />
 </suppressions>

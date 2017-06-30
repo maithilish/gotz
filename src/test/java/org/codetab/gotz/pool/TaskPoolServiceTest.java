@@ -32,16 +32,16 @@ public class TaskPoolServiceTest {
     private ConfigService configService;
 
     @Spy
-    Map<String, ExecutorService> executorsMap;
+    private Map<String, ExecutorService> executorsMap;
 
     @Spy
-    List<Future<?>> futures;
+    private List<Future<?>> futures;
 
     @Mock
-    ExecutorService executor;
+    private ExecutorService executor;
 
     @InjectMocks
-    TaskPoolService taskPool;
+    private TaskPoolService taskPool;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -182,7 +182,7 @@ public class TaskPoolServiceTest {
         assertThat(taskPool.isDone()).isTrue();
     }
 
-    private void sleep(int millis) {
+    private void sleep(final int millis) {
         try {
             TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {

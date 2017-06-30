@@ -17,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 public class GotzEngineTest {
 
     @Mock
-    Task task;
+    private Task task;
     @Mock
     private ActivityService activityService;
     @Mock
@@ -26,7 +26,7 @@ public class GotzEngineTest {
     private GTaskRunner gTaskRunner;
 
     @InjectMocks
-    GotzEngine gotzEngine;
+    private GotzEngine gotzEngine;
 
     @Before
     public void setUp() throws Exception {

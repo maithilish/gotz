@@ -12,17 +12,20 @@ import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
 
-public class TestUtil {
+public final class TestUtil {
 
-    public static Field createField(String name, String value) {
+    private TestUtil() {
+    }
+
+    public static Field createField(final String name, final String value) {
         Field field = new Field();
         field.setName(name);
         field.setValue(value);
         return field;
     }
 
-    public static Fields createFields(String name, String value,
-            FieldsBase... fieldsBase) {
+    public static Fields createFields(final String name, final String value,
+            final FieldsBase... fieldsBase) {
         Fields fields = new Fields();
         fields.setName(name);
         fields.setValue(value);
@@ -32,7 +35,7 @@ public class TestUtil {
         return fields;
     }
 
-    public static List<String> readFileAsList(String fileName) {
+    public static List<String> readFileAsList(final String fileName) {
         try {
             InputStream is = TestUtil.class.getResourceAsStream(fileName);
             return IOUtils.readLines(is, "UTF-8");
@@ -41,8 +44,8 @@ public class TestUtil {
         }
     }
 
-    public static void writeListToFile(List<Object> list, String fileName)
-            throws IOException {
+    public static void writeListToFile(final List<Object> list,
+            final String fileName) throws IOException {
         try (Writer wr = new FileWriter(fileName)) {
             IOUtils.writeLines(list, null, wr);
         }

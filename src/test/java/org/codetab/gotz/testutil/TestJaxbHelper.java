@@ -62,7 +62,7 @@ public class TestJaxbHelper {
         return result;
     }
 
-    public InputStream getInputStream(String fileName)
+    public InputStream getInputStream(final String fileName)
             throws FileNotFoundException {
         InputStream stream = ResourceStream.class.getResourceAsStream(fileName);
         if (stream == null) {

@@ -7,10 +7,10 @@ import org.junit.Test;
 
 public class ColComparatorTest {
 
-    Member m1, m2;
-    Axis axis1, axis2;
+    private Member m1, m2;
+    private Axis axis1, axis2;
 
-    ColComparator sut;
+    private ColComparator sut;
 
     @Before
     public void setUp() throws Exception {

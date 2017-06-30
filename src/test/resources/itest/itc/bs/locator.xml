@@ -2,8 +2,7 @@
 
 <locators xmlns="http://codetab.org/gotz">
     <locators group="bs">
-        <locator name="ITC"
-            url="src/test/resources/itest/itc/bs/itc-bs.html">
+        <locator name="ITC" url="src/test/resources/itest/itc/bs/itc-bs.html">
         </locator>
     </locators>
 </locators>

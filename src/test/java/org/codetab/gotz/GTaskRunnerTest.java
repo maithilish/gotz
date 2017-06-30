@@ -15,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 public class GTaskRunnerTest {
 
     @Mock
-    Task task;
+    private Task task;
     @Mock
     private TaskPoolService taskPoolService;
     @Mock
@@ -24,7 +24,7 @@ public class GTaskRunnerTest {
     private AppenderService appenderService;
 
     @InjectMocks
-    GTaskRunner gTaskRunner;
+    private GTaskRunner gTaskRunner;
 
     @Before
     public void setUp() throws Exception {

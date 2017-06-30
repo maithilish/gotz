@@ -23,20 +23,20 @@ import org.mockito.MockitoAnnotations;
 public class ActivityServiceTest {
 
     @Mock
-    Timer timer;
+    private Timer timer;
     @Mock
-    StopWatch stopWatch;
+    private StopWatch stopWatch;
     @Mock
-    MemoryTask memoryTask;
+    private MemoryTask memoryTask;
 
     @Mock
-    List<Activity> activities;
+    private List<Activity> activities;
     @Mock
-    LongSummaryStatistics totalMemory;
+    private LongSummaryStatistics totalMemory;
     @Mock
-    LongSummaryStatistics freeMemory;
+    private LongSummaryStatistics freeMemory;
     @Mock
-    Runtime runtime;
+    private Runtime runtime;
 
     @InjectMocks
     private ActivityService activityService;

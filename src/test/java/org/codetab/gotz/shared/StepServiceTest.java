@@ -16,9 +16,9 @@ import org.mockito.Spy;
 public class StepServiceTest {
 
     @Spy
-    DInjector dInjector;
+    private DInjector dInjector;
     @InjectMocks
-    StepService stepService;
+    private StepService stepService;
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -30,7 +30,7 @@ public class StepServiceTest {
 
     @Test
     public void testGetStep() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+    InstantiationException, IllegalAccessException {
         // given
         String clzName = "org.codetab.gotz.ext.HtmlLoader";
         Class<?> stepClass = Class.forName(clzName);
@@ -46,7 +46,7 @@ public class StepServiceTest {
 
     @Test
     public void testGetStepClassCastException() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+    InstantiationException, IllegalAccessException {
         // given
         String clzName = "org.codetab.gotz.model.Locator";
 

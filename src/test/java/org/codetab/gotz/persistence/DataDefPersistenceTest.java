@@ -28,16 +28,16 @@ import org.mockito.MockitoAnnotations;
 public class DataDefPersistenceTest {
 
     @Mock
-    ConfigService configService;
+    private ConfigService configService;
 
     @Mock
-    DaoFactory daoFactory;
+    private DaoFactory daoFactory;
 
     @Mock
-    IDataDefDao dataDefDao;
+    private IDataDefDao dataDefDao;
 
     @InjectMocks
-    DataDefPersistence dataDefPersistence;
+    private DataDefPersistence dataDefPersistence;
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
@@ -72,7 +72,7 @@ public class DataDefPersistenceTest {
     public void testLoadDataDefsShouldThrowException() {
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactory.getDaoFactory(ORM.JDO))
-                .willThrow(RuntimeException.class);
+        .willThrow(RuntimeException.class);
 
         expected.expect(CriticalException.class);
         dataDefPersistence.loadDataDefs();
@@ -99,7 +99,7 @@ public class DataDefPersistenceTest {
         DataDef dataDef = new DataDef();
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactory.getDaoFactory(ORM.JDO))
-                .willThrow(RuntimeException.class);
+        .willThrow(RuntimeException.class);
 
         expected.expect(CriticalException.class);
         dataDefPersistence.storeDataDef(dataDef);

@@ -132,7 +132,7 @@ public class UtilTest {
         Util.cartesianProduct();
     }
 
-    private Set<String> getSet(String... strs) {
+    private Set<String> getSet(final String... strs) {
         Set<String> set = new HashSet<String>();
         for (String str : strs) {
             set.add(str);

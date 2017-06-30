@@ -65,8 +65,8 @@ public class MemberTest {
 
         String expected =
                 new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
-                        .append("axes", t1.getAxes())
-                        .append("fields", t1.getFields()).toString();
+                .append("axes", t1.getAxes())
+                .append("fields", t1.getFields()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
@@ -171,7 +171,7 @@ public class MemberTest {
         member.addAxis(row);
 
         assertThat(member.traceMember().toString())
-                .isEqualTo(traceString(member));
+        .isEqualTo(traceString(member));
     }
 
     private List<Member> createTestObjects() {
@@ -195,16 +195,16 @@ public class MemberTest {
         return testObjects;
     }
 
-    private String traceString(Member member) {
+    private String traceString(final Member testMember) {
         String nl = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
         sb.append("Member=[name=");
-        sb.append(member.getName());
+        sb.append(testMember.getName());
         sb.append(",group=");
-        sb.append(member.getGroup());
+        sb.append(testMember.getGroup());
         sb.append("]");
         sb.append(nl);
-        member.getAxes().stream().forEach(sb::append);
+        testMember.getAxes().stream().forEach(sb::append);
         return sb.toString();
     }
 }

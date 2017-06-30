@@ -63,8 +63,8 @@ public class BeanTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = { "id", "fromDate", "toDate", "dnDetachedState",
-                "dnFlags", "dnStateManager" };
+        String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState",
+                "dnFlags", "dnStateManager"};
         int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
         int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
 
@@ -79,8 +79,8 @@ public class BeanTest {
         Enhanced t1 = testObjects.get(0);
         Enhanced t2 = testObjects.get(1);
 
-        String[] excludes = { "id", "fromDate", "toDate", "dnDetachedState",
-                "dnFlags", "dnStateManager" };
+        String[] excludes = {"id", "fromDate", "toDate", "dnDetachedState",
+                "dnFlags", "dnStateManager"};
         assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
 
         assertThat(t1).isEqualTo(t2);

@@ -32,16 +32,16 @@ public class AppenderPoolServiceTest {
     private ConfigService configService;
 
     @Spy
-    Map<String, ExecutorService> executorsMap;
+    private  Map<String, ExecutorService> executorsMap;
 
     @Spy
-    List<Future<?>> futures;
+    private List<Future<?>> futures;
 
     @Mock
-    ExecutorService executor;
+    private ExecutorService executor;
 
     @InjectMocks
-    AppenderPoolService appenderPool;
+    private AppenderPoolService appenderPool;
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -182,7 +182,7 @@ public class AppenderPoolServiceTest {
         assertThat(appenderPool.isDone()).isTrue();
     }
 
-    private void sleep(int millis) {
+    private void sleep(final int millis) {
         try {
             TimeUnit.MILLISECONDS.sleep(millis);
         } catch (InterruptedException e) {

@@ -136,13 +136,13 @@ public class AxisTest {
         return testObjects;
     }
 
-    private String expectedString(Axis axis) {
-        String str = new ToStringBuilder(axis, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("name", axis.getName()).append("value", axis.getValue())
-                .append("match", axis.getMatch())
-                .append("index", axis.getIndex())
-                .append("order", axis.getOrder())
-                .append("fields", axis.getFields()).toString();
+    private String expectedString(final Axis testAxis) {
+        String str = new ToStringBuilder(testAxis, ToStringStyle.SHORT_PREFIX_STYLE)
+                .append("name", testAxis.getName()).append("value", testAxis.getValue())
+                .append("match", testAxis.getMatch())
+                .append("index", testAxis.getIndex())
+                .append("order", testAxis.getOrder())
+                .append("fields", testAxis.getFields()).toString();
         return System.lineSeparator() + "  " + str;
 
     }

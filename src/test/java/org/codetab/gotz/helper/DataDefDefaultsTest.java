@@ -216,7 +216,7 @@ public class DataDefDefaultsTest {
         assertThat(dataDef.getToDate()).isEqualTo(highDate);
     }
 
-    private DAxis getAxis(DataDef dataDef, String axisName) {
+    private DAxis getAxis(final DataDef dataDef, final String axisName) {
         return dataDef.getAxis().stream()
                 .filter(d -> d.getName().equals(axisName)).findFirst().get();
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">    
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
     <datadef name="quotePage">
         <axis name="col">
             <fields name="group" value="script">
@@ -30,7 +30,7 @@
                 <field name="field" value="div:containsOwn(%{row.match}) + div" />
             </fields>
         </axis>
-    </datadef>    
+    </datadef>
 </datadefs>
 
 

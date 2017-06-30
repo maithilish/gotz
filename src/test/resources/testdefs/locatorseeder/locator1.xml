@@ -2,9 +2,9 @@
 
 <locators xmlns="http://codetab.org/gotz">
     <locators group="quote">
-        <locator name="XYZ" url="quote.html" />        
+        <locator name="XYZ" url="quote.html" />
     </locators>
     <locators group="bs">
-        <locator name="XYZ" url="bs.html" />        
+        <locator name="XYZ" url="bs.html" />
     </locators>
 </locators>

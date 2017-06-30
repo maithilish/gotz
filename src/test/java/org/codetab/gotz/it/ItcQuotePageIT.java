@@ -42,7 +42,7 @@ public class ItcQuotePageIT {
         assertThat(actual).containsAll(expected);
     }
 
-    private List<String> getExpected(String prefix) {
+    private List<String> getExpected(final String prefix) {
         List<String> expected = new ArrayList<>();
         expected.add(prefix + "DIV YIELD.(%) |2.70%");
         expected.add(prefix + "INDUSTRY P/E |37.06");

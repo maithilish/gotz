@@ -26,7 +26,7 @@ public class DaoUtil implements IDaoUtil {
 
     private PersistenceManagerFactory pmf;
 
-    public DaoUtil(PersistenceManagerFactory pmf) {
+    public DaoUtil(final PersistenceManagerFactory pmf) {
         this.pmf = pmf;
     }
 
@@ -36,21 +36,21 @@ public class DaoUtil implements IDaoUtil {
     }
 
     @Override
-    public void dropConstraint(PersistenceManagerFactory pmf, String table,
-            String constraint) throws SQLException {
+    public void dropConstraint(final PersistenceManagerFactory pmfac,
+            final String table, final String constraint) throws SQLException {
         String query = null;
-        String driver = pmf.getConnectionDriverName().toLowerCase();
+        String driver = pmfac.getConnectionDriverName().toLowerCase();
         if (driver.contains("hsqldb")) {
             query = MessageFormat.format("alter table {0} drop constraint {1}",
                     table, constraint);
         }
-        executeQuery(pmf, query);
+        executeQuery(pmfac, query);
     }
 
     @Override
-    public void executeQuery(PersistenceManagerFactory pmf, String query)
-            throws SQLException {
-        PersistenceManager pm = pmf.getPersistenceManager();
+    public void executeQuery(final PersistenceManagerFactory pmfac,
+            final String query) throws SQLException {
+        PersistenceManager pm = pmfac.getPersistenceManager();
         JDOConnection jdoCon = pm.getDataStoreConnection();
         Connection connection = (Connection) jdoCon.getNativeConnection();
         Statement stmt = connection.createStatement();
@@ -73,7 +73,7 @@ public class DaoUtil implements IDaoUtil {
     }
 
     @Override
-    public void deleteSchemaForClasses(HashSet<String> schemaClasses) {
+    public void deleteSchemaForClasses(final HashSet<String> schemaClasses) {
         PersistenceNucleusContext ctx =
                 ((JDOPersistenceManagerFactory) pmf).getNucleusContext();
         SchemaAwareStoreManager storeManager =
@@ -82,7 +82,7 @@ public class DaoUtil implements IDaoUtil {
     }
 
     @Override
-    public void createSchemaForClasses(HashSet<String> schemaClasses) {
+    public void createSchemaForClasses(final HashSet<String> schemaClasses) {
         PersistenceNucleusContext ctx =
                 ((JDOPersistenceManagerFactory) pmf).getNucleusContext();
         SchemaAwareStoreManager storeManager =
@@ -97,7 +97,8 @@ public class DaoUtil implements IDaoUtil {
     }
 
     @Override
-    public <T> List<T> getObjects(Class<T> ofClass, List<String> detachGroups) {
+    public <T> List<T> getObjects(final Class<T> ofClass,
+            final List<String> detachGroups) {
         PersistenceManager pm = pmf.getPersistenceManager();
         try {
             Extent<T> extent = pm.getExtent(ofClass);

@@ -115,7 +115,9 @@ public class DataDaoTest {
     public void testGetDataNonExistent() {
         DataDao dataDao = new DataDao(pmf);
 
-        Data actualData = dataDao.getData(100L, 100L);
+        Long docId = 100L;
+        Long dataDefId = 100L;
+        Data actualData = dataDao.getData(docId, dataDefId);
         assertNull(actualData);
     }
 

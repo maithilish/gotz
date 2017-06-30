@@ -12,10 +12,10 @@ import org.mockito.MockitoAnnotations;
 public class GotzTest {
 
     @Mock
-    GotzEngine gotzEngine;
+    private GotzEngine gotzEngine;
 
     @InjectMocks
-    Gotz gotz;
+    private Gotz gotz;
 
     @Before
     public void setUp() throws Exception {

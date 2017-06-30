@@ -39,7 +39,7 @@ public class FieldsTest {
         Enhanced t2 = testObjects.get(1);
 
         String[] excludes =
-                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
+            {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
         int expectedHashT1 = HashCodeBuilder.reflectionHashCode(t1, excludes);
         int expectedHashT2 = HashCodeBuilder.reflectionHashCode(t2, excludes);
 
@@ -55,7 +55,7 @@ public class FieldsTest {
         Enhanced t2 = testObjects.get(1);
 
         String[] excludes =
-                { "id", "dnDetachedState", "dnFlags", "dnStateManager" };
+            {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
         assertThat(EqualsBuilder.reflectionEquals(t1, t2, excludes)).isTrue();
 
         assertThat(t1).isEqualTo(t2);
@@ -120,7 +120,7 @@ public class FieldsTest {
         return testObjects;
     }
 
-    private String expectedString(Fields f, String indent) {
+    private String expectedString(final Fields f, final String indent) {
         String aindent = "   ";
         StringBuilder builder = new StringBuilder();
         builder.append(System.lineSeparator());
@@ -142,7 +142,7 @@ public class FieldsTest {
         return builder.toString();
     }
 
-    private String expectedString(Field f, String indent) {
+    private String expectedString(final Field f, final String indent) {
         StringBuilder builder = new StringBuilder();
         builder.append(System.lineSeparator());
         builder.append(indent);
