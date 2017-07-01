@@ -121,44 +121,50 @@ this ensures
 Eclipse CheckStyle
 ------------------
 
-go to preferences - checkstyle and scroll to right end
-click new and enter
+go to preferences - checkstyle and slide to right side end, click New and enter
  - type - External Configuration
  - name - Gotz Checks
  - location - /orange/data/workspace/gotz/src/main/resources/checkstyle/gotz_checks.xml
 
-this will create new config and select it in project checkstyle setup 
- 
-SuppressWarnings tokens - project -> properties -> java -> compiler -> error/warning
-                          -> enable project specific -> Annotations
-                   change unhandled tokens in suppresswarings to ignore from warning
+this will create new config and select it in project checkstyle setup. Next, 
+edit and modify Gotz Checks
 
-(earlier method or to modify Gotz Checks)
-copy Sun checks to Gotz Checks and configure Module Groups
  - Javadoc comments - disable all modules
  - Class design - disable Design for extension (forces for javadoc for extension) 
  - Class design - disable Final Class 
-   (forces class singleton with private constructor to be final 
-     and final class can't be mocked)
-
+   (forces class singleton with private constructor to be final and final class 
+    can't be mocked)
+  - Filters - suppression filter and set file to
+   /orange/data/workspace/gotz/src/main/resources/checkstyle/suppressions.xml
+   
 in project properties select Gotz Checks module and activate cs
 
 for suppressions configure
- - group filters - suppression filter and set file to
-   /orange/data/workspace/gotz/src/main/resources/checkstyle/suppressions.xml
- 
+  
  !! abs path is required relative path not allowed
- !! enable Purge Checkstyles caches button in toolbar, purge cache after 
+ !! enable Purge Checkstyle caches button in toolbar, purge cache after 
     any changes to suppressions.xml
 
-For formatter, select checkstyle from project context menu and select Formatter profile 
-which creates Eclipse-cs Gotz formatter profile
+Code Style - Formatter
+----------------------
 
-To edit it in preferences -> Java -> Code Style -> Formatter
+For Checkstyle compliant formatter, import workspace/eclipse-prefs/formatter.xml 
+which creates Eclipse-cs Gotz formatter profile. This is the preferred method.
+Import using Preferences -> Java -> Code Style -> Formatter -> Import and then
+in project properties -> Java Code Style -> Formatter, set Active Profile 
+to Eclipse-cs Gotz 
+
+
+Alternatively, to create new Eclipse-cs Gotz formatter profile, select checkstyle 
+from project context menu and select Create Formatter-profile. Edit it 
+with Preferences -> Java -> Code Style -> Formatter
   - Line wrapping - scroll down to Expressions - assignment and set line wrap policy to
     wrap where necessary
-    
-for xml file change format options in perferences -> XML -> XML file -> Editor
+  - Whitespace - Arrays - Initilizers - no after opening and before closing brace    
+For XML files, change format options in Preferences -> XML -> XML file -> Editor
+  - uncheck format comments
+  - indent using spaces - Indention Size 4
+   
       
     
 
