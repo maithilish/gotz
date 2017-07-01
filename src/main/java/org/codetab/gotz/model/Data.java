@@ -8,8 +8,8 @@ public final class Data extends Base {
     private static final long serialVersionUID = 1L;
 
     private String dataDef;
-    private long dataDefId;
-    private long documentId;
+    private Long dataDefId;
+    private Long documentId;
     private List<Member> members = new ArrayList<Member>();
 
     public Data() {
@@ -23,19 +23,19 @@ public final class Data extends Base {
         this.dataDef = dataDef;
     }
 
-    public long getDataDefId() {
+    public Long getDataDefId() {
         return dataDefId;
     }
 
-    public void setDataDefId(final long dataDefId) {
+    public void setDataDefId(final Long dataDefId) {
         this.dataDefId = dataDefId;
     }
 
-    public long getDocumentId() {
+    public Long getDocumentId() {
         return documentId;
     }
 
-    public void setDocumentId(final long documentId) {
+    public void setDocumentId(final Long documentId) {
         this.documentId = documentId;
     }
 

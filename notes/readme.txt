@@ -129,6 +129,9 @@ click new and enter
 
 this will create new config and select it in project checkstyle setup 
  
+SuppressWarnings tokens - project -> properties -> java -> compiler -> error/warning
+                          -> enable project specific -> Annotations
+                   change unhandled tokens in suppresswarings to ignore from warning
 
 (earlier method or to modify Gotz Checks)
 copy Sun checks to Gotz Checks and configure Module Groups

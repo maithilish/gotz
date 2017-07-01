@@ -36,6 +36,7 @@
                     </fields>
                     <fields name="group" value="persist">
                         <field name="data" value="false" />
+                        <field name="document" value="false" />
                     </fields>
                 </fields>
             </fields>
