@@ -68,8 +68,8 @@ maven build
 
 Add new run configuration
 
-   Main->Base directory - ${project_loc:npicks}
-   Goals - process-classes exec:java -Dexec.mainClass="in.m.picks.Picks" -Dexec.cleanupDaemonThreads=false -Dpicks.mode=dev 
+   Main->Base directory - ${project_loc:gotz}
+   Goals-> process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dpicks.mode=dev 
    
 test run 
    mvn test  # enhance and test
@@ -164,6 +164,17 @@ with Preferences -> Java -> Code Style -> Formatter
 For XML files, change format options in Preferences -> XML -> XML file -> Editor
   - uncheck format comments
   - indent using spaces - Indention Size 4
+  
+
+Know selector or xpath in chrome
+-------------------------------
+
+open the page in chrome, select any text, select Inspect from context menu
+in Inspector pane, right click on element and select Copy where you
+can copy selector and xpath and paste it to editor. In selector or xpath use
+single quotes instead of double quotes 
+
+
    
       
     

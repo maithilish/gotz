@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<locators xmlns="http://codetab.org/gotz">
+    <locators group="quote">
+        <locator name="ITC"
+            url="http://www.moneycontrol.com/india/stockpricequote/cigarettes/itc/ITC">
+        </locator>
+<!--         <locator name="Zee" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/mediaentertainment/zeeentertainmententerprises/ZEE" /> -->
+<!--         <locator name="Bajaj Corp" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/personalcare/bajajcorp/BC02" /> -->
+<!--         <locator name="United Pros" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/chemicals/unitedphosphorous/UP04" /> -->
+<!--         <locator name="Motherson Sumi" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/autoancillaries/mothersonsumisystems/MSS01" /> -->
+<!--         <locator name="Tata Global" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/plantationsteacoffee/tataglobalbeverage/TT" /> -->
+<!--         <locator name="Britania" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/foodprocessing/britanniaindustries/BI" /> -->
+<!--         <locator name="Crisil" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/miscellaneous/crisil/CRI" /> -->
+<!--         <locator name="Amar Raja" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/autoancillaries/amararajabatteries/ARB" /> -->
+<!--         <locator name="Peristent" -->
+<!--             url="http://www.moneycontrol.com/india/stockpricequote/computerssoftware/persistentsystems/PS15" /> -->
+    </locators>
+</locators>

@@ -17,9 +17,42 @@ import org.junit.Test;
 public class ItcLocatorIT {
 
     @Test
-    public void itcPlTest() {
+    public void itcLocatorJSoupTest() {
 
         System.setProperty("gotz.beanFile", "/itest/itc/locator/bean.xml");
+
+        DInjector dInjector = new DInjector().instance(DInjector.class);
+        GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);
+        gotzEngine.start();
+
+        AppenderService appenderService =
+                dInjector.instance(AppenderService.class);
+        Appender ap = appenderService.getAppender("list");
+        ListAppender listAppender = null;
+        if (ap instanceof ListAppender) {
+            listAppender = (ListAppender) ap;
+        }
+
+        List<String> actual = new ArrayList<>();
+        List<Object> locators = listAppender.getList();
+        for (Object obj : locators) {
+            Locator locator = (Locator) obj;
+            actual.add(locator.getUrl());
+        }
+
+        List<String> expected = Arrays.asList(
+                "http://www.moneycontrol.com/financials/itc/balance-sheet/ITC#ITC",
+                "http://www.moneycontrol.com/financials/itc/profit-loss/ITC#ITC");
+
+        assertThat(actual.size()).isEqualTo(expected.size());
+        assertThat(actual).containsAll(expected);
+    }
+
+    @Test
+    public void itcLocatorHtmlUnitTest() {
+
+        System.setProperty("gotz.beanFile",
+                "/itest/itc/locator/htmlunit/bean.xml");
 
         DInjector dInjector = new DInjector().instance(DInjector.class);
         GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);

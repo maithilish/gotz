@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+    <datadef name="price">
+        <axis name="col">
+            <fields name="group" value="script">
+                <field name="script" value="configs.getRunDateTime()" />
+            </fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <member name="Price" value="Price" />
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="//*[@id='Nse_Prc_tick']" />
+                <field name="field" value="strong" />
+            </fields>
+        </axis>
+    </datadef>
+</datadefs>
+
+

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fields xmlns="http://codetab.org/gotz">
+    <fields name="class" value="org.codetab.gotz.model.Locator">
+        <fields name="group" value="steps">
+            <fields name="step" value="seeder">
+                <field name="class" value="org.codetab.gotz.steps.LocatorSeeder" />
+                <field name="nextstep" value="loader" />
+                <field name="unique" value="true" />
+            </fields>
+            <fields name="step" value="loader">
+                <field name="class" value="org.codetab.gotz.steps.URLLoader" />
+                <field name="nextstep" value="parser" />
+                <field name="unique" value="true" />
+            </fields>
+            <fields name="step" value="parser">
+                <field name="class" value="org.codetab.gotz.ext.HtmlDataParser" />
+                <field name="nextstep" value="filter" />
+            </fields>
+            <fields name="step" value="filter">
+                <field name="class" value="org.codetab.gotz.steps.DataFilter" />
+                <field name="nextstep" value="encoder" />
+            </fields>
+        </fields>
+        <fields name="group" value="quote">
+            <fields name="group" value="task">
+                <fields name="group" value="datadef">
+                    <field name="datadef" value="quotePage" />
+                    <fields name="step" value="encoder">
+                        <field name="nextstep" value="end" />
+                        <field name="class" value="org.codetab.gotz.steps.CsvEncoder" />
+                        <fields name="appender" value="list">
+                            <field name="class"
+                                value="org.codetab.gotz.appender.ListAppender" />
+                        </fields>
+                    </fields>
+                    <fields name="group" value="persist">
+                        <field name="data" value="false" />
+                        <field name="document" value="false" />
+                    </fields>
+                </fields>
+            </fields>
+            <field name="live" value="P0D" />
+        </fields>
+    </fields>
+</fields>

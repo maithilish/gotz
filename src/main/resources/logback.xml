@@ -31,7 +31,7 @@
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
                 <marker>LOG_ITC_QUOTE</marker>
-                <marker>LOG_ITC_QUOTE_QUOTEPAGE</marker>
+                <marker>LOG_ITC_QUOTE_FINLOCATORS</marker>
             </evaluator>
             <onMismatch>DENY</onMismatch>
             <onMatch>NEUTRAL</onMatch>

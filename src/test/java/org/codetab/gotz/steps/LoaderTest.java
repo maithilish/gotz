@@ -60,7 +60,7 @@ public class LoaderTest {
     private ConfigService configService;
 
     @InjectMocks
-    private JSoupHtmlLoader loader;
+    private URLLoader loader;
     private String fileUrl;
 
     @Rule

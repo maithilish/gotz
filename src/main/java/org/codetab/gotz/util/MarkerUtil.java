@@ -35,13 +35,19 @@ public final class MarkerUtil {
     }
 
     public static Marker getMarker(final String name, final String group,
-            final String dataDef) {
+            final String dataDefName) {
         String markerName = Util.buildString("LOG", "_", name.toUpperCase(),
                 "_", group.toUpperCase());
-        if (dataDef != null) {
-            markerName =
-                    Util.buildString(markerName, "_", dataDef.toUpperCase());
+        if (dataDefName != null) {
+            markerName = Util.buildString(markerName, "_",
+                    dataDefName.toUpperCase());
         }
+        return MarkerFactory.getMarker(markerName);
+    }
+
+    public static Marker getMarker(final String dataDefName) {
+        String markerName =
+                Util.buildString("LOG", "_", dataDefName.toUpperCase());
         return MarkerFactory.getMarker(markerName);
     }
 }

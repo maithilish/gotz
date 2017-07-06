@@ -1,6 +1,9 @@
 package org.codetab.gotz.ext;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,12 +14,17 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.stepbase.BaseParser;
 import org.codetab.gotz.util.DataDefUtil;
 import org.codetab.gotz.util.OFieldsUtil;
@@ -24,18 +32,54 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.ImmediateRefreshHandler;
+import com.gargoylesoftware.htmlunit.StringWebResponse;
+import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public abstract class HtmlParser extends BaseParser {
 
     static final Logger LOGGER = LoggerFactory.getLogger(HtmlParser.class);
 
+    private static final int TIMEOUT_MILLIS = 120000;
+
     private Map<Integer, List<?>> nodeMap;
     private ScriptEngine jsEngine;
+    private HtmlPage htmlPage;
 
     public HtmlParser() {
         nodeMap = new HashMap<Integer, List<?>>();
+    }
+
+    @Override
+    protected boolean postInitialize() {
+        WebClient webClient = null;
+        try {
+            if (!isDocumentLoaded()) {
+                throw new IllegalStateException("document not loaded");
+            }
+            String html = getDocumentHTML();
+            URL url = getDocumentURL();
+            StringWebResponse response = new StringWebResponse(html, url);
+            webClient = getWebClient();
+            htmlPage = HTMLParser.parseHtml(response,
+                    webClient.getCurrentWindow());
+        } catch (IllegalStateException | IOException e) {
+            String givenUpMessage =
+                    "unable to create HtmlUnit.HtmlPage from document byte[]";
+            LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
+            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            throw new StepRunException(givenUpMessage, e);
+        } finally {
+            webClient.setRefreshHandler(new ImmediateRefreshHandler());
+            webClient.close();
+        }
+        setStepState(StepState.INIT);
+        return true;
     }
 
     /*
@@ -49,7 +93,7 @@ public abstract class HtmlParser extends BaseParser {
     protected void setValue(final DataDef dataDef, final Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
+            NoSuchMethodException, IOException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;
             try {
@@ -66,13 +110,50 @@ public abstract class HtmlParser extends BaseParser {
                 }
                 axis.setIndex(startIndex);
             }
-            if (isDocumentLoaded() && axis.getValue() == null) {
-                HtmlPage documentObject =
-                        (HtmlPage) getDocument().getDocumentObject();
-                String value = getValue(documentObject, dataDef, member, axis);
+            if (htmlPage != null && axis.getValue() == null) {
+                String value = getValue(htmlPage, dataDef, member, axis);
                 axis.setValue(value);
             }
         }
+    }
+
+    private WebClient getWebClient() {
+        int timeout = TIMEOUT_MILLIS;
+        String key = "gotz.webClient.timeout";
+        try {
+            timeout = Integer.parseInt(configService.getConfig(key));
+        } catch (NumberFormatException | ConfigNotFoundException e) {
+            // TODO add activity or update config with default
+            String msg =
+                    "for config [" + key + "] using default value " + timeout;
+            LOGGER.warn("{}. {}", e, msg);
+        }
+
+        WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
+        webClient.setRefreshHandler(new ThreadedRefreshHandler());
+
+        webClient.getOptions().setJavaScriptEnabled(false);
+        webClient.getOptions().setCssEnabled(false);
+        webClient.getOptions().setAppletEnabled(false);
+        webClient.getOptions().setPopupBlockerEnabled(true);
+        webClient.getOptions().setTimeout(timeout);
+        return webClient;
+    }
+
+    private String getDocumentHTML() {
+        byte[] bytes = (byte[]) getDocument().getDocumentObject();
+        String html = new String(bytes);
+        return html;
+    }
+
+    private URL getDocumentURL() throws MalformedURLException {
+        URL url;
+        if (UrlValidator.getInstance().isValid(getDocument().getUrl())) {
+            url = new URL(getDocument().getUrl());
+        } else {
+            url = new URL(new URL("file:"), getDocument().getUrl());
+        }
+        return url;
     }
 
     /*
@@ -89,11 +170,12 @@ public abstract class HtmlParser extends BaseParser {
         try {
             List<FieldsBase> scripts =
                     OFieldsUtil.getGroupFields(list, "script");
-            setTraceString(sb, scripts, "--- Script ---");
+            setTraceString(sb, scripts, "<<<");
             scripts =
                     OFieldsUtil.replaceVariables(scripts, member.getAxisMap());
-            setTraceString(sb, scripts, "-- Patched --");
-            LOGGER.trace(getMarker(), "{}", sb);
+            setTraceString(sb, scripts, ">>>>");
+            LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
+                    sb.toString(), Util.LINE);
             value = queryByScript(scripts);
         } catch (FieldNotFoundException e) {
         }
@@ -101,11 +183,12 @@ public abstract class HtmlParser extends BaseParser {
         try {
             List<FieldsBase> queries =
                     OFieldsUtil.getGroupFields(list, "query");
-            setTraceString(sb, queries, "--- Query ---");
+            setTraceString(sb, queries, "<<<");
             queries =
                     OFieldsUtil.replaceVariables(queries, member.getAxisMap());
-            setTraceString(sb, queries, "-- Patched --");
-            LOGGER.trace(getMarker(), "{}", sb);
+            setTraceString(sb, queries, ">>>>");
+            LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
+                    sb.toString(), Util.LINE);
             value = queryByXPath(page, queries);
         } catch (FieldNotFoundException e) {
         }
@@ -126,12 +209,16 @@ public abstract class HtmlParser extends BaseParser {
         if (jsEngine == null) {
             initializeScriptEngine();
         }
-        LOGGER.trace("------Query Data------");
-        LOGGER.trace("Scripts {} ", scripts);
+        LOGGER.trace(getMarker(), "------ query data ------");
+        LOGGER.trace(getMarker(), "Scripts {} ", scripts);
         jsEngine.put("configs", configService);
         String scriptStr = OFieldsUtil.getValue(scripts, "script");
-        Object value = jsEngine.eval(scriptStr);
-        return ConvertUtils.convert(value);
+        Object val = jsEngine.eval(scriptStr);
+        String value = ConvertUtils.convert(val);
+        LOGGER.trace(getMarker(), "result {}", value);
+        LOGGER.trace(getMarker(), "------ query data end ------");
+        LOGGER.trace(getMarker(), "");
+        return value;
     }
 
     private void initializeScriptEngine() {
@@ -151,8 +238,8 @@ public abstract class HtmlParser extends BaseParser {
                     getDataDefName());
             return null;
         }
-        LOGGER.trace("------Query Data------");
-        LOGGER.trace("Queries {} ", queries);
+        LOGGER.trace(getMarker(), "------ query data ------");
+        LOGGER.trace(getMarker(), "Queries {} ", queries);
         String regionXpathExpr = OFieldsUtil.getValue(queries, "region");
         String xpathExpr = OFieldsUtil.getValue(queries, "field");
         String value = getByXPath(page, regionXpathExpr, xpathExpr);
@@ -185,7 +272,8 @@ public abstract class HtmlParser extends BaseParser {
             nodes = page.getByXPath(xpathExpr);
             nodeMap.put(hash, nodes);
         }
-        LOGGER.trace(
+        LOGGER.trace(getMarker(), "------Region------");
+        LOGGER.trace(getMarker(),
                 "Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
         for (Object o : nodes) {
             DomNode node = (DomNode) o;
@@ -200,7 +288,9 @@ public abstract class HtmlParser extends BaseParser {
         final int numOfLines = 5;
         String value = null;
         List<?> nodes = node.getByXPath(xpathExpr);
-        LOGGER.trace("Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
+        LOGGER.trace(getMarker(), "------Nodes------");
+        LOGGER.trace(getMarker(), Util.buildString("Nodes ",
+                String.valueOf(nodes.size()), " for XPATH: ", xpathExpr));
         for (Object o : nodes) {
             DomNode childNode = (DomNode) o;
             value = childNode.getTextContent();
@@ -208,7 +298,9 @@ public abstract class HtmlParser extends BaseParser {
                     "Data Node \n--------\n", "--------");
             LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
-        LOGGER.trace("Text Content of the node: " + value);
+        LOGGER.trace(getMarker(), "node contents : {}", value);
+        LOGGER.trace(getMarker(), "------ query data end ------");
+        LOGGER.trace(getMarker(), "");
         return value;
     }
 
@@ -217,13 +309,11 @@ public abstract class HtmlParser extends BaseParser {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }
-        String line = "\n";
-        sb.append(line);
+        sb.append(Util.LINE);
+        sb.append("  ");
         sb.append(header);
-        sb.append(line);
         for (FieldsBase field : fields) {
             sb.append(field);
-            sb.append(line);
         }
     }
 

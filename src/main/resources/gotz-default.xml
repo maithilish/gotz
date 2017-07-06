@@ -21,7 +21,9 @@
         </poolsize>
         <webClient>
             <timeout>120000</timeout>
-            <userAgent>Mozilla/5.0</userAgent>
+            <userAgent>
+                Mozilla/5.0 (X11\; Linux x86_64\; rv:50.0) Gecko/20100101 Firefox/50.0
+            </userAgent>
         </webClient>
         <highDate>31-12-2099 23:59:59.999</highDate>
         <dateParsePattern>dd-MM-yyyy ; dd/MM/yyyy</dateParsePattern>

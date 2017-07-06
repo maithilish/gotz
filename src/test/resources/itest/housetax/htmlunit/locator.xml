@@ -2,8 +2,7 @@
 
 <locators xmlns="http://codetab.org/gotz">
     <locators group="html">
-        <locator name="taxes"
-            url="file://orange/data/workspace/gotz/src/main/resources/defs/simple/html/taxes.html">
+        <locator name="taxes" url="src/test/resources/itest/housetax/htmlunit/taxes.html">
         </locator>
     </locators>
 </locators>

@@ -14,8 +14,11 @@ import org.junit.Test;
 
 public class ItcPlIT {
 
+    /*
+     * uses JSoup Parser
+     */
     @Test
-    public void itcPlTest() {
+    public void itcPlJSoupTest() {
 
         System.setProperty("gotz.beanFile", "/itest/itc/pl/bean.xml");
 
@@ -34,6 +37,34 @@ public class ItcPlIT {
         List<Object> actual = listAppender.getList();
         List<String> expected =
                 TestUtil.readFileAsList("/itest/itc/pl/expected.txt");
+
+        assertThat(actual.size()).isEqualTo(expected.size());
+        assertThat(actual).containsAll(expected);
+    }
+
+    /*
+     * uses HtmlUnit HtmlParser
+     */
+    @Test
+    public void itcPlHtmlUnitTest() {
+
+        System.setProperty("gotz.beanFile", "/itest/itc/pl/htmlunit/bean.xml");
+
+        DInjector dInjector = new DInjector().instance(DInjector.class);
+        GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);
+        gotzEngine.start();
+
+        AppenderService appenderService =
+                dInjector.instance(AppenderService.class);
+        Appender ap = appenderService.getAppender("list");
+        ListAppender listAppender = null;
+        if (ap instanceof ListAppender) {
+            listAppender = (ListAppender) ap;
+        }
+
+        List<Object> actual = listAppender.getList();
+        List<String> expected =
+                TestUtil.readFileAsList("/itest/itc/pl/htmlunit/expected.txt");
 
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).containsAll(expected);

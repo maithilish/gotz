@@ -25,12 +25,8 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     static final Logger LOGGER =
             LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
 
-    private BeanService beanService;
-
     @Inject
-    void setBeanService(final BeanService beanService) {
-        this.beanService = beanService;
-    }
+    private BeanService beanService;
 
     @Override
     public IStep instance() {

@@ -169,8 +169,10 @@ public class ConfigServiceTest {
 
         assertThat("120000")
                 .isEqualTo(configuration.getString("gotz.webClient.timeout"));
-        assertThat("Mozilla/5.0")
-                .isEqualTo(configuration.getString("gotz.webClient.userAgent"));
+        assertThat(
+                "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0")
+                        .isEqualTo(configuration
+                                .getString("gotz.webClient.userAgent"));
 
         assertThat("31-12-2099 23:59:59.999")
                 .isEqualTo(configuration.getString("gotz.highDate"));

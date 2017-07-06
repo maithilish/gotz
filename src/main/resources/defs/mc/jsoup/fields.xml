@@ -9,7 +9,7 @@
                 <field name="unique" value="true" />
             </fields>
             <fields name="step" value="loader">
-                <field name="class" value="org.codetab.gotz.steps.JSoupHtmlLoader" />
+                <field name="class" value="org.codetab.gotz.steps.URLLoader" />
                 <field name="nextstep" value="parser" />
                 <field name="unique" value="true" />
             </fields>

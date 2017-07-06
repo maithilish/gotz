@@ -8,11 +8,13 @@ import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -23,12 +25,8 @@ public final class HtmlLocatorParser extends HtmlParser {
     static final Logger LOGGER =
             LoggerFactory.getLogger(HtmlLocatorParser.class);
 
-    private BeanService beanService;
-
     @Inject
-    void setBeanService(final BeanService beanService) {
-        this.beanService = beanService;
-    }
+    private BeanService beanService;
 
     @Override
     public IStep instance() {
@@ -37,7 +35,7 @@ public final class HtmlLocatorParser extends HtmlParser {
 
     @Override
     public boolean handover() {
-        final int sleepMillis = 1000;
+        final long sleepMillis = 1000;
         for (Member member : getData().getMembers()) {
             Locator locator = null;
             try {
@@ -66,22 +64,34 @@ public final class HtmlLocatorParser extends HtmlParser {
         locator.setName(OFieldsUtil.getValue(getFields(), "locatorName"));
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
-            String message =
-                    Util.buildString("unable to create new locator. define ",
-                            "group for member in datadef of locator type ",
-                            member.getName());
+            String message = Util.buildString(
+                    "unable to create new locator. define group for member ",
+                    "in datadef of locator type ", member.getName());
             throw new FieldNotFoundException(message);
         } else {
             locator.setGroup(member.getGroup());
             List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
             locator.getFields().addAll(groupFields);
-            List<FieldsBase> stepFields = getGroupFields("steps");
-            locator.getFields().addAll(stepFields);
+            List<FieldsBase> stepsGroup = getGroupFields("steps");
+            List<FieldsBase> stepFields =
+                    FieldsUtil.filterByName(stepsGroup, "step");
+
+            List<Fields> dataDefGroup = FieldsUtil
+                    .filterByGroupAsFields(locator.getFields(), "datadef");
+            for (Fields dataDefFields : dataDefGroup) {
+                for (FieldsBase step : stepFields) {
+                    if (!FieldsUtil.contains(dataDefFields, step.getName(),
+                            step.getValue())) {
+                        dataDefFields.getFields().add(step);
+                    }
+                }
+            }
             if (member.getFields() != null) {
                 locator.getFields().addAll(member.getFields());
             }
         }
-        LOGGER.trace("created new {} {}", locator, locator.getUrl());
+        LOGGER.trace(getMarker(), "created new {} {}", locator,
+                locator.getUrl());
         return locator;
     }
 

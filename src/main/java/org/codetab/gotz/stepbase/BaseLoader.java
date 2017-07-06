@@ -158,7 +158,8 @@ public abstract class BaseLoader extends Step {
                 throw new StepRunException(givenUpMessage, e);
             }
         } else {
-            LOGGER.debug("Persist [false]. Not Stored {}", locator);
+            LOGGER.debug("locator[{}:{}] is not stored as [persist=false]",
+                    locator.getName(), locator.getGroup());
         }
         setStepState(StepState.STORE);
         return true;

@@ -15,7 +15,7 @@ import org.junit.Test;
 public class HouseTaxIT {
 
     @Test
-    public void houseTaxTest() {
+    public void houseTaxJsoupTest() {
 
         System.setProperty("gotz.beanFile", "/itest/housetax/bean.xml");
 
@@ -34,6 +34,32 @@ public class HouseTaxIT {
         List<Object> actual = listAppender.getList();
         List<String> expected =
                 TestUtil.readFileAsList("/itest/housetax/expected.txt");
+
+        assertThat(actual.size()).isEqualTo(expected.size());
+        assertThat(actual).containsAll(expected);
+    }
+
+    @Test
+    public void houseTaxHtmlUnitTest() {
+
+        System.setProperty("gotz.beanFile",
+                "/itest/housetax/htmlunit/bean.xml");
+
+        DInjector dInjector = new DInjector().instance(DInjector.class);
+        GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);
+        gotzEngine.start();
+
+        AppenderService appenderService =
+                dInjector.instance(AppenderService.class);
+        Appender ap = appenderService.getAppender("list");
+        ListAppender listAppender = null;
+        if (ap instanceof ListAppender) {
+            listAppender = (ListAppender) ap;
+        }
+
+        List<Object> actual = listAppender.getList();
+        List<String> expected = TestUtil
+                .readFileAsList("/itest/housetax/htmlunit/expected.txt");
 
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).containsAll(expected);

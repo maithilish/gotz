@@ -29,11 +29,13 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.persistence.DataDefPersistence;
+import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.validation.DataDefValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 @Singleton
 public class DataDefService {
@@ -218,15 +220,19 @@ public class DataDefService {
         logger.trace("---- Trace data structure ----");
         logger.trace("");
         for (DataDef dataDef : dataDefs) {
-            String dataDefName = dataDef.getName();
+            if (dataDef.getAxis().size() == 0) {
+                continue;
+            }
             try {
-                traceDataStructure(getDataTemplate(dataDefName));
+                String dataDefName = dataDef.getName();
+                Data data = getDataTemplate(dataDefName);
+                traceDataStructure(dataDefName, data);
             } catch (DataDefNotFoundException e) {
             }
         }
     }
 
-    public void traceDataStructure(final Data data) {
+    public void traceDataStructure(final String dataDefName, final Data data) {
         String line = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
         sb.append("DataDef [name=");
@@ -248,7 +254,8 @@ public class DataDefService {
             }
             sb.append(line);
         }
-        logger.trace("{}", sb);
+        Marker marker = MarkerUtil.getMarker(dataDefName);
+        logger.trace(marker, "{}", sb);
     }
 
     public void traceDataDefs() {
@@ -257,20 +264,8 @@ public class DataDefService {
         }
         logger.trace("--- Trace DataDefs ----");
         for (DataDef dataDef : dataDefs) {
-            StringBuilder sb = formattedDataDef(dataDef);
-            logger.trace("{}", sb);
+            Marker marker = MarkerUtil.getMarker(dataDef.getName());
+            logger.trace(marker, "{}", dataDef);
         }
-    }
-
-    private StringBuilder formattedDataDef(final DataDef dataDef) {
-        String line = System.lineSeparator();
-        String json = Util.getIndentedJson(dataDef, true);
-        StringBuilder sb = new StringBuilder();
-        sb.append("DataDef [name=");
-        sb.append(dataDef.getName());
-        sb.append("]");
-        sb.append(line);
-        sb.append(json);
-        return sb;
     }
 }

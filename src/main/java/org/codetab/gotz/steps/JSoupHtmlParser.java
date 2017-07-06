@@ -35,8 +35,15 @@ public abstract class JSoupHtmlParser extends BaseParser {
     private Map<Integer, Elements> elementsMap;
     private ScriptEngine jsEngine;
 
+    // TODO add marker to all trace calls. entire project
+
     public JSoupHtmlParser() {
         elementsMap = new HashMap<>();
+    }
+
+    @Override
+    protected boolean postInitialize() {
+        return true;
     }
 
     /*
@@ -68,8 +75,9 @@ public abstract class JSoupHtmlParser extends BaseParser {
                 axis.setIndex(startIndex);
             }
             if (isDocumentLoaded() && axis.getValue() == null) {
-                String docHtml = (String) getDocument().getDocumentObject();
-                Document doc = Jsoup.parse(docHtml);
+                byte[] bytes = (byte[]) getDocument().getDocumentObject();
+                String html = new String(bytes);
+                Document doc = Jsoup.parse(html);
                 String value = getValue(doc, dataDef, member, axis);
                 axis.setValue(value);
             }
@@ -83,6 +91,8 @@ public abstract class JSoupHtmlParser extends BaseParser {
             final Member member, final Axis axis)
             throws ScriptException, IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
+        // TODO explore whether query can be made strict so that it has
+        // to return value else raise StepRunException
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list =
@@ -90,11 +100,12 @@ public abstract class JSoupHtmlParser extends BaseParser {
         try {
             List<FieldsBase> scripts =
                     OFieldsUtil.getGroupFields(list, "script");
-            setTraceString(sb, scripts, "--- Script ---");
+            setTraceString(sb, scripts, "<<<");
             scripts =
                     OFieldsUtil.replaceVariables(scripts, member.getAxisMap());
-            setTraceString(sb, scripts, "-- Patched --");
-            LOGGER.trace(getMarker(), "{}", sb);
+            setTraceString(sb, scripts, ">>>>");
+            LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
+                    sb.toString(), Util.LINE);
             value = queryByScript(scripts);
         } catch (FieldNotFoundException e) {
         }
@@ -102,11 +113,12 @@ public abstract class JSoupHtmlParser extends BaseParser {
         try {
             List<FieldsBase> queries =
                     OFieldsUtil.getGroupFields(list, "query");
-            setTraceString(sb, queries, "--- Query ---");
+            setTraceString(sb, queries, "<<<");
             queries =
                     OFieldsUtil.replaceVariables(queries, member.getAxisMap());
-            setTraceString(sb, queries, "-- Patched --");
-            LOGGER.trace(getMarker(), "{}", sb);
+            setTraceString(sb, queries, ">>>>");
+            LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
+                    sb.toString(), Util.LINE);
             value = queryBySelector(page, queries);
         } catch (FieldNotFoundException e) {
         }
@@ -127,12 +139,16 @@ public abstract class JSoupHtmlParser extends BaseParser {
         if (jsEngine == null) {
             initializeScriptEngine();
         }
-        LOGGER.trace("------Query Data------");
-        LOGGER.trace("Scripts {} ", scripts);
+        LOGGER.trace(getMarker(), "------ query data ------");
+        LOGGER.trace(getMarker(), "Scripts {} ", scripts);
         jsEngine.put("configs", configService);
         String scriptStr = OFieldsUtil.getValue(scripts, "script");
-        Object value = jsEngine.eval(scriptStr);
-        return ConvertUtils.convert(value);
+        Object val = jsEngine.eval(scriptStr);
+        String value = ConvertUtils.convert(val);
+        LOGGER.trace(getMarker(), "result {}", value);
+        LOGGER.trace(getMarker(), "------ query data end ------");
+        LOGGER.trace(getMarker(), "");
+        return value;
     }
 
     private void initializeScriptEngine() {
@@ -152,8 +168,8 @@ public abstract class JSoupHtmlParser extends BaseParser {
                     getDataDefName());
             return null;
         }
-        LOGGER.trace("------Query Data------");
-        LOGGER.trace("Queries {} ", queries);
+        LOGGER.trace(getMarker(), "------ query data ------");
+        LOGGER.trace(getMarker(), "Queries {} ", queries);
         String regionXpathExpr = OFieldsUtil.getValue(queries, "region");
         String xpathExpr = OFieldsUtil.getValue(queries, "field");
         String attr = null;
@@ -190,7 +206,8 @@ public abstract class JSoupHtmlParser extends BaseParser {
             elementsMap.put(hash, elements);
         }
 
-        LOGGER.trace(
+        LOGGER.trace(getMarker(), "------Region------");
+        LOGGER.trace(getMarker(),
                 "Region Nodes " + elements.size() + " for XPATH: " + xpathExpr);
         for (Element element : elements) {
             String nodeTraceStr = Util.stripe(element.outerHtml(), numOfLines,
@@ -205,6 +222,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
         final int numOfLines = 5;
         String value = null;
         Elements subElements = elements.select(xpathExpr);
+        LOGGER.trace(getMarker(), "------Node------");
         LOGGER.trace(
                 "Nodes " + subElements.size() + " for XPATH: " + xpathExpr);
         for (Element element : subElements) {
@@ -217,7 +235,9 @@ public abstract class JSoupHtmlParser extends BaseParser {
                     "Data Node \n--------\n", "--------");
             LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
-        LOGGER.trace("Text Content of the node: " + value);
+        LOGGER.trace(getMarker(), "Node contents : {}", value);
+        LOGGER.trace(getMarker(), "------ query data end ------");
+        LOGGER.trace(getMarker(), "");
         return value;
     }
 
@@ -226,14 +246,11 @@ public abstract class JSoupHtmlParser extends BaseParser {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }
-        String line = "\n";
-        sb.append(line);
+        sb.append(Util.LINE);
+        sb.append("  ");
         sb.append(header);
-        sb.append(line);
         for (FieldsBase field : fields) {
             sb.append(field);
-            sb.append(line);
         }
     }
-
 }

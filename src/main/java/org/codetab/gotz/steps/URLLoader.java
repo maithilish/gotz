@@ -1,22 +1,21 @@
 package org.codetab.gotz.steps;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.net.URLConnection;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.stepbase.BaseLoader;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class JSoupHtmlLoader extends BaseLoader {
+public class URLLoader extends BaseLoader {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(JSoupHtmlLoader.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(URLLoader.class);
+
     private static final int TIMEOUT_MILLIS = 120000;
 
     @Override
@@ -26,20 +25,27 @@ public final class JSoupHtmlLoader extends BaseLoader {
 
     @Override
     public Object fetchDocument(final String url) throws IOException {
-        // TODO handle relative files
+        // TODO charset encoding
         LOGGER.info("fetch web resource {}", url);
-        Document doc;
+        byte[] bytes;
         if (UrlValidator.getInstance().isValid(url)) {
-            doc = Jsoup.connect(url).userAgent(getUserAgent())
-                    .timeout(getTimeout()).get();
+            URL webURL = new URL(url);
+            URLConnection uc = webURL.openConnection();
+
+            int timeout = getTimeout();
+            uc.setConnectTimeout(timeout);
+            uc.setReadTimeout(timeout);
+
+            uc.setRequestProperty("User-Agent", getUserAgent());
+
+            bytes = IOUtils.toByteArray(uc);
             LOGGER.debug("fetched web resource {}", url);
         } else {
             URL fileURL = new URL(new URL("file:"), url);
-            File file = FileUtils.toFile(fileURL);
-            doc = Jsoup.parse(file, null);
+            bytes = IOUtils.toByteArray(fileURL);
             LOGGER.debug("fetched file resource {}", url);
         }
-        return doc.toString();
+        return bytes;
     }
 
     private int getTimeout() {
@@ -58,7 +64,7 @@ public final class JSoupHtmlLoader extends BaseLoader {
 
     private String getUserAgent() {
         String userAgent =
-                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:15.0) Gecko/20100101 Firefox/15.0.1";
+                "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0";
         String key = "gotz.webClient.userAgent";
         try {
             userAgent = configService.getConfig(key);
@@ -69,4 +75,5 @@ public final class JSoupHtmlLoader extends BaseLoader {
         }
         return userAgent;
     }
+
 }

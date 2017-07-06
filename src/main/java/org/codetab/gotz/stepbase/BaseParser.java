@@ -2,6 +2,7 @@ package org.codetab.gotz.stepbase;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -41,6 +42,7 @@ public abstract class BaseParser extends Step {
     private Document document;
     private Data data;
     private Marker marker;
+    private String label;
 
     private Set<Integer[]> memberIndexSet = new HashSet<>();
 
@@ -57,11 +59,15 @@ public abstract class BaseParser extends Step {
                     OFieldsUtil.getValue(getFields(), "locatorGroup");
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
                     dataDefName);
+            label = Util.buildString(locatorName, ":", locatorGroup, ":",
+                    dataDefName);
         } catch (FieldNotFoundException e) {
             throw new StepRunException("unable to initialize parser", e);
         }
-        return true;
+        return postInitialize();
     }
+
+    protected abstract boolean postInitialize();
 
     /*
      * (non-Javadoc)
@@ -119,7 +125,8 @@ public abstract class BaseParser extends Step {
             data = dataPersistence.loadData(data.getId());
             LOGGER.debug("Stored {}", data);
         } else {
-            LOGGER.debug("Persist Data [false]. Not Stored {}", data);
+            LOGGER.debug("Data for [{}] is not stored as [persist=false]",
+                    label);
         }
         return true;
     }
@@ -138,7 +145,7 @@ public abstract class BaseParser extends Step {
     protected abstract void setValue(DataDef dataDef, Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException;
+            NoSuchMethodException, MalformedURLException, IOException;
 
     private void prepareData() throws DataDefNotFoundException,
             ClassNotFoundException, IOException {

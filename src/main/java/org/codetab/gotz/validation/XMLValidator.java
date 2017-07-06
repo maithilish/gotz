@@ -27,10 +27,15 @@ public class XMLValidator {
 
     public boolean validate(final String xmlFile, final String schemaFile)
             throws JAXBException, IOException, SAXException {
+        LOGGER.debug("validate : [{}] with [{}]", xmlFile, schemaFile);
         try (InputStream xmlStream = resourceStream.getInputStream(xmlFile);
                 InputStream schemaStream =
                         resourceStream.getInputStream(schemaFile)) {
             validate(xmlStream, schemaStream);
+            LOGGER.info("validation passed {} + {}", xmlFile, schemaFile);
+        } catch (SAXException e) {
+            throw new SAXException("XML validation failed [" + xmlFile + "] ["
+                    + schemaFile + "]");
         }
         return true;
     }
@@ -38,22 +43,13 @@ public class XMLValidator {
     public boolean validate(final InputStream xmlStream,
             final InputStream schemaStream)
             throws JAXBException, IOException, SAXException {
-        LOGGER.debug("validate : [{}] with [{}]", xmlStream, schemaStream);
-        try {
-            SchemaFactory schemaFactory = SchemaFactory
-                    .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            Schema schema =
-                    schemaFactory.newSchema(new StreamSource(schemaStream));
-            Validator validator = schema.newValidator();
-            validator.setErrorHandler(new ValidationErrorHandler());
-            validator.validate(new StreamSource(xmlStream));
-            LOGGER.debug("validated Bean file [{}] with [{}]", xmlStream,
-                    schemaStream);
-            return true;
-        } catch (SAXException e) {
-            throw new SAXException("XML validation failed [" + xmlStream + "] ["
-                    + schemaStream + "]");
-        }
+        SchemaFactory schemaFactory = SchemaFactory
+                .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+        Validator validator = schema.newValidator();
+        validator.setErrorHandler(new ValidationErrorHandler());
+        validator.validate(new StreamSource(xmlStream));
+        return true;
     }
 
     private static class ValidationErrorHandler implements ErrorHandler {

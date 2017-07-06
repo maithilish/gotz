@@ -4,20 +4,22 @@
     <datadef name="taxtable">
         <axis name="col">
             <fields name="group" value="query">
-                <field name="region" value="//table" />
-                <field name="field" value="*//tr[1]/th[%{col.index}+1]" />
+                <field name="region" value="table:contains(Taxes)" />
+                <field name="field"
+                    value="tbody > tr:nth-child(1) > th:nth-child(%{col.index})" />
             </fields>
-            <member name="year">
+            <member name="year" index="2">
                 <!-- <field name="indexRange" value="1-1" /> -->
                 <field name="breakAfter" value="2017" />
             </member>
         </axis>
         <axis name="row">
             <fields name="group" value="query">
-                <field name="region" value="//table" />
-                <field name="field" value="*//tr[%{row.index}+1]/td[1]" />
+                <field name="region" value="table:contains(Taxes)" />
+                <field name="field"
+                    value="tbody > tr:nth-child(%{row.index}) > td:nth-child(1)" />
             </fields>
-            <member name="item">
+            <member name="item" index="2">
                 <!-- <field name="indexRange" value="1-1" /> -->
                 <field name="breakAfter" value="GF" />
             </member>
@@ -29,9 +31,9 @@
         </axis>
         <axis name="fact">
             <fields name="group" value="query">
-                <field name="region" value="//table" />
+                <field name="region" value="table:contains(Taxes)" />
                 <field name="field"
-                    value="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
+                    value="tbody > tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
             </fields>
         </axis>
     </datadef>

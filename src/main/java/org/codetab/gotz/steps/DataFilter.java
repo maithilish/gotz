@@ -53,7 +53,7 @@ public final class DataFilter extends BaseFilter {
         for (Member member : forRemovalMembers) {
             getData().getMembers().remove(member);
         }
-        dataDefService.traceDataStructure(getData());
+        dataDefService.traceDataStructure(getData().getDataDef(), getData());
         setConsistent(true);
         setStepState(StepState.PROCESS);
         return true;
