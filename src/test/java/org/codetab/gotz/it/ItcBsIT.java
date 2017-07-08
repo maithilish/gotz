@@ -2,7 +2,6 @@ package org.codetab.gotz.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.codetab.gotz.GotzEngine;
@@ -64,12 +63,6 @@ public class ItcBsIT {
         }
 
         List<Object> actual = listAppender.getList();
-        try {
-            TestUtil.writeListToFile(actual, "x.txt");
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         List<String> expected =
                 TestUtil.readFileAsList("/itest/itc/bs/htmlunit/expected.txt");
 

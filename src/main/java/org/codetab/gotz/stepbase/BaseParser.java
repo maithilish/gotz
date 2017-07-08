@@ -18,6 +18,7 @@ import org.apache.commons.lang3.Range;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
@@ -42,7 +43,6 @@ public abstract class BaseParser extends Step {
     private Document document;
     private Data data;
     private Marker marker;
-    private String label;
 
     private Set<Integer[]> memberIndexSet = new HashSet<>();
 
@@ -58,8 +58,6 @@ public abstract class BaseParser extends Step {
             String locatorGroup =
                     OFieldsUtil.getValue(getFields(), "locatorGroup");
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
-                    dataDefName);
-            label = Util.buildString(locatorName, ":", locatorGroup, ":",
                     dataDefName);
         } catch (FieldNotFoundException e) {
             throw new StepRunException("unable to initialize parser", e);
@@ -126,7 +124,7 @@ public abstract class BaseParser extends Step {
             LOGGER.debug("Stored {}", data);
         } else {
             LOGGER.debug("Data for [{}] is not stored as [persist=false]",
-                    label);
+                    getLabel());
         }
         return true;
     }
@@ -138,8 +136,20 @@ public abstract class BaseParser extends Step {
      */
     @Override
     public boolean handover() {
-        stepService.pushTask(this, data, getFields());
+        List<FieldsBase> nextStepFields = createNextStepFields();
+        stepService.pushTask(this, data, nextStepFields);
         return true;
+    }
+
+    private List<FieldsBase> createNextStepFields() {
+        List<FieldsBase> nextStepFields = getFields();
+        if (nextStepFields.size() == 0) {
+            String message = "unable to get next step fields";
+            LOGGER.error("{} {}", message, getLabel());
+            activityService.addActivity(Type.GIVENUP, message);
+            throw new StepRunException(message);
+        }
+        return nextStepFields;
     }
 
     protected abstract void setValue(DataDef dataDef, Member member)

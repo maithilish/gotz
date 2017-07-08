@@ -1,8 +1,12 @@
 package org.codetab.gotz.stepbase;
 
+import java.util.List;
+
+import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
+import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.step.Step;
-import org.codetab.gotz.step.StepState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +38,20 @@ public abstract class BaseFilter extends Step {
      */
     @Override
     public boolean handover() {
-        stepService.pushTask(this, data, getFields());
-        setStepState(StepState.HANDOVER);
+        List<FieldsBase> nextStepFields = createNextStepFields();
+        stepService.pushTask(this, data, nextStepFields);
         return true;
+    }
+
+    private List<FieldsBase> createNextStepFields() {
+        List<FieldsBase> nextStepFields = getFields();
+        if (nextStepFields.size() == 0) {
+            String message = "unable to get next step fields";
+            LOGGER.error("{} {}", message, getLabel());
+            activityService.addActivity(Type.GIVENUP, message);
+            throw new StepRunException(message);
+        }
+        return nextStepFields;
     }
 
     /*

@@ -14,7 +14,6 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.helper.DocumentHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.persistence.DocumentPersistence;
@@ -178,11 +177,9 @@ public abstract class BaseLoader extends Step {
         String givenUpMessage = Util.buildString("create parser for locator [",
                 locator.getName(), "] failed.");
 
-        // List<FieldsBase> stepsFields = null;
         List<FieldsBase> dataDefFields = null;
         try {
-            // stepsFields = OFieldsUtil.getGroupFields(locator.getFields(),
-            // "steps");
+
             dataDefFields =
                     FieldsUtil.filterByGroup(locator.getFields(), "datadef");
         } catch (FieldNotFoundException e) {
@@ -191,36 +188,47 @@ public abstract class BaseLoader extends Step {
             throw new StepRunException(givenUpMessage, e);
         }
         for (FieldsBase dataDefField : dataDefFields) {
-            if (dataDefField instanceof Fields) {
-                Fields dataDefFieldCopy = null;
-                try {
-                    dataDefFieldCopy =
-                            Util.deepClone(Fields.class, (Fields) dataDefField);
-                } catch (ClassNotFoundException | IOException e) {
-                    LOGGER.error("{} {}", "unable to clone fields",
-                            e.getLocalizedMessage());
+            if (isDocumentLoaded()) {
+                List<FieldsBase> nextStepFields =
+                        createNextStepFields(dataDefField);
+                if (nextStepFields.size() == 0) {
+                    String message = "unable to get next step fields";
+                    LOGGER.error("{} {}", message, locator);
+                    activityService.addActivity(Type.GIVENUP,
+                            Util.buildString(givenUpMessage, " : ", message));
                     continue;
                 }
-                if (isDocumentLoaded()) {
-                    List<FieldsBase> nextStepFields = new ArrayList<>();
-                    nextStepFields.add(dataDefFieldCopy);
-                    // nextStepFields.addAll(stepsFields);
-                    nextStepFields.add(OFieldsUtil.createField("locatorName",
-                            locator.getName()));
-                    nextStepFields.add(OFieldsUtil.createField("locatorGroup",
-                            locator.getGroup()));
-                    nextStepFields.add(OFieldsUtil.createField("locatorUrl",
-                            locator.getUrl()));
-                    stepService.pushTask(this, document, nextStepFields);
-                } else {
-                    LOGGER.warn("Document not loaded - Locator [{}]", locator);
-                    activityService.addActivity(Type.GIVENUP,
-                            "Document not loaded. " + givenUpMessage);
-                }
+                stepService.pushTask(this, document, nextStepFields);
+            } else {
+                String message = "document not loaded";
+                LOGGER.error("{} {}", message, locator);
+                activityService.addActivity(Type.GIVENUP,
+                        Util.buildString(givenUpMessage, " : ", message));
             }
         }
         setStepState(StepState.HANDOVER);
         return true;
+    }
+
+    private List<FieldsBase> createNextStepFields(
+            final FieldsBase dataDefField) {
+        List<FieldsBase> nextStepFields = new ArrayList<>();
+        FieldsBase dataDefFieldCopy = null;
+        try {
+            dataDefFieldCopy = Util.deepClone(FieldsBase.class, dataDefField);
+        } catch (ClassNotFoundException | IOException e) {
+            LOGGER.error("{} {}", "unable to clone datadef fields",
+                    e.getLocalizedMessage());
+            return nextStepFields;
+        }
+        nextStepFields.add(dataDefFieldCopy);
+        nextStepFields
+                .add(FieldsUtil.createField("locatorName", locator.getName()));
+        nextStepFields.add(
+                FieldsUtil.createField("locatorGroup", locator.getGroup()));
+        nextStepFields
+                .add(FieldsUtil.createField("locatorUrl", locator.getUrl()));
+        return nextStepFields;
     }
 
     /*

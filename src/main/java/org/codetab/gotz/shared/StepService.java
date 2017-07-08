@@ -59,10 +59,7 @@ public class StepService {
 
     public void pushTask(final Step step, final Object input,
             final List<FieldsBase> nextStepFields) {
-        try {
-            nextStepFields.add(FieldsUtil.getField(step.getFields(), "label"));
-        } catch (FieldNotFoundException e1) {
-        }
+        addLabelField(step, nextStepFields);
 
         String label = step.getLabel();
         String givenUpMessage = Util.buildString("[", label, "] step [",
@@ -95,6 +92,18 @@ public class StepService {
             LOGGER.debug("{}", e);
             LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
             activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+        }
+    }
+
+    private void addLabelField(final Step step,
+            final List<FieldsBase> nextStepFields) {
+        if (FieldsUtil.isFieldDefined(step.getFields(), "label")) {
+            return;
+        }
+        try {
+            nextStepFields.add(FieldsUtil.getField(step.getFields(), "label"));
+        } catch (FieldNotFoundException e) {
+            LOGGER.warn("{}", e);
         }
     }
 

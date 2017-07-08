@@ -15,6 +15,13 @@ public final class FieldsUtil {
     private FieldsUtil() {
     }
 
+    public static Field createField(final String name, final String value) {
+        Field field = new Field();
+        field.setName(name);
+        field.setValue(value);
+        return field;
+    }
+
     public static Field getField(final List<FieldsBase> fields,
             final String name) throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
@@ -169,6 +176,16 @@ public final class FieldsUtil {
             }
         }
         return false;
+    }
+
+    public static boolean isFieldDefined(final List<FieldsBase> fields,
+            final String name) {
+        try {
+            OFieldsUtil.getValue(fields, name);
+            return true;
+        } catch (FieldNotFoundException e) {
+            return false;
+        }
     }
 
 }

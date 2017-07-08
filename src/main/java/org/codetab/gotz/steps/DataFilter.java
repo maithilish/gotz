@@ -102,5 +102,4 @@ public final class DataFilter extends BaseFilter {
         }
         return false;
     }
-
 }

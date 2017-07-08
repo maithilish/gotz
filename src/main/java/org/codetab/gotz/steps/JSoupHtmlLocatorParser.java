@@ -48,7 +48,8 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             }
             // String stepType = getStepType();
             // setStepType("seeder");
-            stepService.pushTask(this, locator, locator.getFields());
+            List<FieldsBase> nextStepFields = createNextStepFields(locator);
+            stepService.pushTask(this, locator, nextStepFields);
             // setStepType(stepType);
             try {
                 Thread.sleep(sleepMillis);
@@ -69,12 +70,18 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
                     "in datadef of locator type ", member.getName());
             throw new FieldNotFoundException(message);
         } else {
-            locator.setGroup(member.getGroup());
-            List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
-            locator.getFields().addAll(groupFields);
+            /*
+             * getGroupFields gets cloned fields from BeanService so that new
+             * locator gets fresh set of fields. Ensure that existing fields are
+             * not reused here
+             */
             List<FieldsBase> stepsGroup = getGroupFields("steps");
             List<FieldsBase> stepFields =
                     FieldsUtil.filterByName(stepsGroup, "step");
+
+            locator.setGroup(member.getGroup());
+            List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
+            locator.getFields().addAll(groupFields);
 
             List<Fields> dataDefGroup = FieldsUtil
                     .filterByGroupAsFields(locator.getFields(), "datadef");
@@ -92,6 +99,17 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
         }
         LOGGER.trace("created new {} {}", locator, locator.getUrl());
         return locator;
+    }
+
+    private List<FieldsBase> createNextStepFields(final Locator locator) {
+        List<FieldsBase> nextStepFields = locator.getFields();
+        if (nextStepFields.size() == 0) {
+            String message = "unable to get next step fields";
+            LOGGER.error("{} {}", message, getLabel());
+            activityService.addActivity(Type.GIVENUP, message);
+            throw new StepRunException(message);
+        }
+        return nextStepFields;
     }
 
     private List<FieldsBase> getGroupFields(final String group)
