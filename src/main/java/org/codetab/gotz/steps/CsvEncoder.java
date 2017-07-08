@@ -12,7 +12,7 @@ import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.stepbase.BaseEncoder;
-import org.codetab.gotz.util.OFieldsUtil;
+import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +44,8 @@ public final class CsvEncoder extends BaseEncoder {
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName = OFieldsUtil.getValue(getFields(), "locatorName");
-            locatorGroup = OFieldsUtil.getValue(getFields(), "locatorGroup");
+            locatorName = FieldsUtil.getValue(getFields(), "locatorName");
+            locatorGroup = FieldsUtil.getValue(getFields(), "locatorGroup");
         } catch (FieldNotFoundException e) {
             String message = "unable to get locator name and group";
             LOGGER.error("{} {}", message, Util.getMessage(e));

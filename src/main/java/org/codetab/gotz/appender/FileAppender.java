@@ -13,7 +13,7 @@ import org.apache.commons.io.FileUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.shared.ActivityService;
-import org.codetab.gotz.util.OFieldsUtil;
+import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,7 @@ public final class FileAppender extends Appender {
     public void run() {
         String file = null;
         try {
-            file = OFieldsUtil.getValue(getFields(), "file");
+            file = FieldsUtil.getValue(getFields(), "file");
         } catch (FieldNotFoundException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));

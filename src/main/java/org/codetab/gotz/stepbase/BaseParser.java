@@ -28,8 +28,8 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
+import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +52,11 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean initialize() {
         try {
-            dataDefName = OFieldsUtil.getValue(getFields(), "datadef");
+            dataDefName = FieldsUtil.getValue(getFields(), "datadef");
             String locatorName =
-                    OFieldsUtil.getValue(getFields(), "locatorName");
+                    FieldsUtil.getValue(getFields(), "locatorName");
             String locatorGroup =
-                    OFieldsUtil.getValue(getFields(), "locatorGroup");
+                    FieldsUtil.getValue(getFields(), "locatorGroup");
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
                     dataDefName);
         } catch (FieldNotFoundException e) {
@@ -117,7 +117,11 @@ public abstract class BaseParser extends Step {
      */
     @Override
     public boolean store() {
-        boolean persist = OFieldsUtil.isPersist(getFields(), "data");
+        boolean persist = true;
+        try {
+            persist = FieldsUtil.isTrue(getFields(), "persist", "data");
+        } catch (FieldNotFoundException e) {
+        }
         if (persist) {
             dataPersistence.storeData(data);
             data = dataPersistence.loadData(data.getId());
@@ -237,7 +241,7 @@ public abstract class BaseParser extends Step {
         boolean noField = true;
         try {
             String breakAfter =
-                    OFieldsUtil.getValue(axis.getFields(), "breakAfter");
+                    FieldsUtil.getValue(axis.getFields(), "breakAfter");
             noField = false;
             String value = axis.getValue().trim();
             if (value.equals(breakAfter)) {
@@ -358,7 +362,7 @@ public abstract class BaseParser extends Step {
      */
     protected Integer getStartIndex(final List<FieldsBase> fields)
             throws NumberFormatException, FieldNotFoundException {
-        Range<Integer> indexRange = OFieldsUtil.getRange(fields, "indexRange");
+        Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
         return indexRange.getMinimum();
     }
 
@@ -367,7 +371,7 @@ public abstract class BaseParser extends Step {
      */
     protected Integer getEndIndex(final List<FieldsBase> fields)
             throws NumberFormatException, FieldNotFoundException {
-        Range<Integer> indexRange = OFieldsUtil.getRange(fields, "indexRange");
+        Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
         return indexRange.getMaximum();
     }
 

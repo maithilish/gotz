@@ -10,7 +10,7 @@ import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.util.OFieldsUtil;
+import org.codetab.gotz.util.FieldsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ public abstract class Step implements IStep {
     public final void setFields(final List<FieldsBase> fields) {
         this.fields = fields;
         try {
-            label = OFieldsUtil.getValue(fields, "label");
+            label = FieldsUtil.getValue(fields, "label");
         } catch (FieldNotFoundException e1) {
         }
     }

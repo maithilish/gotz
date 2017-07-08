@@ -13,7 +13,7 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.pool.AppenderPoolService;
-import org.codetab.gotz.util.OFieldsUtil;
+import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +44,7 @@ public class AppenderService {
             final List<FieldsBase> fields)
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, FieldNotFoundException {
-        String appenderClzName = OFieldsUtil.getValue(fields, "class");
+        String appenderClzName = FieldsUtil.getValue(fields, "class");
         if (appenders.containsKey(appenderName)) {
             return;
         }

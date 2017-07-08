@@ -17,7 +17,6 @@ import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.stepbase.BaseSeeder;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,7 +109,7 @@ public class LocatorSeeder extends BaseSeeder {
             List<FieldsBase> classFields = FieldsUtil.filterByValue(fields,
                     "class", Locator.class.getName());
             List<FieldsBase> stepsGroup =
-                    OFieldsUtil.getGroupFields(classFields, "steps");
+                    FieldsUtil.filterByGroup(classFields, "steps");
             List<FieldsBase> stepFields =
                     FieldsUtil.filterByName(stepsGroup, "step");
             setFields(stepFields);
@@ -123,7 +122,7 @@ public class LocatorSeeder extends BaseSeeder {
     private void addLabelField(final Locator locator) {
         String label =
                 Util.buildString(locator.getName(), ":", locator.getGroup());
-        FieldsBase field = OFieldsUtil.createField("label", label);
+        FieldsBase field = FieldsUtil.createField("label", label);
         locator.getFields().add(field);
     }
 

@@ -15,7 +15,6 @@ import org.codetab.gotz.model.Member;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.FieldsUtil;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,7 @@ public final class HtmlLocatorParser extends HtmlParser {
     private Locator createLocator(final Member member)
             throws FieldNotFoundException {
         Locator locator = new Locator();
-        locator.setName(OFieldsUtil.getValue(getFields(), "locatorName"));
+        locator.setName(FieldsUtil.getValue(getFields(), "locatorName"));
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
             String message = Util.buildString(
@@ -98,11 +97,11 @@ public final class HtmlLocatorParser extends HtmlParser {
     private List<FieldsBase> getGroupFields(final String group)
             throws FieldNotFoundException {
         List<FieldsBase> fieldsBeans = beanService.getBeans(FieldsBase.class);
-        FieldsBase classFields = OFieldsUtil.getFieldsByValue(fieldsBeans,
+        List<FieldsBase> classFields = FieldsUtil.filterByValue(fieldsBeans,
                 "class", Locator.class.getName());
         if (classFields != null) {
             List<FieldsBase> fields =
-                    OFieldsUtil.getGroupFields(classFields, group);
+                    FieldsUtil.filterByGroup(classFields, group);
             return fields;
         }
         return null;

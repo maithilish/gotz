@@ -29,8 +29,8 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.persistence.DataDefPersistence;
+import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.validation.DataDefValidator;
 import org.slf4j.Logger;
@@ -142,15 +142,15 @@ public class DataDefService {
                 try {
                     // fields from DMember level are added in createAxis()
                     // fields from datadef level are added here
-                    FieldsBase fields = OFieldsUtil.getFieldsByValue(
+                    List<FieldsBase> fields = FieldsUtil.filterByValue(
                             dataDef.getFields(), "member", dMember.getName());
-                    dataMember.getFields().add(fields);
+                    dataMember.getFields().addAll(fields);
                 } catch (FieldNotFoundException e) {
                 }
             }
             try {
                 String group =
-                        OFieldsUtil.getValue(dataMember.getFields(), "group");
+                        FieldsUtil.getValue(dataMember.getFields(), "group");
                 dataMember.setGroup(group);
             } catch (FieldNotFoundException e) {
             }
@@ -244,7 +244,7 @@ public class DataDefService {
         Collections.sort(data.getMembers(), new ColComparator());
         for (Member member : data.getMembers()) {
             sb.append("Member [");
-            sb.append(OFieldsUtil.getFormattedFields(member.getFields()));
+            sb.append(member.getFields());
             sb.append(line);
             List<Axis> axes = new ArrayList<Axis>(member.getAxes());
             Collections.sort(axes);

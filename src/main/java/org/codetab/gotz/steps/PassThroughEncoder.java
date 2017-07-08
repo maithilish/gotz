@@ -15,7 +15,6 @@ import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsUtil;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +42,7 @@ public class PassThroughEncoder extends Step {
             List<FieldsBase> appenders =
                     FieldsUtil.filterByName(getFields(), "appender");
             for (FieldsBase appender : appenders) {
-                List<FieldsBase> fields = OFieldsUtil.asList(appender);
+                List<FieldsBase> fields = FieldsUtil.asList(appender);
                 try {
                     String appenderName = appender.getValue();
                     appenderService.createAppender(appenderName, fields);

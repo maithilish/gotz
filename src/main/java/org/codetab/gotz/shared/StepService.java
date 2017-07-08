@@ -9,14 +9,12 @@ import javax.inject.Singleton;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.Task;
 import org.codetab.gotz.util.FieldsUtil;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +57,9 @@ public class StepService {
 
     public void pushTask(final Step step, final Object input,
             final List<FieldsBase> nextStepFields) {
+        String label = step.getLabel();
         addLabelField(step, nextStepFields);
 
-        String label = step.getLabel();
         String givenUpMessage = Util.buildString("[", label, "] step [",
                 step.getStepType(), "] create next step failed");
         try {
@@ -97,14 +95,15 @@ public class StepService {
 
     private void addLabelField(final Step step,
             final List<FieldsBase> nextStepFields) {
-        if (FieldsUtil.isFieldDefined(step.getFields(), "label")) {
+        if (FieldsUtil.isDefined(nextStepFields, "label")) {
             return;
         }
-        try {
-            nextStepFields.add(FieldsUtil.getField(step.getFields(), "label"));
-        } catch (FieldNotFoundException e) {
-            LOGGER.warn("{}", e);
+        String label = step.getLabel();
+        if (label == null) {
+            LOGGER.warn("unable to add label field to next step");
+            return;
         }
+        nextStepFields.add(FieldsUtil.createField("label", label));
     }
 
     private List<FieldsBase> getNextStepClasses(final List<FieldsBase> fields,
@@ -130,10 +129,9 @@ public class StepService {
 
     public String getNextStepType(final List<FieldsBase> fields,
             final String stepType) throws FieldNotFoundException {
-        FieldsBase step =
-                OFieldsUtil.getFieldsByValue(fields, "step", stepType);
-        Field nextStep = OFieldsUtil.getField(step, "nextstep");
-        return nextStep.getValue();
+        List<FieldsBase> step =
+                FieldsUtil.filterByValue(fields, "step", stepType);
+        return FieldsUtil.getValue(step, "nextstep");
     }
 
     /**

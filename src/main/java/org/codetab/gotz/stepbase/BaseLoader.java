@@ -22,7 +22,6 @@ import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
-import org.codetab.gotz.util.OFieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +47,9 @@ public abstract class BaseLoader extends Step {
     @Override
     public boolean initialize() {
         // TODO write test
-        marker = MarkerUtil.getMarker(locator.getName(), locator.getGroup());
+        String lName = locator.getName();
+        String lGroup = locator.getGroup();
+        marker = MarkerUtil.getMarker(lName, lGroup);
         return true;
     }
 
@@ -133,8 +134,12 @@ public abstract class BaseLoader extends Step {
      */
     @Override
     public boolean store() {
-        boolean persist =
-                OFieldsUtil.isPersist(locator.getFields(), "document");
+        boolean persist = true;
+        try {
+            persist = FieldsUtil.isTrue(locator.getFields(), "persist",
+                    "document");
+        } catch (FieldNotFoundException e) {
+        }
         if (persist) {
             /*
              * fields are not persistable, so need to set them from the
