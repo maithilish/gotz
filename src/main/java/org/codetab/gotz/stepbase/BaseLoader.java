@@ -220,8 +220,8 @@ public abstract class BaseLoader extends Step {
         List<FieldsBase> nextStepFields = new ArrayList<>();
         FieldsBase dataDefFieldCopy = null;
         try {
-            dataDefFieldCopy = Util.deepClone(FieldsBase.class, dataDefField);
-        } catch (ClassNotFoundException | IOException e) {
+            dataDefFieldCopy = FieldsUtil.deepClone(dataDefField);
+        } catch (RuntimeException e) {
             LOGGER.error("{} {}", "unable to clone datadef fields",
                     e.getLocalizedMessage());
             return nextStepFields;

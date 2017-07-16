@@ -13,8 +13,12 @@ public final class FieldsIterator implements Iterator<FieldsBase> {
     private final Stack<FieldsBase> stack = new Stack<>();
 
     public FieldsIterator(final List<FieldsBase> fieldsBaseList) {
-        for (FieldsBase fieldBase : fieldsBaseList) {
-            stack.push(fieldBase);
+        // for (FieldsBase fieldBase : fieldsBaseList) {
+        // stack.push(fieldBase);
+        // }
+        for (int i = fieldsBaseList.size() - 1; i >= 0; i--) {
+            FieldsBase fb = fieldsBaseList.get(i);
+            stack.push(fb);
         }
     }
 

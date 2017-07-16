@@ -35,6 +35,12 @@ public final class TestUtil {
         return fields;
     }
 
+    public static List<FieldsBase> asList(final FieldsBase fb) {
+        List<FieldsBase> list = new ArrayList<>();
+        list.add(fb);
+        return list;
+    }
+
     public static List<String> readFileAsList(final String fileName) {
         try {
             InputStream is = TestUtil.class.getResourceAsStream(fileName);

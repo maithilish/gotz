@@ -33,14 +33,18 @@ public class GotzEngine {
             gSystem.initSystem();
             Task task = gSystem.createInitialTask();
             LOGGER.info("basic system initialized");
+            gSystem.waitForHeapDump();
 
             LOGGER.info("switching to multi thread environment");
             gTaskRunner.executeInitalTask(task);
+            task = null;
             gTaskRunner.waitForFinish();
         } catch (CriticalException e) {
             LOGGER.error("{}", "terminating Gotz", e);
         }
         activityService.end();
+        gSystem.waitForHeapDump();
         LOGGER.info("shutting down GotzEngine");
     }
+
 }

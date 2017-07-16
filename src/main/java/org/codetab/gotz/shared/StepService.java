@@ -65,6 +65,9 @@ public class StepService {
         try {
             String nextStepType =
                     getNextStepType(step.getFields(), step.getStepType());
+            if (nextStepType.equalsIgnoreCase("end")) {
+                return;
+            }
             List<FieldsBase> stepClasses =
                     getNextStepClasses(nextStepFields, nextStepType);
             if (stepClasses.size() == 0) {

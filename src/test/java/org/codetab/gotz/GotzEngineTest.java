@@ -46,9 +46,12 @@ public class GotzEngineTest {
         inOrder.verify(activityService).start();
         inOrder.verify(gSystem).initSystem();
         inOrder.verify(gSystem).createInitialTask();
+        inOrder.verify(gSystem).waitForHeapDump();
         inOrder.verify(gTaskRunner).executeInitalTask(task);
         inOrder.verify(gTaskRunner).waitForFinish();
+        inOrder.verify(gSystem).waitForHeapDump();
         inOrder.verify(activityService).end();
+        verifyNoMoreInteractions(gSystem, gTaskRunner, activityService);
     }
 
     @Test

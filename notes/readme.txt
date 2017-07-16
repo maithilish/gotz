@@ -84,8 +84,19 @@ prod run
 M2E 
 ---
 
-Link javadoc and sources 
-    Project Context Menu->Maven->Download Javadoc
+Link javadoc and sources - Project Context Menu->Maven->Download Javadoc
+
+
+Eclipse setup 
+-------------
+
+attach Java javadoc
+install openjdk javadoc rpm, list alternatives and look for javadocdir  
+# alternatives --list
+javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.121-8.b14.fc24/api
+
+Preferences -> Installed JRE -> OpenJdk x.x.x -> Edit -> select rt.jar -> 
+Javadoc Location - enter Javadoc URL as file:///etc/alternatives/javadocdir
     
     
 Schema Generation

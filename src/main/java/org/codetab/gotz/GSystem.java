@@ -1,5 +1,6 @@
 package org.codetab.gotz;
 
+import java.io.Console;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -13,6 +14,7 @@ import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Task;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,5 +97,19 @@ public class GSystem {
             modeInfo = "Mode : [Dev]";
         }
         return modeInfo;
+    }
+
+    public void waitForHeapDump() {
+        String wait = "false";
+        try {
+            wait = configService.getConfig("waitForHeapDump");
+        } catch (ConfigNotFoundException e) {
+        }
+        if (wait.equalsIgnoreCase("true")) {
+            Console console = System.console();
+            console.printf("%s%s", "Waiting to acquire Heap Dump", Util.LINE);
+            console.printf("%s", "Press Enter to continue ...");
+            console.readLine();
+        }
     }
 }

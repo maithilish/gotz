@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.codetab.gotz.exception.FieldNotFoundException;
@@ -42,6 +43,18 @@ public final class FieldsUtil {
         return list;
     }
 
+    public static List<FieldsBase> deepClone(final List<FieldsBase> fields) {
+        List<FieldsBase> list = new ArrayList<>();
+        for (FieldsBase fb : fields) {
+            list.add(SerializationUtils.clone(fb));
+        }
+        return list;
+    }
+
+    public static FieldsBase deepClone(final FieldsBase fieldsBase) {
+        return SerializationUtils.clone(fieldsBase);
+
+    }
     // get methods
 
     // return first matching FieldsBase value
@@ -64,6 +77,12 @@ public final class FieldsUtil {
             final String name)
             throws FieldNotFoundException, NumberFormatException {
         String value = FieldsUtil.getValue(fields, name);
+
+        if (value.startsWith("-")) {
+            NumberFormatException e =
+                    new NumberFormatException("Invalid Range " + value);
+            throw e;
+        }
         String[] tokens = StringUtils.split(value, '-');
         if (tokens.length < 1 || tokens.length > 2) {
             NumberFormatException e =
