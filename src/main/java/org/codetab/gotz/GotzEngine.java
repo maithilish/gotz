@@ -39,11 +39,11 @@ public class GotzEngine {
             gTaskRunner.executeInitalTask(task);
             task = null;
             gTaskRunner.waitForFinish();
+            gSystem.waitForHeapDump();
         } catch (CriticalException e) {
             LOGGER.error("{}", "terminating Gotz", e);
         }
         activityService.end();
-        gSystem.waitForHeapDump();
         LOGGER.info("shutting down GotzEngine");
     }
 
