@@ -1,7 +1,6 @@
 package org.codetab.gotz.dao.jdo;
 
 import javax.inject.Inject;
-import javax.jdo.PersistenceManagerFactory;
 
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.IDataDefDao;
@@ -13,8 +12,6 @@ import org.slf4j.LoggerFactory;
 public final class JdoDaoFactory extends org.codetab.gotz.dao.DaoFactory {
 
     static final Logger LOGGER = LoggerFactory.getLogger(JdoDaoFactory.class);
-
-    private PersistenceManagerFactory pmfactory;
 
     private PMF pmf;
 
@@ -28,31 +25,26 @@ public final class JdoDaoFactory extends org.codetab.gotz.dao.DaoFactory {
             pmf.init();
         }
         this.pmf = pmf;
-        pmfactory = this.pmf.getFactory();
-    }
-
-    public PersistenceManagerFactory getFactory() {
-        return pmfactory;
     }
 
     @Override
     public IDocumentDao getDocumentDao() {
-        return new DocumentDao(pmfactory);
+        return new DocumentDao(pmf.getFactory());
     }
 
     @Override
     public IDataDefDao getDataDefDao() {
-        return new DataDefDao(pmfactory);
+        return new DataDefDao(pmf.getFactory());
     }
 
     @Override
     public IDataDao getDataDao() {
-        return new DataDao(pmfactory);
+        return new DataDao(pmf.getFactory());
     }
 
     @Override
     public ILocatorDao getLocatorDao() {
-        return new LocatorDao(pmfactory);
+        return new LocatorDao(pmf.getFactory());
     }
 
 }

@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
-import javax.jdo.PersistenceManagerFactory;
-
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.IDocumentDao;
@@ -63,11 +61,4 @@ public class DaoFactoryTest {
         assertNotNull(dao);
         assertEquals(DataDao.class, dao.getClass());
     }
-
-    @Test
-    public void testGetFactory() {
-        PersistenceManagerFactory pmf = daoFactory.getFactory();
-        assertNotNull(pmf);
-    }
-
 }

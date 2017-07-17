@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
@@ -44,6 +45,7 @@ public class DataDefService {
 
     private List<DataDef> dataDefs;
     private Map<String, Set<Set<DMember>>> memberSetsMap = new HashMap<>();
+    private Map<String, Data> dataTemplateMap = new HashMap<>();
 
     @Inject
     private BeanService beanService;
@@ -126,37 +128,44 @@ public class DataDefService {
     public Data getDataTemplate(final String dataDefName)
             throws DataDefNotFoundException, ClassNotFoundException,
             IOException {
-        DataDef dataDef = getDataDef(dataDefName);
-        if (memberSetsMap.get(dataDefName) == null) {
-            generateMemberSets(dataDef); // synchronized
-        }
-        Data data = new Data();
-        data.setDataDef(dataDefName);
-        for (Set<DMember> members : memberSetsMap.get(dataDefName)) {
-            Member dataMember = new Member();
-            dataMember.setName(""); // there is no name for member
-            // add axis and its fields
-            for (DMember dMember : members) {
-                Axis axis = createAxis(dMember);
-                dataMember.addAxis(axis);
+        Data data = null;
+        if (dataTemplateMap.containsKey(dataDefName)) {
+            data = dataTemplateMap.get(dataDefName);
+        } else {
+            DataDef dataDef = getDataDef(dataDefName);
+            if (!memberSetsMap.containsKey(dataDefName)) {
+                generateMemberSets(dataDef); // synchronized
+            }
+            data = new Data();
+            data.setDataDef(dataDefName);
+            for (Set<DMember> members : memberSetsMap.get(dataDefName)) {
+                Member dataMember = new Member();
+                dataMember.setName(""); // there is no name for member
+                // add axis and its fields
+                for (DMember dMember : members) {
+                    Axis axis = createAxis(dMember);
+                    dataMember.addAxis(axis);
+                    try {
+                        // fields from DMember level are added in createAxis()
+                        // fields from datadef level are added here
+                        List<FieldsBase> fields =
+                                FieldsUtil.filterByValue(dataDef.getFields(),
+                                        "member", dMember.getName());
+                        dataMember.getFields().addAll(fields);
+                    } catch (FieldNotFoundException e) {
+                    }
+                }
                 try {
-                    // fields from DMember level are added in createAxis()
-                    // fields from datadef level are added here
-                    List<FieldsBase> fields = FieldsUtil.filterByValue(
-                            dataDef.getFields(), "member", dMember.getName());
-                    dataMember.getFields().addAll(fields);
+                    String group = FieldsUtil.getValue(dataMember.getFields(),
+                            "group");
+                    dataMember.setGroup(group);
                 } catch (FieldNotFoundException e) {
                 }
+                data.addMember(dataMember);
             }
-            try {
-                String group =
-                        FieldsUtil.getValue(dataMember.getFields(), "group");
-                dataMember.setGroup(group);
-            } catch (FieldNotFoundException e) {
-            }
-            data.addMember(dataMember);
+            dataTemplateMap.put(dataDefName, data);
         }
-        return data;
+        return SerializationUtils.clone(data);
     }
 
     private Axis createAxis(final DMember dMember) {

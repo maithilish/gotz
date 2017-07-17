@@ -106,6 +106,7 @@ public class GSystem {
         } catch (ConfigNotFoundException e) {
         }
         if (wait.equalsIgnoreCase("true")) {
+            System.gc();
             Console console = System.console();
             console.printf("%s%s", "Waiting to acquire Heap Dump", Util.LINE);
             console.printf("%s", "Press Enter to continue ...");

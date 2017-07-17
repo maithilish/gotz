@@ -45,42 +45,44 @@ public final class DataDao implements IDataDao {
     @Override
     public Data getData(final Long documentId, final Long dataDefId) {
         PersistenceManager pm = getPM();
+        List<Data> data = null;
         try {
             String filter = "documentId == rId && dataDefId == dId";
             String paramDecla = "Long rId,Long dId";
             Extent<Data> extent = pm.getExtent(Data.class);
             Query<Data> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecla);
-
-            @SuppressWarnings("unchecked")
-            List<Data> data = (List<Data>) query.execute(documentId, dataDefId);
+            query.setParameters(documentId, dataDefId);
+            data = query.executeList();
             pm.getFetchPlan().addGroup("detachMembers");
             data = (List<Data>) pm.detachCopyAll(data);
-            switch (data.size()) {
-            case 0:
-                return null;
-            case 1:
-                return data.get(0);
-            default:
-                throw new IllegalStateException(
-                        "found multiple data for [documentId][dataDefId] ["
-                                + documentId + "][" + dataDefId + "]");
-            }
         } finally {
             pm.close();
+        }
+        switch (data.size()) {
+        case 0:
+            return null;
+        case 1:
+            return data.get(0);
+        default:
+            throw new IllegalStateException(
+                    "found multiple data for [documentId][dataDefId] ["
+                            + documentId + "][" + dataDefId + "]");
         }
     }
 
     @Override
     public Data getData(final Long id) {
         PersistenceManager pm = getPM();
+        Data data = null;
         try {
             Object result = pm.getObjectById(Data.class, id);
             pm.getFetchPlan().addGroup("detachMembers");
-            return (Data) pm.detachCopy(result);
+            data = (Data) pm.detachCopy(result);
         } finally {
             pm.close();
         }
+        return data;
     }
 
     private PersistenceManager getPM() {
