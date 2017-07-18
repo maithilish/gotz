@@ -68,7 +68,9 @@ public abstract class Pool {
 
     @GuardedBy("this")
     public final synchronized boolean isDone() {
-        return getNotDone() == 0;
+        long notDone = getNotDone();
+        LOGGER.info("not done : {}", notDone);
+        return notDone == 0;
     }
 
     private long getNotDone() {
@@ -81,7 +83,7 @@ public abstract class Pool {
     }
 
     public void waitForFinish() {
-        while (!isDone()) {
+        while (!isDone()) {            
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {
