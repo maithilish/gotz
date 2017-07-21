@@ -28,7 +28,7 @@ public class LocatorSeeder extends BaseSeeder {
 
     private static final long SLEEP_MILLIS = 1000;
 
-    // cs - don't name locators as it hides field
+    // cs - don't name the next as locators as it hides field
     private List<Locator> locatorList = new ArrayList<>();
 
     @Inject
@@ -98,32 +98,6 @@ public class LocatorSeeder extends BaseSeeder {
         for (Locators locators : list) {
             extractLocator(locators);
         }
-        for (Locator locator : locatorList) {
-            addLabelField(locator);
-        }
-    }
-
-    private void initFields() {
-        List<FieldsBase> fields = beanService.getBeans(FieldsBase.class);
-        try {
-            List<FieldsBase> classFields = FieldsUtil.filterByValue(fields,
-                    "class", Locator.class.getName());
-            List<FieldsBase> stepsGroup =
-                    FieldsUtil.filterByGroup(classFields, "steps");
-            List<FieldsBase> stepFields =
-                    FieldsUtil.filterByName(stepsGroup, "step");
-            setFields(stepFields);
-            mergeStepFields(classFields, stepFields);
-            mergeFields(classFields);
-        } catch (FieldNotFoundException e) {
-        }
-    }
-
-    private void addLabelField(final Locator locator) {
-        String label =
-                Util.buildString(locator.getName(), ":", locator.getGroup());
-        FieldsBase field = FieldsUtil.createField("label", label);
-        locator.getFields().add(field);
     }
 
     private void extractLocator(final Locators locatorsList) {
@@ -150,16 +124,35 @@ public class LocatorSeeder extends BaseSeeder {
         }
     }
 
-    private void mergeFields(final List<FieldsBase> classFields) {
-        LOGGER.info("merge fields with locators");
+    /*
+     * ensure that only new fields or deep copy are added to locator fields as
+     * other threads may overwrite fields
+     */
+    private void initFields() {
         for (Locator locator : locatorList) {
-            try {
-                List<Fields> groupFields = FieldsUtil
-                        .filterByGroupAsFields(classFields, locator.getGroup());
-                locator.getFields().addAll(groupFields);
-            } catch (FieldNotFoundException e) {
-            }
+            addLabelField(locator);
         }
+
+        List<FieldsBase> fields = beanService.getBeans(FieldsBase.class);
+        try {
+            List<FieldsBase> classFields = FieldsUtil.filterByValue(fields,
+                    "class", Locator.class.getName());
+            List<FieldsBase> stepsGroup =
+                    FieldsUtil.filterByGroup(classFields, "steps");
+            List<FieldsBase> stepFields =
+                    FieldsUtil.filterByName(stepsGroup, "step");
+            setFields(stepFields);
+            mergeStepFields(classFields, stepFields);
+            mergeFields(classFields);
+        } catch (FieldNotFoundException e) {
+        }
+    }
+
+    private void addLabelField(final Locator locator) {
+        String label =
+                Util.buildString(locator.getName(), ":", locator.getGroup());
+        FieldsBase field = FieldsUtil.createField("label", label);
+        locator.getFields().add(field);
     }
 
     private void mergeStepFields(final List<FieldsBase> classFields,
@@ -170,15 +163,30 @@ public class LocatorSeeder extends BaseSeeder {
                     FieldsUtil.filterByGroupAsFields(classFields, "datadef");
             for (Fields dataDefFields : dataDefGroup) {
                 for (FieldsBase step : stepFields) {
+                    // if step is not defined for datadef, then add it
                     if (!FieldsUtil.contains(dataDefFields, step.getName(),
                             step.getValue())) {
-                        dataDefFields.getFields().add(step);
+                        dataDefFields.getFields()
+                                .add(FieldsUtil.deepClone(step));
                     }
                 }
             }
         } catch (FieldNotFoundException e) {
             LOGGER.warn(
                     "unable to find datadef fields in class fields, check fields xml file");
+        }
+    }
+
+    private void mergeFields(final List<FieldsBase> classFields) {
+        LOGGER.info("merge fields with locators");
+        for (Locator locator : locatorList) {
+            try {
+                List<FieldsBase> groupFields = FieldsUtil
+                        .filterByGroup(classFields, locator.getGroup());
+                groupFields = FieldsUtil.deepClone(groupFields);
+                locator.getFields().addAll(groupFields);
+            } catch (FieldNotFoundException e) {
+            }
         }
     }
 

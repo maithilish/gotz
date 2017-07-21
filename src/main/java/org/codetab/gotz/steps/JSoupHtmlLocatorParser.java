@@ -100,17 +100,6 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
         return locator;
     }
 
-    private List<FieldsBase> createNextStepFields(final Locator locator) {
-        List<FieldsBase> nextStepFields = locator.getFields();
-        if (nextStepFields.size() == 0) {
-            String message = "unable to get next step fields";
-            LOGGER.error("{} {}", message, getLabel());
-            activityService.addActivity(Type.GIVENUP, message);
-            throw new StepRunException(message);
-        }
-        return nextStepFields;
-    }
-
     private List<FieldsBase> getGroupFields(final String group)
             throws FieldNotFoundException {
         List<FieldsBase> fieldsBeans = beanService.getBeans(FieldsBase.class);
@@ -122,6 +111,21 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             return fields;
         }
         return null;
+    }
+
+    private List<FieldsBase> createNextStepFields(final Locator locator) {
+        /*
+         * createLocator above adds fresh set of fields, so no need for deep
+         * copy
+         */
+        List<FieldsBase> nextStepFields = locator.getFields();
+        if (nextStepFields.size() == 0) {
+            String message = "unable to get next step fields";
+            LOGGER.error("{} {}", message, getLabel());
+            activityService.addActivity(Type.GIVENUP, message);
+            throw new StepRunException(message);
+        }
+        return nextStepFields;
     }
 
     @Override

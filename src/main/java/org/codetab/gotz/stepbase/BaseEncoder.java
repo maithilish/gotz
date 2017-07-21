@@ -80,6 +80,11 @@ public abstract class BaseEncoder extends Step {
         return false;
     }
 
+    @Override
+    public boolean handover() {
+        return false;
+    }
+
     /*
      * (non-Javadoc)
      *

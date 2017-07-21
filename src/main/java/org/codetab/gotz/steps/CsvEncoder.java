@@ -81,9 +81,4 @@ public final class CsvEncoder extends BaseEncoder {
         setStepState(StepState.PROCESS);
         return true;
     }
-
-    @Override
-    public boolean handover() {
-        return false;
-    }
 }

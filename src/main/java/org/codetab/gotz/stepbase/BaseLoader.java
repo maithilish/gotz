@@ -218,6 +218,10 @@ public abstract class BaseLoader extends Step {
 
     private List<FieldsBase> createNextStepFields(
             final FieldsBase dataDefField) {
+        /*
+         * need to deep copy the fields as each locator may have multiple
+         * datadefs and parsers
+         */
         List<FieldsBase> nextStepFields = new ArrayList<>();
         FieldsBase dataDefFieldCopy = null;
         try {
@@ -228,6 +232,7 @@ public abstract class BaseLoader extends Step {
             return nextStepFields;
         }
         nextStepFields.add(dataDefFieldCopy);
+        // we add info fields here, as parser also push locator to loader
         nextStepFields
                 .add(FieldsUtil.createField("locatorName", locator.getName()));
         nextStepFields.add(

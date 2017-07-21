@@ -45,10 +45,10 @@ public final class HtmlLocatorParser extends HtmlParser {
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
-            // String stepType = getStepType();
-            // setStepType("seeder");
-            stepService.pushTask(this, locator, locator.getFields());
-            // setStepType(stepType);
+
+            List<FieldsBase> nextStepFields = createNextStepFields(locator);
+            stepService.pushTask(this, locator, nextStepFields);
+
             try {
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
@@ -68,12 +68,18 @@ public final class HtmlLocatorParser extends HtmlParser {
                     "in datadef of locator type ", member.getName());
             throw new FieldNotFoundException(message);
         } else {
-            locator.setGroup(member.getGroup());
-            List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
-            locator.getFields().addAll(groupFields);
+            /*
+             * getGroupFields gets cloned fields from BeanService so that new
+             * locator gets fresh set of fields. Ensure that existing fields are
+             * not reused here
+             */
             List<FieldsBase> stepsGroup = getGroupFields("steps");
             List<FieldsBase> stepFields =
                     FieldsUtil.filterByName(stepsGroup, "step");
+
+            locator.setGroup(member.getGroup());
+            List<FieldsBase> groupFields = getGroupFields(locator.getGroup());
+            locator.getFields().addAll(groupFields);
 
             List<Fields> dataDefGroup = FieldsUtil
                     .filterByGroupAsFields(locator.getFields(), "datadef");
@@ -105,6 +111,21 @@ public final class HtmlLocatorParser extends HtmlParser {
             return fields;
         }
         return null;
+    }
+
+    private List<FieldsBase> createNextStepFields(final Locator locator) {
+        /*
+         * createLocator above adds fresh set of fields, so no need for deep
+         * copy
+         */
+        List<FieldsBase> nextStepFields = locator.getFields();
+        if (nextStepFields.size() == 0) {
+            String message = "unable to get next step fields";
+            LOGGER.error("{} {}", message, getLabel());
+            activityService.addActivity(Type.GIVENUP, message);
+            throw new StepRunException(message);
+        }
+        return nextStepFields;
     }
 
     @Override

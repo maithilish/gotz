@@ -99,8 +99,4 @@ public final class CsvRecordEncoder extends BaseEncoder {
         return header;
     }
 
-    @Override
-    public boolean handover() {
-        return false;
-    }
 }
