@@ -16,6 +16,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.FieldsBase;
@@ -65,6 +66,11 @@ public class AppenderServiceTest {
         field.setValue("org.codetab.gotz.appender.FileAppender");
         fields.add(field);
 
+        String userProvidedFile = "gotz.properties";
+        String defaultsFile = "gotz-default.xml";
+        ConfigService configService = dInjector.instance(ConfigService.class);
+        configService.init(userProvidedFile, defaultsFile);
+
         appenderService.createAppender("x", fields);
 
         Appender appender = appenderService.getAppender("x");
@@ -74,9 +80,9 @@ public class AppenderServiceTest {
     }
 
     @Test
-    public void testCreateAppenderAlreadyExists()
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldNotFoundException {
+    public void testCreateAppenderAlreadyExists() throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException,
+            FieldNotFoundException, ConfigNotFoundException {
         List<FieldsBase> fields = new ArrayList<>();
         Field field = new Field();
         field.setName("name");
@@ -88,8 +94,12 @@ public class AppenderServiceTest {
         field.setValue("org.codetab.gotz.appender.FileAppender");
         fields.add(field);
 
-        appenderService.createAppender("x", fields);
+        String userProvidedFile = "gotz.properties";
+        String defaultsFile = "gotz-default.xml";
+        ConfigService configService = dInjector.instance(ConfigService.class);
+        configService.init(userProvidedFile, defaultsFile);
 
+        appenderService.createAppender("x", fields);
         Appender appender = appenderService.getAppender("x");
 
         assertThat(appender.getFields()).isEqualTo(fields);

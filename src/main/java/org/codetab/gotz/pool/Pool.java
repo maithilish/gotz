@@ -1,5 +1,8 @@
 package org.codetab.gotz.pool;
 
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,14 +30,14 @@ public abstract class Pool {
     private static final int SLEEP_MILLIS = 1000;
 
     private Map<String, ExecutorService> executorsMap;
-    private List<Future<?>> futures;
+    private List<NamedFuture> futures;
 
     @Inject
     private ConfigService configService;
 
     protected Pool() {
-        executorsMap = new HashMap<String, ExecutorService>();
-        futures = new ArrayList<Future<?>>();
+        executorsMap = new HashMap<>();
+        futures = new ArrayList<>();
     }
 
     private ExecutorService getPool(final String poolName) {
@@ -62,19 +65,18 @@ public abstract class Pool {
     public synchronized boolean submit(final String poolName,
             final Runnable task) {
         ExecutorService pool = getPool(poolName);
-        Future<?> future = pool.submit(task);
-        return futures.add(future);
+        Future<?> f = pool.submit(task);
+        NamedFuture nf = new NamedFuture(poolName, f);
+        return futures.add(nf);
     }
 
     @GuardedBy("this")
     public final synchronized boolean isDone() {
-        long notDone = getNotDone();
-        LOGGER.info("not done : {}", notDone);
-        return notDone == 0;
+        return getNotDone() == 0;
     }
 
     private long getNotDone() {
-        futures.removeIf(Future::isDone);
+        futures.removeIf(NamedFuture::isDone);
         return futures.stream().count();
     }
 
@@ -83,7 +85,8 @@ public abstract class Pool {
     }
 
     public void waitForFinish() {
-        while (!isDone()) {            
+        while (!isDone()) {
+            LOGGER.debug("running tasks {}", taskCounts());
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {
@@ -105,4 +108,9 @@ public abstract class Pool {
                 .allMatch(ExecutorService::isTerminated);
     }
 
+    private String taskCounts() {
+        Map<String, Long> counts = futures.stream()
+                .collect(groupingBy(NamedFuture::getPoolName, counting()));
+        return counts.toString();
+    }
 }

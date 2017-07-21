@@ -1,8 +1,10 @@
 package org.codetab.gotz.pool;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,7 @@ public class TaskPoolServiceTest {
     private Map<String, ExecutorService> executorsMap;
 
     @Spy
-    private List<Future<?>> futures;
+    private List<NamedFuture> futures;
 
     @Mock
     private ExecutorService executor;
@@ -70,19 +72,23 @@ public class TaskPoolServiceTest {
         String poolName = "x";
         Runnable task = () -> {
         };
+
         @SuppressWarnings("rawtypes")
         Future future = new CompletableFuture<>();
 
         given(executorsMap.get(poolName)).willReturn(executor);
         given(executor.submit(task)).willReturn(future);
-        given(futures.add(future)).willReturn(true);
+        // TODO need to improve this
+        given(futures.add(any(NamedFuture.class))).willReturn(true);
 
         boolean actual = taskPool.submit(poolName, task);
         assertThat(actual).isTrue();
 
-        InOrder inOrder = inOrder(executor, futures);
+        InOrder inOrder = inOrder(executor, futures, executorsMap);
+        inOrder.verify(executorsMap).get(poolName);
         inOrder.verify(executor).submit(task);
-        inOrder.verify(futures).add(future);
+        inOrder.verify(futures).add(any(NamedFuture.class));
+        verifyNoMoreInteractions(executor, futures, executorsMap);
     }
 
     @Test

@@ -2,13 +2,10 @@ package org.codetab.gotz.appender;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import javax.inject.Inject;
 
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.shared.ActivityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,15 +13,7 @@ public final class ListAppender extends Appender {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ListAppender.class);
 
-    private static final int QUEUE_CAPACITY = 1024;
-
-    private BlockingQueue<Object> queue =
-            new ArrayBlockingQueue<Object>(QUEUE_CAPACITY);
-
     private List<Object> list = new ArrayList<>();
-
-    @Inject
-    private ActivityService activityService;
 
     @Inject
     private ListAppender() {
@@ -35,7 +24,7 @@ public final class ListAppender extends Appender {
         for (;;) {
             Object item;
             try {
-                item = queue.take();
+                item = getQueue().take();
                 if (item == Marker.EOF) {
                     break;
                 }
@@ -51,7 +40,7 @@ public final class ListAppender extends Appender {
 
     @Override
     public void append(final Object object) throws InterruptedException {
-        queue.put(object);
+        getQueue().put(object);
     }
 
     public List<Object> getList() {

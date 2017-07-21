@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 
 public class ConfigServiceTest {
 
-    private static final int DEFAULT_CONFIGS_COUNT = 18;
+    private static final int DEFAULT_CONFIGS_COUNT = 19;
 
     private static final int USER_PROVIDED_CONFIGS_COUNT = 20;
 
@@ -166,6 +166,9 @@ public class ConfigServiceTest {
                 .isEqualTo(configuration.getString("gotz.poolsize.encoder"));
         assertThat("2")
                 .isEqualTo(configuration.getString("gotz.poolsize.appender"));
+
+        assertThat(configuration.getString("gotz.appender.queuesize"))
+                .isEqualTo("4096");
 
         assertThat("120000")
                 .isEqualTo(configuration.getString("gotz.webClient.timeout"));

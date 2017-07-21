@@ -125,7 +125,7 @@ public abstract class BaseParser extends Step {
         if (persist) {
             dataPersistence.storeData(data);
             data = dataPersistence.loadData(data.getId());
-            LOGGER.debug("Stored {}", data);
+            LOGGER.debug("stored data : {}", getLabel());
         } else {
             LOGGER.debug("Data for [{}] is not stored as [persist=false]",
                     getLabel());

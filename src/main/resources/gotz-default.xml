@@ -19,10 +19,15 @@
             <encoder>4</encoder>
             <appender>2</appender>
         </poolsize>
+        <appender>
+            <queuesize>4096</queuesize>
+        </appender>
         <webClient>
             <timeout>120000</timeout>
             <userAgent>
+              <![CDATA[
                 Mozilla/5.0 (X11\; Linux x86_64\; rv:50.0) Gecko/20100101 Firefox/50.0
+              ]]>
             </userAgent>
         </webClient>
         <highDate>31-12-2099 23:59:59.999</highDate>

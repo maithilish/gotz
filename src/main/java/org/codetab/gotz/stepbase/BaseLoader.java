@@ -152,7 +152,8 @@ public abstract class BaseLoader extends Step {
                 locator = locatorPersistence.loadLocator(locator.getId());
                 locator.getFields().addAll(fields);
                 document = documentPersistence.loadDocument(document.getId());
-                LOGGER.debug("Stored {}", locator);
+                LOGGER.debug("stored Locator[{}:{}]", locator.getName(),
+                        locator.getGroup());
                 LOGGER.trace(marker, "-- Locator stored --{}{}", Util.LINE,
                         locator);
             } catch (RuntimeException e) {
