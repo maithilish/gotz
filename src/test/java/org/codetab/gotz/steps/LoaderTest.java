@@ -261,7 +261,8 @@ public class LoaderTest {
 
         Date fromDate = new Date();
         Date toDate = DateUtils.addMonths(fromDate, 1);
-        Object docObject = loader.fetchDocument(fileUrl);
+        byte[] docObject = loader.fetchDocument(fileUrl);
+        // document2.setDocumentObject(docObject);
 
         given(dInjector.instance(Document.class)).willReturn(document2);
         given(configService.getRunDateTime()).willReturn(fromDate);
@@ -277,12 +278,12 @@ public class LoaderTest {
         assertThat(document2.getFromDate()).isEqualTo(fromDate);
         assertThat(document2.getToDate()).isEqualTo(toDate);
         assertThat(document2.getUrl()).isEqualTo(fileUrl);
-        assertThat(document2.getDocumentObject()).isEqualTo(docObject);
 
         assertThat(locator.getDocuments().size()).isEqualTo(2);
         assertThat(locator.getDocuments()).contains(document1);
         assertThat(locator.getDocuments()).contains(document2);
 
+        verify(documentHelper).setDocumentObject(document2, docObject);
         verifyZeroInteractions(documentPersistence);
         assertThat(loader.isConsistent()).isTrue();
     }

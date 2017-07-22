@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import javax.inject.Inject;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.helper.DocumentHelper;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
@@ -34,6 +36,9 @@ public abstract class JSoupHtmlParser extends BaseParser {
 
     private Map<Integer, Elements> elementsMap;
     private ScriptEngine jsEngine;
+
+    @Inject
+    private DocumentHelper documentHelper;
 
     // TODO add marker to all trace calls. entire project
 
@@ -75,7 +80,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
                 axis.setIndex(startIndex);
             }
             if (isDocumentLoaded() && axis.getValue() == null) {
-                byte[] bytes = (byte[]) getDocument().getDocumentObject();
+                byte[] bytes = documentHelper.getDocumentObject(getDocument());
                 String html = new String(bytes);
                 Document doc = Jsoup.parse(html);
                 String value = getValue(doc, dataDef, member, axis);

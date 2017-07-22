@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import javax.inject.Inject;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -18,6 +19,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.helper.DocumentHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -50,6 +52,9 @@ public abstract class HtmlParser extends BaseParser {
     private Map<Integer, List<?>> nodeMap;
     private ScriptEngine jsEngine;
     private HtmlPage htmlPage;
+
+    @Inject
+    private DocumentHelper documentHelper;
 
     public HtmlParser() {
         nodeMap = new HashMap<Integer, List<?>>();
@@ -141,7 +146,7 @@ public abstract class HtmlParser extends BaseParser {
     }
 
     private String getDocumentHTML() {
-        byte[] bytes = (byte[]) getDocument().getDocumentObject();
+        byte[] bytes = documentHelper.getDocumentObject(getDocument());
         String html = new String(bytes);
         return html;
     }

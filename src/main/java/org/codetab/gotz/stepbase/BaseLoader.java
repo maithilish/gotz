@@ -82,17 +82,21 @@ public abstract class BaseLoader extends Step {
 
     @Override
     public boolean process() {
+        String locatorLabel = Util.buildString("Locator[name=",
+                locator.getName(), ",group=", locator.getGroup(), "]");
         Long activeDocumentId = null;
         if (locator.getId() != null) {
             activeDocumentId =
                     documentHelper.getActiveDocumentId(locator.getDocuments());
         }
         if (activeDocumentId == null) {
-            Object object = null;
+            byte[] documentObject = null;
             try {
-                object = fetchDocument(locator.getUrl());
+                // object is byte[]
+                documentObject = fetchDocument(locator.getUrl());
             } catch (IOException e) {
-                String givenUpMessage = "unable to fetch document";
+                String givenUpMessage = Util
+                        .buildString("unable to fetch document ", locatorLabel);
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
@@ -103,10 +107,19 @@ public abstract class BaseLoader extends Step {
                     locator.getFields(), getLabel());
             document = dInjector.instance(Document.class);
             document.setName(locator.getName());
-            document.setDocumentObject(object);
             document.setFromDate(fromDate);
             document.setToDate(toDate);
             document.setUrl(locator.getUrl());
+
+            try {
+                documentHelper.setDocumentObject(document, documentObject);
+            } catch (IOException e) {
+                String givenUpMessage = Util.buildString(
+                        "unable to compress document object ", locatorLabel);
+                LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
+                activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+                throw new StepRunException(givenUpMessage, e);
+            }
             locator.getDocuments().add(document);
             setConsistent(true);
             LOGGER.info(
@@ -275,5 +288,5 @@ public abstract class BaseLoader extends Step {
     }
 
     // template method to be implemented by subclass
-    public abstract Object fetchDocument(String url) throws IOException;
+    public abstract byte[] fetchDocument(String url) throws IOException;
 }

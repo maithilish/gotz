@@ -24,11 +24,11 @@ public class URLLoader extends BaseLoader {
     }
 
     @Override
-    public Object fetchDocument(final String url) throws IOException {
+    public byte[] fetchDocument(final String url) throws IOException {
         // TODO charset encoding
-        LOGGER.info("fetch web resource {}", url);
         byte[] bytes;
         if (UrlValidator.getInstance().isValid(url)) {
+            LOGGER.info("fetch web resource {}", url);
             URL webURL = new URL(url);
             URLConnection uc = webURL.openConnection();
 
@@ -41,6 +41,7 @@ public class URLLoader extends BaseLoader {
             bytes = IOUtils.toByteArray(uc);
             LOGGER.debug("fetched web resource {}", url);
         } else {
+            LOGGER.info("fetch file resource {}", url);
             URL fileURL = new URL(new URL("file:"), url);
             bytes = IOUtils.toByteArray(fileURL);
             LOGGER.debug("fetched file resource {}", url);

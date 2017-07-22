@@ -86,7 +86,7 @@ public abstract class Pool {
 
     public void waitForFinish() {
         while (!isDone()) {
-            LOGGER.debug("running tasks {}", taskCounts());
+            LOGGER.trace("running tasks {}", taskCounts());
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {

@@ -1,5 +1,6 @@
 package org.codetab.gotz.helper;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -18,6 +19,7 @@ import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.util.CompressionUtil;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -80,4 +82,17 @@ public class DocumentHelper {
         return Date.from(Instant.from(toDate));
     }
 
+    public byte[] getDocumentObject(final Document document) {
+        final int bufferLength = 4086;
+        return CompressionUtil.decompressByteArray(
+                (byte[]) document.getDocumentObject(), bufferLength);
+    }
+
+    public void setDocumentObject(final Document document,
+            final byte[] documentObject) throws IOException {
+        final int bufferLength = 4086;
+        byte[] compressedObject =
+                CompressionUtil.compressByteArray(documentObject, bufferLength);
+        document.setDocumentObject(compressedObject);
+    }
 }
