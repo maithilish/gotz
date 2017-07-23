@@ -94,6 +94,8 @@ public final class HtmlLocatorParser extends HtmlParser {
             if (member.getFields() != null) {
                 locator.getFields().addAll(member.getFields());
             }
+            // as in locatorSeeder, we add label to new locator
+            addLabelField(locator);
         }
         LOGGER.trace(getMarker(), "created new {} {}", locator,
                 locator.getUrl());
@@ -126,6 +128,13 @@ public final class HtmlLocatorParser extends HtmlParser {
             throw new StepRunException(message);
         }
         return nextStepFields;
+    }
+
+    private void addLabelField(final Locator locator) {
+        String label =
+                Util.buildString(locator.getName(), ":", locator.getGroup());
+        FieldsBase field = FieldsUtil.createField("label", label);
+        locator.getFields().add(field);
     }
 
     @Override

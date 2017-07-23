@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<locators xmlns="http://codetab.org/gotz">
+    <locators group="bs">
+        <locator name="ITC1"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-bs.html" />
+        <locator name="ITC2"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-bs.html" />
+        <locator name="ITC3"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-bs.html" />
+        <locator name="ITC4"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-bs.html" />
+        <locator name="ITC5"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-bs.html" />
+    </locators>
+    <locators group="pl">
+        <locator name="ITC1"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-pl.html" />
+        <locator name="ITC2"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-pl.html" />
+        <locator name="ITC3"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-pl.html" />
+        <locator name="ITC4"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-pl.html" />
+        <locator name="ITC5"
+            url="src/main/resources/perfdefs/mc/multi-locator/itc-pl.html" />
+    </locators>
+</locators>

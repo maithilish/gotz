@@ -70,9 +70,9 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             throw new FieldNotFoundException(message);
         } else {
             /*
-             * getGroupFields gets cloned fields from BeanService so that new
-             * locator gets fresh set of fields. Ensure that existing fields are
-             * not reused here
+             * getGroupFields clones fields from BeanService so that new locator
+             * gets fresh set of fields. Ensure that existing fields are not
+             * reused here
              */
             List<FieldsBase> stepsGroup = getGroupFields("steps");
             List<FieldsBase> stepFields =
@@ -95,6 +95,8 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             if (member.getFields() != null) {
                 locator.getFields().addAll(member.getFields());
             }
+            // as in locatorSeeder, we add label to new locator
+            addLabelField(locator);
         }
         LOGGER.trace("created new {} {}", locator, locator.getUrl());
         return locator;
@@ -126,6 +128,13 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             throw new StepRunException(message);
         }
         return nextStepFields;
+    }
+
+    private void addLabelField(final Locator locator) {
+        String label =
+                Util.buildString(locator.getName(), ":", locator.getGroup());
+        FieldsBase field = FieldsUtil.createField("label", label);
+        locator.getFields().add(field);
     }
 
     @Override

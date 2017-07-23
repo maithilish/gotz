@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<locators xmlns="http://codetab.org/gotz">
+    <locators group="bs">
+        <locator name="ITC" url="src/main/resources/perfdefs/mc/two-locator/itc-bs.html">
+        </locator>
+    </locators>
+    <locators group="pl">
+        <locator name="ITC" url="src/main/resources/perfdefs/mc/two-locator/itc-pl.html">
+        </locator>
+    </locators>
+</locators>
