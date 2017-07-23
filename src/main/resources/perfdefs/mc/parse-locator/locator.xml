@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<locators xmlns="http://codetab.org/gotz">
+    <locators group="quote">
+        <locator name="ITC0"
+            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
+<!--         <locator name="ITC1" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC2" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC3" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC4" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC5" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC6" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC7" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC8" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+<!--         <locator name="ITC9" -->
+<!--             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" /> -->
+    </locators>
+</locators>

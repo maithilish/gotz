@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.helper.FieldsHelper;
 import org.codetab.gotz.misc.ShutdownHook;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
@@ -30,6 +31,8 @@ public class GSystem {
     private DataDefService dataDefService;
     @Inject
     private StepService stepService;
+    @Inject
+    private FieldsHelper fieldsHelper;
     @Inject
     private ShutdownHook shutdownHook;
     @Inject
@@ -66,6 +69,9 @@ public class GSystem {
         dataDefService.init();
         int dataDefsCount = dataDefService.getCount();
         LOGGER.info("DataDefs loaded {}", dataDefsCount);
+
+        fieldsHelper.init();
+
         return true;
     }
 
@@ -77,8 +83,7 @@ public class GSystem {
         try {
             String seederClassName =
                     configService.getConfig("gotz.seederClass");
-            IStep step = stepService.getStep(seederClassName);
-            step = step.instance();
+            IStep step = stepService.getStep(seederClassName).instance();
             Task task = stepService.createTask(step);
             return task;
         } catch (ClassNotFoundException | InstantiationException

@@ -30,7 +30,7 @@
                     <fields name="step" value="parser">
                         <field name="class"
                             value="org.codetab.gotz.steps.JSoupHtmlLocatorParser" />
-                        <field name="nextstep" value="loader" />
+                        <field name="nextstep" value="seeder" />
                     </fields>
                 </fields>
                 <fields name="group" value="datadef">
@@ -77,7 +77,7 @@
                             <field name="class"
                                 value="org.codetab.gotz.appender.FileAppender" />
                             <field name="file" value="output/bs.txt" />
-                            <field name="queuesize" value="10240" />
+                            <field name="queuesize" value="60000" />
                         </fields>
                     </fields>
                 </fields>
@@ -96,7 +96,7 @@
                             <field name="class"
                                 value="org.codetab.gotz.appender.FileAppender" />
                             <field name="file" value="output/pl.txt" />
-                            <field name="queuesize" value="10240" />
+                            <field name="queuesize" value="60000" />
                         </fields>
                     </fields>
                 </fields>

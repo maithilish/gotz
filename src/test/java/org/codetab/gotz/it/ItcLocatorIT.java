@@ -34,10 +34,13 @@ public class ItcLocatorIT {
         }
 
         List<String> actual = new ArrayList<>();
-        List<Object> locators = listAppender.getList();
-        for (Object obj : locators) {
-            Locator locator = (Locator) obj;
-            actual.add(locator.getUrl());
+        List<Object> list = listAppender.getList();
+        for (Object obj : list) {
+            @SuppressWarnings("unchecked")
+            List<Locator> locators = (List<Locator>) obj;
+            for (Locator locator : locators) {
+                actual.add(locator.getUrl());
+            }
         }
 
         List<String> expected = Arrays.asList(
@@ -67,10 +70,13 @@ public class ItcLocatorIT {
         }
 
         List<String> actual = new ArrayList<>();
-        List<Object> locators = listAppender.getList();
-        for (Object obj : locators) {
-            Locator locator = (Locator) obj;
-            actual.add(locator.getUrl());
+        List<Object> list = listAppender.getList();
+        for (Object obj : list) {
+            @SuppressWarnings("unchecked")
+            List<Locator> locators = (List<Locator>) obj;
+            for (Locator locator : locators) {
+                actual.add(locator.getUrl());
+            }
         }
 
         List<String> expected = Arrays.asList(

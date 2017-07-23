@@ -212,25 +212,5 @@
         <locator name="ITC99"
             url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
 
-        <locator name="ITC100"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC101"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC102"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC103"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC104"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC105"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC106"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC107"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC108"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
-        <locator name="ITC109"
-            url="src/main/resources/perfdefs/mc/load/itc-quote-local-file.html" />
     </locators>
 </locators>

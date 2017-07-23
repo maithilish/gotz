@@ -111,11 +111,19 @@ public class StepService {
 
     private List<FieldsBase> getNextStepClasses(final List<FieldsBase> fields,
             final String stepType) throws FieldNotFoundException {
-        List<FieldsBase> list;
+        List<FieldsBase> list = null;
         try {
             list = FieldsUtil.filterByGroup(fields, "task");
         } catch (FieldNotFoundException e) {
-            list = FieldsUtil.filterByGroup(fields, "datadef");
+        }
+        if (list == null) {
+            try {
+                list = FieldsUtil.filterByGroup(fields, "datadef");
+            } catch (FieldNotFoundException e) {
+            }
+        }
+        if (list == null) {
+            list = fields;
         }
         List<FieldsBase> step =
                 FieldsUtil.filterByValue(list, "step", stepType);
