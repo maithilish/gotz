@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,8 +110,12 @@ public abstract class Pool {
     }
 
     private String taskCounts() {
-        Map<String, Long> counts = futures.stream()
-                .collect(groupingBy(NamedFuture::getPoolName, counting()));
-        return counts.toString();
+        try {
+            Map<String, Long> counts = futures.stream()
+                    .collect(groupingBy(NamedFuture::getPoolName, counting()));
+            return counts.toString();
+        } catch (ConcurrentModificationException e) {
+            return "unable to count tasks - " + e.getLocalizedMessage();
+        }
     }
 }

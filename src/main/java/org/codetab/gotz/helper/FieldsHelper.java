@@ -1,8 +1,8 @@
 package org.codetab.gotz.helper;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
@@ -18,8 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Singleton;
 
-import net.jcip.annotations.GuardedBy;
-
 @Singleton
 public class FieldsHelper {
 
@@ -28,7 +26,8 @@ public class FieldsHelper {
 
     private List<FieldsBase> stepFields;
     private List<FieldsBase> classFields;
-    private Map<String, List<FieldsBase>> locatorFieldsMap = new HashMap<>();
+    private Map<String, List<FieldsBase>> locatorFieldsMap =
+            new ConcurrentHashMap<>();
 
     @Inject
     private BeanService beanService;
@@ -53,12 +52,9 @@ public class FieldsHelper {
     /*
      * return deep copy or new fields as other threads may modify fields
      */
-    @GuardedBy("this")
     public List<FieldsBase> getLocatorGroupFields(final String group) {
         if (!locatorFieldsMap.containsKey(group)) {
-            synchronized (this) {
-                addGroupFieldsToMap(group);
-            }
+            addGroupFieldsToMap(group);
         }
         return FieldsUtil.deepClone(locatorFieldsMap.get(group));
     }
