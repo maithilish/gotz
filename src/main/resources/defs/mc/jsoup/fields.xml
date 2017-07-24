@@ -30,7 +30,7 @@
                     <fields name="step" value="parser">
                         <field name="class"
                             value="org.codetab.gotz.steps.JSoupHtmlLocatorParser" />
-                        <field name="nextstep" value="seeder" />
+                        <field name="nextstep" value="loader" />
                     </fields>
                 </fields>
                 <fields name="group" value="datadef">

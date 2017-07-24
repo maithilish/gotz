@@ -12,6 +12,7 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,13 @@ public class FieldsHelper {
             }
         }
         return FieldsUtil.deepClone(locatorFieldsMap.get(group));
+    }
+
+    public void addLabel(final Locator locator) {
+        String label =
+                Util.buildString(locator.getName(), ":", locator.getGroup());
+        FieldsBase field = FieldsUtil.createField("label", label);
+        locator.getFields().add(field);
     }
 
     private void setClassFields() {

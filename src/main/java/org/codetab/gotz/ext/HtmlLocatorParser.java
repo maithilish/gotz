@@ -1,6 +1,5 @@
 package org.codetab.gotz.ext;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,9 +45,9 @@ public final class HtmlLocatorParser extends HtmlParser {
                 throw new StepRunException(givenUpMessage, e);
             }
             List<FieldsBase> nextStepFields = createNextStepFields(locator);
-            List<Locator> locatorList = new ArrayList<>();
-            locatorList.add(locator);
-            stepService.pushTask(this, locatorList, nextStepFields);
+            // List<Locator> locatorList = new ArrayList<>();
+            // locatorList.add(locator);
+            stepService.pushTask(this, locator, nextStepFields);
             try {
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {

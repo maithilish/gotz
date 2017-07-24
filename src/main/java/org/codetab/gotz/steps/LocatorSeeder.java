@@ -13,7 +13,6 @@ import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.stepbase.BaseSeeder;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -61,7 +60,7 @@ public class LocatorSeeder extends BaseSeeder {
         for (Locator locator : locatorList) {
             List<FieldsBase> groupFields =
                     fieldsHelper.getLocatorGroupFields(locator.getGroup());
-            addLabel(locator);
+            fieldsHelper.addLabel(locator);
             locator.getFields().addAll(groupFields);
         }
         logState("locator after merging fields");
@@ -93,19 +92,15 @@ public class LocatorSeeder extends BaseSeeder {
         return true;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void setInput(final Object input) {
-        if (input instanceof List) {
-            locatorList = (List<Locator>) input;
+        if (input instanceof Locator) {
+            Locator locator = (Locator) input;
+            // this step adds fields based on group
+            locator.getFields().clear();
+            locatorList = new ArrayList<>();
+            locatorList.add(locator);
         }
-    }
-
-    private void addLabel(final Locator locator) {
-        String label =
-                Util.buildString(locator.getName(), ":", locator.getGroup());
-        FieldsBase field = FieldsUtil.createField("label", label);
-        locator.getFields().add(field);
     }
 
     private void logState(final String message) {

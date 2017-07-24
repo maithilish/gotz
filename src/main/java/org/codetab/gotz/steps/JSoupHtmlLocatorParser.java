@@ -1,6 +1,5 @@
 package org.codetab.gotz.steps;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -46,9 +45,9 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
                 throw new StepRunException(givenUpMessage, e);
             }
             List<FieldsBase> nextStepFields = createNextStepFields(locator);
-            List<Locator> locatorList = new ArrayList<>();
-            locatorList.add(locator);
-            stepService.pushTask(this, locatorList, nextStepFields);
+            // List<Locator> locatorList = new ArrayList<>();
+            // locatorList.add(locator);
+            stepService.pushTask(this, locator, nextStepFields);
             try {
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
@@ -69,9 +68,13 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             throw new FieldNotFoundException(message);
         } else {
             locator.setGroup(member.getGroup());
+            List<FieldsBase> groupFields =
+                    fieldsHelper.getLocatorGroupFields(locator.getGroup());
+            locator.getFields().addAll(groupFields);
             if (member.getFields() != null) {
                 locator.getFields().addAll(member.getFields());
             }
+            fieldsHelper.addLabel(locator);
         }
         LOGGER.trace("created new {} {}", locator, locator.getUrl());
         return locator;
