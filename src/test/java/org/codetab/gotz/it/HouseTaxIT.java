@@ -2,17 +2,38 @@ package org.codetab.gotz.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.codetab.gotz.GotzEngine;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.appender.ListAppender;
+import org.codetab.gotz.dao.DaoUtilFactory;
+import org.codetab.gotz.dao.IDaoUtil;
+import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.testutil.TestUtil;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 public class HouseTaxIT {
+
+    private static IDaoUtil daoUtil;
+    private static HashSet<String> schemaClasses;
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        schemaClasses = new HashSet<>();
+        schemaClasses.add("org.codetab.gotz.model.DataDef");
+        schemaClasses.add("org.codetab.gotz.model.Locator");
+        schemaClasses.add("org.codetab.gotz.model.Document");
+        schemaClasses.add("org.codetab.gotz.model.Data");
+
+        daoUtil = DaoUtilFactory.getDaoFactory(ORM.JDO).getUtilDao();
+        daoUtil.deleteSchemaForClasses(schemaClasses);
+        daoUtil.clearCache();
+    }
 
     @Test
     public void houseTaxJsoupTest() {
