@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<locators xmlns="http://codetab.org/gotz">
+    <locators group="quote">
+        <locator name="ITC"
+            url="src/test/resources/itest/itc/all-loader/itc-quote-local-file.html" />
+    </locators>
+</locators>

@@ -68,6 +68,9 @@ public final class HtmlLocatorParser extends HtmlParser {
             throw new FieldNotFoundException(message);
         } else {
             locator.setGroup(member.getGroup());
+            List<FieldsBase> groupFields =
+                    fieldsHelper.getLocatorGroupFields(locator.getGroup());
+            locator.getFields().addAll(groupFields);
             if (member.getFields() != null) {
                 locator.getFields().addAll(member.getFields());
             }
