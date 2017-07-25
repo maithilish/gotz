@@ -17,7 +17,6 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.helper.DataDefDefaults;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
@@ -29,6 +28,7 @@ import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
 import org.codetab.gotz.validation.DataDefValidator;
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class DataDefServiceTest {
     @Mock
     private DataDefValidator validator;
     @Mock
-    private DataDefDefaults defaults;
+    private DataDefHelper defaults;
 
     @InjectMocks
     private DataDefService dataDefService;

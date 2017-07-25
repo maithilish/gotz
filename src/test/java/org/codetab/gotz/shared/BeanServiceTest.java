@@ -13,10 +13,10 @@ import javax.xml.bind.JAXBException;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
-import org.codetab.gotz.helper.BeanFiles;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Locator;
+import org.codetab.gotz.model.helper.BeanHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 public class BeanServiceTest {
 
     @Mock
-    private BeanFiles beanFiles;
+    private BeanHelper beanFiles;
 
     @InjectMocks
     private BeanService beanService;

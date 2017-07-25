@@ -6,10 +6,10 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.helper.FieldsHelper;
-import org.codetab.gotz.helper.LocatorHelper;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
+import org.codetab.gotz.model.helper.FieldsHelper;
+import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.stepbase.BaseSeeder;
@@ -102,7 +102,8 @@ public class LocatorSeeder extends BaseSeeder {
     public void setInput(final Object input) {
         if (input instanceof Locator) {
             Locator locator = (Locator) input;
-            // this step adds fields based on group
+            // locatorseeder adds new set of fields based on group, so clear the
+            // existing fields
             locator.getFields().clear();
             locatorList = new ArrayList<>();
             locatorList.add(locator);

@@ -13,14 +13,14 @@ import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.helper.DocumentHelper;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.helper.DataDefHelper;
+import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.stepbase.BaseParser;
-import org.codetab.gotz.util.DataDefUtil;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.jsoup.Jsoup;
@@ -39,6 +39,8 @@ public abstract class JSoupHtmlParser extends BaseParser {
 
     @Inject
     private DocumentHelper documentHelper;
+    @Inject
+    private DataDefHelper dataDefHelper;
 
     // TODO add marker to all trace calls. entire project
 
@@ -101,7 +103,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list =
-                DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
+                dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
         try {
             List<FieldsBase> scripts = FieldsUtil.filterByGroup(list, "script");
             setTraceString(sb, scripts, "<<<");

@@ -17,6 +17,7 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.model.Bean;
+import org.codetab.gotz.model.helper.BeanHelper;
 import org.codetab.gotz.validation.XMLValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,7 @@ public class BeanFilesTest {
     private IXoc xoc;
 
     @InjectMocks
-    private BeanFiles beanFiles;
+    private BeanHelper beanFiles;
 
     @Before
     public void setUp() throws Exception {

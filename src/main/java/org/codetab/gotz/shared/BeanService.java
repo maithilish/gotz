@@ -10,8 +10,8 @@ import javax.xml.bind.JAXBException;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
-import org.codetab.gotz.helper.BeanFiles;
 import org.codetab.gotz.model.Bean;
+import org.codetab.gotz.model.helper.BeanHelper;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class BeanService {
             LoggerFactory.getLogger(BeanService.class);
 
     @Inject
-    private BeanFiles beanFiles;
+    private BeanHelper beanFiles;
 
     private List<Object> beans;
 

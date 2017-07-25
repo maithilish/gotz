@@ -19,16 +19,16 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.helper.DocumentHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.helper.DataDefHelper;
+import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.stepbase.BaseParser;
-import org.codetab.gotz.util.DataDefUtil;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -55,6 +55,8 @@ public abstract class HtmlParser extends BaseParser {
 
     @Inject
     private DocumentHelper documentHelper;
+    @Inject
+    private DataDefHelper dataDefHelper;
 
     public HtmlParser() {
         nodeMap = new HashMap<Integer, List<?>>();
@@ -171,7 +173,7 @@ public abstract class HtmlParser extends BaseParser {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
         List<FieldsBase> list =
-                DataDefUtil.getAxis(dataDef, axis.getName()).getFields();
+                dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
         try {
             List<FieldsBase> scripts = FieldsUtil.filterByGroup(list, "script");
             setTraceString(sb, scripts, "<<<");

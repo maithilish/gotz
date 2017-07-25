@@ -1,4 +1,4 @@
-package org.codetab.gotz.helper;
+package org.codetab.gotz.model.helper;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -31,6 +31,10 @@ public class DocumentHelper {
 
     @Inject
     private ConfigService configService;
+
+    @Inject
+    private DocumentHelper() {
+    }
 
     public Long getActiveDocumentId(final List<Document> documents) {
         Long activeDocumentId = null;

@@ -10,6 +10,7 @@ import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Field;
+import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class DataDefDefaultsTest {
     private ConfigService configService;
 
     @InjectMocks
-    private DataDefDefaults dataDefDefaults;
+    private DataDefHelper dataDefDefaults;
 
     @Before
     public void setUp() throws Exception {

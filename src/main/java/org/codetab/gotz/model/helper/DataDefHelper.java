@@ -1,7 +1,8 @@
-package org.codetab.gotz.helper;
+package org.codetab.gotz.model.helper;
 
 import javax.inject.Inject;
 
+import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
@@ -9,10 +10,14 @@ import org.codetab.gotz.model.Field;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.FieldsUtil;
 
-public class DataDefDefaults {
+public class DataDefHelper {
 
     @Inject
     private ConfigService configService;
+
+    @Inject
+    private DataDefHelper() {
+    }
 
     public void addFact(final DataDef dataDef) {
         for (DAxis axis : dataDef.getAxis()) {
@@ -62,6 +67,16 @@ public class DataDefDefaults {
     public void setDates(final DataDef dataDef) {
         dataDef.setFromDate(configService.getRunDateTime());
         dataDef.setToDate(configService.getHighDate());
+    }
+
+    public DAxis getAxis(final DataDef dataDef, final AxisName axisName) {
+        String axisNameStr = axisName.toString();
+        for (DAxis dAxis : dataDef.getAxis()) {
+            if (dAxis.getName().equalsIgnoreCase(axisNameStr)) {
+                return dAxis;
+            }
+        }
+        return null;
     }
 
 }

@@ -6,12 +6,12 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.helper.FieldsHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;

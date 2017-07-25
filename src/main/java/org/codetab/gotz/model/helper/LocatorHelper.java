@@ -1,4 +1,4 @@
-package org.codetab.gotz.helper;
+package org.codetab.gotz.model.helper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,10 @@ public class LocatorHelper {
     private BeanService beanService;
     @Inject
     private ConfigService configService;
+
+    @Inject
+    private LocatorHelper() {
+    }
 
     public List<Locator> getLocatorsFromBeans() {
         List<Locator> locatorList = new ArrayList<>();

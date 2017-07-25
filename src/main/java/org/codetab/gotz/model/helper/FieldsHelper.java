@@ -1,4 +1,4 @@
-package org.codetab.gotz.helper;
+package org.codetab.gotz.model.helper;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +31,10 @@ public class FieldsHelper {
 
     @Inject
     private BeanService beanService;
+
+    @Inject
+    private FieldsHelper() {
+    }
 
     public boolean init() {
         if (stepFields == null) {

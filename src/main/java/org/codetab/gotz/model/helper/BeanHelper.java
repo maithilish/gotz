@@ -1,4 +1,4 @@
-package org.codetab.gotz.helper;
+package org.codetab.gotz.model.helper;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,15 +9,16 @@ import javax.xml.bind.JAXBException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.helper.IXoc;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.validation.XMLValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-public class BeanFiles {
+public class BeanHelper {
 
-    private final Logger logger = LoggerFactory.getLogger(BeanFiles.class);
+    private final Logger logger = LoggerFactory.getLogger(BeanHelper.class);
 
     @Inject
     private XMLValidator xmlValidator;
@@ -27,6 +28,10 @@ public class BeanFiles {
     private String beanFile;
     private String schemaFile;
     private String baseName;
+
+    @Inject
+    private BeanHelper() {
+    }
 
     public void setFiles(final String beanFileName,
             final String schemaFileName) {

@@ -17,7 +17,6 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.helper.DataDefDefaults;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -29,6 +28,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
+import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
@@ -54,7 +54,7 @@ public class DataDefService {
     @Inject
     private DataDefValidator validator;
     @Inject
-    private DataDefDefaults dataDefDefaults;
+    private DataDefHelper dataDefDefaults;
 
     @Inject
     private DataDefService() {

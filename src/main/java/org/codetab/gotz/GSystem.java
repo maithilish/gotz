@@ -7,8 +7,8 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
-import org.codetab.gotz.helper.FieldsHelper;
 import org.codetab.gotz.misc.ShutdownHook;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
