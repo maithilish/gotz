@@ -5,7 +5,8 @@
         <axis name="col">
             <fields name="group" value="query">
                 <field name="region" value="table:contains(Sources Of Funds)" />
-                <field name="field" value="tr:nth-child(1) > td:nth-child(%{col.index})" />
+                <field name="field"
+                    value="tr:nth-child(1) > td:nth-child(%{col.index})" />
             </fields>
             <member name="year">
                 <field name="indexRange" value="2-6" />
@@ -15,7 +16,8 @@
         <axis name="row">
             <fields name="group" value="query">
                 <field name="region" value="table:contains(Sources Of Funds)" />
-                <field name="field" value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
             </fields>
             <member name="item" index="5">
                 <!-- <field name="indexRange" value="1-34" /> -->

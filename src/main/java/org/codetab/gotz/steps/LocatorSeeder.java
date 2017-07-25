@@ -43,6 +43,12 @@ public class LocatorSeeder extends BaseSeeder {
     public boolean initialize() {
         if (locatorList.size() == 0) {
             locatorList = locatorHelper.getLocatorsFromBeans();
+            // fork for load test
+            List<Locator> forkedLocators =
+                    locatorHelper.forkLocators(locatorList);
+            if (forkedLocators.size() > 0) {
+                locatorList = forkedLocators;
+            }
         }
         logState("locator after init");
         setStepState(StepState.INIT);
