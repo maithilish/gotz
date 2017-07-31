@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fields xmlns="http://codetab.org/gotz">
+    <fields name="class" value="org.codetab.gotz.model.Locator">
+        <fields name="group" value="steps">
+            <fields name="step" value="seeder">
+                <field name="nextstep" value="loader" />
+            </fields>
+            <fields name="step" value="loader">
+                <field name="nextstep" value="parser" />
+            </fields>
+            <fields name="step" value="parser">
+                <field name="nextstep" value="filter" />
+            </fields>
+        </fields>
+        <fields name="group" value="g1">
+            <fields name="group" value="datadef">
+                <field name="datadef" value="dd1" />
+            </fields>
+            <fields name="group" value="datadef">
+                <field name="datadef" value="dd2" />
+                <fields name="step" value="parser">
+                    <field name="nextstep" value="seeder" />
+                </fields>
+
+            </fields>
+            <fields name="group" value="datadef">
+                <field name="datadef" value="dd3" />
+                <fields name="step" value="parser">
+                    <field name="nextstep" value="loader" />
+                </fields>
+            </fields>            
+        </fields>
+        <fields name="group" value="g2">
+            <fields name="group" value="datadef">
+                <field name="datadef" value="dd4" />
+            </fields>
+        </fields>
+        <fields name="group" value="g3">
+        </fields>
+    </fields>
+</fields>
+

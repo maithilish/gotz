@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fields xmlns="http://codetab.org/gotz">
+    <fields name="class" value="org.codetab.gotz.model.Locator">
+        <fields name="group" value="steps">
+            <fields name="step" value="seeder">
+                <field name="class" value="org.codetab.gotz.steps.LocatorSeeder" />
+                <field name="nextstep" value="loader" />
+            </fields>
+            <fields name="step" value="loader">
+                <field name="class"
+                    value="org.codetab.gotz.steps.JSoupHtmlLoader" />
+                <field name="nextstep" value="parser" />
+            </fields>
+        </fields>
+        <fields name="group" value="quote">
+            <fields name="group" value="datadef">
+                <field name="datadef" value="quotePage" />
+                <fields name="step" value="encoder">
+                    <field name="class"
+                        value="org.codetab.gotz.steps.CsvEncoder" />
+                    <field name="nextstep" value="end" />
+                    <fields name="appender" value="file">
+                        <field name="class"
+                            value="org.codetab.gotz.appender.FileAppender" />
+                        <field name="file" value="output/quote.txt" />
+                    </fields>
+                </fields>
+                <fields name="group" value="persist">
+                    <field name="data" value="false" />
+                </fields>
+            </fields>
+        </fields>
+    </fields>
+    <fields name="class" value="org.codetab.gotz.model.Xyz">
+        <fields name="group" value="steps">
+            <fields name="step" value="xseeder">
+                <field name="class" value="org.codetab.gotz.steps.LocatorSeeder" />
+                <field name="nextstep" value="loader" />
+            </fields>
+            <fields name="step" value="xloader">
+                <field name="class"
+                    value="org.codetab.gotz.steps.JSoupHtmlLoader" />
+                <field name="nextstep" value="parser" />
+            </fields>
+        </fields>
+        <fields name="group" value="xquote">
+            <fields name="group" value="xdatadef">
+                <field name="datadef" value="xquotePage" />
+                <fields name="step" value="encoder">
+                    <field name="class"
+                        value="org.codetab.gotz.steps.CsvEncoder" />
+                    <field name="nextstep" value="end" />
+                    <fields name="appender" value="file">
+                        <field name="class"
+                            value="org.codetab.gotz.appender.FileAppender" />
+                        <field name="file" value="output/quote.txt" />
+                    </fields>
+                </fields>
+                <fields name="group" value="persist">
+                    <field name="data" value="false" />
+                </fields>
+            </fields>
+        </fields>
+    </fields>
+</fields>
+

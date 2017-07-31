@@ -11,7 +11,7 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.helper.FieldsHelper;
+import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
@@ -24,7 +24,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
 
     @Inject
-    private FieldsHelper fieldsHelper;
+    private LocatorFieldsHelper fieldsHelper;
 
     @Override
     public IStep instance() {

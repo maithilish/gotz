@@ -14,20 +14,45 @@ import org.codetab.gotz.shared.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides list of locator. It obtains locators from BeanService and propagate
+ * group to all locators. It also fork locator for load testing.
+ *
+ * @author m
+ *
+ */
 public class LocatorHelper {
 
+    /**
+     * logger.
+     */
     private static final Logger LOGGER =
             LoggerFactory.getLogger(LocatorHelper.class);
 
+    /**
+     * BeanService singleton.
+     */
     @Inject
     private BeanService beanService;
+
+    /**
+     * ConfigService singleton.
+     */
     @Inject
     private ConfigService configService;
 
+    /**
+     * private constructor.
+     */
     @Inject
     private LocatorHelper() {
     }
 
+    /**
+     * obtains locators from BeanService, trickle groups and creates list of
+     * locators.
+     * @return list of locators
+     */
     public List<Locator> getLocatorsFromBeans() {
         List<Locator> locatorList = new ArrayList<>();
         LOGGER.info("initialize locators");
@@ -41,14 +66,19 @@ public class LocatorHelper {
         return locatorList;
     }
 
-    /*
-     * fork locators for load testing
+    /**
+     * if forklocator system property is set, then each locator is forked n
+     * (forklocator value) times. Returned list contains original locator and
+     * forked locators.
+     * @param locators
+     *            - original list of locator
+     * @return list of locators - original plus forked
      */
     public List<Locator> forkLocators(final List<Locator> locators) {
-        List<Locator> forkedLocators = new ArrayList<>();
         try {
             int count =
                     Integer.parseInt(configService.getConfig("forklocator"));
+            List<Locator> forkedLocators = new ArrayList<>();
             for (Locator locator : locators) {
                 forkedLocators.add(locator);
                 for (int i = 0; i < count; i++) {
@@ -57,15 +87,24 @@ public class LocatorHelper {
                     forkedLocators.add(forkedLocator);
                 }
             }
+            return forkedLocators;
         } catch (ConfigNotFoundException e) {
+            return locators;
         }
-        return forkedLocators;
     }
 
+    /**
+     * locators contains list of locator and also locators. This will
+     * recursively extract all locator into a flat list.
+     * @param locatorsList
+     *            - list of locators
+     * @return list of locator
+     */
     private List<Locator> extractLocator(final Locators locatorsList) {
+        LOGGER.info("extract locators to locator");
         List<Locator> locatorList = new ArrayList<>();
         for (Locators locs : locatorsList.getLocators()) {
-            extractLocator(locs);
+            locatorList.addAll(extractLocator(locs));
         }
         for (Locator locator : locatorsList.getLocator()) {
             locatorList.add(locator);
@@ -73,8 +112,15 @@ public class LocatorHelper {
         return locatorList;
     }
 
+    /**
+     * locators contains list of locator and also locators. This will
+     * recursively trickle group to all locator.
+     *
+     * @param locators
+     *            - list of locators
+     */
     private void trikleGroup(final Locators locators) {
-        LOGGER.info("cascade locators group to all locator");
+        LOGGER.info("propagate locators group to all locator");
         for (Locators locs : locators.getLocators()) {
             if (locs.getGroup() == null) {
                 locs.setGroup(locators.getGroup());

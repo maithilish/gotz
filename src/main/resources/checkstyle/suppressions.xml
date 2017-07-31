@@ -26,4 +26,7 @@
 
     <!-- disable magicnumber check for test java files  -->
     <suppress files=".*Test.java" checks="MagicNumber" />
+    <suppress files=".*Test.java" checks="JavadocMethod" />
+    <suppress files=".*Test.java" checks="JavadocVariable" />
+    <suppress files=".*Test.java" checks="JavadocPackage" />
 </suppressions>

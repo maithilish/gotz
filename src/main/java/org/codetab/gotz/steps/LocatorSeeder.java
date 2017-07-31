@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
-import org.codetab.gotz.model.helper.FieldsHelper;
+import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
@@ -19,26 +19,76 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
+/**
+ * Create seeder tasks and handover them to queue.
+ * @author Maithilish
+ *
+ */
+
 public class LocatorSeeder extends BaseSeeder {
 
+    /**
+     * logger.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(LocatorSeeder.class);
 
+    /**
+     * delay between task submit.
+     */
     private static final long SLEEP_MILLIS = 1000;
 
-    // cs - don't name the next as locators as it hides field
+    /**
+     * list of locator don't name the next as locators as it hides field.
+     * (checkstyle)
+     */
     private List<Locator> locatorList = new ArrayList<>();
 
+    /**
+     * helper - provides fields for locators.
+     */
     @Inject
-    private FieldsHelper fieldsHelper;
+    private LocatorFieldsHelper fieldsHelper;
+
+    /**
+     * helper - create and manage locators.
+     */
     @Inject
     private LocatorHelper locatorHelper;
 
+    /**
+     * <p>
+     * get instance of this class.
+     */
     @Override
     public IStep instance() {
         setStepType("seeder");
         return this;
     }
 
+    /**
+     * <p>
+     * Creates a list of locator and adds input locator to the list. Normally,
+     * LocatorParser uses this method to seed the locator it has parsed.
+     * Otherwise, if list is empty, then initialize method obtains list of
+     * locators from LocatorHelper.
+     *
+     */
+    @Override
+    public void setInput(final Object input) {
+        if (input instanceof Locator) {
+            Locator locator = (Locator) input;
+            // locatorseeder adds new set of fields based on group, so clear the
+            // existing fields
+            locator.getFields().clear();
+            locatorList = new ArrayList<>();
+            locatorList.add(locator);
+        }
+    }
+
+    /**
+     * <p>
+     * Initialize list of locators (or forked locators to load test).
+     */
     @Override
     public boolean initialize() {
         if (locatorList.size() == 0) {
@@ -55,11 +105,10 @@ public class LocatorSeeder extends BaseSeeder {
         return true;
     }
 
-    @Override
-    public boolean load() {
-        return false;
-    }
-
+    /**
+     * <p>
+     * Adds group fields and label field to locators.
+     */
     @Override
     public boolean process() {
         setFields(fieldsHelper.getStepFields());
@@ -75,14 +124,13 @@ public class LocatorSeeder extends BaseSeeder {
         return true;
     }
 
-    @Override
-    public boolean store() {
-        return false;
-    }
-
+    /**
+     * <p>
+     * Submit tasks to queue.
+     */
     @Override
     public boolean handover() {
-        LOGGER.info("push locators to loader taskpool");
+        LOGGER.info("push locators to taskpool");
         int count = 0;
         for (Locator locator : locatorList) {
             stepService.pushTask(this, locator, locator.getFields());
@@ -92,24 +140,18 @@ public class LocatorSeeder extends BaseSeeder {
             } catch (InterruptedException e) {
             }
         }
-        LOGGER.info("locators count [{}], queued to loader [{}].",
+        LOGGER.info("locators count [{}], queued to taskpool [{}].",
                 locatorList.size(), count);
         setStepState(StepState.HANDOVER);
         return true;
     }
 
-    @Override
-    public void setInput(final Object input) {
-        if (input instanceof Locator) {
-            Locator locator = (Locator) input;
-            // locatorseeder adds new set of fields based on group, so clear the
-            // existing fields
-            locator.getFields().clear();
-            locatorList = new ArrayList<>();
-            locatorList.add(locator);
-        }
-    }
-
+    /**
+     * <p>
+     * Logs trace with marker.
+     * @param message
+     *            - message to log {@link String}
+     */
     private void logState(final String message) {
         for (Locator locator : locatorList) {
             Marker marker =

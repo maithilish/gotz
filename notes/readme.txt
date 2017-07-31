@@ -97,7 +97,17 @@ javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.121-8.b14.fc24/api
 
 Preferences -> Installed JRE -> OpenJdk x.x.x -> Edit -> select rt.jar -> 
 Javadoc Location - enter Javadoc URL as file:///etc/alternatives/javadocdir
-    
+
+Static import - Preference -> Java -> Editor -> Content Assist -> Favorites
+and add New Types
+  org.mockito.Mockito
+  org.mockito.Matchers
+  org.mockito.BDDMockito
+  org.assertj.core.api.Assertions
+
+Change author name - edit eclipse.ini and add
+-Duser.name=Maithilish
+
     
 Schema Generation
 -----------------
