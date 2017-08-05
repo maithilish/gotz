@@ -2,26 +2,41 @@ package org.codetab.gotz.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/**
+ * <p>
+ * Utility methods to compress and decompress byte array.
+ * @author Maithilish
+ *
+ */
 public class CompressionUtil {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(CompressionUtil.class);
-
+    /**
+     * private constructor.
+     */
     private CompressionUtil() {
     }
 
+    /**
+     * <p>
+     * Compress byte array.
+     *
+     * @param input
+     *            byte array to compress
+     * @param bufferLength
+     *            length of buffer
+     * @return compressed byte array
+     * @throws IOException
+     *             if error closing stream
+     */
     public static byte[] compressByteArray(final byte[] input,
             final int bufferLength) throws IOException {
-
-        if (null == input) {
-            throw new IllegalArgumentException("input was null");
-        }
+        Objects.requireNonNull(input, "input must not be null");
+        // bufferLength is int, so it can't be null
 
         Deflater compressor = new Deflater();
         compressor.setLevel(Deflater.BEST_COMPRESSION);
@@ -43,11 +58,24 @@ public class CompressionUtil {
         return bos.toByteArray();
     }
 
+    /**
+     * <p>
+     * Decompress byte array.
+     *
+     * @param input
+     *            byte array to compress
+     * @param bufferLength
+     *            length of buffer
+     * @return uncompressed byte array
+     * @throws IOException
+     *             if error closing stream
+     * @throws DataFormatException
+     *             if error in data format
+     */
     public static byte[] decompressByteArray(final byte[] input,
-            final int bufferLength) {
-        if (null == input) {
-            throw new IllegalArgumentException("input was null");
-        }
+            final int bufferLength) throws DataFormatException, IOException {
+        Objects.requireNonNull(input, "input must not be null");
+        // bufferLength is int, so it can't be null
 
         final Inflater decompressor = new Inflater();
 
@@ -59,22 +87,13 @@ public class CompressionUtil {
 
         final byte[] buf = new byte[bufferLength];
 
-        try {
-            while (!decompressor.finished()) {
-                int count = decompressor.inflate(buf);
-                baos.write(buf, 0, count);
-            }
-        } catch (DataFormatException ex) {
-            LOGGER.error("problem decompressing. {}", ex);
+        while (!decompressor.finished()) {
+            int count = decompressor.inflate(buf);
+            baos.write(buf, 0, count);
         }
 
         decompressor.end();
-
-        try {
-            baos.close();
-        } catch (IOException ex) {
-            LOGGER.error("problem closing stream.{}", ex);
-        }
+        baos.close();
 
         return baos.toByteArray();
     }

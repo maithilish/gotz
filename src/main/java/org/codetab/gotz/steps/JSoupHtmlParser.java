@@ -1,10 +1,12 @@
 package org.codetab.gotz.steps;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
 import javax.script.ScriptEngine;
@@ -64,7 +66,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
     protected void setValue(final DataDef dataDef, final Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException {
+            NoSuchMethodException, DataFormatException, IOException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;
             try {

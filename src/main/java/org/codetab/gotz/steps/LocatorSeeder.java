@@ -25,7 +25,7 @@ import org.slf4j.Marker;
  *
  */
 
-public class LocatorSeeder extends BaseSeeder {
+public final class LocatorSeeder extends BaseSeeder {
 
     /**
      * logger.

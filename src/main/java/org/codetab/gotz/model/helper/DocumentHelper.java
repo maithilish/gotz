@@ -9,11 +9,14 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Document;
@@ -25,48 +28,113 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Helper routines to handle documents.
+ * @author Maithilish
+ *
+ */
 public class DocumentHelper {
 
+    /**
+     * logger.
+     */
     static final Logger LOGGER = LoggerFactory.getLogger(Document.class);
 
+    /**
+     * ConfigService singleton.
+     */
     @Inject
     private ConfigService configService;
+    /**
+     * DI singleton.
+     */
+    @Inject
+    private DInjector dInjector;
 
+    /**
+     * private constructor.
+     */
     @Inject
     private DocumentHelper() {
     }
 
+    /**
+     * Returns id of document where toDate is &gt;= runDateTime config. When,
+     * there are more than one matching documents, then the id of last one is
+     * returned. If, list is null then returns null.
+     * @param documents
+     *            list of {@link Document}
+     * @return active document id or null when no matching document is found or
+     *         input is empty or null.
+     */
     public Long getActiveDocumentId(final List<Document> documents) {
+        if (documents == null) {
+            return null;
+        }
         Long activeDocumentId = null;
-        for (Document r : documents) {
-            Date toDate = r.getToDate();
+        for (Document doc : documents) {
+            Date toDate = doc.getToDate();
             Date runDateTime = configService.getRunDateTime();
             // toDate > today
             if (toDate.compareTo(runDateTime) >= 0) {
-                activeDocumentId = r.getId();
+                activeDocumentId = doc.getId();
             }
         }
         return activeDocumentId;
     }
 
-    public Date getToDate(final Date fromDate, final List<FieldsBase> fields,
-            final String locatorLabel) {
+    /**
+     * <p>
+     * Calculates document expire date from live field and from date.
+     * <p>
+     * Live field can hold duration (ISO-8601 duration format PnDTnHnMn.nS) or
+     * date string. When live is duration then it is added to fromDate else
+     * string is parsed as to date based on parse pattern provided by
+     * ConfigService.
+     * <p>
+     * In case, live is not defined or it is zero or blank then from date is
+     * returned.
+     * @param fromDate
+     *            document from date
+     * @param fields
+     *            list of fields
+     * @return a Date which is document expire date, not null
+     * @see java.time.Duration
+     */
+    public Date getToDate(final Date fromDate, final List<FieldsBase> fields) {
+        Objects.requireNonNull(fromDate, "fromDate must not be null");
+        Objects.requireNonNull(fields, "fields must not be null");
+
+        // set label
+        String label = "not defined";
+        try {
+            label = FieldsUtil.getValue(fields, "label");
+        } catch (FieldNotFoundException e) {
+            LOGGER.warn("{}", e.getLocalizedMessage());
+        }
+
+        // convert fromDate to DateTime
         ZonedDateTime fromDateTime = ZonedDateTime
                 .ofInstant(fromDate.toInstant(), ZoneId.systemDefault());
         ZonedDateTime toDate = null;
+
+        // extract live value
         String live = null;
         try {
             live = FieldsUtil.getValue(fields, "live");
         } catch (FieldNotFoundException e) {
-            LOGGER.warn("{} - defaults to 0 day. ", e, locatorLabel);
+            LOGGER.warn("{} - defaults to 0 day. ", e, label);
         }
         if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
             live = "PT0S"; // zero second
         }
+
+        // calculate toDate
         try {
             TemporalAmount ta = Util.praseTemporalAmount(live);
             toDate = fromDateTime.plus(ta);
         } catch (DateTimeParseException e) {
+            // if live is not Duration string then parse it as Date
             try {
                 String[] patterns =
                         configService.getConfigArray("gotz.dateParsePattern");
@@ -75,28 +143,91 @@ public class DocumentHelper {
                 toDate = ZonedDateTime.ofInstant(td.toInstant(),
                         ZoneId.systemDefault());
             } catch (ParseException | ConfigNotFoundException pe) {
-                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days",
-                        locatorLabel, live, e);
+                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", label,
+                        live, e);
                 TemporalAmount ta = Util.praseTemporalAmount("PT0S");
                 toDate = fromDateTime.plus(ta);
             }
         }
+
         LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live,
-                toDate, locatorLabel);
+                toDate, label);
         return Date.from(Instant.from(toDate));
     }
 
-    public byte[] getDocumentObject(final Document document) {
+    /**
+     * <p>
+     * Get uncompressed bytes of the documentObject.
+     * @param document
+     *            which has the documentObject, not null
+     * @return uncompressed bytes of the documentObject, not null
+     * @throws IOException
+     *             if error closing stream
+     * @throws DataFormatException
+     *             if error decompress data
+     */
+    public byte[] getDocumentObject(final Document document)
+            throws DataFormatException, IOException {
+        Objects.requireNonNull(document, "document must not be null");
+        Objects.requireNonNull(document.getDocumentObject(),
+                "documentObject must not be null");
+
         final int bufferLength = 4086;
         return CompressionUtil.decompressByteArray(
                 (byte[]) document.getDocumentObject(), bufferLength);
     }
 
-    public void setDocumentObject(final Document document,
+    /**
+     * <p>
+     * Compresses the documentObject and sets it to Document.
+     * @param document
+     *            document to set, not null
+     * @param documentObject
+     *            object to compress and set, not null
+     * @return true if success
+     * @throws IOException
+     *             any exception while compression
+     */
+    public boolean setDocumentObject(final Document document,
             final byte[] documentObject) throws IOException {
+        Objects.requireNonNull(document, "document must not be null");
+        Objects.requireNonNull(documentObject,
+                "documentObject must not be null");
+
         final int bufferLength = 4086;
         byte[] compressedObject =
                 CompressionUtil.compressByteArray(documentObject, bufferLength);
         document.setDocumentObject(compressedObject);
+        return true;
+    }
+
+    /**
+     * <p>
+     * Factory method to create Document and set its fields.
+     * <p>
+     * Uses DI to create the Document.
+     * @param name
+     *            document name
+     * @param url
+     *            document URL
+     * @param fromDate
+     *            document start date
+     * @param toDate
+     *            document expire date
+     * @return document, not null
+     */
+    public Document createDocument(final String name, final String url,
+            final Date fromDate, final Date toDate) {
+        Objects.requireNonNull(name, "name must not be null");
+        Objects.requireNonNull(url, "url must not be null");
+        Objects.requireNonNull(fromDate, "fromDate must not be null");
+        Objects.requireNonNull(toDate, "toDate must not be null");
+
+        Document document = dInjector.instance(Document.class);
+        document.setName(name);
+        document.setUrl(url);
+        document.setFromDate(fromDate);
+        document.setToDate(toDate);
+        return document;
     }
 }

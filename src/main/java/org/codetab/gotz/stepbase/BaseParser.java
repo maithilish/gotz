@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
 import javax.script.ScriptException;
@@ -98,7 +99,7 @@ public abstract class BaseParser extends Step {
                     | IOException | NumberFormatException
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
-                    | FieldNotFoundException e) {
+                    | FieldNotFoundException | DataFormatException e) {
                 String message =
                         Util.buildString("unable to parse ", getLabel());
                 throw new StepRunException(message, e);
@@ -159,7 +160,8 @@ public abstract class BaseParser extends Step {
     protected abstract void setValue(DataDef dataDef, Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, MalformedURLException, IOException;
+            NoSuchMethodException, MalformedURLException, IOException,
+            DataFormatException;
 
     private void prepareData() throws DataDefNotFoundException,
             ClassNotFoundException, IOException {
@@ -184,7 +186,8 @@ public abstract class BaseParser extends Step {
     public void parse() throws DataDefNotFoundException, ScriptException,
             ClassNotFoundException, IOException, NumberFormatException,
             FieldNotFoundException, IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException {
+            InvocationTargetException, NoSuchMethodException,
+            DataFormatException {
         DataDef dataDef = dataDefService.getDataDef(dataDefName);
         Deque<Member> mStack = new ArrayDeque<>();
         for (Member member : data.getMembers()) {

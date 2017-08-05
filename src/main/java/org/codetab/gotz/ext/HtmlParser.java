@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
 import javax.script.ScriptEngine;
@@ -75,7 +76,7 @@ public abstract class HtmlParser extends BaseParser {
             webClient = getWebClient();
             htmlPage = HTMLParser.parseHtml(response,
                     webClient.getCurrentWindow());
-        } catch (IllegalStateException | IOException e) {
+        } catch (IllegalStateException | IOException | DataFormatException e) {
             String givenUpMessage =
                     "unable to create HtmlUnit.HtmlPage from document byte[]";
             LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
@@ -147,7 +148,7 @@ public abstract class HtmlParser extends BaseParser {
         return webClient;
     }
 
-    private String getDocumentHTML() {
+    private String getDocumentHTML() throws DataFormatException, IOException {
         byte[] bytes = documentHelper.getDocumentObject(getDocument());
         String html = new String(bytes);
         return html;

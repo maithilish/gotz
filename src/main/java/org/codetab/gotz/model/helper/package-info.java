@@ -1,5 +1,5 @@
 /**
- * Helper classes for model classes.
+ * Helpers for model classes.
  * <p>
  *
  * @since 1.0
