@@ -204,7 +204,7 @@ public class DataDefService {
     }
 
     public Map<AxisName, List<FieldsBase>> getFilterMap(final String dataDef)
-            throws DataDefNotFoundException, IllegalArgumentException {
+            throws DataDefNotFoundException {
         Map<AxisName, List<FieldsBase>> filterMap = new HashMap<>();
         List<DAxis> axes = getDataDef(dataDef).getAxis();
         for (DAxis axis : axes) {

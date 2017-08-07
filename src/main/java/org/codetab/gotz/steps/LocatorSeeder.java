@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 
 /**
- * Create seeder tasks and handover them to queue.
+ * Creates seeder tasks and handover them to queue.
  * @author Maithilish
  *
  */

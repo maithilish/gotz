@@ -80,6 +80,23 @@ dev run
 prod run 
    mvn exec:java -Dexec.mainClass="in.m.picks.Picks" 
 
+tests and IT tests
+   mvn verify
+   
+skip tests and run integration tests 
+   mvn integration-test -Dtest=zzz.java -DfailIfNoTests=false
+
+javadoc
+   mvn javadoc:javadoc
+   
+jacoco report
+   mvn clean test jacoco:report     - coverage excludes IT tests. 
+   mvn clean verify                 - coverage excludes IT tests.    
+   mvn clean verify jacoco:report   - coverage includes IT tests.
+
+know dependency updates
+   mvn versions:display-dependency-updates
+   
   
 M2E 
 ---

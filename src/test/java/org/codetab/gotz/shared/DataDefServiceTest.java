@@ -279,8 +279,7 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testGetFilterMap()
-            throws IllegalArgumentException, DataDefNotFoundException {
+    public void testGetFilterMap() throws DataDefNotFoundException {
         List<DataDef> dataDefs = createTestDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -296,6 +295,21 @@ public class DataDefServiceTest {
         assertThat(filterMap.get(AxisName.FACT)).isNull();
         assertThat(filterMap.get(AxisName.COL)).isNull();
         assertThat(filterMap.get(AxisName.ROW)).isEqualTo(filter.getFields());
+    }
+
+    @Test
+    public void testGetFilterMapShouldThrowException()
+            throws DataDefNotFoundException {
+        List<DataDef> dataDefs = createTestDataDefs();
+
+        given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
+        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
+        given(validator.validate()).willReturn(true);
+
+        dataDefService.init();
+
+        exception.expect(DataDefNotFoundException.class);
+        dataDefService.getFilterMap("unknown");
     }
 
     @Test
