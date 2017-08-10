@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Abstract Base Filter.
+ * Abstract Base Filter. Implementing class filters the data.
  * @author Maithilish
  *
  */
@@ -40,7 +40,6 @@ public abstract class BaseFilter extends Step {
      * <p>
      * Return true if step is consistent and data is not null.
      * @return true if data is not null else false
-     * @see org.codetab.gotz.step.IStep#isConsistent()
      */
     @Override
     public boolean isConsistent() {
@@ -52,7 +51,6 @@ public abstract class BaseFilter extends Step {
      * Push task with data as input. This step fields are used for next step
      * also.
      * @return true
-     * @see org.codetab.gotz.step.IStep#handover()
      */
     @Override
     public boolean handover() {
@@ -66,7 +64,9 @@ public abstract class BaseFilter extends Step {
      * <p>
      * Create fields for next step. Uses this step fields for next step also.
      * Throws StepRunException if list is empty.
-     * @return list of fields.
+     * @return list of fields
+     * @throws StepRunException
+     *             if nextStepFields list is empty
      */
     private List<FieldsBase> createNextStepFields() {
         List<FieldsBase> nextStepFields = getFields();
@@ -81,9 +81,8 @@ public abstract class BaseFilter extends Step {
 
     /**
      * <p>
-     * Sets step input if it is not null and instance of Data.
+     * If input is not null and is instance of Data, sets it as step input.
      *
-     * @see org.codetab.gotz.step.IStepO#setInput(java.lang.Object)
      */
     @Override
     public void setInput(final Object input) {
@@ -105,14 +104,21 @@ public abstract class BaseFilter extends Step {
         return data;
     }
 
+    /**
+     * Do nothing.
+     * @return false
+     */
     @Override
     public boolean load() {
         return false;
     }
 
+    /**
+     * Do nothing.
+     * @return false
+     */
     @Override
     public boolean store() {
         return false;
     }
-
 }
