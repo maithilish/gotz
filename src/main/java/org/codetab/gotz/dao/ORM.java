@@ -1,5 +1,15 @@
 package org.codetab.gotz.dao;
 
+/**
+ * <p>
+ * ORM types enum.
+ * @author Maithilish
+ *
+ */
 public enum ORM {
-    JDO, JPA
+
+    /**
+     * ORM types.
+     */
+    JDO, JPA, DEFUALT
 }

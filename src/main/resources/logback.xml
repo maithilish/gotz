@@ -21,6 +21,18 @@
         </encoder>
     </appender>
 
+    <appender name="errorlog" class="ch.qos.logback.core.FileAppender">
+        <file>logs/error.log</file>
+        <append>false</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>warn</level>
+        </filter>
+        <encoder>
+            <pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
     <appender name="statelog" class="ch.qos.logback.core.FileAppender">
         <file>logs/state.log</file>
         <append>false</append>
@@ -50,10 +62,11 @@
 
     <logger name="DataNucleus.JDO" level="OFF" />
 
-    <root level="trace">
+    <root level="debug">
         <appender-ref ref="console" />
-        <appender-ref ref="tracelog" />
+        <appender-ref ref="errorlog" />
         <appender-ref ref="debuglog" />
-        <appender-ref ref="statelog" />
+<!--         <appender-ref ref="statelog" /> -->
+<!--         <appender-ref ref="tracelog" />         -->
     </root>
 </configuration>

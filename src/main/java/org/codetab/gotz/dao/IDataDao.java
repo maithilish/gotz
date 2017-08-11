@@ -2,12 +2,39 @@ package org.codetab.gotz.dao;
 
 import org.codetab.gotz.model.Data;
 
+/**
+ * <p>
+ * DataDao interface.
+ * @author Maithilish
+ *
+ */
 public interface IDataDao {
-
+    /**
+     * <p>
+     * Store data.
+     * @param data
+     *            to store
+     */
     void storeData(Data data);
 
+    /**
+     * <p>
+     * Get Data from document id and datadef id.
+     * @param documentId
+     *            document id
+     * @param dataDefId
+     *            datadef id
+     * @return data
+     */
     Data getData(Long documentId, Long dataDefId);
 
+    /**
+     * <p>
+     * Get Data from data id.
+     * @param id
+     *            data id.
+     * @return data
+     */
     Data getData(Long id);
 
 }
