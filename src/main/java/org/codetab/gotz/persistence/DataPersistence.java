@@ -2,7 +2,8 @@ package org.codetab.gotz.persistence;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.dao.DaoFactory;
+import org.codetab.gotz.dao.DaoFactoryProvider;
+import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.StepPersistenceException;
@@ -21,12 +22,13 @@ public class DataPersistence {
     @Inject
     private ConfigService configService;
     @Inject
-    private DaoFactory daoFactory;
+    private DaoFactoryProvider daoFactoryProvider;
 
     public Data loadData(final Long dataDefId, final Long documentId) {
         try {
             ORM orm = configService.getOrmType();
-            IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            IDataDao dao = daoFactory.getDataDao();
             Data data = dao.getData(documentId, dataDefId);
             return data;
         } catch (RuntimeException e) {
@@ -42,7 +44,8 @@ public class DataPersistence {
     public Data loadData(final Long id) {
         try {
             ORM orm = configService.getOrmType();
-            IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            IDataDao dao = daoFactory.getDataDao();
             Data data = dao.getData(id);
             return data;
         } catch (RuntimeException e) {
@@ -57,7 +60,8 @@ public class DataPersistence {
     public void storeData(final Data data) {
         try {
             ORM orm = configService.getOrmType();
-            IDataDao dao = daoFactory.getDaoFactory(orm).getDataDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            IDataDao dao = daoFactory.getDataDao();
             dao.storeData(data);
         } catch (RuntimeException e) {
             String message =

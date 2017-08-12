@@ -6,7 +6,7 @@ import java.util.Timer;
 
 import org.codetab.gotz.Gotz;
 import org.codetab.gotz.GotzEngine;
-import org.codetab.gotz.dao.DaoFactory;
+import org.codetab.gotz.dao.DaoFactoryProvider;
 import org.codetab.gotz.dao.jdo.PMF;
 import org.codetab.gotz.helper.IXoc;
 import org.codetab.gotz.helper.JaxbXoc;
@@ -31,7 +31,7 @@ public class BasicModule extends AbstractModule {
         bind(BeanService.class);
         bind(DataDefService.class);
         bind(DInjector.class);
-        bind(DaoFactory.class);
+        bind(DaoFactoryProvider.class);
         bind(PMF.class);
         bind(Timer.class);
         bind(ActivityService.class);

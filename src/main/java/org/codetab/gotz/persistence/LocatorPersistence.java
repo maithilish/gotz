@@ -2,7 +2,8 @@ package org.codetab.gotz.persistence;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.dao.DaoFactory;
+import org.codetab.gotz.dao.DaoFactoryProvider;
+import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.ILocatorDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.StepPersistenceException;
@@ -20,12 +21,13 @@ public class LocatorPersistence {
     @Inject
     private ConfigService configService;
     @Inject
-    private DaoFactory daoFactory;
+    private DaoFactoryProvider daoFactoryProvider;
 
     public Locator loadLocator(final String name, final String group) {
         try {
             ORM orm = configService.getOrmType();
-            ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            ILocatorDao dao = daoFactory.getLocatorDao();
             Locator existingLocator = dao.getLocator(name, group);
             return existingLocator;
         } catch (RuntimeException e) {
@@ -40,7 +42,8 @@ public class LocatorPersistence {
     public Locator loadLocator(final Long id) {
         try {
             ORM orm = configService.getOrmType();
-            ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            ILocatorDao dao = daoFactory.getLocatorDao();
             return dao.getLocator(id);
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
@@ -54,7 +57,8 @@ public class LocatorPersistence {
     public void storeLocator(final Locator locator) {
         try {
             ORM orm = configService.getOrmType();
-            ILocatorDao dao = daoFactory.getDaoFactory(orm).getLocatorDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            ILocatorDao dao = daoFactory.getLocatorDao();
             dao.storeLocator(locator);
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());

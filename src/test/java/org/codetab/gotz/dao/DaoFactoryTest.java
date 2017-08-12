@@ -25,7 +25,7 @@ public class DaoFactoryTest {
     private DInjector dInjector;
 
     @InjectMocks
-    private DaoFactory daoFactory;
+    private DaoFactoryProvider daoFactoryProvider;
 
     @Rule
     public ExpectedException testRule = ExpectedException.none();
@@ -37,52 +37,27 @@ public class DaoFactoryTest {
 
     @Test
     public void testGetDaoFactoryJDO() {
-        daoFactory.getDaoFactory(ORM.JDO);
+        daoFactoryProvider.getDaoFactory(ORM.JDO);
         verify(dInjector).instance(JdoDaoFactory.class);
     }
 
     @Test
     public void testGetDaoFactoryDefault() {
-        daoFactory.getDaoFactory(ORM.DEFUALT);
+        daoFactoryProvider.getDaoFactory(ORM.DEFUALT);
         verify(dInjector).instance(JdoDaoFactory.class);
     }
 
     @Test
     public void testGetDaoFactoryJPAShouldThrowException() {
         testRule.expect(UnsupportedOperationException.class);
-        daoFactory.getDaoFactory(ORM.JPA);
+        daoFactoryProvider.getDaoFactory(ORM.JPA);
     }
 
     @Test
     public void testGetDaoFactoryInstance() {
-        DaoFactory df1 = daoFactory.getDaoFactory(ORM.JDO);
-        DaoFactory df2 = daoFactory.getDaoFactory(ORM.JDO);
+        IDaoFactory df1 = daoFactoryProvider.getDaoFactory(ORM.JDO);
+        IDaoFactory df2 = daoFactoryProvider.getDaoFactory(ORM.JDO);
 
         assertThat(df1).isSameAs(df2);
     }
-
-    @Test
-    public void testGetLocatorDao() {
-        testRule.expect(UnsupportedOperationException.class);
-        daoFactory.getLocatorDao();
-    }
-
-    @Test
-    public void testGetDocumentDao() {
-        testRule.expect(UnsupportedOperationException.class);
-        daoFactory.getDocumentDao();
-    }
-
-    @Test
-    public void testGetDataDefDao() {
-        testRule.expect(UnsupportedOperationException.class);
-        daoFactory.getDataDefDao();
-    }
-
-    @Test
-    public void testGetDataDao() {
-        testRule.expect(UnsupportedOperationException.class);
-        daoFactory.getDataDao();
-    }
-
 }

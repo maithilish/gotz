@@ -5,7 +5,8 @@ import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.dao.DaoFactory;
+import org.codetab.gotz.dao.DaoFactoryProvider;
+import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.CriticalException;
@@ -22,12 +23,13 @@ public class DataDefPersistence {
     @Inject
     private ConfigService configService;
     @Inject
-    private DaoFactory daoFactory;
+    private DaoFactoryProvider daoFactoryProvider;
 
     public List<DataDef> loadDataDefs() {
         try {
             ORM orm = configService.getOrmType();
-            IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            IDataDefDao dao = daoFactory.getDataDefDao();
             List<DataDef> dataDefs =
                     dao.getDataDefs(configService.getRunDateTime());
             LOGGER.debug("DataDef loaded : [{}]", dataDefs.size());
@@ -42,7 +44,8 @@ public class DataDefPersistence {
     public void storeDataDef(final DataDef dataDef) {
         try {
             ORM orm = configService.getOrmType();
-            IDataDefDao dao = daoFactory.getDaoFactory(orm).getDataDefDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            IDataDefDao dao = daoFactory.getDataDefDao();
             String name = dataDef.getName();
             LOGGER.debug("store DataDef");
             dao.storeDataDef(dataDef);

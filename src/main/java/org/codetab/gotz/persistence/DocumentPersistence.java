@@ -2,7 +2,8 @@ package org.codetab.gotz.persistence;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.dao.DaoFactory;
+import org.codetab.gotz.dao.DaoFactoryProvider;
+import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.StepPersistenceException;
@@ -20,13 +21,14 @@ public class DocumentPersistence {
     @Inject
     private ConfigService configService;
     @Inject
-    private DaoFactory daoFactory;
+    private DaoFactoryProvider daoFactoryProvider;
 
     public Document loadDocument(final Long id) {
         // get Document with documentObject
         try {
             ORM orm = configService.getOrmType();
-            IDocumentDao dao = daoFactory.getDaoFactory(orm).getDocumentDao();
+            IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
+            IDocumentDao dao = daoFactory.getDocumentDao();
             return dao.getDocument(id);
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());

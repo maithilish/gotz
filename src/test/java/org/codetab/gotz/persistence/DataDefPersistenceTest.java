@@ -9,9 +9,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.dao.DaoFactory;
+import org.codetab.gotz.dao.DaoFactoryProvider;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.ORM;
+import org.codetab.gotz.dao.jdo.JdoDaoFactory;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DataDef;
@@ -31,7 +32,10 @@ public class DataDefPersistenceTest {
     private ConfigService configService;
 
     @Mock
-    private DaoFactory daoFactory;
+    private DaoFactoryProvider daoFactoryProvider;
+
+    @Mock
+    private JdoDaoFactory jdoDao;
 
     @Mock
     private IDataDefDao dataDefDao;
@@ -52,17 +56,18 @@ public class DataDefPersistenceTest {
         Date runDate = new Date();
         List<DataDef> dataDefs = new ArrayList<>();
         given(configService.getOrmType()).willReturn(ORM.JDO);
-        given(daoFactory.getDaoFactory(ORM.JDO)).willReturn(daoFactory);
-        given(daoFactory.getDataDefDao()).willReturn(dataDefDao);
+        given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
+        given(jdoDao.getDataDefDao()).willReturn(dataDefDao);
         given(configService.getRunDateTime()).willReturn(runDate);
         given(dataDefDao.getDataDefs(runDate)).willReturn(dataDefs);
 
         List<DataDef> actual = dataDefPersistence.loadDataDefs();
 
-        InOrder inOrder = inOrder(configService, daoFactory, dataDefDao);
+        InOrder inOrder =
+                inOrder(configService, daoFactoryProvider, dataDefDao, jdoDao);
         inOrder.verify(configService).getOrmType();
-        inOrder.verify(daoFactory).getDaoFactory(ORM.JDO);
-        inOrder.verify(daoFactory).getDataDefDao();
+        inOrder.verify(daoFactoryProvider).getDaoFactory(ORM.JDO);
+        inOrder.verify(jdoDao).getDataDefDao();
         inOrder.verify(configService).getRunDateTime();
         inOrder.verify(dataDefDao).getDataDefs(runDate);
         assertThat(actual).isSameAs(dataDefs);
@@ -71,7 +76,7 @@ public class DataDefPersistenceTest {
     @Test
     public void testLoadDataDefsShouldThrowException() {
         given(configService.getOrmType()).willReturn(ORM.JDO);
-        given(daoFactory.getDaoFactory(ORM.JDO))
+        given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
         expected.expect(CriticalException.class);
@@ -82,15 +87,16 @@ public class DataDefPersistenceTest {
     public void testStoreDataDef() {
         DataDef dataDef = new DataDef();
         given(configService.getOrmType()).willReturn(ORM.JDO);
-        given(daoFactory.getDaoFactory(ORM.JDO)).willReturn(daoFactory);
-        given(daoFactory.getDataDefDao()).willReturn(dataDefDao);
+        given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
+        given(jdoDao.getDataDefDao()).willReturn(dataDefDao);
 
         dataDefPersistence.storeDataDef(dataDef);
 
-        InOrder inOrder = inOrder(configService, daoFactory, dataDefDao);
+        InOrder inOrder =
+                inOrder(configService, daoFactoryProvider, dataDefDao, jdoDao);
         inOrder.verify(configService).getOrmType();
-        inOrder.verify(daoFactory).getDaoFactory(ORM.JDO);
-        inOrder.verify(daoFactory).getDataDefDao();
+        inOrder.verify(daoFactoryProvider).getDaoFactory(ORM.JDO);
+        inOrder.verify(jdoDao).getDataDefDao();
         inOrder.verify(dataDefDao).storeDataDef(dataDef);
     }
 
@@ -98,7 +104,7 @@ public class DataDefPersistenceTest {
     public void testStoreDataDefShouldThrowException() {
         DataDef dataDef = new DataDef();
         given(configService.getOrmType()).willReturn(ORM.JDO);
-        given(daoFactory.getDaoFactory(ORM.JDO))
+        given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
         expected.expect(CriticalException.class);

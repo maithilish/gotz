@@ -2,6 +2,7 @@ package org.codetab.gotz.dao.jdo;
 
 import javax.inject.Inject;
 
+import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.IDocumentDao;
@@ -9,7 +10,14 @@ import org.codetab.gotz.dao.ILocatorDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class JdoDaoFactory extends org.codetab.gotz.dao.DaoFactory {
+/**
+ * <p>
+ * Concrete implementation of IDaoFactory which creates family of DAO for JDO
+ * (more specifically, for javax.jdo specification)
+ * @author Maithilish
+ *
+ */
+public class JdoDaoFactory implements IDaoFactory {
 
     static final Logger LOGGER = LoggerFactory.getLogger(JdoDaoFactory.class);
 
