@@ -428,7 +428,9 @@ public class BaseLoaderTest {
     public void testStorePersistIsTrue() throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
         Locator locator1 = locators.get(0);
+        locator1.setId(0L);
         Locator locator2 = locators.get(1);
+        locator2.setId(0L);
         Document document1 = locator1.getDocuments().get(0);
         Document document2 = new Document();
 
@@ -466,7 +468,9 @@ public class BaseLoaderTest {
     public void testStorePersistUndefined() throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
         Locator locator1 = locators.get(0);
+        locator1.setId(0L);
         Locator locator2 = locators.get(1);
+        locator2.setId(0L);
         Document document1 = locator1.getDocuments().get(0);
         Document document2 = new Document();
 
@@ -501,6 +505,7 @@ public class BaseLoaderTest {
     public void testStoreExpectException() throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
+        locator.setId(0L);
         Document document = locator.getDocuments().get(0);
 
         FieldUtils.writeField(loader, "locator", locator, true);

@@ -30,7 +30,7 @@
               ]]>
             </userAgent>
         </webClient>
-        <highDate>31-12-2099 23:59:59.999</highDate>
+        <highDate>31-12-2037 23:59:59.999</highDate>
         <dateParsePattern>dd-MM-yyyy ; dd/MM/yyyy</dateParsePattern>
         <dateTimeParsePattern>
             <![CDATA[

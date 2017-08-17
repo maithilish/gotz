@@ -26,6 +26,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+/**
+ * <p>
+ * LocatorDao tests.
+ * @author Maithilish
+ *
+ */
 public class LocatorDaoTest {
 
     private static IDaoUtil daoUtil;
@@ -76,7 +82,7 @@ public class LocatorDaoTest {
         Locator actualLocator = locatorDao.getLocator(name, group);
         assertNull(actualLocator);
 
-        actualLocator = locatorDao.getLocator(null, null);
+        actualLocator = locatorDao.getLocator("n", "g");
         assertNull(actualLocator);
     }
 

@@ -227,7 +227,15 @@ use @see to link any project classes and also java or external classes and metho
         
       
     
+Design notes
+------------
 
+As XML schema allows optional elements, JAXB uses wrappers for primitives since
+primitives can't be null. XJC generated models will have Long, Integer etc.
+Apart from model classes, try to use primitives as far as possible as it we
+need not validate method param for primitives.  
+
+validate param for null or illegal argument.
 
 
  

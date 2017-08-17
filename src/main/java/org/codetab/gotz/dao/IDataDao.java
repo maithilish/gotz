@@ -26,7 +26,7 @@ public interface IDataDao {
      *            datadef id
      * @return data
      */
-    Data getData(Long documentId, Long dataDefId);
+    Data getData(long documentId, long dataDefId);
 
     /**
      * <p>
@@ -35,6 +35,6 @@ public interface IDataDao {
      *            data id.
      * @return data
      */
-    Data getData(Long id);
+    Data getData(long id);
 
 }

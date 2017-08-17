@@ -22,10 +22,24 @@ import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.api.jdo.JDOPersistenceManagerFactory;
 import org.datanucleus.store.schema.SchemaAwareStoreManager;
 
+/**
+ * <p>
+ * DaoUtil for tests.
+ * @author Maithilish
+ *
+ */
 public class DaoUtil implements IDaoUtil {
 
+    /**
+     * pmf.
+     */
     private PersistenceManagerFactory pmf;
 
+    /**
+     * <p>
+     * Constructor.
+     * @param pmf pmf
+     */
     public DaoUtil(final PersistenceManagerFactory pmf) {
         this.pmf = pmf;
     }
@@ -43,6 +57,10 @@ public class DaoUtil implements IDaoUtil {
         if (driver.contains("hsqldb")) {
             query = MessageFormat.format("alter table {0} drop constraint {1}",
                     table, constraint);
+        }
+        if (driver.contains("mysql") || driver.contains("mariadb")) {
+            query = MessageFormat.format("alter table {0} drop index {1}",
+                    table.toUpperCase(), constraint.toUpperCase());
         }
         executeQuery(pmfac, query);
     }

@@ -39,7 +39,7 @@ public class LocatorPersistence {
         }
     }
 
-    public Locator loadLocator(final Long id) {
+    public Locator loadLocator(final long id) {
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);

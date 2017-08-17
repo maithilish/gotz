@@ -36,5 +36,5 @@ public interface ILocatorDao {
      *            locator id
      * @return locator
      */
-    Locator getLocator(Long id);
+    Locator getLocator(long id);
 }

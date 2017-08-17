@@ -1,15 +1,16 @@
 package org.codetab.gotz.dao.jdo;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManagerFactory;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.dao.DaoUtilFactory;
 import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
@@ -22,6 +23,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+/**
+ * <p>
+ * DocumentDao tests.
+ * @author Maithilish
+ *
+ */
 public class DocumentDaoTest {
 
     private static IDaoUtil daoUtil;
@@ -29,7 +36,7 @@ public class DocumentDaoTest {
     private static HashSet<String> schemaClasses;
 
     @Rule
-    public ExpectedException exception = ExpectedException.none();
+    public ExpectedException testRule = ExpectedException.none();
 
     @BeforeClass
     public static void setUpBeforeClass() throws IOException {
@@ -58,20 +65,23 @@ public class DocumentDaoTest {
 
     @Test
     public void testDao() {
-        exception.expect(NullPointerException.class);
-        new DocumentDao(null);
+        try {
+            new DocumentDao(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("pmf must not be null");
+        }
     }
 
     @Test
     public void testGetDocument() {
-        String name = "test";
-        String url = "testurl";
-        String docObj = "testdocumentobject";
+        String name = "x";
+        String url = "xu";
+        String docObj = "xdoc";
 
-        LocatorDao locDao = new LocatorDao(pmf);
-
-        Date fromDate = new Date();
-        Date toDate = new Date();
+        Date now = new Date();
+        Date fromDate = DateUtils.addDays(now, -1);
+        Date toDate = now;
 
         Document doc = new Document();
         doc.setName(name);
@@ -80,37 +90,83 @@ public class DocumentDaoTest {
         doc.setToDate(toDate);
         doc.setDocumentObject(docObj);
 
-        Locator loc = new Locator();
-        loc.getDocuments().add(doc);
-        locDao.storeLocator(loc);
+        Locator locator = new Locator();
+        locator.getDocuments().add(doc);
 
-        loc = locDao.getLocator(loc.getId());
-        List<Document> docs = loc.getDocuments();
-        assertEquals(1, docs.size());
-        Document actualDoc = docs.get(0);
-        Long id = actualDoc.getId();
+        LocatorDao locatorDao = new LocatorDao(pmf);
+        locatorDao.storeLocator(locator);
 
-        DocumentDao docDao = new DocumentDao(pmf);
-        actualDoc = docDao.getDocument(id);
+        DocumentDao documentDao = new DocumentDao(pmf);
 
-        assertEquals(name, actualDoc.getName());
-        assertEquals(url, actualDoc.getUrl());
-        assertEquals(fromDate, actualDoc.getFromDate());
-        assertEquals(toDate, actualDoc.getToDate());
-        assertEquals(docObj, actualDoc.getDocumentObject());
+        // when
+        Document actual = documentDao.getDocument(doc.getId());
 
+        assertThat(actual.getName()).isEqualTo(name);
+        assertThat(actual.getUrl()).isEqualTo(url);
+        assertThat(actual.getFromDate()).isEqualTo(fromDate);
+        assertThat(actual.getToDate()).isEqualTo(toDate);
+        assertThat(actual.getDocumentObject()).isEqualTo(docObj);
+    }
+
+    @Test
+    public void testGetDocumentFromMultiple() {
+        String docObj1 = "doc1";
+        String docObj2 = "doc2";
+
+        Date now = new Date();
+        Date fromDate = DateUtils.addDays(now, -1);
+        Date toDate = now;
+
+        Document doc1 = new Document();
+        doc1.setName("d1");
+        doc1.setUrl("u1");
+        doc1.setFromDate(fromDate);
+        doc1.setToDate(toDate);
+        doc1.setDocumentObject(docObj1);
+
+        Document doc2 = new Document();
+        doc2.setName("d2");
+        doc2.setUrl("u2");
+        doc2.setFromDate(fromDate);
+        doc2.setToDate(toDate);
+        doc2.setDocumentObject(docObj2);
+
+        Locator locator = new Locator();
+        locator.getDocuments().add(doc1);
+        locator.getDocuments().add(doc2);
+
+        LocatorDao locatorDao = new LocatorDao(pmf);
+        locatorDao.storeLocator(locator);
+
+        DocumentDao documentDao = new DocumentDao(pmf);
+
+        // when
+        Document actual1 = documentDao.getDocument(doc1.getId());
+
+        assertThat(actual1.getName()).isEqualTo(doc1.getName());
+        assertThat(actual1.getUrl()).isEqualTo(doc1.getUrl());
+        assertThat(actual1.getFromDate()).isEqualTo(fromDate);
+        assertThat(actual1.getToDate()).isEqualTo(toDate);
+        assertThat(actual1.getDocumentObject()).isEqualTo(docObj1);
+
+        Document actual2 = documentDao.getDocument(doc2.getId());
+
+        assertThat(actual2.getName()).isEqualTo(doc2.getName());
+        assertThat(actual2.getUrl()).isEqualTo(doc2.getUrl());
+        assertThat(actual2.getFromDate()).isEqualTo(fromDate);
+        assertThat(actual2.getToDate()).isEqualTo(toDate);
+        assertThat(actual2.getDocumentObject()).isEqualTo(docObj2);
     }
 
     @Test
     public void testGetDocumentNonExistent() {
-        String name = "test";
-        String url = "testurl";
-        String docObj = "testdocumentobject";
+        String name = "x";
+        String url = "xu";
+        String docObj = "xdoc";
 
-        LocatorDao locDao = new LocatorDao(pmf);
-
-        Date fromDate = new Date();
-        Date toDate = new Date();
+        Date now = new Date();
+        Date fromDate = DateUtils.addDays(now, -1);
+        Date toDate = now;
 
         Document doc = new Document();
         doc.setName(name);
@@ -119,13 +175,15 @@ public class DocumentDaoTest {
         doc.setToDate(toDate);
         doc.setDocumentObject(docObj);
 
-        Locator loc = new Locator();
-        loc.getDocuments().add(doc);
-        locDao.storeLocator(loc);
+        Locator locator = new Locator();
+        locator.getDocuments().add(doc);
+
+        LocatorDao locatorDao = new LocatorDao(pmf);
+        locatorDao.storeLocator(locator);
 
         DocumentDao docDao = new DocumentDao(pmf);
 
-        exception.expect(JDOObjectNotFoundException.class);
+        testRule.expect(JDOObjectNotFoundException.class);
         docDao.getDocument(100L);
     }
 

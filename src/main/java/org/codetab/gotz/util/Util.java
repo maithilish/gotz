@@ -13,6 +13,8 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -20,6 +22,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.model.Wrapper;
 
 import com.google.gson.Gson;
@@ -210,4 +213,26 @@ public final class Util {
     public static String getMessage(final Exception e) {
         return e.getClass().getSimpleName() + ": " + e.getLocalizedMessage();
     }
+
+    /**
+     * <p>
+     * Get properties as string.
+     * @param properties
+     *            properties to convert to string
+     * @return string
+     */
+    public static String getPropertiesAsString(final Properties properties) {
+        Validate.notNull(properties, "properties must not be null");
+
+        String line = System.lineSeparator();
+        StringBuilder sb = new StringBuilder();
+        sb.append(line);
+        for (Entry<Object, Object> entry : properties.entrySet()) {
+            sb.append(Util.logIndent());
+            sb.append(entry);
+            sb.append(line);
+        }
+        return sb.toString();
+    }
+
 }

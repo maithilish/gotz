@@ -1,8 +1,9 @@
 package org.codetab.gotz.dao.jdo;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import javax.jdo.JDODataStoreException;
+import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManagerFactory;
 
 import org.codetab.gotz.dao.DaoUtilFactory;
@@ -27,6 +29,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+/**
+ * <p>
+ * DataDao tests.
+ * @author Maithilish
+ *
+ */
 public class DataDaoTest {
 
     private static IDaoUtil daoUtil;
@@ -34,7 +42,7 @@ public class DataDaoTest {
     private static HashSet<String> schemaClasses;
 
     @Rule
-    public ExpectedException exception = ExpectedException.none();
+    public ExpectedException testRule = ExpectedException.none();
 
     @BeforeClass
     public static void setUpBeforeClass() throws IOException {
@@ -61,9 +69,13 @@ public class DataDaoTest {
     }
 
     @Test
-    public void testDao() {
-        exception.expect(NullPointerException.class);
-        new DataDao(null);
+    public void testDaoPMFNull() {
+        try {
+            new DataDao(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("pmf must not be null");
+        }
     }
 
     @Test
@@ -89,8 +101,21 @@ public class DataDaoTest {
 
         assertNotNull(data.getId());
 
-        exception.expect(JDODataStoreException.class);
+        testRule.expect(JDODataStoreException.class);
         dataDao.storeData(data2);
+    }
+
+    @Test
+    public void testStoreNullParams() {
+
+        DataDao dataDao = new DataDao(pmf);
+
+        try {
+            dataDao.storeData(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("data must not be null");
+        }
     }
 
     @Test
@@ -100,15 +125,15 @@ public class DataDaoTest {
         Data data = createData();
         dataDao.storeData(data);
 
-        Data actualData =
+        Data actual =
                 dataDao.getData(data.getDocumentId(), data.getDataDefId());
 
-        assertEquals(data.getId(), actualData.getId());
-        assertEquals(data.getName(), actualData.getName());
-        assertEquals(data.getDataDefId(), actualData.getDataDefId());
-        assertEquals(data.getDocumentId(), actualData.getDocumentId());
-        assertEquals(data.getDataDef(), actualData.getDataDef());
-        assertEquals(data.getMembers(), actualData.getMembers());
+        assertThat(actual.getId()).isEqualTo(data.getId());
+        assertThat(actual.getName()).isEqualTo(data.getName());
+        assertThat(actual.getDataDefId()).isEqualTo(data.getDataDefId());
+        assertThat(actual.getDocumentId()).isEqualTo(data.getDocumentId());
+        assertThat(actual.getDataDef()).isEqualTo(data.getDataDef());
+        assertThat(actual.getMembers()).isEqualTo(data.getMembers());
     }
 
     @Test
@@ -133,8 +158,35 @@ public class DataDaoTest {
         daoUtil.dropConstraint(pmf, "data", "unique_data");
         dataDao.storeData(data2);
 
-        exception.expect(IllegalStateException.class);
+        testRule.expect(IllegalStateException.class);
         dataDao.getData(data.getDocumentId(), data.getDataDefId());
+    }
+
+    @Test
+    public void testGetDataById() {
+
+        DataDao dataDao = new DataDao(pmf);
+        Data data = createData();
+        dataDao.storeData(data);
+
+        Data actual = dataDao.getData(data.getId());
+
+        assertThat(actual.getId()).isEqualTo(data.getId());
+        assertThat(actual.getName()).isEqualTo(data.getName());
+        assertThat(actual.getDataDefId()).isEqualTo(data.getDataDefId());
+        assertThat(actual.getDocumentId()).isEqualTo(data.getDocumentId());
+        assertThat(actual.getDataDef()).isEqualTo(data.getDataDef());
+        assertThat(actual.getMembers()).isEqualTo(data.getMembers());
+    }
+
+    @Test
+    public void testGetDataByIdNonExists() {
+        DataDao dataDao = new DataDao(pmf);
+
+        long id = 100L;
+
+        testRule.expect(JDOObjectNotFoundException.class);
+        dataDao.getData(id);
     }
 
     private Data createData() {

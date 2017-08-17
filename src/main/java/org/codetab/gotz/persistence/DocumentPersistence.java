@@ -23,7 +23,7 @@ public class DocumentPersistence {
     @Inject
     private DaoFactoryProvider daoFactoryProvider;
 
-    public Document loadDocument(final Long id) {
+    public Document loadDocument(final long id) {
         // get Document with documentObject
         try {
             ORM orm = configService.getOrmType();

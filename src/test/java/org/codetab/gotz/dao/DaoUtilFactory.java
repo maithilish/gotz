@@ -1,17 +1,34 @@
 package org.codetab.gotz.dao;
 
 import org.codetab.gotz.dao.jdo.JdoDaoUtilFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * DaoUtilFactory for tests.
+ * @author Maithilish
+ *
+ */
 public abstract class DaoUtilFactory {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(DaoUtilFactory.class);
-
+    /**
+     * instance.
+     */
     private static DaoUtilFactory instance;
 
+    /**
+     * <p>
+     * Get UtilDao.
+     * @return IDaoUtil
+     */
     public abstract IDaoUtil getUtilDao();
 
+    /**
+     * <p>
+     * get Dao factory.
+     * @param orm
+     *            ORM type
+     * @return daoUtilFactory
+     */
     public static DaoUtilFactory getDaoFactory(final ORM orm) {
         if (instance == null) {
             switch (orm) {
@@ -26,6 +43,13 @@ public abstract class DaoUtilFactory {
         return instance;
     }
 
+    /**
+     * <p>
+     * Get ORM type.
+     * @param ormName
+     *            ORM type string
+     * @return ORM type.
+     */
     public static ORM getOrmType(final String ormName) {
         ORM orm = null;
         if (ormName == null) {

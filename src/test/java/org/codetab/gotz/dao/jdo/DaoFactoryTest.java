@@ -14,6 +14,12 @@ import org.codetab.gotz.shared.ConfigService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+/**
+ * <p>
+ * DaoFactory tests.
+ * @author Maithilish
+ *
+ */
 public class DaoFactoryTest {
 
     private static JdoDaoFactory daoFactory;

@@ -27,6 +27,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+/**
+ * <p>
+ * PMF tests.
+ * @author Maithilish
+ *
+ */
 public class PMFTest {
 
     @Mock
@@ -115,9 +121,9 @@ public class PMFTest {
 
     @Test
     public void testInitThrowFileNotFoundException()
-            throws FileNotFoundException {
-        given(resourceStream.getInputStream("/jdoconfig.properties"))
-                .willThrow(FileNotFoundException.class);
+            throws FileNotFoundException, ConfigNotFoundException {
+        given(configService.getConfig("gotz.datastore.configFile"))
+                .willReturn("x.properties");
 
         exceptionRule.expect(CriticalException.class);
         pmf.init();

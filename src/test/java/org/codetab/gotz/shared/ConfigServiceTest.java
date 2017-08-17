@@ -177,7 +177,7 @@ public class ConfigServiceTest {
                         .isEqualTo(configuration
                                 .getString("gotz.webClient.userAgent"));
 
-        assertThat("31-12-2099 23:59:59.999")
+        assertThat("31-12-2037 23:59:59.999")
                 .isEqualTo(configuration.getString("gotz.highDate"));
         String[] dateTimePatterns =
                 {"dd-MM-yyyy HH:mm:ss.SSS", "dd/MM/yyyy HH:mm:ss.SSS"};

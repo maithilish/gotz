@@ -10,7 +10,7 @@ import org.codetab.gotz.di.DInjector;
  * <p>
  * It defines a Simple Factory method which creates DaoFactory of ORM type which
  * in turn uses Abstract Factory Pattern to create a families of DAO.
- * @author m
+ * @author Maithilish
  *
  */
 public class DaoFactoryProvider {

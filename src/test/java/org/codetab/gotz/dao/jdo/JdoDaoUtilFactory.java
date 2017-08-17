@@ -6,16 +6,25 @@ import org.codetab.gotz.dao.DaoUtilFactory;
 import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.shared.ConfigService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * JDO DaoUtilFactory for tests.
+ * @author Maithilish
+ *
+ */
 public final class JdoDaoUtilFactory extends DaoUtilFactory {
 
-    static final Logger LOGGER =
-            LoggerFactory.getLogger(JdoDaoUtilFactory.class);
-
+    /**
+     * pmf.
+     */
     private PersistenceManagerFactory pmf;
 
+    /**
+     * <p>
+     * Constructor.
+     *
+     */
     public JdoDaoUtilFactory() {
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
@@ -27,6 +36,11 @@ public final class JdoDaoUtilFactory extends DaoUtilFactory {
         pmf = jdoPMF.getFactory();
     }
 
+    /**
+     * <p>
+     * Get PMF.
+     * @return PMF
+     */
     public PersistenceManagerFactory getFactory() {
         return pmf;
     }

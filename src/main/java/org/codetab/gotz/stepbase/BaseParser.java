@@ -83,7 +83,9 @@ public abstract class BaseParser extends Step {
             throw new StepRunException(givenUpMessage, e);
         }
         Long documentId = getDocument().getId();
-        data = dataPersistence.loadData(dataDefId, documentId);
+        if (documentId != null) {
+            data = dataPersistence.loadData(dataDefId, documentId);
+        }
         return true;
     }
 

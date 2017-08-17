@@ -16,20 +16,47 @@ import org.codetab.gotz.model.DataDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * JDO DataDef DAO implementation.
+ * @author Maithilish
+ *
+ */
 public final class DataDefDao implements IDataDefDao {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(DataDefDao.class);
+    /**
+     * logger.
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(DataDefDao.class);
 
+    /**
+     * JDO PMF.
+     */
     private PersistenceManagerFactory pmf;
 
+    /**
+     * <p>
+     * Constructor.
+     * @param pmf
+     *            JDO PMF
+     */
     public DataDefDao(final PersistenceManagerFactory pmf) {
         Validate.notNull(pmf, "pmf must not be null");
         this.pmf = pmf;
     }
 
+    /**
+     * <p>
+     * Stores new version datadef. It also updates the toDate field of previous
+     * version to runDateTime minus 1 second. It will not check whether same
+     * version exists in store as an equal but inactive version can exists.
+     * @param datadef
+     */
     @Override
     public void storeDataDef(final DataDef dataDef) {
         Validate.notNull(dataDef, "dataDef must not be null");
+
         PersistenceManager pm = getPM();
         Transaction tx = pm.currentTransaction();
         try {
@@ -44,23 +71,30 @@ public final class DataDefDao implements IDataDefDao {
 
             pm.getFetchPlan().addGroup("detachFields");
             pm.getFetchPlan().addGroup("detachAxis");
-            pm.getFetchPlan().addGroup("detachMembers");
-            pm.getFetchPlan().addGroup("detachFilters");
 
             @SuppressWarnings("unchecked")
             List<DataDef> dataDefs =
                     (List<DataDef>) query.execute(dataDef.getName());
+
+            /*
+             * don't check whether similar item exists in database as some
+             * previous version can be same as present one but it is no longer
+             * active
+             */
+
+            // if previous version exists, update its toDate
             if (dataDefs.size() > 0) {
                 DataDef lastDataDef = dataDefs.get(dataDefs.size() - 1);
-                if (!dataDef.equals(lastDataDef)) {
-                    Date toDate = DateUtils
-                            .addMilliseconds(dataDef.getFromDate(), -1);
-                    lastDataDef.setToDate(toDate);
-                    pm.makePersistent(dataDef);
+                Date toDate = DateUtils.addSeconds(dataDef.getFromDate(), -1);
+                if (toDate.before(lastDataDef.getFromDate())) {
+                    toDate = new Date(lastDataDef.getFromDate().getTime());
                 }
-            } else {
-                pm.makePersistent(dataDef);
+                lastDataDef.setToDate(toDate);
             }
+
+            // insert new version
+            pm.makePersistent(dataDef);
+
             tx.commit();
         } finally {
             if (tx.isActive()) {
@@ -70,8 +104,17 @@ public final class DataDefDao implements IDataDefDao {
         }
     }
 
+    /**
+     * <p>
+     * Get list of active datadef (detached copy) for a date.
+     * @param date
+     * @return list of datadef
+     */
     @Override
     public List<DataDef> getDataDefs(final Date date) {
+        Validate.notNull(date, "date must not be null");
+
+        List<DataDef> dataDefs = null;
         PersistenceManager pm = getPM();
         try {
             String filter = "fromDate <= pdate && toDate >= pdate";
@@ -81,41 +124,29 @@ public final class DataDefDao implements IDataDefDao {
             query.declareParameters(paramDecla);
 
             @SuppressWarnings("unchecked")
-            List<DataDef> dataDefs = (List<DataDef>) query.execute(date);
+            List<DataDef> result = (List<DataDef>) query.execute(date);
             pm.getFetchPlan().addGroup("detachFields");
             pm.getFetchPlan().addGroup("detachAxis");
-            pm.getFetchPlan().addGroup("detachMembers");
-            pm.getFetchPlan().addGroup("detachFilters");
-            return (List<DataDef>) pm.detachCopyAll(dataDefs);
+
+            dataDefs = (List<DataDef>) pm.detachCopyAll(result);
         } finally {
             pm.close();
         }
+        return dataDefs;
     }
 
-    @Override
-    public DataDef getDataDef(final String name, final Date date) {
-        PersistenceManager pm = getPM();
-        try {
-            String filter =
-                    "name == pname && fromDate <= pdate && toDate >= pdate";
-            String paramDecla = "String pname, java.util.Date pdate";
-            Extent<DataDef> extent = pm.getExtent(DataDef.class);
-            Query<DataDef> query = pm.newQuery(extent, filter);
-            query.declareParameters(paramDecla);
-
-            DataDef dataDef = (DataDef) query.execute(date);
-            pm.getFetchPlan().addGroup("detachFields");
-            pm.getFetchPlan().addGroup("detachAxis");
-            pm.getFetchPlan().addGroup("detachMembers");
-            pm.getFetchPlan().addGroup("detachFilters");
-            return pm.detachCopy(dataDef);
-        } finally {
-            pm.close();
-        }
-    }
-
+    /**
+     * <p>
+     * Get list of active datadef (detached copy) of a name.
+     * @param name
+     *            datadef name
+     * @return list of datadef
+     */
     @Override
     public List<DataDef> getDataDefs(final String name) {
+        Validate.notNull(name, "name must not be null");
+
+        List<DataDef> dataDefs = null;
         PersistenceManager pm = getPM();
         try {
             String filter = "name == pname";
@@ -125,17 +156,22 @@ public final class DataDefDao implements IDataDefDao {
             query.declareParameters(paramDecla);
 
             @SuppressWarnings("unchecked")
-            List<DataDef> dataDefs = (List<DataDef>) query.execute(name);
+            List<DataDef> result = (List<DataDef>) query.execute(name);
             pm.getFetchPlan().addGroup("detachFields");
             pm.getFetchPlan().addGroup("detachAxis");
-            pm.getFetchPlan().addGroup("detachMembers");
-            pm.getFetchPlan().addGroup("detachFilters");
-            return (List<DataDef>) pm.detachCopyAll(dataDefs);
+
+            dataDefs = (List<DataDef>) pm.detachCopyAll(result);
         } finally {
             pm.close();
         }
+        return dataDefs;
     }
 
+    /**
+     * <p>
+     * Get persistence manager from PersistenceManagerFactory.
+     * @return persistence manager
+     */
     private PersistenceManager getPM() {
         PersistenceManager pm = pmf.getPersistenceManager();
         LOGGER.trace("returning PM : {}", pm);

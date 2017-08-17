@@ -17,6 +17,6 @@ public interface IDocumentDao {
      *            document id
      * @return document
      */
-    Document getDocument(Long id);
+    Document getDocument(long id);
 
 }

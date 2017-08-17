@@ -24,7 +24,7 @@ public class DataPersistence {
     @Inject
     private DaoFactoryProvider daoFactoryProvider;
 
-    public Data loadData(final Long dataDefId, final Long documentId) {
+    public Data loadData(final long dataDefId, final long documentId) {
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
@@ -41,7 +41,7 @@ public class DataPersistence {
         }
     }
 
-    public Data loadData(final Long id) {
+    public Data loadData(final long id) {
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);

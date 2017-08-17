@@ -32,17 +32,6 @@ public interface IDataDefDao {
 
     /**
      * <p>
-     * Get DataDef by name and date.
-     * @param name
-     *            datadef name
-     * @param date
-     *            date
-     * @return datadef
-     */
-    DataDef getDataDef(String name, Date date);
-
-    /**
-     * <p>
      * Get list of datadef for a name includes active as well as previous
      * versions.
      * @param name
