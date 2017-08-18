@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.DaoFactoryProvider;
 import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataDefDao;
@@ -15,16 +16,38 @@ import org.codetab.gotz.shared.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * DataDef persistence and related helper methods.
+ * @author Maithilish
+ *
+ */
 public class DataDefPersistence {
 
+    /**
+     * logger.
+     */
     private static final Logger LOGGER =
             LoggerFactory.getLogger(DataDefPersistence.class);
 
+    /**
+     * ConfigService.
+     */
     @Inject
     private ConfigService configService;
+    /**
+     * DaoFactoryProvider.
+     */
     @Inject
     private DaoFactoryProvider daoFactoryProvider;
 
+    /**
+     * <p>
+     * Loads all active DataDef as on run datetime from store.
+     * @return list of active datadef
+     * @throws CriticalException
+     *             if any persistence error
+     */
     public List<DataDef> loadDataDefs() {
         try {
             ORM orm = configService.getOrmType();
@@ -41,7 +64,17 @@ public class DataDefPersistence {
         }
     }
 
+    /**
+     * <p>
+     * Store DataDef.
+     * @param dataDef
+     *            not null
+     * @throws CriticalException
+     *             if any persistence error
+     */
     public void storeDataDef(final DataDef dataDef) {
+        Validate.notNull(dataDef, "dataDef must not be null");
+
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
@@ -59,8 +92,24 @@ public class DataDefPersistence {
         }
     }
 
+    /**
+     * <p>
+     * Compares active and new list of datadef and if any active datadef has a
+     * new datadef version, then the active datadef highDate is reset to
+     * runDateTime and new datadef is added to active list. For any new datadef,
+     * there is no active datadef, then the new datadef is added active list.
+     * Later updated active list is persisted to store.
+     * @param dataDefs
+     *            active list - existing active datadefs, not null
+     * @param newDataDefs
+     *            list of new datadefs, not null
+     * @return true if active list is modified
+     */
     public boolean markForUpdation(final List<DataDef> dataDefs,
             final List<DataDef> newDataDefs) {
+        Validate.notNull(dataDefs, "dataDefs must not be null");
+        Validate.notNull(newDataDefs, "newDataDefs must not be null");
+
         boolean updates = false;
         for (DataDef newDataDef : newDataDefs) {
             String name = newDataDef.getName();
@@ -85,10 +134,25 @@ public class DataDefPersistence {
         return updates;
     }
 
+    /**
+     * <p>
+     * Reset datadef highDate to runDateTime.
+     * @param dataDef
+     *            datadef to modify
+     */
     private void resetHighDate(final DataDef dataDef) {
         dataDef.setToDate(configService.getRunDateTime());
     }
 
+    /**
+     * <p>
+     * Filter list of datadef by name.
+     * @param dataDefs
+     *            list datadef
+     * @param name
+     *            datadef name
+     * @return matching datadef
+     */
     private DataDef getDataDef(final List<DataDef> dataDefs,
             final String name) {
         return dataDefs.stream().filter(e -> e.getName().equals(name))

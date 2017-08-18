@@ -13,16 +13,40 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * Document persistence methods.
+ * @author Maithilish
+ *
+ */
 public class DocumentPersistence {
 
-    static final Logger LOGGER =
+    /**
+     * logger.
+     */
+    private static final Logger LOGGER =
             LoggerFactory.getLogger(DocumentPersistence.class);
 
+    /**
+     * Config service.
+     */
     @Inject
     private ConfigService configService;
+    /**
+     * DaoFactory provider.
+     */
     @Inject
     private DaoFactoryProvider daoFactoryProvider;
 
+    /**
+     * <p>
+     * Loads document by id.
+     * @param id
+     *            document id
+     * @return document or null if not found
+     * @throws StepPersistenceException
+     *             if persistence error
+     */
     public Document loadDocument(final long id) {
         // get Document with documentObject
         try {

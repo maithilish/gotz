@@ -1,6 +1,7 @@
 package org.codetab.gotz.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 
@@ -26,6 +27,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+/**
+ * <p>
+ * DataDefPersistence tests.
+ * @author Maithilish
+ *
+ */
 public class DataDefPersistenceTest {
 
     @Mock
@@ -44,7 +51,7 @@ public class DataDefPersistenceTest {
     private DataDefPersistence dataDefPersistence;
 
     @Rule
-    public ExpectedException expected = ExpectedException.none();
+    public ExpectedException testRule = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -79,7 +86,7 @@ public class DataDefPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
-        expected.expect(CriticalException.class);
+        testRule.expect(CriticalException.class);
         dataDefPersistence.loadDataDefs();
     }
 
@@ -107,8 +114,18 @@ public class DataDefPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
-        expected.expect(CriticalException.class);
+        testRule.expect(CriticalException.class);
         dataDefPersistence.storeDataDef(dataDef);
+    }
+
+    @Test
+    public void testStoreNullParams() {
+        try {
+            dataDefPersistence.storeDataDef(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("dataDef must not be null");
+        }
     }
 
     @Test
@@ -215,6 +232,24 @@ public class DataDefPersistenceTest {
         assertThat(dataDefY.getToDate()).isEqualTo(runDate);
         assertThat(newDataDefX.getToDate()).isEqualTo(highDate);
         assertThat(newDataDefY.getToDate()).isEqualTo(highDate);
+    }
+
+    @Test
+    public void testMarkForUpdationNullParams() {
+        try {
+            dataDefPersistence.markForUpdation(null, new ArrayList<>());
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("dataDefs must not be null");
+        }
+
+        try {
+            dataDefPersistence.markForUpdation(new ArrayList<>(), null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("newDataDefs must not be null");
+        }
     }
 
 }
