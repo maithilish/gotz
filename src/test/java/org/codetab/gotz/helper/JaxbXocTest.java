@@ -21,6 +21,12 @@ import org.codetab.gotz.util.ResourceStream;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * <p>
+ * JAXBXoc tests.
+ * @author Maithilish
+ *
+ */
 public class JaxbXocTest {
 
     private JaxbXoc jaxbXoc;
