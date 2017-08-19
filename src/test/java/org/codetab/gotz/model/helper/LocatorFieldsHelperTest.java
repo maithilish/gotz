@@ -1,6 +1,7 @@
 package org.codetab.gotz.model.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 
 import java.io.IOException;
@@ -141,6 +142,18 @@ public class LocatorFieldsHelperTest {
     }
 
     @Test
+    public void testInitIllegalState() throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(fieldsHelper, "beanService", null, true);
+
+        try {
+            fieldsHelper.init();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("beanService is null");
+        }
+    }
+
+    @Test
     public void testGetStepFields()
             throws JAXBException, IOException, IllegalAccessException {
         TestJaxbHelper jh = new TestJaxbHelper();
@@ -162,44 +175,14 @@ public class LocatorFieldsHelperTest {
     }
 
     @Test
-    public void testGetStepFieldsNotInitialized()
-            throws JAXBException, IOException {
-        // when
-        testRule.expect(IllegalStateException.class);
-        fieldsHelper.getStepFields();
-    }
-
-    @Test
-    public void testGetLocatorGroupFieldsNotInitialized()
-            throws JAXBException, IOException, IllegalAccessException {
-
-        // when
-        testRule.expect(IllegalStateException.class);
-        fieldsHelper.getLocatorGroupFields("x");
-    }
-
-    @Test
-    public void testGetLocatorGroupFieldsClassFieldsNotInitialized()
-            throws JAXBException, IOException, IllegalAccessException {
-        List<FieldsBase> list = new ArrayList<>();
-
-        FieldUtils.writeDeclaredField(fieldsHelper, "stepFields", list, true);
-
-        // when
-        testRule.expect(IllegalStateException.class);
-        fieldsHelper.getLocatorGroupFields("x");
-    }
-
-    @Test
-    public void testGetLocatorGroupFieldsStepFieldsNotInitialized()
-            throws JAXBException, IOException, IllegalAccessException {
-        List<FieldsBase> list = new ArrayList<>();
-
-        FieldUtils.writeDeclaredField(fieldsHelper, "classFields", list, true);
-
-        // when
-        testRule.expect(IllegalStateException.class);
-        fieldsHelper.getLocatorGroupFields("x");
+    public void testGetStepFieldsIllegalState() {
+        try {
+            fieldsHelper.getStepFields();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("LocatorFieldsHelper is not initialized");
+        }
     }
 
     @Test
@@ -312,6 +295,44 @@ public class LocatorFieldsHelperTest {
     }
 
     @Test
+    public void testGetLocatorGroupFieldsIllegalState()
+            throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(fieldsHelper, "stepFields", null, true);
+        FieldUtils.writeDeclaredField(fieldsHelper, "classFields",
+                new ArrayList<>(), true);
+
+        try {
+            fieldsHelper.getLocatorGroupFields("x");
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("LocatorFieldsHelper is not initialized");
+        }
+
+        FieldUtils.writeDeclaredField(fieldsHelper, "stepFields",
+                new ArrayList<>(), true);
+        FieldUtils.writeDeclaredField(fieldsHelper, "classFields", null, true);
+
+        try {
+            fieldsHelper.getLocatorGroupFields("x");
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("LocatorFieldsHelper is not initialized");
+        }
+    }
+
+    @Test
+    public void testGetLocatorGroupFieldsNullParams() {
+        try {
+            fieldsHelper.getLocatorGroupFields(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("group must not be null");
+        }
+    }
+
+    @Test
     public void testAddLabel() {
         Locator locator = new Locator();
         locator.setName("n");
@@ -328,6 +349,16 @@ public class LocatorFieldsHelperTest {
 
         assertThat(actual.getName()).isEqualTo("label");
         assertThat(actual.getValue()).isEqualTo("n:g");
+    }
+
+    @Test
+    public void testAddLabelNullParams() {
+        try {
+            fieldsHelper.addLabel(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("locator must not be null");
+        }
     }
 
     private List<FieldsBase> getExpectedGroupFields(final String fieldsFile,

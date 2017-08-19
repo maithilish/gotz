@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
@@ -18,7 +19,7 @@ import org.slf4j.LoggerFactory;
  * Provides list of locator. It obtains locators from BeanService and propagate
  * group to all locators. It also fork locator for load testing.
  *
- * @author m
+ * @author Maithilish
  *
  */
 public class LocatorHelper {
@@ -54,8 +55,11 @@ public class LocatorHelper {
      * @return list of locators
      */
     public List<Locator> getLocatorsFromBeans() {
-        List<Locator> locatorList = new ArrayList<>();
         LOGGER.info("initialize locators");
+
+        Validate.validState(beanService != null, "beanService is null");
+
+        List<Locator> locatorList = new ArrayList<>();
         List<Locators> list = beanService.getBeans(Locators.class);
         for (Locators locators : list) {
             trikleGroup(locators);
@@ -75,6 +79,10 @@ public class LocatorHelper {
      * @return list of locators - original plus forked
      */
     public List<Locator> forkLocators(final List<Locator> locators) {
+        Validate.notNull(locators, "locators must not be null");
+
+        Validate.validState(configService != null, "configService is null");
+
         try {
             int count =
                     Integer.parseInt(configService.getConfig("forklocator"));
@@ -102,6 +110,7 @@ public class LocatorHelper {
      */
     private List<Locator> extractLocator(final Locators locatorsList) {
         LOGGER.info("extract locators to locator");
+
         List<Locator> locatorList = new ArrayList<>();
         for (Locators locs : locatorsList.getLocators()) {
             locatorList.addAll(extractLocator(locs));
@@ -121,6 +130,7 @@ public class LocatorHelper {
      */
     private void trikleGroup(final Locators locators) {
         LOGGER.info("propagate locators group to all locator");
+
         for (Locators locs : locators.getLocators()) {
             if (locs.getGroup() == null) {
                 locs.setGroup(locators.getGroup());

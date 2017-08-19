@@ -1,6 +1,7 @@
-package org.codetab.gotz.helper;
+package org.codetab.gotz.model.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -16,8 +17,9 @@ import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.helper.IXoc;
 import org.codetab.gotz.model.Bean;
-import org.codetab.gotz.model.helper.BeanHelper;
+import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.validation.XMLValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +29,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.xml.sax.SAXException;
 
-public class BeanFilesTest {
+/**
+ * <p>
+ * BeanHelper tests.
+ * @author Maithilish
+ *
+ */
+public class BeanHelperTest {
 
     @Mock
     private XMLValidator xmlValidator;
@@ -36,7 +44,7 @@ public class BeanFilesTest {
     private IXoc xoc;
 
     @InjectMocks
-    private BeanHelper beanFiles;
+    private BeanHelper beanHelper;
 
     @Before
     public void setUp() throws Exception {
@@ -50,16 +58,35 @@ public class BeanFilesTest {
         String schemaFile = "x.xsd";
 
         // when
-        beanFiles.setFiles(beanFile, schemaFile);
+        beanHelper.setFiles(beanFile, schemaFile);
 
         // then
-        String actualBeanFile = (String) FieldUtils.readDeclaredField(beanFiles,
-                "beanFile", true);
+        String actualBeanFile = (String) FieldUtils
+                .readDeclaredField(beanHelper, "beanFile", true);
         String actualSchemaFile = (String) FieldUtils
-                .readDeclaredField(beanFiles, "schemaFile", true);
+                .readDeclaredField(beanHelper, "schemaFile", true);
 
         assertThat(actualBeanFile).isEqualTo(beanFile);
         assertThat(actualSchemaFile).isEqualTo(schemaFile);
+    }
+
+    @Test
+    public void testSetFilesNullParams() {
+        try {
+            beanHelper.setFiles(null, "x");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("beanFileName must not be null");
+        }
+
+        try {
+            beanHelper.setFiles("x", null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("schemaFileName must not be null");
+        }
     }
 
     @Test
@@ -68,13 +95,34 @@ public class BeanFilesTest {
         // given
         String beanFile = "x.xml";
         String schemaFile = "x.xsd";
-        beanFiles.setFiles(beanFile, schemaFile);
+        beanHelper.setFiles(beanFile, schemaFile);
 
         // when
-        beanFiles.validateBeanFile();
+        beanHelper.validateBeanFile();
 
         // then
         verify(xmlValidator).validate(beanFile, schemaFile);
+    }
+
+    @Test
+    public void testValidateBeanFileIllegalState()
+            throws JAXBException, IOException, SAXException,
+            ConfigNotFoundException, IllegalAccessException {
+        try {
+            beanHelper.validateBeanFile();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("beanFile is null");
+        }
+
+        FieldUtils.writeDeclaredField(beanHelper, "beanFile", "x", true);
+
+        try {
+            beanHelper.validateBeanFile();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("schemaFile is null");
+        }
     }
 
     @Test
@@ -84,7 +132,7 @@ public class BeanFilesTest {
         List<Bean> testBeanFiles = getTestBeanFiles();
 
         // when
-        beanFiles.validateBeanFiles(testBeanFiles);
+        beanHelper.validateBeanFiles(testBeanFiles);
 
         // then
         InOrder inOrder = inOrder(xmlValidator);
@@ -95,12 +143,23 @@ public class BeanFilesTest {
     }
 
     @Test
+    public void testValidateBeanFilesNullParams()
+            throws JAXBException, SAXException, IOException {
+        try {
+            beanHelper.validateBeanFiles(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("beanFiles must not be null");
+        }
+    }
+
+    @Test
     public void testGetBeanFiles()
             throws JAXBException, IOException, SAXException {
         // given
         String beanFile = "/org/example/x.xml";
         String schemaFile = "/com/example/x.xsd";
-        beanFiles.setFiles(beanFile, schemaFile);
+        beanHelper.setFiles(beanFile, schemaFile);
 
         List<Bean> testBeanFiles = getTestBeanFiles();
 
@@ -108,7 +167,7 @@ public class BeanFilesTest {
                 .willReturn(testBeanFiles);
 
         // when
-        List<Bean> actualBeanFiles = beanFiles.getBeanFiles();
+        List<Bean> actualBeanFiles = beanHelper.getBeanFiles();
 
         // then
         Bean actualBean = actualBeanFiles.get(0);
@@ -125,6 +184,27 @@ public class BeanFilesTest {
     }
 
     @Test
+    public void testGetBeanFilesIllegalState()
+            throws JAXBException, IOException, SAXException,
+            ConfigNotFoundException, IllegalAccessException {
+        try {
+            beanHelper.getBeanFiles();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("beanFile is null");
+        }
+
+        FieldUtils.writeDeclaredField(beanHelper, "beanFile", "x", true);
+
+        try {
+            beanHelper.getBeanFiles();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("schemaFile is null");
+        }
+    }
+
+    @Test
     public void testUnmarshalBeanFile() throws JAXBException, IOException {
         // given
         String xmlFile = "x.xml";
@@ -132,11 +212,29 @@ public class BeanFilesTest {
         given(xoc.unmarshall(xmlFile, Bean.class)).willReturn(beans);
 
         // when
-        List<Bean> actual = beanFiles.unmarshalBeanFile(xmlFile, Bean.class);
+        List<Bean> actual = beanHelper.unmarshalBeanFile(xmlFile, Bean.class);
 
         // then
         verify(xoc).unmarshall(xmlFile, Bean.class);
         assertThat(actual).isSameAs(beans);
+    }
+
+    @Test
+    public void testUnmarshalBeanFileNullParams()
+            throws JAXBException, SAXException, IOException {
+        try {
+            beanHelper.unmarshalBeanFile(null, Locator.class);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("fileName must not be null");
+        }
+
+        try {
+            beanHelper.unmarshalBeanFile("x", null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("clz must not be null");
+        }
     }
 
     private List<Bean> getTestBeanFiles() {

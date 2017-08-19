@@ -235,8 +235,9 @@ primitives can't be null. XJC generated models will have Long, Integer etc.
 Apart from model classes, try to use primitives as far as possible as it we
 need not validate method param for primitives.  
 
-validate param for null or illegal argument.
-
+validate param for null or illegal argument (not required for private methods).
+validate IllegalState for state vars, injected state vars or init (not required
+    for private methods).
 
  
   

@@ -9,12 +9,12 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
@@ -63,11 +63,13 @@ public class DocumentHelper {
      * there are more than one matching documents, then the id of last one is
      * returned. If, list is null then returns null.
      * @param documents
-     *            list of {@link Document}
+     *            list of {@link Document}, not null
      * @return active document id or null when no matching document is found or
      *         input is empty or null.
      */
     public Long getActiveDocumentId(final List<Document> documents) {
+        Validate.validState(configService != null, "configService is null");
+
         if (documents == null) {
             return null;
         }
@@ -95,15 +97,18 @@ public class DocumentHelper {
      * In case, live is not defined or it is zero or blank then from date is
      * returned.
      * @param fromDate
-     *            document from date
+     *            document from date, not null
      * @param fields
-     *            list of fields
+     *            list of fields, not null
      * @return a Date which is document expire date, not null
      * @see java.time.Duration
      */
     public Date getToDate(final Date fromDate, final List<FieldsBase> fields) {
-        Objects.requireNonNull(fromDate, "fromDate must not be null");
-        Objects.requireNonNull(fields, "fields must not be null");
+
+        Validate.notNull(fromDate, "fromDate must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
+        Validate.validState(configService != null, "configService is null");
 
         // set label
         String label = "not defined";
@@ -168,8 +173,8 @@ public class DocumentHelper {
      */
     public byte[] getDocumentObject(final Document document)
             throws DataFormatException, IOException {
-        Objects.requireNonNull(document, "document must not be null");
-        Objects.requireNonNull(document.getDocumentObject(),
+        Validate.notNull(document, "document must not be null");
+        Validate.notNull(document.getDocumentObject(),
                 "documentObject must not be null");
 
         final int bufferLength = 4086;
@@ -190,9 +195,8 @@ public class DocumentHelper {
      */
     public boolean setDocumentObject(final Document document,
             final byte[] documentObject) throws IOException {
-        Objects.requireNonNull(document, "document must not be null");
-        Objects.requireNonNull(documentObject,
-                "documentObject must not be null");
+        Validate.notNull(document, "document must not be null");
+        Validate.notNull(documentObject, "documentObject must not be null");
 
         final int bufferLength = 4086;
         byte[] compressedObject =
@@ -207,21 +211,23 @@ public class DocumentHelper {
      * <p>
      * Uses DI to create the Document.
      * @param name
-     *            document name
+     *            document name, not null
      * @param url
-     *            document URL
+     *            document URL, not null
      * @param fromDate
-     *            document start date
+     *            document start date, not null
      * @param toDate
-     *            document expire date
+     *            document expire date, not null
      * @return document, not null
      */
     public Document createDocument(final String name, final String url,
             final Date fromDate, final Date toDate) {
-        Objects.requireNonNull(name, "name must not be null");
-        Objects.requireNonNull(url, "url must not be null");
-        Objects.requireNonNull(fromDate, "fromDate must not be null");
-        Objects.requireNonNull(toDate, "toDate must not be null");
+        Validate.notNull(name, "name must not be null");
+        Validate.notNull(url, "url must not be null");
+        Validate.notNull(fromDate, "fromDate must not be null");
+        Validate.notNull(toDate, "toDate must not be null");
+
+        Validate.validState(dInjector != null, "dInjector is null");
 
         Document document = dInjector.instance(Document.class);
         document.setName(name);

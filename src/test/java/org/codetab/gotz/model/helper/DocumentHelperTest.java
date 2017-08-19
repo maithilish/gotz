@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.DataFormatException;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
@@ -107,6 +108,18 @@ public class DocumentHelperTest {
         List<Document> documents = new ArrayList<>();
         Long actual = documentHelper.getActiveDocumentId(documents);
         assertThat(actual).isNull();
+    }
+
+    @Test
+    public void testSetDatesIllegalState() throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(documentHelper, "configService", null,
+                true);
+        try {
+            documentHelper.getActiveDocumentId(new ArrayList<>());
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("configService is null");
+        }
     }
 
     @Test
@@ -225,6 +238,18 @@ public class DocumentHelperTest {
     }
 
     @Test
+    public void testGetToDateIllegalState() throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(documentHelper, "configService", null,
+                true);
+        try {
+            documentHelper.getToDate(new Date(), new ArrayList<>());
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("configService is null");
+        }
+    }
+
+    @Test
     public void testSetDocumentObjectCompression() throws IOException {
         Document document = new Document();
         byte[] documentObject = String.valueOf("some string").getBytes();
@@ -292,6 +317,36 @@ public class DocumentHelperTest {
     }
 
     @Test
+    public void testCreateDocument() {
+        Document document = new Document();
+        Date fromDate = new Date();
+        Date toDate = new Date();
+
+        given(dInjector.instance(Document.class)).willReturn(document);
+
+        Document actual =
+                documentHelper.createDocument("x", "y", fromDate, toDate);
+
+        assertThat(actual).isSameAs(document);
+        assertThat(actual.getName()).isEqualTo("x");
+        assertThat(actual.getUrl()).isEqualTo("y");
+        assertThat(actual.getFromDate()).isEqualTo(fromDate);
+        assertThat(actual.getToDate()).isEqualTo(toDate);
+    }
+
+    @Test
+    public void testCreateDocumentObjectIllegalState()
+            throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(documentHelper, "dInjector", null, true);
+        try {
+            documentHelper.createDocument("x", "y", new Date(), new Date());
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("dInjector is null");
+        }
+    }
+
+    @Test
     public void testCreateDocumentNullParams() {
         try {
             documentHelper.createDocument(null, "y", new Date(), new Date());
@@ -322,21 +377,4 @@ public class DocumentHelperTest {
         }
     }
 
-    @Test
-    public void testCreateDocument() {
-        Document document = new Document();
-        Date fromDate = new Date();
-        Date toDate = new Date();
-
-        given(dInjector.instance(Document.class)).willReturn(document);
-
-        Document actual =
-                documentHelper.createDocument("x", "y", fromDate, toDate);
-
-        assertThat(actual).isSameAs(document);
-        assertThat(actual.getName()).isEqualTo("x");
-        assertThat(actual.getUrl()).isEqualTo("y");
-        assertThat(actual.getFromDate()).isEqualTo(fromDate);
-        assertThat(actual.getToDate()).isEqualTo(toDate);
-    }
 }

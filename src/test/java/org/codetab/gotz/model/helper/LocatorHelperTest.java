@@ -1,11 +1,13 @@
 package org.codetab.gotz.model.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Locator;
@@ -21,7 +23,7 @@ import org.mockito.MockitoAnnotations;
 /**
  * tests for LocatorHelper.
  *
- * @author m
+ * @author Maithilish
  *
  */
 public class LocatorHelperTest {
@@ -125,6 +127,18 @@ public class LocatorHelperTest {
     }
 
     @Test
+    public void testGetLocatorsFromBeansIllegalState()
+            throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(locatorHelper, "beanService", null, true);
+        try {
+            locatorHelper.getLocatorsFromBeans();
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("beanService is null");
+        }
+    }
+
+    @Test
     public void testForkLocators() throws ConfigNotFoundException {
         Locator locator1 = new Locator();
         locator1.setName("x");
@@ -172,6 +186,28 @@ public class LocatorHelperTest {
         // then
         assertThat(actual.size()).isEqualTo(1);
         assertThat(actual).contains(locator1);
+    }
+
+    @Test
+    public void testForkLocatorsIllegalState() throws IllegalAccessException {
+        FieldUtils.writeDeclaredField(locatorHelper, "configService", null,
+                true);
+        try {
+            locatorHelper.forkLocators(new ArrayList<>());
+            fail("should throw IllegalStateException");
+        } catch (IllegalStateException e) {
+            assertThat(e.getMessage()).isEqualTo("configService is null");
+        }
+    }
+
+    @Test
+    public void testForkLocatorsNullParams() {
+        try {
+            locatorHelper.forkLocators(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("locators must not be null");
+        }
     }
 
     private List<Locators> createTestObjects() {

@@ -38,7 +38,8 @@ public class DaoUtil implements IDaoUtil {
     /**
      * <p>
      * Constructor.
-     * @param pmf pmf
+     * @param pmf
+     *            pmf
      */
     public DaoUtil(final PersistenceManagerFactory pmf) {
         this.pmf = pmf;

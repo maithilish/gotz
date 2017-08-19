@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
@@ -94,6 +95,8 @@ public class LocatorFieldsHelper {
      * @return true if able to set step and class fields else returns false
      */
     public boolean init() {
+        Validate.validState(beanService != null, "beanService is null");
+
         setStepFields();
         setClassFields();
         return true;
@@ -109,10 +112,8 @@ public class LocatorFieldsHelper {
      *             if not initialized by calling init
      */
     public List<FieldsBase> getStepFields() {
-        if (stepFields == null) {
-            throw new IllegalStateException(
-                    "LocatorFieldsHelper is not initialized");
-        }
+        Validate.validState(stepFields != null,
+                "LocatorFieldsHelper is not initialized");
         return FieldsUtil.deepClone(stepFields);
     }
 
@@ -130,10 +131,13 @@ public class LocatorFieldsHelper {
      *             if not initialized by calling init
      */
     public List<FieldsBase> getLocatorGroupFields(final String group) {
-        if (stepFields == null || classFields == null) {
-            throw new IllegalStateException(
-                    "LocatorFieldsHelper is not initialized");
-        }
+        Validate.notNull(group, "group must not be null");
+
+        Validate.validState(stepFields != null,
+                "LocatorFieldsHelper is not initialized");
+        Validate.validState(classFields != null,
+                "LocatorFieldsHelper is not initialized");
+
         if (!locatorFieldsMap.containsKey(group)) {
             addGroupFieldsToMap(group);
         }
@@ -151,6 +155,8 @@ public class LocatorFieldsHelper {
      *            {@link Locator}
      */
     public void addLabel(final Locator locator) {
+        Validate.notNull(locator, "locator must not be null");
+
         String label =
                 Util.buildString(locator.getName(), ":", locator.getGroup());
         FieldsBase field = FieldsUtil.createField("label", label);
@@ -198,6 +204,7 @@ public class LocatorFieldsHelper {
      *            {@link String}
      */
     private void addGroupFieldsToMap(final String locatorGroup) {
+
         List<FieldsBase> groupFields;
         try {
             groupFields = getGroupFieldsWithSteps(locatorGroup);
@@ -223,6 +230,7 @@ public class LocatorFieldsHelper {
     private List<FieldsBase> getGroupFieldsWithSteps(final String locatorGroup)
             throws FieldNotFoundException {
         LOGGER.info("merge step fields with datadef fields");
+
         List<FieldsBase> groupFields = null;
         try {
             groupFields = FieldsUtil.filterByGroup(classFields, locatorGroup);
