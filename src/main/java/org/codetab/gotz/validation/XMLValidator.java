@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.util.ResourceStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,16 +18,51 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/**
+ * <p>
+ * Validate XML with schema.
+ * @author Maithilish
+ *
+ */
 public class XMLValidator {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(XMLValidator.class);
+    /**
+     * logger.
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(XMLValidator.class);
 
+    /**
+     * ResourceStream.
+     */
     @Inject
     private ResourceStream resourceStream;
 
+    /**
+     * <p>
+     * Validate XML file with schema file.
+     * <p>
+     * File name should start with / and available in classpath. For example,
+     * /bean.xml and /schema/gotz.xsd validates bean.xml at root of classpath
+     * with gotz.xsd that exists in schema folder in classpath.
+     * @param xmlFile
+     *            XML file name starts with / and exists in classpath
+     * @param schemaFile
+     *            schema file name starts with / and exists in classpath
+     * @return true if valid XML
+     * @throws SAXException
+     *             on parse error
+     * @throws IOException
+     *             on IO error
+     */
     public boolean validate(final String xmlFile, final String schemaFile)
-            throws JAXBException, IOException, SAXException {
+            throws IOException, SAXException {
         LOGGER.debug("validate : [{}] with [{}]", xmlFile, schemaFile);
+
+        Validate.notNull(xmlFile, "xmlFile must not be null");
+        Validate.notNull(schemaFile, "schemaFile must not be null");
+        Validate.validState(resourceStream != null, "resourceStream is null");
+
         try (InputStream xmlStream = resourceStream.getInputStream(xmlFile);
                 InputStream schemaStream =
                         resourceStream.getInputStream(schemaFile)) {
@@ -40,9 +75,24 @@ public class XMLValidator {
         return true;
     }
 
+    /**
+     * <p>
+     * Validate XML stream with schema stream. *
+     * @param xmlStream
+     *            XML stream
+     * @param schemaStream
+     *            schema stream
+     * @return true if valid XML
+     * @throws SAXException
+     *             on parse error
+     * @throws IOException
+     *             on IO error
+     */
     public boolean validate(final InputStream xmlStream,
-            final InputStream schemaStream)
-            throws JAXBException, IOException, SAXException {
+            final InputStream schemaStream) throws IOException, SAXException {
+        Validate.notNull("xmlStream", "xmlStream must not be null");
+        Validate.notNull("schemaStream", "schemaStream must not be null");
+
         SchemaFactory schemaFactory = SchemaFactory
                 .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
@@ -52,8 +102,18 @@ public class XMLValidator {
         return true;
     }
 
+    /**
+     * <p>
+     * ErrorHandler to log custom descriptive error message.
+     * @author Maithilish
+     *
+     */
     private static class ValidationErrorHandler implements ErrorHandler {
-        static final Logger LOGGER = LoggerFactory.getLogger("Validator");
+        /**
+         * logger.
+         */
+        private static final Logger LOGGER =
+                LoggerFactory.getLogger("Validator");
 
         @Override
         public void error(final SAXParseException exception)

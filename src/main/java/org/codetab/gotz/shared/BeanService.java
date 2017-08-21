@@ -24,7 +24,7 @@ public class BeanService {
             LoggerFactory.getLogger(BeanService.class);
 
     @Inject
-    private BeanHelper beanFiles;
+    private BeanHelper beanHelper;
 
     private List<Object> beans;
 
@@ -35,10 +35,10 @@ public class BeanService {
     public void init(final String beanFile, final String schemaFile) {
         LOGGER.info("initialize singleton {}", "BeanService");
         try {
-            beanFiles.setFiles(beanFile, schemaFile);
-            beanFiles.validateBeanFile();
-            List<Bean> files = beanFiles.getBeanFiles();
-            beanFiles.validateBeanFiles(files);
+            beanHelper.setFiles(beanFile, schemaFile);
+            beanHelper.validateBeanFile();
+            List<Bean> files = beanHelper.getBeanFiles();
+            beanHelper.validateBeanFiles(files);
             beans = unmarshallBeanFiles(files);
         } catch (ConfigNotFoundException | JAXBException | SAXException
                 | IOException | ClassNotFoundException e) {
@@ -82,7 +82,7 @@ public class BeanService {
         for (Bean bean : beanList) {
             Class<?> ofClass = Class.forName(bean.getClassName());
             List<?> objs =
-                    beanFiles.unmarshalBeanFile(bean.getXmlFile(), ofClass);
+                    beanHelper.unmarshalBeanFile(bean.getXmlFile(), ofClass);
             list.addAll(objs);
         }
         return list;

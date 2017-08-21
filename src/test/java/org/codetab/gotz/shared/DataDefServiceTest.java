@@ -84,7 +84,8 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(true);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
+        given(validator.validate(dataDefs.get(1))).willReturn(true);
         given(dataDefPersistence.markForUpdation(dataDefs, dataDefs))
                 .willReturn(false);
 
@@ -105,10 +106,8 @@ public class DataDefServiceTest {
         inOrder.verify(defaults).setDates(dataDefs.get(1));
         inOrder.verify(defaults).addIndexRange(dataDefs.get(1));
 
-        inOrder.verify(validator).setDataDef(dataDefs.get(0));
-        inOrder.verify(validator).validate();
-        inOrder.verify(validator).setDataDef(dataDefs.get(1));
-        inOrder.verify(validator).validate();
+        inOrder.verify(validator).validate(dataDefs.get(0));
+        inOrder.verify(validator).validate(dataDefs.get(1));
 
         inOrder.verify(dataDefPersistence).loadDataDefs();
 
@@ -122,7 +121,8 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(true);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
+        given(validator.validate(dataDefs.get(1))).willReturn(true);
         given(dataDefPersistence.markForUpdation(dataDefs, dataDefs))
                 .willReturn(true);
 
@@ -147,7 +147,7 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(false);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         // when then
         exception.expect(CriticalException.class);
@@ -189,7 +189,7 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(true);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         dataDefService.init();
 
@@ -245,7 +245,7 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(true);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         dataDefService.init();
 
@@ -266,7 +266,7 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(true);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         dataDefService.init();
 
@@ -284,7 +284,7 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(true);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         dataDefService.init();
 
@@ -304,7 +304,7 @@ public class DataDefServiceTest {
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate()).willReturn(true);
+        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         dataDefService.init();
 

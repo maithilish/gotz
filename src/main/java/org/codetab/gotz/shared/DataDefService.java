@@ -91,8 +91,7 @@ public class DataDefService {
     private void validateDataDefs(final List<DataDef> newDataDefs) {
         boolean valid = true;
         for (DataDef dataDef : newDataDefs) {
-            validator.setDataDef(dataDef);
-            if (!validator.validate()) {
+            if (!validator.validate(dataDef)) {
                 valid = false;
             }
         }
