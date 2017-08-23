@@ -15,8 +15,8 @@ import java.util.Properties;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.util.ResourceStream;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class PMFTest {
     @Mock
     private ConfigService configService;
     @Spy
-    private ResourceStream resourceStream;
+    private IOHelper ioHelper;
     @Spy
     private Properties jdoProperties;
 
@@ -77,9 +77,9 @@ public class PMFTest {
 
         pmf.init();
 
-        InOrder inOrder = inOrder(configService, resourceStream, jdoProperties);
+        InOrder inOrder = inOrder(configService, ioHelper, jdoProperties);
         inOrder.verify(configService).getConfig("gotz.datastore.configFile");
-        inOrder.verify(resourceStream).getInputStream("/jdoconfig.properties");
+        inOrder.verify(ioHelper).getInputStream("/jdoconfig.properties");
         inOrder.verify(jdoProperties).load(any(InputStream.class));
 
         assertThat(pmf.getFactory()).isNotNull();
@@ -95,18 +95,18 @@ public class PMFTest {
 
         pmf.init();
 
-        InOrder inOrder = inOrder(configService, resourceStream, jdoProperties);
+        InOrder inOrder = inOrder(configService, ioHelper, jdoProperties);
         inOrder.verify(configService).getConfig("gotz.datastore.configFile");
-        inOrder.verify(resourceStream).getInputStream("/jdoconfig.properties");
+        inOrder.verify(ioHelper).getInputStream("/jdoconfig.properties");
         inOrder.verify(jdoProperties).load(any(InputStream.class));
 
         assertThat(pmf.getFactory()).isNotNull();
 
-        verifyNoMoreInteractions(configService, resourceStream);
+        verifyNoMoreInteractions(configService, ioHelper);
 
         pmf.init();
 
-        verifyNoMoreInteractions(configService, resourceStream);
+        verifyNoMoreInteractions(configService, ioHelper);
     }
 
     @Test

@@ -1,33 +1,58 @@
 package org.codetab.gotz.appender;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.inject.Inject;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * File based appender. Writes output to file.
+ * @author Maithilish
+ *
+ */
 public final class FileAppender extends Appender {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(FileAppender.class);
+    /**
+     * logger.
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(FileAppender.class);
 
+    /**
+     * IOHelper.
+     */
+    @Inject
+    private IOHelper ioHelper;
+
+    /**
+     * <p>
+     * private constructor.
+     */
     @Inject
     private FileAppender() {
     }
 
+    /**
+     * Creates a file (PrintWriter) from appenders file field. Write the objects
+     * taken from blocking queue until object is Marker.EOF.
+     */
     @Override
     public void run() {
-        String file = null;
+        Validate.validState(ioHelper != null, "ioHelper is null");
+
+        String fileName = null;
         try {
-            file = FieldsUtil.getValue(getFields(), "file");
+            fileName = FieldsUtil.getValue(getFields(), "file");
         } catch (FieldNotFoundException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
@@ -36,17 +61,24 @@ public final class FileAppender extends Appender {
             return;
         }
 
-        try (FileOutputStream fos = FileUtils.openOutputStream(new File(file));
-                PrintWriter writer = new PrintWriter(fos);) {
+        try (PrintWriter writer = ioHelper.getPrintWriter(fileName);) {
             for (;;) {
-                Object item = getQueue().take();
-                if (item == Marker.EOF) {
-                    break;
+                Object item = null;
+                try {
+                    item = getQueue().take();
+                    if (item == Marker.EOF) {
+                        writer.flush();
+                        break;
+                    }
+                    String data = item.toString();
+                    writer.println(data);
+                } catch (InterruptedException e) {
+                    String message = "unable to take object from queue";
+                    LOGGER.debug("{}", e);
+                    activityService.addActivity(Type.GIVENUP, message, e);
                 }
-                String str = item.toString();
-                writer.println(str);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
@@ -54,8 +86,16 @@ public final class FileAppender extends Appender {
         }
     }
 
+    /**
+     * Append object to appender queue.
+     * @param object
+     *            object to append, not null
+     * @throws InterruptedException
+     *             if interrupted while queue put operation
+     */
     @Override
     public void append(final Object object) throws InterruptedException {
+        Validate.notNull(object, "object must not be null");
         getQueue().put(object);
     }
 

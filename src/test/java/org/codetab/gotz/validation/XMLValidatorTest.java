@@ -12,7 +12,7 @@ import java.io.InputStream;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.codetab.gotz.util.ResourceStream;
+import org.codetab.gotz.helper.IOHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
 public class XMLValidatorTest {
 
     @Spy
-    private ResourceStream resourceStream;
+    private IOHelper ioHelper;
 
     @InjectMocks
     private XMLValidator validator;
@@ -76,9 +76,8 @@ public class XMLValidatorTest {
         InputStream xmlStream = Mockito.mock(InputStream.class);
         InputStream schemaStream = Mockito.mock(InputStream.class);
 
-        given(resourceStream.getInputStream(xmlFile)).willReturn(xmlStream);
-        given(resourceStream.getInputStream(schemaFile))
-                .willReturn(schemaStream);
+        given(ioHelper.getInputStream(xmlFile)).willReturn(xmlStream);
+        given(ioHelper.getInputStream(schemaFile)).willReturn(schemaStream);
 
         try {
             validator.validate(xmlFile, schemaFile);
@@ -126,12 +125,12 @@ public class XMLValidatorTest {
     @Test
     public void testValidateIllegalState()
             throws IOException, SAXException, IllegalAccessException {
-        FieldUtils.writeDeclaredField(validator, "resourceStream", null, true);
+        FieldUtils.writeDeclaredField(validator, "ioHelper", null, true);
         try {
             validator.validate("x", "y");
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
-            assertThat(e.getMessage()).isEqualTo("resourceStream is null");
+            assertThat(e.getMessage()).isEqualTo("ioHelper is null");
         }
     }
 

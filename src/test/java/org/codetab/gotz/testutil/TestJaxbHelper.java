@@ -15,8 +15,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Wrapper;
-import org.codetab.gotz.util.ResourceStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class TestJaxbHelper {
 
     public InputStream getInputStream(final String fileName)
             throws FileNotFoundException {
-        InputStream stream = ResourceStream.class.getResourceAsStream(fileName);
+        InputStream stream = IOHelper.class.getResourceAsStream(fileName);
         if (stream == null) {
             throw new FileNotFoundException(fileName);
         }

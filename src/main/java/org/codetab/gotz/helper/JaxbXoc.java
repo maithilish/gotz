@@ -16,7 +16,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.codetab.gotz.model.Wrapper;
-import org.codetab.gotz.util.ResourceStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +36,7 @@ public class JaxbXoc implements IXoc {
      * Resource helper.
      */
     @Inject
-    private ResourceStream resourceStream;
+    private IOHelper ioHelper;
 
     /**
      * Unmarshal XML file to class.
@@ -57,7 +56,7 @@ public class JaxbXoc implements IXoc {
     public <T> List<T> unmarshall(final String xmlFile, final Class<T> ofClass)
             throws JAXBException, IOException {
         InputStream xmlStream = null;
-        xmlStream = resourceStream.getInputStream(xmlFile);
+        xmlStream = ioHelper.getInputStream(xmlFile);
         List<T> list = unmarshall(xmlStream, ofClass);
         if (xmlStream != null) {
             xmlStream.close();

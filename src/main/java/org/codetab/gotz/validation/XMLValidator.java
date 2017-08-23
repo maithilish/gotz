@@ -11,7 +11,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.util.ResourceStream;
+import org.codetab.gotz.helper.IOHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
@@ -36,7 +36,7 @@ public class XMLValidator {
      * ResourceStream.
      */
     @Inject
-    private ResourceStream resourceStream;
+    private IOHelper ioHelper;
 
     /**
      * <p>
@@ -61,11 +61,11 @@ public class XMLValidator {
 
         Validate.notNull(xmlFile, "xmlFile must not be null");
         Validate.notNull(schemaFile, "schemaFile must not be null");
-        Validate.validState(resourceStream != null, "resourceStream is null");
+        Validate.validState(ioHelper != null, "ioHelper is null");
 
-        try (InputStream xmlStream = resourceStream.getInputStream(xmlFile);
+        try (InputStream xmlStream = ioHelper.getInputStream(xmlFile);
                 InputStream schemaStream =
-                        resourceStream.getInputStream(schemaFile)) {
+                        ioHelper.getInputStream(schemaFile)) {
             validate(xmlStream, schemaStream);
             LOGGER.info("validation passed {} + {}", xmlFile, schemaFile);
         } catch (SAXException e) {

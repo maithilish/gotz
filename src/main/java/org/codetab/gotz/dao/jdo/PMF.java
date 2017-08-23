@@ -11,8 +11,8 @@ import javax.jdo.PersistenceManagerFactory;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.util.ResourceStream;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class PMF {
      * ResourceStream.
      */
     @Inject
-    private ResourceStream resourceStream;
+    private IOHelper ioHelper;
     /**
      * JDO properties.
      */
@@ -97,8 +97,7 @@ public class PMF {
                 throw new CriticalException(
                         "JDO Persistence Manager setup error", e);
             }
-            try (InputStream propStream =
-                    resourceStream.getInputStream(configFile)) {
+            try (InputStream propStream = ioHelper.getInputStream(configFile)) {
                 jdoProperties.load(propStream);
                 factory = JDOHelper.getPersistenceManagerFactory(jdoProperties);
 

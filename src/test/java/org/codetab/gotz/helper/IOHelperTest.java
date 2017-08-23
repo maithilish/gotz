@@ -1,4 +1,4 @@
-package org.codetab.gotz.util;
+package org.codetab.gotz.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,32 +8,33 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.helper.IOHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ResourceStreamTest {
+public class IOHelperTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private ResourceStream resourceStream;
+    private IOHelper ioHelper;
 
     @Before
     public void setUp() throws Exception {
         DInjector di = new DInjector().instance(DInjector.class);
-        resourceStream = di.instance(ResourceStream.class);
+        ioHelper = di.instance(IOHelper.class);
     }
 
     @Test
     public void testGetInputStream() throws IOException {
         // given
         String file = "/gotz-default.xml";
-        InputStream expected = ResourceStream.class.getResourceAsStream(file);
+        InputStream expected = IOHelper.class.getResourceAsStream(file);
 
         // when
-        InputStream actual = resourceStream.getInputStream(file);
+        InputStream actual = ioHelper.getInputStream(file);
 
         // then
         assertThat(IOUtils.contentEquals(actual, expected)).isTrue();
@@ -45,7 +46,7 @@ public class ResourceStreamTest {
         exception.expect(FileNotFoundException.class);
 
         // when
-        resourceStream.getInputStream("xyz");
+        ioHelper.getInputStream("xyz");
     }
 
 }

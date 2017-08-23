@@ -17,7 +17,6 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.Beans;
 import org.codetab.gotz.model.ObjectFactory;
-import org.codetab.gotz.util.ResourceStream;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -73,7 +72,7 @@ public class JaxbXocTest {
     public void testUnmarshallFromStream()
             throws FileNotFoundException, JAXBException {
         // given
-        ResourceStream rs = new ResourceStream();
+        IOHelper rs = new IOHelper();
         InputStream xmlStream =
                 rs.getInputStream("/testdefs/beanservice/bean.xml");
 
@@ -88,7 +87,7 @@ public class JaxbXocTest {
     @Test
     public void testMarshall() throws JAXBException, IOException {
         // given
-        ResourceStream rs = new ResourceStream();
+        IOHelper rs = new IOHelper();
         InputStream xmlStream =
                 rs.getInputStream("/testdefs/beanservice/bean.xml");
         String expected = IOUtils.toString(xmlStream, "UTF-8");
