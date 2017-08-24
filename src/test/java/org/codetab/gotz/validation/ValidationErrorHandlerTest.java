@@ -8,6 +8,12 @@ import org.junit.rules.ExpectedException;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+/**
+ * <p>
+ * ValidationErrorHandler tests.
+ * @author Maithilish
+ *
+ */
 public class ValidationErrorHandlerTest {
 
     private ValidationErrorHandler errorHandler;

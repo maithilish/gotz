@@ -1,14 +1,26 @@
 package org.codetab.gotz.exception;
 
-/*
- * RuntimeException : unrecoverable
+/**
+ * <p>
+ * Exception thrown when DataDef not found.
+ * <p>
+ * CheckedException : recoverable
  */
 public final class DataDefNotFoundException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private String name;
+    /**
+     * datadef name.
+     */
+    private final String name;
 
+    /**
+     * <p>
+     * Constructor.
+     * @param name
+     *            datadef name
+     */
     public DataDefNotFoundException(final String name) {
         this.name = name;
     }

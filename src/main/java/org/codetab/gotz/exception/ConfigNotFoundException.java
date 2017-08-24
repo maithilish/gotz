@@ -1,15 +1,26 @@
 package org.codetab.gotz.exception;
 
-/*
- * checked exceptionRule : recoverable, when config is not found then default
- * value may be used
+/**
+ * <p>
+ * Exception thrown when config not found.
+ * <p>
+ * checked exception : recoverable
  */
 public class ConfigNotFoundException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    private String key;
+    /**
+     * config key.
+     */
+    private final String key;
 
+    /**
+     * <p>
+     * Constructor.
+     * @param key
+     *            config key
+     */
     public ConfigNotFoundException(final String key) {
         this.key = key;
     }
