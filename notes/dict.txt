@@ -26,3 +26,4 @@ validator
 vars
 classpath
 queuesize
+stats

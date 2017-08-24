@@ -97,6 +97,10 @@ jacoco report
 know dependency updates
    mvn versions:display-dependency-updates
    
+download javadoc and source
+
+mvn dependency:resolve -Dclassifier=javadoc
+mvn dependency:sources   
   
 M2E 
 ---

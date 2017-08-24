@@ -8,7 +8,6 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.helper.IOHelper;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -108,7 +108,7 @@ public class XMLValidator {
      * @author Maithilish
      *
      */
-    private static class ValidationErrorHandler implements ErrorHandler {
+    public static class ValidationErrorHandler implements ErrorHandler {
         /**
          * logger.
          */
