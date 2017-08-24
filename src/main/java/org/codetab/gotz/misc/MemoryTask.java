@@ -5,23 +5,23 @@ import java.util.TimerTask;
 import javax.inject.Inject;
 
 import org.codetab.gotz.shared.ActivityService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * <p>
+ * Task to collect memory stats.
+ * @author Maithilish
+ *
+ */
 public class MemoryTask extends TimerTask {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(MemoryTask.class);
-
+    /**
+     * activity service.
+     */
+    @Inject
     private ActivityService activityService;
 
     @Override
     public void run() {
         activityService.collectMemoryStat();
     }
-
-    @Inject
-    public void setActivityService(final ActivityService activityService) {
-        this.activityService = activityService;
-    }
-
 }
