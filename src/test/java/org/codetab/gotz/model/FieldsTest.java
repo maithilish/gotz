@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.codetab.gotz.util.FieldsIterator;
+import org.codetab.gotz.model.iterator.FieldsIterator;
 import org.junit.Before;
 import org.junit.Test;
 

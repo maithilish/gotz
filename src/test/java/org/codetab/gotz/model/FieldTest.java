@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.codetab.gotz.util.NullIterator;
+import org.codetab.gotz.model.iterator.NullIterator;
 import org.junit.Before;
 import org.junit.Test;
 

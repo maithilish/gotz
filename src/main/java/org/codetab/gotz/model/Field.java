@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.codetab.gotz.util.NullIterator;
+import org.codetab.gotz.model.iterator.NullIterator;
 
 /**
  * <p>

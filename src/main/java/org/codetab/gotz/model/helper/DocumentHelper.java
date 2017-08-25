@@ -136,7 +136,7 @@ public class DocumentHelper {
 
         // calculate toDate
         try {
-            TemporalAmount ta = Util.praseTemporalAmount(live);
+            TemporalAmount ta = Util.parseTemporalAmount(live);
             toDate = fromDateTime.plus(ta);
         } catch (DateTimeParseException e) {
             // if live is not Duration string then parse it as Date
@@ -150,7 +150,7 @@ public class DocumentHelper {
             } catch (ParseException | ConfigNotFoundException pe) {
                 LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", label,
                         live, e);
-                TemporalAmount ta = Util.praseTemporalAmount("PT0S");
+                TemporalAmount ta = Util.parseTemporalAmount("PT0S");
                 toDate = fromDateTime.plus(ta);
             }
         }
