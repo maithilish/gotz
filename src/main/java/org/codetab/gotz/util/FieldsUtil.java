@@ -12,24 +12,41 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.StrSubstitutor;
+import org.apache.commons.text.StrSubstitutor;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.iterator.FieldsIterator;
 
+/**
+ * <p>
+ * Utility methods for FieldsBase. Model classes hold List<FieldsBase> and
+ * FieldsBase may be Field or Fields, For convince, List<FieldsBase> is called
+ * as fields instead of fieldsBaseList or fieldsBases.
+ * @author Maithilish
+ *
+ */
 public final class FieldsUtil {
 
+    /**
+     * <p>
+     * private constructor.
+     */
     private FieldsUtil() {
     }
 
-    /*
-     * models hold List<FieldsBase> and FieldsBase may be Field or Fields for
-     * convince List<FieldsBase> is called as fields instead of fieldsBaseList
-     * or fieldsBases
-     */
-
     // create methods
+
+    /**
+     * <p>
+     * Create field.
+     * @param name
+     *            name
+     * @param value
+     *            value
+     * @return field
+     */
     public static Field createField(final String name, final String value) {
         Field field = new Field();
         field.setName(name);
@@ -37,27 +54,59 @@ public final class FieldsUtil {
         return field;
     }
 
+    /**
+     * <p>
+     * Create list of fieldsBase.
+     * @param fb
+     *            fieldsBase to add
+     * @return list of fieldsBase
+     */
     public static List<FieldsBase> asList(final FieldsBase fb) {
         List<FieldsBase> list = new ArrayList<>();
         list.add(fb);
         return list;
     }
 
+    /**
+     * <p>
+     * Deep clone list of FieldsBase.
+     * @param fields
+     *            list of fieldsBase to clone
+     * @return cloned list
+     */
     public static List<FieldsBase> deepClone(final List<FieldsBase> fields) {
         List<FieldsBase> list = new ArrayList<>();
         for (FieldsBase fb : fields) {
-            list.add(SerializationUtils.clone(fb));
+            list.add(deepClone(fb));
         }
         return list;
     }
 
+    /**
+     * <p>
+     * Deep clone FieldsBase.
+     * @param fieldsBase
+     *            to clone
+     * @return cloned FieldsBase
+     */
     public static FieldsBase deepClone(final FieldsBase fieldsBase) {
+        // TODO migrate to manual deep clone
         return SerializationUtils.clone(fieldsBase);
-
     }
+
     // get methods
 
-    // return first matching FieldsBase value
+    /**
+     * <p>
+     * Get first matching FieldsBase value.
+     * @param fields
+     *            list
+     * @param name
+     *            field name
+     * @return value
+     * @throws FieldNotFoundException
+     *             if no such field
+     */
     public static String getValue(final List<FieldsBase> fields,
             final String name) throws FieldNotFoundException {
         if (fields == null) {
@@ -73,6 +122,19 @@ public final class FieldsUtil {
         throw new FieldNotFoundException(name);
     }
 
+    /**
+     * <p>
+     * Get value as Range.
+     * @param fields
+     *            list
+     * @param name
+     *            field name
+     * @return range
+     * @throws FieldNotFoundException
+     *             if no such field
+     * @throws NumberFormatException
+     *             value is not range or minimum is greater than maximum
+     */
     public static Range<Integer> getRange(final List<FieldsBase> fields,
             final String name)
             throws FieldNotFoundException, NumberFormatException {
@@ -107,6 +169,17 @@ public final class FieldsUtil {
         return Range.between(min, max);
     }
 
+    /**
+     * <p>
+     * Get the first field by name which is instance of Field.
+     * @param fields
+     *            list
+     * @param name
+     *            field name
+     * @return field
+     * @throws FieldNotFoundException
+     *             if no such field
+     */
     public static Field getField(final List<FieldsBase> fields,
             final String name) throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
@@ -119,6 +192,17 @@ public final class FieldsUtil {
         throw new FieldNotFoundException("Name [" + name + "]");
     }
 
+    /**
+     * <p>
+     * Get the first fields by name which is instance of Fields.
+     * @param fields
+     *            list
+     * @param name
+     *            fields name
+     * @return fields
+     * @throws FieldNotFoundException
+     *             if no such fields
+     */
     public static Fields getFields(final List<FieldsBase> fields,
             final String name) throws FieldNotFoundException {
         FieldsIterator ite = new FieldsIterator(fields);
@@ -132,6 +216,47 @@ public final class FieldsUtil {
     }
 
     // filter methods
+
+    /**
+     * <p>
+     * Filter by name.
+     * @param fields
+     *            list
+     * @param name
+     *            name to match
+     * @return list of filtered items
+     * @throws FieldNotFoundException
+     *             if no matching FieldsBase
+     */
+    public static List<FieldsBase> filterByName(final List<FieldsBase> fields,
+            final String name) throws FieldNotFoundException {
+        List<FieldsBase> list = new ArrayList<>();
+        FieldsIterator ite = new FieldsIterator(fields);
+        while (ite.hasNext()) {
+            FieldsBase f = ite.next();
+            if (StringUtils.equals(f.getName(), name)) {
+                list.add(f);
+            }
+        }
+        if (list.size() == 0) {
+            throw new FieldNotFoundException("name [" + name + "]");
+        }
+        return list;
+    }
+
+    /**
+     * <p>
+     * Filter by name and value.
+     * @param fields
+     *            list
+     * @param name
+     *            name to match
+     * @param value
+     *            value to match
+     * @return list of filtered items
+     * @throws FieldNotFoundException
+     *             if no matching FieldsBase
+     */
     public static List<FieldsBase> filterByValue(final List<FieldsBase> fields,
             final String name, final String value)
             throws FieldNotFoundException {
@@ -151,28 +276,38 @@ public final class FieldsUtil {
         return list;
     }
 
-    public static List<FieldsBase> filterByName(final List<FieldsBase> fields,
+    /**
+     * <p>
+     * Filter by group and name. It first filters by group and then by name.
+     * @param fields
+     *            list
+     * @param group
+     *            group name
+     * @param name
+     *            name
+     * @return list of filtered items.
+     * @throws FieldNotFoundException
+     *             if no matching FieldsBase
+     */
+    public static List<FieldsBase> filterByGroupName(
+            final List<FieldsBase> fields, final String group,
             final String name) throws FieldNotFoundException {
-        List<FieldsBase> list = new ArrayList<>();
-        FieldsIterator ite = new FieldsIterator(fields);
-        while (ite.hasNext()) {
-            FieldsBase f = ite.next();
-            if (StringUtils.equals(f.getName(), name)) {
-                list.add(f);
-            }
-        }
-        if (list.size() == 0) {
-            throw new FieldNotFoundException("name [" + name + "]");
-        }
-        return list;
-    }
-
-    public static List<FieldsBase> filterByName(final List<FieldsBase> fields,
-            final String group, final String name)
-            throws FieldNotFoundException {
         List<FieldsBase> groupFields = filterByGroup(fields, group);
         return filterByName(groupFields, name);
     }
+
+    /**
+     * <p>
+     * Filter children of Fields by name. Children of fields are
+     * Fields.getFields().
+     * @param fields
+     *            list
+     * @param name
+     *            name
+     * @return list of filtered items.
+     * @throws FieldNotFoundException
+     *             if no matching FieldsBase
+     */
 
     public static List<FieldsBase> filterChildrenByName(
             final List<FieldsBase> fields, final String name)
@@ -193,6 +328,17 @@ public final class FieldsUtil {
         return list;
     }
 
+    /**
+     * <p>
+     * Filter items where name == "group" and value == group.
+     * @param fields
+     *            list
+     * @param group
+     *            group name (compared with value)
+     * @return list of filtered items.
+     * @throws FieldNotFoundException
+     *             if no matching items
+     */
     public static List<FieldsBase> filterByGroup(final List<FieldsBase> fields,
             final String group) throws FieldNotFoundException {
         List<FieldsBase> groupFields = new ArrayList<>();
@@ -211,6 +357,18 @@ public final class FieldsUtil {
         return groupFields;
     }
 
+    /**
+     * <p>
+     * Filter items where name == "group" and value == group. Only Fields are
+     * included and returned as List<Fields>.
+     * @param fields
+     *            list
+     * @param group
+     *            group name (compared with value)
+     * @return filtered items as list of fields
+     * @throws FieldNotFoundException
+     *             if no matching items
+     */
     public static List<Fields> filterByGroupAsFields(
             final List<FieldsBase> fields, final String group)
             throws FieldNotFoundException {
@@ -234,23 +392,62 @@ public final class FieldsUtil {
 
     // get modified value methods
 
-    public static String prefixValue(final List<FieldsBase> prefixes,
+    /**
+     * <p>
+     * From the input list, Field values are concated in reverse order and
+     * suffixed with input string.
+     * <p>
+     * Example : for suffix xyz and two fields with value foo and bar, it
+     * returns string barfooxyz.
+     * @param fields
+     *            input list
+     * @param str
+     *            string to prefix
+     * @return string prefixed concated values
+     */
+    public static String suffixValue(final List<FieldsBase> fields,
             final String str) {
-        String prefixedByValue = str;
-        Iterator<FieldsBase> ite = new FieldsIterator(prefixes);
+        String suffixedValues = str;
+        Iterator<FieldsBase> ite = new FieldsIterator(fields);
         while (ite.hasNext()) {
-            FieldsBase prefix = ite.next();
-            if (prefix instanceof Field) {
-                prefixedByValue = prefix.getValue() + prefixedByValue;
+            FieldsBase field = ite.next();
+            if (field instanceof Field) {
+                suffixedValues = field.getValue() + suffixedValues;
             }
         }
-        return prefixedByValue;
+        return suffixedValues;
     }
 
+    /**
+     * <p>
+     * Replace replaceable variables in Field value with value returned by a
+     * getter. Fields are ignored.
+     * <p>
+     * Replaces %{objName.getterMethodName} by the value returned by the getter
+     * method of the object.
+     * <p>
+     * examples : %{col.value} is replaced with value returned by getValue() of
+     * col axis and %{row.match} is replaced with value returned by getMatch()
+     * of row axis.
+     * @param fields
+     *            list
+     * @param map
+     *            map of object name and object
+     * @return patched list of field (fields are ignored and not returned)
+     * @throws IllegalAccessException
+     *             on error
+     * @throws InvocationTargetException
+     *             on error
+     * @throws NoSuchMethodException
+     *             on error
+     */
     public static List<FieldsBase> replaceVariables(
             final List<FieldsBase> fields, final Map<String, ?> map)
             throws IllegalAccessException, InvocationTargetException,
             NoSuchMethodException {
+
+        // TODO provide some examples and full explanation in javadoc
+
         Iterator<FieldsBase> ite = new FieldsIterator(fields);
         List<FieldsBase> patchedFields = new ArrayList<>();
         while (ite.hasNext()) {
@@ -269,6 +466,21 @@ public final class FieldsUtil {
         return patchedFields;
     }
 
+    /**
+     * <p>
+     * Get value map.
+     * @param str
+     *            string to parse
+     * @param map
+     *            axis map
+     * @return axis value map
+     * @throws IllegalAccessException
+     *             on error
+     * @throws InvocationTargetException
+     *             on error
+     * @throws NoSuchMethodException
+     *             on error
+     */
     private static Map<String, String> getValueMap(final String str,
             final Map<String, ?> map) throws IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
@@ -279,11 +491,11 @@ public final class FieldsUtil {
         Map<String, String> valueMap = new HashMap<>();
         for (String key : keys) {
             String[] parts = key.split("\\.");
-            String axisName = parts[0];
+            String objKey = parts[0];
             String property = parts[1];
-            Object axis = map.get(axisName.toUpperCase());
+            Object obj = map.get(objKey.toUpperCase());
             // call getter and type convert to String
-            Object o = PropertyUtils.getProperty(axis, property);
+            Object o = PropertyUtils.getProperty(obj, property);
             valueMap.put(key, ConvertUtils.convert(o));
         }
         return valueMap;
@@ -291,7 +503,17 @@ public final class FieldsUtil {
 
     // boolean methods
 
-    // contains field or fields with matching name/value
+    /**
+     * <p>
+     * Is List contains field or fields with matching name and value.
+     * @param fields
+     *            list
+     * @param name
+     *            field name
+     * @param value
+     *            field value
+     * @return true if matching item exists
+     */
     public static boolean contains(final List<FieldsBase> fields,
             final String name, final String value) {
         if (fields == null) {
@@ -307,7 +529,17 @@ public final class FieldsUtil {
         return false;
     }
 
-    // contains field or fields with matching name/value
+    /**
+     * <p>
+     * Is Fields contains field or fields with matching name and value.
+     * @param fields
+     *            fields
+     * @param name
+     *            field name
+     * @param value
+     *            field value
+     * @return true if matching item exists
+     */
     public static boolean contains(final Fields fields, final String name,
             final String value) {
         if (fields == null) {
@@ -323,13 +555,17 @@ public final class FieldsUtil {
         return false;
     }
 
-    public static boolean isTrue(final List<FieldsBase> fields,
-            final String group, final String name)
-            throws FieldNotFoundException {
-        List<FieldsBase> fg = filterByGroup(fields, group);
-        return isTrue(fg, name);
-    }
-
+    /**
+     * <p>
+     * Is value of a field is true.
+     * @param fields
+     *            list
+     * @param name
+     *            field name
+     * @return if value of the field is true
+     * @throws FieldNotFoundException
+     *             if no such field
+     */
     public static boolean isTrue(final List<FieldsBase> fields,
             final String name) throws FieldNotFoundException {
         FieldsBase fb = getField(fields, name);
@@ -339,6 +575,35 @@ public final class FieldsUtil {
         return false;
     }
 
+    /**
+     * <p>
+     * Is value of a field in group is true.
+     * @param fields
+     *            list
+     * @param group
+     *            group name
+     * @param name
+     *            field name
+     * @return if value of field in the group is true
+     * @throws FieldNotFoundException
+     *             if no such field
+     */
+    public static boolean isTrue(final List<FieldsBase> fields,
+            final String group, final String name)
+            throws FieldNotFoundException {
+        List<FieldsBase> fg = filterByGroup(fields, group);
+        return isTrue(fg, name);
+    }
+
+    /**
+     * <p>
+     * Is field by name is defined.
+     * @param fields
+     *            list
+     * @param name
+     *            field name
+     * @return true if named field exists
+     */
     public static boolean isDefined(final List<FieldsBase> fields,
             final String name) {
         try {
@@ -349,6 +614,15 @@ public final class FieldsUtil {
         }
     }
 
+    /**
+     * <p>
+     * Is any one field from list of names is defined.
+     * @param fields
+     *            list
+     * @param names
+     *            list of names
+     * @return true if any one named field exists
+     */
     public static boolean isAnyDefined(final List<FieldsBase> fields,
             final String... names) {
         for (String name : names) {
@@ -361,6 +635,15 @@ public final class FieldsUtil {
         return false;
     }
 
+    /**
+     * <p>
+     * Is all fields from list of names is defined.
+     * @param fields
+     *            list
+     * @param names
+     *            list of names
+     * @return true if all named field exists
+     */
     public static boolean isAllDefined(final List<FieldsBase> fields,
             final String... names) {
         for (String name : names) {
@@ -373,8 +656,15 @@ public final class FieldsUtil {
         return true;
     }
 
-    // misc methods
+    // miscellaneous methods
 
+    /**
+     * <p>
+     * Iterate over list of fields and count of number of fields.
+     * @param fields
+     *            list
+     * @return count
+     */
     public static int countField(final List<FieldsBase> fields) {
         int count = 0;
         FieldsIterator ite = new FieldsIterator(fields);

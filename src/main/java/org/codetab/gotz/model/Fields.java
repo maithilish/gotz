@@ -172,6 +172,7 @@ public class Fields extends FieldsBase implements Serializable {
 
     @Override
     public Iterator<FieldsBase> iterator() {
+        // TODO whether need to add this fields also to iterator
         return new FieldsIterator(fields);
     }
 

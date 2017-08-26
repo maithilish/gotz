@@ -5,9 +5,11 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 
+import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,6 +23,13 @@ public class CompressionUtilTest {
 
     @Before
     public void setUp() throws Exception {
+    }
+
+    @Test
+    public void testUtilityClassWellDefined()
+            throws NoSuchMethodException, InvocationTargetException,
+            InstantiationException, IllegalAccessException {
+        TestUtil.assertUtilityClassWellDefined(CompressionUtil.class);
     }
 
     @Test

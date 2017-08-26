@@ -1,46 +1,37 @@
 package org.codetab.gotz.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.Wrapper;
 import org.codetab.gotz.testutil.TestUtil;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+/**
+ * <p>
+ * Util tests.
+ * @author Maithilish
+ *
+ */
 public class UtilTest {
 
     @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    public ExpectedException testRule = ExpectedException.none();
 
     @Test
     public void testDeepClone() throws ClassNotFoundException, IOException {
@@ -59,9 +50,27 @@ public class UtilTest {
         int actualHash = System.identityHashCode(actual);
         int actualListHash = System.identityHashCode(actual.get(0));
 
-        assertEquals(obj, actual);
-        assertNotEquals(objHash, actualHash);
-        assertNotEquals(objListHash, actualListHash);
+        assertThat(obj).isEqualTo(actual);
+        assertThat(objHash).isNotEqualTo(actualHash);
+        assertThat(objListHash).isNotEqualTo(actualListHash);
+    }
+
+    @Test
+    public void testDeepCloneNullParams()
+            throws ClassNotFoundException, IOException {
+        try {
+            Util.deepClone(null, "obj");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("ofClass must not be null");
+        }
+
+        try {
+            Util.deepClone(String.class, null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("object must not be null");
+        }
     }
 
     @Test
@@ -69,10 +78,10 @@ public class UtilTest {
         String x = "x";
         String y = "y";
         String z = null;
-        assertFalse(Util.hasNulls(x));
-        assertFalse(Util.hasNulls(x, y));
-        assertTrue(Util.hasNulls(x, z));
-        assertTrue(Util.hasNulls(z));
+        assertThat(Util.hasNulls(x)).isFalse();
+        assertThat(Util.hasNulls(x, y)).isFalse();
+        assertThat(Util.hasNulls(x, z)).isTrue();
+        assertThat(Util.hasNulls(z)).isTrue();
     }
 
     @Test
@@ -87,23 +96,23 @@ public class UtilTest {
         z.add("z1");
 
         Set<Set<Object>> xy = Util.cartesianProduct(x, y);
-        assertEquals(4, xy.size());
-        assertTrue(xy.contains(getSet("y1", "x1")));
-        assertTrue(xy.contains(getSet("y1", "x2")));
-        assertTrue(xy.contains(getSet("y2", "x1")));
-        assertTrue(xy.contains(getSet("y2", "x2")));
+        assertThat(4).isEqualTo(xy.size());
+        assertThat(xy.contains(getSet("y1", "x1"))).isTrue();
+        assertThat(xy.contains(getSet("y1", "x2"))).isTrue();
+        assertThat(xy.contains(getSet("y2", "x1"))).isTrue();
+        assertThat(xy.contains(getSet("y2", "x2"))).isTrue();
 
         Set<Set<Object>> xyz = Util.cartesianProduct(x, y, z);
-        assertEquals(4, xyz.size());
-        assertTrue(xyz.contains(getSet("y1", "x1", "z1")));
-        assertTrue(xyz.contains(getSet("y1", "x2", "z1")));
-        assertTrue(xyz.contains(getSet("y2", "x1", "z1")));
-        assertTrue(xyz.contains(getSet("y2", "x2", "z1")));
+        assertThat(4).isEqualTo(xyz.size());
+        assertThat(xyz.contains(getSet("y1", "x1", "z1"))).isTrue();
+        assertThat(xyz.contains(getSet("y1", "x2", "z1"))).isTrue();
+        assertThat(xyz.contains(getSet("y2", "x1", "z1"))).isTrue();
+        assertThat(xyz.contains(getSet("y2", "x2", "z1"))).isTrue();
 
         Set<Set<Object>> xz = Util.cartesianProduct(x, z);
-        assertEquals(2, xz.size());
-        assertTrue(xz.contains(getSet("x1", "z1")));
-        assertTrue(xz.contains(getSet("x2", "z1")));
+        assertThat(2).isEqualTo(xz.size());
+        assertThat(xz.contains(getSet("x1", "z1"))).isTrue();
+        assertThat(xz.contains(getSet("x2", "z1"))).isTrue();
     }
 
     @Test
@@ -113,7 +122,7 @@ public class UtilTest {
         x.add("x2");
         Set<String> emptySet = new HashSet<String>();
 
-        exceptionRule.expect(IllegalArgumentException.class);
+        testRule.expect(IllegalArgumentException.class);
         Util.cartesianProduct(x, emptySet);
     }
 
@@ -123,14 +132,21 @@ public class UtilTest {
         x.add("x1");
         x.add("x2");
 
-        exceptionRule.expect(IllegalArgumentException.class);
+        testRule.expect(IllegalArgumentException.class);
         Util.cartesianProduct(x);
     }
 
     @Test
     public void testCartesianProductNoArg() {
-        exceptionRule.expect(IllegalArgumentException.class);
+        testRule.expect(IllegalArgumentException.class);
         Util.cartesianProduct();
+    }
+
+    @Test
+    public void testCartesianProductNullParams() {
+        Set<String> set = null;
+        testRule.expect(IllegalArgumentException.class);
+        Util.cartesianProduct(set);
     }
 
     private Set<String> getSet(final String... strs) {
@@ -147,7 +163,7 @@ public class UtilTest {
         Field field = TestUtil.createField("x", "y");
         String actual = Util.getJson(field, false);
 
-        assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
     }
 
     @Test
@@ -159,7 +175,17 @@ public class UtilTest {
         Field field = TestUtil.createField("x", "y");
         String actual = Util.getJson(field, true);
 
-        assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
+    }
+
+    @Test
+    public void testGetJsonNullParams() {
+        try {
+            Util.getJson(null, false);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("object must not be null");
+        }
     }
 
     @Test
@@ -168,7 +194,7 @@ public class UtilTest {
         Field field = TestUtil.createField("x", "y");
         String actual = Util.getIndentedJson(field, false);
 
-        assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
     }
 
     @Test
@@ -182,130 +208,180 @@ public class UtilTest {
         Field field = TestUtil.createField("x", "y");
         String actual = Util.getIndentedJson(field, true);
 
-        assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
     }
 
     @Test
-    public void testBuildString() {
-        assertEquals("a", Util.buildString("a"));
-        assertEquals("ab", Util.buildString("a", "b"));
-    }
-
-    @Test
-    public void testUnmarshal() throws JAXBException, FileNotFoundException {
-        JAXBContext jc = JAXBContext.newInstance(Wrapper.class);
-        Unmarshaller um = jc.createUnmarshaller();
-        List<Object> list = Util.unmarshal(um, "/util/bean.xml");
-        for (Object o : list) {
-            @SuppressWarnings("unchecked")
-            JAXBElement<Bean> je = (JAXBElement<Bean>) o;
-            Bean bean = je.getValue();
-            assertNotNull(bean);
+    public void testGetIndentedJsonNullParams() {
+        try {
+            Util.getIndentedJson(null, false);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("object must not be null");
         }
     }
 
     @Test
-    public void testGetResourceAsStream() throws FileNotFoundException {
-        InputStream is = Util.getResourceAsStream("/util/bean.xml");
-        assertNotNull(is);
+    public void testBuildString() {
+        assertThat("a").isEqualTo(Util.buildString("a"));
+        assertThat("ab").isEqualTo(Util.buildString("a", "b"));
+    }
 
-        exceptionRule.expect(FileNotFoundException.class);
-        Util.getResourceAsStream("bean.xml");
+    @Test
+    public void testBuildStringNullParams() {
+        String str = null;
+
+        String actual = Util.buildString(str);
+
+        assertThat(actual).isNull();
     }
 
     @Test
     public void testPraseTemporalAmount() {
-        TemporalAmount ta = Util.praseTemporalAmount("P2M");
-        assertEquals(2, ta.get(ChronoUnit.MONTHS));
+        TemporalAmount ta = Util.parseTemporalAmount("P2M");
+        assertThat(ta.get(ChronoUnit.MONTHS)).isEqualTo(2L);
 
-        ta = Util.praseTemporalAmount("PT5S");
-        assertEquals(5, ta.get(ChronoUnit.SECONDS));
+        ta = Util.parseTemporalAmount("PT5S");
+        assertThat(ta.get(ChronoUnit.SECONDS)).isEqualTo(5L);
 
-        exceptionRule.expect(DateTimeParseException.class);
-        ta = Util.praseTemporalAmount("X2M");
+        testRule.expect(DateTimeParseException.class);
+        ta = Util.parseTemporalAmount("X2M");
+    }
+
+    @Test
+    public void testParseTemporalAmountNullParams() {
+        try {
+            Util.parseTemporalAmount(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("text must not be null");
+        }
     }
 
     @Test
     public void testStripe() {
         String str = Util.stripe("test", 2, null, null);
-        assertTrue(StringUtils.startsWith(str, "test"));
-        assertTrue(StringUtils.endsWith(str, "test"));
-        assertEquals(0, StringUtils.countMatches(str, "\n"));
+        assertThat(StringUtils.startsWith(str, "test")).isTrue();
+        assertThat(StringUtils.endsWith(str, "test")).isTrue();
+        assertThat(0).isEqualTo(StringUtils.countMatches(str, "\n"));
 
         str = Util.stripe("test", 2, "prefix", "suffix");
-        assertEquals("prefixtestsuffix", str);
-        assertEquals(0, StringUtils.countMatches(str, "\n"));
+        assertThat("prefixtestsuffix").isEqualTo(str);
+        assertThat(0).isEqualTo(StringUtils.countMatches(str, "\n"));
 
         str = Util.stripe("line1\nline2\nline3\nline4", 1, null, null);
-        assertEquals(2, StringUtils.countMatches(str, "\n")); // head 1 dots 1
+        assertThat(2).isEqualTo(StringUtils.countMatches(str, "\n")); // head 1
+                                                                      // dots 1
 
         str = Util.stripe("line1\nline2\nline3\nline4\nline5\nline6", 2, null,
                 null);
-        assertEquals(4, StringUtils.countMatches(str, "\n")); // head 2 dots 1
+        assertThat(4).isEqualTo(StringUtils.countMatches(str, "\n")); // head 2
+                                                                      // dots 1
         // tail 1
+    }
+
+    @Test
+    public void testStripeNullParams() {
+        try {
+            Util.stripe(null, 1, "prefix", "suffix");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("string must not be null");
+        }
     }
 
     @Test
     public void testHead() {
         String str = Util.head("line1\nline2\nline3\nline4\nline5\nline6", 3);
-        assertTrue(str.equals("line1\nline2\nline3"));
+        assertThat(str.equals("line1\nline2\nline3")).isTrue();
 
         str = Util.head("line1\nline2", 1);
-        assertEquals("line1", str);
+        assertThat("line1").isEqualTo(str);
 
         str = Util.head("line1\nline2", 0);
-        assertEquals("line1", str);
+        assertThat("line1").isEqualTo(str);
+    }
+
+    @Test
+    public void testHeadNullParams() {
+        try {
+            Util.head(null, 1);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("string must not be null");
+        }
     }
 
     @Test
     public void testTail() {
         String str = Util.tail("line1\nline2\nline3\nline4\nline5\nline6", 3);
-        assertTrue(str.equals("line4\nline5\nline6"));
+        assertThat(str.equals("line4\nline5\nline6")).isTrue();
 
         str = Util.tail("line1\nline2\nline3\nline4\nline5\nline6\n", 3);
-        assertEquals("line4\nline5\nline6\n", str);
+        assertThat("line4\nline5\nline6\n").isEqualTo(str);
 
         str = Util.tail("line1\nline2", 1);
-        assertEquals("line2", str);
+        assertThat("line2").isEqualTo(str);
 
         str = Util.tail("line1\nline2", 0);
-        assertEquals("line2", str);
+        assertThat("line2").isEqualTo(str);
+    }
+
+    @Test
+    public void testTailNullParams() {
+        try {
+            Util.tail(null, 1);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("string must not be null");
+        }
     }
 
     @Test
     public void testGetMessage() {
         String expected = "FieldNotFoundException: [test]";
         String actual = Util.getMessage(new FieldNotFoundException("test"));
-        assertEquals(expected, actual);
+        assertThat(expected).isEqualTo(actual);
     }
 
     @Test
-    public void testWellDefined()
-            throws NoSuchMethodException, InvocationTargetException,
-            InstantiationException, IllegalAccessException {
-        assertUtilityClassWellDefined(Util.class);
+    public void testGetMessageNullParams() {
+        try {
+            Util.getMessage(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("exception must not be null");
+        }
     }
 
-    public static void assertUtilityClassWellDefined(final Class<?> clazz)
+    @Test
+    public void testGetPropertiesAsString() {
+        Properties props = new Properties();
+        props.put("x", "xv");
+        props.put("y", "yv");
+
+        String actual = Util.getPropertiesAsString(props);
+
+        String expected = Util.LINE + Util.logIndent() + "x=xv" + Util.LINE
+                + Util.logIndent() + "y=yv" + Util.LINE;
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void testGetPropertiesAsNullParams() {
+        try {
+            Util.getPropertiesAsString(null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("properties must not be null");
+        }
+    }
+
+    @Test
+    public void testWellDefinedUtilityClass()
             throws NoSuchMethodException, InvocationTargetException,
             InstantiationException, IllegalAccessException {
-        Assert.assertTrue("class must be final",
-                Modifier.isFinal(clazz.getModifiers()));
-        Assert.assertEquals("There must be only one constructor", 1,
-                clazz.getDeclaredConstructors().length);
-        final Constructor<?> constructor = clazz.getDeclaredConstructor();
-        if (constructor.isAccessible()
-                || !Modifier.isPrivate(constructor.getModifiers())) {
-            Assert.fail("constructor is not private");
-        }
-        constructor.setAccessible(true);
-        constructor.newInstance();
-        constructor.setAccessible(false);
-        for (final Method method : clazz.getMethods()) {
-            if (!Modifier.isStatic(method.getModifiers())
-                    && method.getDeclaringClass().equals(clazz)) {
-                Assert.fail("there exists a non-static method:" + method);
-            }
-        }
+        TestUtil.assertUtilityClassWellDefined(Util.class);
     }
 }

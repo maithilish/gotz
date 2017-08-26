@@ -13,7 +13,7 @@ import java.util.zip.Inflater;
  * @author Maithilish
  *
  */
-public class CompressionUtil {
+public final class CompressionUtil {
 
     /**
      * private constructor.

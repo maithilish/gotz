@@ -130,7 +130,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
 
         try {
             List<FieldsBase> prefix = FieldsUtil.filterByGroup(list, "prefix");
-            value = FieldsUtil.prefixValue(prefix, value);
+            value = FieldsUtil.suffixValue(prefix, value);
         } catch (FieldNotFoundException e) {
         }
 

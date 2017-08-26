@@ -75,10 +75,10 @@ test run
    mvn test  # enhance and test
 
 dev run 
-   mvn exec:java -Dexec.mainClass="in.m.picks.Picks" -Dpicks.mode=dev
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dpicks.mode=dev
    
 prod run 
-   mvn exec:java -Dexec.mainClass="in.m.picks.Picks" 
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz"
 
 tests and IT tests
    mvn verify
@@ -86,6 +86,10 @@ tests and IT tests
 skip tests and run integration tests 
    mvn integration-test -Dtest=zzz.java -DfailIfNoTests=false
 
+find selector
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector" 
+       -Dexec.args="fileName 'selector' "
+        
 javadoc
    mvn javadoc:javadoc
    
@@ -102,6 +106,7 @@ download javadoc and source
 mvn dependency:resolve -Dclassifier=javadoc
 mvn dependency:sources   
   
+
 M2E 
 ---
 
