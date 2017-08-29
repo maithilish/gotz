@@ -19,7 +19,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
@@ -28,7 +27,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runners.model.TestTimedOutException;
 import org.mockito.InOrder;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 /**
  * <p>
@@ -38,6 +40,10 @@ import org.mockito.Mockito;
  */
 public class PoolsTest {
 
+    @Mock
+    private ConfigService configService;
+
+    @InjectMocks
     private TaskPoolService pools;
 
     @Rule
@@ -45,14 +51,7 @@ public class PoolsTest {
 
     @Before
     public void setUp() throws Exception {
-        DInjector di = new DInjector();
-
-        String userProvidedFile = "gotz.properties";
-        String defaultsFile = "gotz-default.xml";
-        ConfigService cs = di.instance(ConfigService.class);
-        cs.init(userProvidedFile, defaultsFile);
-
-        pools = di.instance(TaskPoolService.class);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -70,20 +69,13 @@ public class PoolsTest {
     @SuppressWarnings("unchecked")
     public void testSubmitToExistingPool() throws IllegalAccessException {
 
-        TaskPoolService poolsWithMocks = new TaskPoolService();
-
-        // we use mocks in this test to check internals of submit method
         // create and set mocks
-        ConfigService configService = Mockito.mock(ConfigService.class);
-        FieldUtils.writeField(poolsWithMocks, "configService", configService,
-                true);
-
+        // we need mocks in this test to check internals of method
         Map<String, ExecutorService> executorsMap = Mockito.mock(Map.class);
-        FieldUtils.writeField(poolsWithMocks, "executorsMap", executorsMap,
-                true);
+        FieldUtils.writeField(pools, "executorsMap", executorsMap, true);
 
         ArrayList<NamedFuture> futures = Mockito.spy(ArrayList.class);
-        FieldUtils.writeField(poolsWithMocks, "futures", futures, true);
+        FieldUtils.writeField(pools, "futures", futures, true);
 
         ExecutorService executor = Mockito.mock(ExecutorService.class);
 
@@ -97,7 +89,7 @@ public class PoolsTest {
         given(executor.submit(task)).willReturn(future);
 
         // when
-        boolean actual = poolsWithMocks.submit(poolName, task);
+        boolean actual = pools.submit(poolName, task);
 
         assertThat(actual).isTrue();
         InOrder inOrder = inOrder(executor, futures, executorsMap);
@@ -142,10 +134,6 @@ public class PoolsTest {
     @Test
     public void testNewPoolCreationConfiguredPoolSize()
             throws IllegalAccessException, ConfigNotFoundException {
-
-        // set mock
-        ConfigService configService = Mockito.mock(ConfigService.class);
-        FieldUtils.writeField(pools, "configService", configService, true);
 
         String poolName = "x";
         Runnable task = () -> {

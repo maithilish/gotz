@@ -2,12 +2,12 @@ package org.codetab.gotz.pool;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 /**
  * <p>
@@ -17,21 +17,15 @@ import org.junit.rules.ExpectedException;
  */
 public class TaskPoolServiceTest {
 
-    private TaskPoolService pools;
+    @Mock
+    private ConfigService configService;
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
+    @InjectMocks
+    private TaskPoolService pools;
 
     @Before
     public void setUp() throws Exception {
-        DInjector di = new DInjector();
-
-        String userProvidedFile = "gotz.properties";
-        String defaultsFile = "gotz-default.xml";
-        ConfigService cs = di.instance(ConfigService.class);
-        cs.init(userProvidedFile, defaultsFile);
-
-        pools = di.instance(TaskPoolService.class);
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
