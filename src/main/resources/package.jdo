@@ -8,11 +8,11 @@
     <package name="org.codetab.gotz.model">
         <class name="Base" detachable="true">
             <inheritance strategy="subclass-table" />
-            <field name="id" primary-key="true" value-strategy="identity" />
+            <field name="id" primary-key="true" value-strategy="INCREMENT" />
             <field name="name" />
         </class>
         <class name="Locator" detachable="true">
-            <!-- <field name="id" primary-key="true" value-strategy="identity" 
+            <!-- <field name="id" primary-key="true" value-strategy="INCREMENT" 
                 /> -->
             <unique name="UNIQUE_NAMEGROUP">
                 <field name="name" />
