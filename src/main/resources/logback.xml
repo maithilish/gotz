@@ -85,12 +85,12 @@
 
     <logger name="DataNucleus.JDO" level="OFF" />
 
-    <root level="debug">
+    <root level="trace">
         <appender-ref ref="console" />
         <appender-ref ref="errorlog" />
         <appender-ref ref="debuglog" />
         <appender-ref ref="poolstatelog" />
 <!--         <appender-ref ref="statelog" /> -->
-<!--         <appender-ref ref="tracelog" />         -->
+        <appender-ref ref="tracelog" />        
     </root>
 </configuration>

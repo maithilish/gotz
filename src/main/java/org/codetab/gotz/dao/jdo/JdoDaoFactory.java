@@ -6,6 +6,7 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.IDataDefDao;
+import org.codetab.gotz.dao.IDataSetDao;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ILocatorDao;
 
@@ -73,6 +74,15 @@ public class JdoDaoFactory implements IDaoFactory {
     @Override
     public IDataDao getDataDao() {
         return new DataDao(pmf.getFactory());
+    }
+
+    /**
+     * Get DataSetDao for JDO.
+     * @return dataSetDao
+     */
+    @Override
+    public IDataSetDao getDataSetDao() {
+        return new DataSetDao(pmf.getFactory());
     }
 
     /**

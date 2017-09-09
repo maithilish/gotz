@@ -146,6 +146,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
         LOGGER.trace(getMarker(), "------ query data ------");
         LOGGER.trace(getMarker(), "Scripts {} ", scripts);
         jsEngine.put("configs", configService);
+        jsEngine.put("document", getDocument());
         String scriptStr = FieldsUtil.getValue(scripts, "script");
         Object val = jsEngine.eval(scriptStr);
         String value = ConvertUtils.convert(val);

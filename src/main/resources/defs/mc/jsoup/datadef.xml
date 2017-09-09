@@ -40,7 +40,8 @@
         <axis name="col">
             <fields name="group" value="query">
                 <field name="region" value="table:contains(Sources Of Funds)" />
-                <field name="field" value="tr:nth-child(1) > td:nth-child(%{col.index})" />
+                <field name="field"
+                    value="tr:nth-child(1) > td:nth-child(%{col.index})" />
             </fields>
             <member name="year">
                 <field name="indexRange" value="2-6" />
@@ -50,7 +51,8 @@
         <axis name="row">
             <fields name="group" value="query">
                 <field name="region" value="table:contains(Sources Of Funds)" />
-                <field name="field" value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
             </fields>
             <member name="item" index="5">
                 <!-- <field name="indexRange" value="1-34" /> -->
@@ -76,7 +78,8 @@
         <axis name="col">
             <fields name="group" value="query">
                 <field name="region" value="table:contains(Employee Cost)" />
-                <field name="field" value="tr:nth-child(1) > td:nth-child(%{col.index})" />
+                <field name="field"
+                    value="tr:nth-child(1) > td:nth-child(%{col.index})" />
             </fields>
             <member name="year">
                 <field name="indexRange" value="2-6" />
@@ -85,7 +88,8 @@
         <axis name="row">
             <fields name="group" value="query">
                 <field name="region" value="table:contains(Employee Cost)" />
-                <field name="field" value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+                <field name="field"
+                    value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
             </fields>
             <member name="item" index="6">
                 <!-- <field name="indexRange" value="1-37" /> -->
@@ -110,22 +114,22 @@
     <datadef name="quotePage">
         <axis name="col">
             <fields name="group" value="script">
-                <field name="script" value="configs.getRunDateTime()" />
+                <field name="script" value="document.getFromDate()" />
             </fields>
             <member name="date" />
         </axis>
         <axis name="row">
             <fields name="group" value="query">
                 <field name="region" value="div#mktdet_2" />
-                <field name="field" value="div:containsOwn(%{row.match})" />
+                <field name="field" value="div:matchesOwn(^%{row.match})" />
             </fields>
             <member name="MC" match="MARKET CAP" />
-            <member name="EPS" match="EPS (TTM)" />
+            <member name="EPS" match="EPS \(TTM\)" />
             <member name="PE" match="P/E" />
             <member name="PC" match="P/C" />
             <member name="BV" match="BOOK VALUE" />
             <member name="PB" match="PRICE/BOOK" />
-            <member name="DIV" match="DIV (%)" />
+            <member name="DIV" match="DIV \(%\)" />
             <member name="DY" match="DIV YIELD" />
             <member name="FV" match="FACE VALUE" />
             <member name="IND PE" match="INDUSTRY P/E" />
@@ -133,14 +137,14 @@
         <axis name="fact">
             <fields name="group" value="query">
                 <field name="region" value="div#mktdet_2" />
-                <field name="field" value="div:containsOwn(%{row.match}) + div" />
+                <field name="field" value="div:matchesOwn(^%{row.match}) + div" />
             </fields>
         </axis>
     </datadef>
     <datadef name="price">
         <axis name="col">
             <fields name="group" value="script">
-                <field name="script" value="configs.getRunDateTime()" />
+                <field name="script" value="document.getFromDate()" />
             </fields>
             <member name="date" />
         </axis>

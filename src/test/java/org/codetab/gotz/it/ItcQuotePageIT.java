@@ -107,7 +107,7 @@ public class ItcQuotePageIT {
 
     private void addExpected(final String prefix, final List<String> expected) {
         expected.add(prefix + "DIV YIELD.(%) |2.70%");
-        expected.add(prefix + "INDUSTRY P/E |37.06");
+        expected.add(prefix + "P/E |-");
         expected.add(prefix + "P/C |-");
         expected.add(prefix + "FACE VALUE (Rs) |1.00");
         expected.add(prefix + "MARKET CAP (Rs Cr) |382,642.57");

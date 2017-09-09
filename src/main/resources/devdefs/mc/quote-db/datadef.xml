@@ -31,6 +31,21 @@
             </fields>
         </axis>
     </datadef>
+    <datadef name="price">
+        <axis name="col">
+            <fields name="group" value="script">
+                <field name="script" value="configs.getRunDateTime()" />
+            </fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <member name="Price" value="Price" />
+        </axis>
+        <axis name="fact">
+            <fields name="group" value="query">
+                <field name="region" value="div#Nse_Prc_tick_div" />
+                <field name="field" value="*" />
+            </fields>
+        </axis>
+    </datadef>
 </datadefs>
-
-

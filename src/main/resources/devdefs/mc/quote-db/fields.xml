@@ -26,14 +26,6 @@
         <fields name="group" value="quote">
             <fields name="group" value="task">
                 <fields name="group" value="datadef">
-                    <field name="datadef" value="finlocators" />
-                    <fields name="step" value="parser">
-                        <field name="class"
-                            value="org.codetab.gotz.steps.JSoupHtmlLocatorParser" />
-                        <field name="nextstep" value="loader" />
-                    </fields>
-                </fields>
-                <fields name="group" value="datadef">
                     <field name="datadef" value="quotePage" />
                     <fields name="step" value="encoder">
                         <field name="class"
@@ -63,41 +55,6 @@
             </fields>
             <field name="live" value="P7D" />
         </fields>
-        <fields name="group" value="bs">
-            <fields name="group" value="task">
-                <fields name="group" value="datadef">
-                    <field name="datadef" value="bs" />
-                    <fields name="step" value="encoder">
-                        <field name="class"
-                            value="org.codetab.gotz.steps.DataConverter" />
-                        <field name="nextstep" value="end" />
-                        <fields name="appender" value="db">
-                            <field name="class"
-                                value="org.codetab.gotz.appender.DbAppender" />
-                            <field name="queuesize" value="60000" />
-                        </fields>
-                    </fields>
-                </fields>
-            </fields>
-            <field name="live" value="P3M" />
-        </fields>
-        <fields name="group" value="pl">
-            <fields name="group" value="task">
-                <fields name="group" value="datadef">
-                    <field name="datadef" value="pl" />
-                    <fields name="step" value="encoder">
-                        <field name="class"
-                            value="org.codetab.gotz.steps.DataConverter" />
-                        <field name="nextstep" value="end" />
-                        <fields name="appender" value="db">
-                            <field name="class"
-                                value="org.codetab.gotz.appender.DbAppender" />
-                            <field name="queuesize" value="60000" />
-                        </fields>
-                    </fields>
-                </fields>
-            </fields>
-            <field name="live" value="P6M" />
-        </fields>
     </fields>
 </fields>
+

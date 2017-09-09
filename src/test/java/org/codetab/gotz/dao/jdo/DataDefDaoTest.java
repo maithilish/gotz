@@ -124,8 +124,9 @@ public class DataDefDaoTest {
         assertThat(actual1).isEqualTo(dataDef2);
         assertThat(actual2).isEqualTo(dataDef2);
 
-        assertThat(actual1.getId()).isEqualTo(0L);
-        assertThat(actual2.getId()).isEqualTo(1L);
+        assertThat(actual1.getId()).isNotNull();
+        assertThat(actual2.getId()).isNotNull();
+        assertThat(actual1.getId()).isNotEqualTo(actual2.getId());
 
         fromDate = DateUtils.truncate(fromDate, Calendar.SECOND);
 
@@ -164,8 +165,9 @@ public class DataDefDaoTest {
         assertThat(actual1).isEqualTo(dataDef1);
         assertThat(actual2).isEqualTo(dataDef2);
 
-        assertThat(actual1.getId()).isEqualTo(0L);
-        assertThat(actual2.getId()).isEqualTo(1L);
+        assertThat(actual1.getId()).isNotNull();
+        assertThat(actual2.getId()).isNotNull();
+        assertThat(actual1.getId()).isNotEqualTo(actual2.getId());
 
         fromDate = DateUtils.truncate(fromDate, Calendar.SECOND);
 
@@ -204,8 +206,9 @@ public class DataDefDaoTest {
         assertThat(actual1).isEqualTo(dataDef1);
         assertThat(actual2).isEqualTo(dataDef2);
 
-        assertThat(actual1.getId()).isEqualTo(0L);
-        assertThat(actual2.getId()).isEqualTo(1L);
+        assertThat(actual1.getId()).isNotNull();
+        assertThat(actual2.getId()).isNotNull();
+        assertThat(actual1.getId()).isNotEqualTo(actual2.getId());
 
         fromDate = DateUtils.truncate(fromDate, Calendar.SECOND);
 

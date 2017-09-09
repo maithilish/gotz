@@ -36,12 +36,11 @@
                     <field name="datadef" value="quotePage" />
                     <fields name="step" value="encoder">
                         <field name="class"
-                            value="org.codetab.gotz.steps.CsvEncoder" />
+                            value="org.codetab.gotz.steps.DataConverter" />
                         <field name="nextstep" value="end" />
-                        <fields name="appender" value="file">
+                        <fields name="appender" value="db">
                             <field name="class"
-                                value="org.codetab.gotz.appender.FileAppender" />
-                            <field name="file" value="output/quote.txt" />
+                                value="org.codetab.gotz.appender.DbAppender" />
                         </fields>
                     </fields>
                     <fields name="group" value="persist">
@@ -52,12 +51,11 @@
                     <field name="datadef" value="price" />
                     <fields name="step" value="encoder">
                         <field name="class"
-                            value="org.codetab.gotz.steps.CsvEncoder" />
+                            value="org.codetab.gotz.steps.DataConverter" />
                         <field name="nextstep" value="end" />
-                        <fields name="appender" value="quote">
+                        <fields name="appender" value="db">
                             <field name="class"
-                                value="org.codetab.gotz.appender.FileAppender" />
-                            <field name="file" value="output/quote.txt" />
+                                value="org.codetab.gotz.appender.DbAppender" />
                         </fields>
                     </fields>
                 </fields>
@@ -69,13 +67,12 @@
                 <fields name="group" value="datadef">
                     <field name="datadef" value="bs" />
                     <fields name="step" value="encoder">
-                        <field name="nextstep" value="end" />
                         <field name="class"
-                            value="org.codetab.gotz.steps.CsvEncoder" />
-                        <fields name="appender" value="bs">
+                            value="org.codetab.gotz.steps.DataConverter" />
+                        <field name="nextstep" value="end" />
+                        <fields name="appender" value="db">
                             <field name="class"
-                                value="org.codetab.gotz.appender.FileAppender" />
-                            <field name="file" value="output/bs.txt" />
+                                value="org.codetab.gotz.appender.DbAppender" />
                             <field name="queuesize" value="60000" />
                         </fields>
                     </fields>
@@ -88,13 +85,12 @@
                 <fields name="group" value="datadef">
                     <field name="datadef" value="pl" />
                     <fields name="step" value="encoder">
-                        <field name="nextstep" value="end" />
                         <field name="class"
-                            value="org.codetab.gotz.steps.CsvEncoder" />
-                        <fields name="appender" value="pl">
+                            value="org.codetab.gotz.steps.DataConverter" />
+                        <field name="nextstep" value="end" />
+                        <fields name="appender" value="db">
                             <field name="class"
-                                value="org.codetab.gotz.appender.FileAppender" />
-                            <field name="file" value="output/pl.txt" />
+                                value="org.codetab.gotz.appender.DbAppender" />
                             <field name="queuesize" value="60000" />
                         </fields>
                     </fields>

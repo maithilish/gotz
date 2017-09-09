@@ -455,8 +455,11 @@ public final class FieldsUtil {
             if (field instanceof Field) {
                 String str = field.getValue();
                 Map<String, String> valueMap = getValueMap(str, map);
-                String patchedStr =
-                        StrSubstitutor.replace(str, valueMap, "%{", "}");
+                StrSubstitutor ss = new StrSubstitutor(valueMap);
+                ss.setVariablePrefix("%{");
+                ss.setVariableSuffix("}");
+                ss.setEscapeChar('%');
+                String patchedStr = ss.replace(str);
                 Field patchedField = new Field();
                 patchedField.setName(field.getName());
                 patchedField.setValue(patchedStr);

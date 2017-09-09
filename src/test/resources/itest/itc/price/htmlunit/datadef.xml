@@ -4,7 +4,7 @@
     <datadef name="price">
         <axis name="col">
             <fields name="group" value="script">
-                <field name="script" value="configs.getRunDateTime()" />
+                <field name="script" value="document.getFromDate()" />
             </fields>
             <member name="date" />
         </axis>

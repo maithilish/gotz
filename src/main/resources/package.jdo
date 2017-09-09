@@ -66,5 +66,19 @@
                 <field name="members" />
             </fetch-group>
         </class>
+        <class name="DataSet">
+            <unique name="UNIQUE_DATASET">
+                <field name="name" />
+                <field name="group" />
+                <field name="col" />
+                <field name="row" />
+            </unique>
+            <field name="id" primary-key="true" value-strategy="INCREMENT" />
+            <field name="name" />
+            <field name="group" />
+            <field name="col" />
+            <field name="row" />
+            <field name="fact" />
+        </class>
     </package>
 </jdo>

@@ -40,4 +40,11 @@ public interface IDaoFactory {
      * @return dataDao
      */
     IDataDao getDataDao();
+
+    /**
+     * <p>
+     * Subclass should override this.
+     * @return dataSetDao
+     */
+    IDataSetDao getDataSetDao();
 }
