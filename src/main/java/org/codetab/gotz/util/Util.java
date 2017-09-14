@@ -9,10 +9,13 @@ import java.time.Duration;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
@@ -349,6 +352,37 @@ public final class Util {
             sb.append(line);
         }
         return sb.toString();
+    }
+
+    /**
+     * <p>
+     * Split delimited string to key/value map.
+     * <p>
+     * example : x=1|y=2 key value separator is = and delimiter is |
+     * if there are duplicates then last item is added to map
+     * @param input
+     *            string to split, not null
+     * @param keyValueSeparator
+     *            key value separator, not null
+     * @param delimiter
+     *            entry delimiter, not null
+     * @return map
+     */
+    public static Map<String, String> split(final String input,
+            final String keyValueSeparator, final String delimiter) {
+
+        Validate.notNull(input, "input string must not be null");
+        Validate.notNull(keyValueSeparator,
+                "keyValueSeparator must not be null");
+        Validate.notNull(delimiter, "delimiter must not be null");
+
+        // toMap last arg is mergeFunction which selects the second item from
+        // duplicates
+        Map<String, String> map = Arrays
+                .stream(StringUtils.split(input, delimiter))
+                .map(s -> s.split(keyValueSeparator))
+                .collect(Collectors.toMap(a -> a[0], a -> a[1], (x, y) -> y));
+        return map;
     }
 
 }

@@ -37,10 +37,10 @@
             </fields>
         </fields>
 
-        <fields name="group" value="quote">
+        <fields name="group" value="bs">
             <fields name="group" value="task">
                 <fields name="group" value="datadef">
-                    <field name="datadef" value="quotePage" />
+                    <field name="datadef" value="bs" />
 
                     <fields name="step" value="converter">
                         <field name="nextstep" value="appender" />
@@ -49,40 +49,22 @@
 
                         <fields name="converter" value="date">
                             <field name="class"
-                                value="org.codetab.gotz.converter.DateFormater" />
+                                value="org.codetab.gotz.converter.DateRoller" />
                             <field name="axis" value="col" />
-                            <field name="inpattern"
-                                value="EEE MMM dd HH:mm:SS z YYYY" />
+                            <field name="inpattern" value="MMM ''YY" />
                             <field name="outpattern" value="YYYY-MM-dd" />
+                            <field name="roll" value="DAY_OF_MONTH=ceil" />
                         </fields>
                     </fields>
 
                     <fields name="group" value="persist">
-                        <field name="data" value="false" />
+                        <field name="document" value="true" />
+                        <field name="data" value="true" />
                     </fields>
-                </fields>
-                <fields name="group" value="datadef">
-                    <field name="datadef" value="price" />
-
-                    <fields name="step" value="converter">
-                        <field name="nextstep" value="appender" />
-                        <field name="class"
-                            value="org.codetab.gotz.step.convert.DataSetConverter" />
-
-                        <fields name="converter" value="date">
-                            <field name="class"
-                                value="org.codetab.gotz.converter.DateFormater" />
-                            <field name="axis" value="col" />
-                            <field name="inpattern"
-                                value="EEE MMM dd HH:mm:SS z YYYY" />
-                            <field name="outpattern" value="YYYY-MM-dd" />
-                        </fields>
-                    </fields>
-
                 </fields>
             </fields>
-            <field name="live" value="P7D" />
+            <field name="live" value="P0D" />
         </fields>
+
     </fields>
 </fields>
-

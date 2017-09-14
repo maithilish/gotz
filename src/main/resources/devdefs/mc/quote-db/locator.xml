@@ -3,10 +3,8 @@
 <locators xmlns="http://codetab.org/gotz">
     <locators group="quote">
         <locator name="ITC"
-            url="http://www.moneycontrol.com/india/stockpricequote/cigarettes/itc/ITC" />
+            url="src/main/resources/devdefs/mc/quote-db/itc-quote.html" />
         <locator name="Zee"
-            url="http://www.moneycontrol.com/india/stockpricequote/mediaentertainment/zeeentertainmententerprises/ZEE" />
-        <locator name="Bajaj Corp"
-            url="http://www.moneycontrol.com/india/stockpricequote/personalcare/bajajcorp/BC02" />
+            url="src/main/resources/devdefs/mc/quote-db/zee-quote.html" />
     </locators>
 </locators>

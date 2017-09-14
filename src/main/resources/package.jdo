@@ -74,10 +74,12 @@
                 <field name="row" />
             </unique>
             <field name="id" primary-key="true" value-strategy="INCREMENT" />
-            <field name="name" />
+            <field name="name" />            
             <field name="group" />
-            <field name="col" />
-            <field name="row" />
+            <field name="col" converter="org.codetab.gotz.dao.jdo.StringDateConverter" >
+               <column name="x" jdbc-type="DATE" />
+            </field>                   
+            <field name="row" column="y" />
             <field name="fact" />
         </class>
     </package>

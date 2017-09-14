@@ -5,7 +5,7 @@
         <propertyPattern>gotz/properties/property</propertyPattern>
         <beanFile>/bean.xml</beanFile>
         <schemaFile>/schema/gotz.xsd</schemaFile>
-        <seederClass>org.codetab.gotz.steps.LocatorSeeder</seederClass>
+        <seederClass>org.codetab.gotz.step.extract.LocatorSeeder</seederClass>
         <datastore>
             <name>datastore</name>
             <orm>jdo</orm>
@@ -16,7 +16,7 @@
             <loader>4</loader>
             <parser>4</parser>
             <filter>4</filter>
-            <encoder>4</encoder>
+            <converter>4</converter>
             <appender>2</appender>
         </poolsize>
         <appender>

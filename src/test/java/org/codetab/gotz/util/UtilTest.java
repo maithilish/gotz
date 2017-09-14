@@ -1,6 +1,7 @@
 package org.codetab.gotz.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -384,4 +386,99 @@ public class UtilTest {
             InstantiationException, IllegalAccessException {
         TestUtil.assertUtilityClassWellDefined(Util.class);
     }
+
+    @Test
+    public void testSplit() {
+        // delimited with pipe
+        Map<String, String> actual = Util.split("a=1|b=2", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        actual = Util.split("a=1|a=2|b=2", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "2"), entry("b", "2"));
+
+        actual = Util.split("a=1|a=1|b=2", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        // delimited with space
+        actual = Util.split("a=1 b=2", "=", " ");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        actual = Util.split("a=1 a=2 b=2", "=", " ");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "2"), entry("b", "2"));
+
+        actual = Util.split("a=1 a=1 b=2", "=", " ");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        // key value separator :
+        actual = Util.split("a:1 b:2", ":", " ");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        actual = Util.split("a:1 a:2 b:2", ":", " ");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "2"), entry("b", "2"));
+
+        actual = Util.split("a:1 a:1 b:2", ":", " ");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        // trailing delimiter
+        actual = Util.split("a=1|b=2|", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        actual = Util.split("a=1|a=2|b=2|", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "2"), entry("b", "2"));
+
+        actual = Util.split("a=1|a=1|b=2|", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        // leading delimiter
+        actual = Util.split("|a=1|b=2", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+
+        actual = Util.split("|a=1|a=2|b=2", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "2"), entry("b", "2"));
+
+        actual = Util.split("|a=1|a=1|b=2", "=", "|");
+        assertThat(actual).hasSize(2);
+        assertThat(actual).contains(entry("a", "1"), entry("b", "2"));
+    }
+
+    @Test
+    public void testSplitNullParams() {
+        try {
+            Util.split(null, ":", " ");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("input string must not be null");
+        }
+
+        try {
+            Util.split("a:1 b:2", null, " ");
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage())
+                    .isEqualTo("keyValueSeparator must not be null");
+        }
+
+        try {
+            Util.split("a:1 b:2", ":", null);
+            fail("should throw NullPointerException");
+        } catch (NullPointerException e) {
+            assertThat(e.getMessage()).isEqualTo("delimiter must not be null");
+        }
+    }
+
 }
