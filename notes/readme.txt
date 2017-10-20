@@ -1,68 +1,4 @@
 
-locator - group, url, symbol, cache, datadef, handler
-
-Config Files
-------------
-
-fixed             - bean.xml, package.jdo
-user configurable - datadef.xml, locator.xml, afields.xml, picks-default.xml
-                    picks.properties, logback.xml, jdoconfig.xml
-
-Three sets of config files at following locations
-dev - src/main/resources  and also sub dir like simple, mc etc. set the sub
-                          dir in picks.properties and beans.xml
-test - src/test/resources
-prod - src/prod/resources  
-
-while packaging the app as jar (mvn package), 
-  - exclude src/main/resources i.e. dev 
-for app distribution, 
-  - use maven assemble plugin to copy src/prod/resources to target/config dir 
-  - zip it with app jar with dependencies. User can modify config
-    files. Config dir and jar are to be added to classpath while running the app    
-
-
-database setup
---------------
-
-hsqldb is used for test mode. 
-
-In Fedora, install hsqldb with
-
-# dnf install hsqldb
-
-It installs hsqldb at /usr/lib/hsqldb and  /var/lib/hsqldb 
-
-config files are - /var/lib/hsqldb/server.properties and /etc/sysconfig/hsqldb
-
-to create picks db instances, add following lines in /var/lib/hsqldb/server.properties
-
-server.database.1   file:data/db1               
-server.dbname.1     picks-dev
-server.database.2   file:data/db2               
-server.dbname.2     picks-test
-
-start hsqldb with systemctl
-
-# systemctl daemon-reload    ## if new installation
-# systemctl start hsqldb.service
-# systemctl enable hsqldb.service
-
-data files are created at /var/lib/hsqldb/data. 
-
-For more info, ref HsqlDB doc chapters 
-    - HyperSQL Network Listeners (Servers) 
-    - HyperSQL on UNIX
-  
-to enable hsqldb client
-    add new external tool configuration 
-    Program->New Launch Configration
-    Main->Location     /usr/bin/java
-    Main->Arguments    -jar /usr/share/java/hsqldb.jar
-    disable - Refresh, Build->build before launch, Common->allocate console
-    enable - Common->Display in Favorites
-  
-
 maven build
 -----------
 
@@ -107,17 +43,45 @@ mvn dependency:resolve -Dclassifier=javadoc
 mvn dependency:sources   
   
 
-M2E 
----
+DB setup
+--------------
 
-Link javadoc and sources - Project Context Menu->Maven->Download Javadoc
+hsqldb is used for dev and tests. 
+
+In Fedora, install hsqldb with
+
+# dnf install hsqldb
+# dnf install java-1.8.0-openjdk     // for java headless error
+
+installation locations /usr/lib/hsqldb and /var/lib/hsqldb
+data files : /var/lib/hsqldb/data
+config files : /var/lib/hsqldb/server.properties and /etc/sysconfig/hsqldb
+
+to create gotz DB instances, edit /var/lib/hsqldb/server.properties 
+add following lines, leave db0 config as it is. 
+
+server.database.1   file:data/db1
+server.dbname.1     gotz-dev
+server.database.2   file:data/db2
+server.dbname.2     gotz-test
+
+start hsqldb
+
+# systemctl daemon-reload    ## if new installation
+# systemctl start hsqldb.service
+# systemctl enable hsqldb.service
+  
+for client, copy hsqldb.desktop to ~/.local/share/applications
 
 
 Eclipse setup 
 -------------
 
 attach Java javadoc
-install openjdk javadoc rpm, list alternatives and look for javadocdir  
+install openjdk javadoc rpm, list alternatives and look for javadocdir
+
+# dnf install java-1.8.0-openjdk-javadoc
+  
 # alternatives --list
 javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.121-8.b14.fc24/api
 
@@ -134,36 +98,10 @@ and add New Types
 Change author name - edit eclipse.ini and add
 -Duser.name=Maithilish
 
-    
-Schema Generation
------------------
+M2E 
+---
 
-run src/main/scripts/schemagen.sh from project base dir and it will generates schema1.xsd
-and places it in src/main/resources/schema dir. Beans are validated against the schema.
-Before packaging run the script
-  
-Generate Model classes from schema
-----------------------------------
-
-xjc -Xinject-code -extension                \
-    -p in.m.picks.model                     \
-    -b src/main/resources/schema/picks.xjb  \
-    -d src/main/java                        \
-    src/main/resources/schema/picks.xsd
-
-
-Integration Tests
------------------
-
-mvn clean integration-test -Dtest=zzz.java -DfailIfNoTests=false
-
-this ensures 
- - all tests are compiled
- - test resources are copied
- - unit tests are skipped  (as no such file named zzz.java)
- - build is not failed because of failure of unit tests 
- - *IT.java tests are run 
-
+Download javadoc and sources - Project Context Menu-> Maven->Download Javadoc
 
 Eclipse CheckStyle
 ------------------
@@ -196,11 +134,10 @@ Code Style - Formatter
 ----------------------
 
 For Checkstyle compliant formatter, import workspace/eclipse-prefs/formatter.xml 
-which creates Eclipse-cs Gotz formatter profile. This is the preferred method.
-Import using Preferences -> Java -> Code Style -> Formatter -> Import and then
-in project properties -> Java Code Style -> Formatter, set Active Profile 
+which creates Eclipse-cs Gotz formatter profile. This is the preferred method and 
+to do that : Import using Preferences -> Java -> Code Style -> Formatter -> Import 
+and then in project properties -> Java Code Style -> Formatter, set Active Profile 
 to Eclipse-cs Gotz 
-
 
 Alternatively, to create new Eclipse-cs Gotz formatter profile, select checkstyle 
 from project context menu and select Create Formatter-profile. Edit it 
@@ -211,7 +148,37 @@ with Preferences -> Java -> Code Style -> Formatter
 For XML files, change format options in Preferences -> XML -> XML file -> Editor
   - uncheck format comments
   - indent using spaces - Indention Size 4
+
+    
+Schema Generation
+-----------------
+
+run src/main/scripts/schemagen.sh from project base dir and it will generates schema1.xsd
+and places it in src/main/resources/schema dir. Beans are validated against the schema.
+Before packaging run the script
   
+Generate Model classes from schema
+----------------------------------
+
+xjc -Xinject-code -extension                \
+    -p in.m.picks.model                     \
+    -b src/main/resources/schema/picks.xjb  \
+    -d src/main/java                        \
+    src/main/resources/schema/picks.xsd
+
+
+Integration Tests
+-----------------
+
+mvn clean integration-test -Dtest=zzz.java -DfailIfNoTests=false
+
+this ensures 
+ - all tests are compiled
+ - test resources are copied
+ - unit tests are skipped  (as no such file named zzz.java)
+ - build is not failed because of failure of unit tests 
+ - *IT.java tests are run 
+
 
 Know selector or xpath in chrome
 -------------------------------
@@ -221,20 +188,6 @@ in Inspector pane, right click on element and select Copy where you
 can copy selector and xpath and paste it to editor. In selector or xpath use
 single quotes instead of double quotes 
 
-
-javadoc guidelines
-------------------
-
-add /** and press enter to generate javadoc comments.
-remove any non-javadoc comments generated by eclipse.
-use @throws both for checked and unchecked exception.
-for methods that doesn't do anything add do nothing
-for overridden method, add javadoc comments.
-use @see to link any project classes and also java or external classes and methods.
-  -- @see in text creates inline link 
-  -- if used after tags (param,return) then added in See also section.  
-        
-      
     
 Design notes
 ------------
@@ -248,6 +201,38 @@ validate param for null or illegal argument (not required for private methods).
 validate IllegalState for state vars, injected state vars or init (not required
     for private methods).
 
+javadoc guidelines
+------------------
+
+add /** and press enter to generate javadoc comments.
+remove any non-javadoc comments generated by eclipse.
+use @throws both for checked and unchecked exception.
+for methods that doesn't do anything add do nothing
+for overridden method, add javadoc comments.
+use @see to link any project classes and also java or external classes and methods.
+  -- @see in text creates inline link 
+  -- if used after tags (param,return) then added in See also section.  
+        
+Config Files
+------------
+
+fixed             - bean.xml, package.jdo
+user configurable - datadef.xml, locator.xml, afields.xml, picks-default.xml
+                    picks.properties, logback.xml, jdoconfig.xml
+
+Three sets of config files at following locations
+dev - src/main/resources  and also sub dir like simple, mc etc. set the sub
+                          dir in picks.properties and beans.xml
+test - src/test/resources
+prod - src/prod/resources  
+
+while packaging the app as jar (mvn package), 
+  - exclude src/main/resources i.e. dev 
+for app distribution, 
+  - use maven assemble plugin to copy src/prod/resources to target/config dir 
+  - zip it with app jar with dependencies. User can modify config
+    files. Config dir and jar are to be added to classpath while running the app    
+    
  
   
 
