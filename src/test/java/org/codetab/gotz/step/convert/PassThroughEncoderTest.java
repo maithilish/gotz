@@ -12,7 +12,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.step.convert.PassThroughEncoder;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;

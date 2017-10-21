@@ -16,7 +16,6 @@ import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.step.extract.LocatorSeeder;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Test;

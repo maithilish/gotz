@@ -358,8 +358,8 @@ public final class Util {
      * <p>
      * Split delimited string to key/value map.
      * <p>
-     * example : x=1|y=2 key value separator is = and delimiter is |
-     * if there are duplicates then last item is added to map
+     * example : x=1|y=2 key value separator is = and delimiter is | if there
+     * are duplicates then last item is added to map
      * @param input
      *            string to split, not null
      * @param keyValueSeparator

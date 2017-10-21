@@ -2,7 +2,6 @@ package org.codetab.gotz.step.base;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.codetab.gotz.step.base.BaseSeeder;
 import org.codetab.gotz.step.extract.LocatorSeeder;
 import org.junit.Before;
 import org.junit.Test;

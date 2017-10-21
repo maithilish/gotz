@@ -24,7 +24,6 @@ import org.codetab.gotz.model.Member;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.step.convert.CsvEncoder;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;

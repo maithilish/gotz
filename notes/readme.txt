@@ -1,84 +1,11 @@
 
-maven build
------------
-
-Add new run configuration
-
-   Main->Base directory - ${project_loc:gotz}
-   Goals-> process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dpicks.mode=dev 
-   
-test run 
-   mvn test  # enhance and test
-
-dev run 
-   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dpicks.mode=dev
-   
-prod run 
-   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz"
-
-tests and IT tests
-   mvn verify
-   
-skip tests and run integration tests 
-   mvn integration-test -Dtest=zzz.java -DfailIfNoTests=false
-
-find selector
-   mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector" 
-       -Dexec.args="fileName 'selector' "
-        
-javadoc
-   mvn javadoc:javadoc
-   
-jacoco report
-   mvn clean test jacoco:report     - coverage excludes IT tests. 
-   mvn clean verify                 - coverage excludes IT tests.    
-   mvn clean verify jacoco:report   - coverage includes IT tests.
-
-know dependency updates
-   mvn versions:display-dependency-updates
-   
-download javadoc and source
-
-mvn dependency:resolve -Dclassifier=javadoc
-mvn dependency:sources   
-  
-
-DB setup
---------------
-
-hsqldb is used for dev and tests. 
-
-In Fedora, install hsqldb with
-
-# dnf install hsqldb
-# dnf install java-1.8.0-openjdk     // for java headless error
-
-installation locations /usr/lib/hsqldb and /var/lib/hsqldb
-data files : /var/lib/hsqldb/data
-config files : /var/lib/hsqldb/server.properties and /etc/sysconfig/hsqldb
-
-to create gotz DB instances, edit /var/lib/hsqldb/server.properties 
-add following lines, leave db0 config as it is. 
-
-server.database.1   file:data/db1
-server.dbname.1     gotz-dev
-server.database.2   file:data/db2
-server.dbname.2     gotz-test
-
-start hsqldb
-
-# systemctl daemon-reload    ## if new installation
-# systemctl start hsqldb.service
-# systemctl enable hsqldb.service
-  
-for client, copy hsqldb.desktop to ~/.local/share/applications
-
-
 Eclipse setup 
 -------------
 
+install eclipse-cs and ecl-emma
+import preferences  !!! only after cs and emma are installed
+
 attach Java javadoc
-install openjdk javadoc rpm, list alternatives and look for javadocdir
 
 # dnf install java-1.8.0-openjdk-javadoc
   
@@ -87,6 +14,8 @@ javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.121-8.b14.fc24/api
 
 Preferences -> Installed JRE -> OpenJdk x.x.x -> Edit -> select rt.jar -> 
 Javadoc Location - enter Javadoc URL as file:///etc/alternatives/javadocdir
+
+add imports
 
 Static import - Preference -> Java -> Editor -> Content Assist -> Favorites
 and add New Types
@@ -133,7 +62,7 @@ for suppressions configure
 Code Style - Formatter
 ----------------------
 
-For Checkstyle compliant formatter, import workspace/eclipse-prefs/formatter.xml 
+For Checkstyle compliant formatter, import src/mainresources/checkstyle/formatter.xml 
 which creates Eclipse-cs Gotz formatter profile. This is the preferred method and 
 to do that : Import using Preferences -> Java -> Code Style -> Formatter -> Import 
 and then in project properties -> Java Code Style -> Formatter, set Active Profile 
@@ -148,6 +77,81 @@ with Preferences -> Java -> Code Style -> Formatter
 For XML files, change format options in Preferences -> XML -> XML file -> Editor
   - uncheck format comments
   - indent using spaces - Indention Size 4
+
+DB setup
+--------------
+
+hsqldb is used for dev and tests. 
+
+In Fedora, install hsqldb with
+
+# dnf install hsqldb
+# dnf install java-1.8.0-openjdk     // for java headless error
+
+installation locations /usr/lib/hsqldb and /var/lib/hsqldb
+data files : /var/lib/hsqldb/data
+config files : /var/lib/hsqldb/server.properties and /etc/sysconfig/hsqldb
+
+to create gotz DB instances, edit /var/lib/hsqldb/server.properties 
+add following lines, leave db0 config as it is. 
+
+server.database.1   file:data/db1
+server.dbname.1     gotz-dev
+server.database.2   file:data/db2
+server.dbname.2     gotz-test
+
+start hsqldb
+
+# systemctl daemon-reload    ## if new installation
+# systemctl start hsqldb.service
+# systemctl enable hsqldb.service
+  
+for client, copy hsqldb.desktop to ~/.local/share/applications
+
+!!! if jdbc error in gotz, then compare hsqldb dependency and server version  
+
+maven build
+-----------
+
+Add new run configuration
+
+   Main->Base directory - ${project_loc:gotz}
+   Goals-> process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dpicks.mode=dev 
+   
+test run 
+   mvn test  # enhance and test
+
+dev run 
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dpicks.mode=dev
+   
+prod run 
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz"
+
+tests and IT tests
+   mvn verify
+   
+skip tests and run integration tests 
+   mvn integration-test -Dtest=zzz.java -DfailIfNoTests=false
+
+find selector
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector" 
+       -Dexec.args="fileName 'selector' "
+        
+javadoc
+   mvn javadoc:javadoc
+   
+jacoco report
+   mvn clean test jacoco:report     - coverage excludes IT tests. 
+   mvn clean verify                 - coverage excludes IT tests.    
+   mvn clean verify jacoco:report   - coverage includes IT tests.
+
+know dependency updates
+   mvn versions:display-dependency-updates
+   
+download javadoc and source
+
+mvn dependency:resolve -Dclassifier=javadoc
+mvn dependency:sources   
 
     
 Schema Generation
@@ -232,10 +236,4 @@ for app distribution,
   - use maven assemble plugin to copy src/prod/resources to target/config dir 
   - zip it with app jar with dependencies. User can modify config
     files. Config dir and jar are to be added to classpath while running the app    
-    
- 
-  
-
-
-
     

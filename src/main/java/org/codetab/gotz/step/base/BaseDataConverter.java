@@ -1,17 +1,13 @@
 package org.codetab.gotz.step.base;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.FieldsBase;
-import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

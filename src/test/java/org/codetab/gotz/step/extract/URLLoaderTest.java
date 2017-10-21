@@ -12,7 +12,6 @@ import org.apache.commons.io.IOUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.URLConnectionHelper;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.step.extract.URLLoader;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

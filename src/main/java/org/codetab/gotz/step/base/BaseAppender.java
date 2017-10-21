@@ -11,7 +11,6 @@ import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Step;
