@@ -1,4 +1,83 @@
 
+Eclipse setup 
+-------------
+
+install eclipse-cs and ecl-emma
+import preferences  !!! only after cs and emma are installed
+
+attach Java javadoc
+
+# dnf install java-1.8.0-openjdk-javadoc
+  
+# alternatives --list
+javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.121-8.b14.fc24/api
+
+Preferences -> Installed JRE -> OpenJdk x.x.x -> Edit -> select rt.jar -> 
+Javadoc Location - enter Javadoc URL as file:///etc/alternatives/javadocdir
+
+add imports
+
+Static import - Preference -> Java -> Editor -> Content Assist -> Favorites
+and add New Types
+  org.mockito.Mockito
+  org.mockito.Matchers
+  org.mockito.BDDMockito
+  org.assertj.core.api.Assertions
+
+Change author name - edit eclipse.ini and add
+-Duser.name=Maithilish
+
+M2E 
+---
+
+Download javadoc and sources - Project Context Menu-> Maven->Download Javadoc
+
+Eclipse CheckStyle
+------------------
+
+go to preferences - checkstyle and slide to right side end, click New and enter
+ - type - External Configuration
+ - name - Gotz Checks
+ - location - /orange/data/workspace/gotz/src/main/resources/checkstyle/gotz_checks.xml
+
+this will create new config and select it in project checkstyle setup. Next, 
+edit and modify Gotz Checks
+
+ - Javadoc comments - disable all modules
+ - Class design - disable Design for extension (forces for javadoc for extension) 
+ - Class design - disable Final Class 
+   (forces class singleton with private constructor to be final and final class 
+    can't be mocked)
+  - Filters - suppression filter and set file to
+   /orange/data/workspace/gotz/src/main/resources/checkstyle/suppressions.xml
+   
+in project properties select Gotz Checks module and activate cs
+
+for suppressions configure
+  
+ !! abs path is required relative path not allowed
+ !! enable Purge Checkstyle caches button in toolbar, purge cache after 
+    any changes to suppressions.xml
+
+Code Style - Formatter
+----------------------
+
+For Checkstyle compliant formatter, import src/mainresources/checkstyle/formatter.xml 
+which creates Eclipse-cs Gotz formatter profile. This is the preferred method and 
+to do that : Import using Preferences -> Java -> Code Style -> Formatter -> Import 
+and then in project properties -> Java Code Style -> Formatter, set Active Profile 
+to Eclipse-cs Gotz 
+
+Alternatively, to create new Eclipse-cs Gotz formatter profile, select checkstyle 
+from project context menu and select Create Formatter-profile. Edit it 
+with Preferences -> Java -> Code Style -> Formatter
+  - Line wrapping - scroll down to Expressions - assignment and set line wrap policy to
+    wrap where necessary
+  - Whitespace - Arrays - Initilizers - no after opening and before closing brace    
+For XML files, change format options in Preferences -> XML -> XML file -> Editor
+  - uncheck format comments
+  - indent using spaces - Indention Size 4
+
 maven build
 -----------
 
@@ -72,82 +151,6 @@ start hsqldb
 # systemctl enable hsqldb.service
   
 for client, copy hsqldb.desktop to ~/.local/share/applications
-
-
-Eclipse setup 
--------------
-
-attach Java javadoc
-install openjdk javadoc rpm, list alternatives and look for javadocdir
-
-# dnf install java-1.8.0-openjdk-javadoc
-  
-# alternatives --list
-javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.121-8.b14.fc24/api
-
-Preferences -> Installed JRE -> OpenJdk x.x.x -> Edit -> select rt.jar -> 
-Javadoc Location - enter Javadoc URL as file:///etc/alternatives/javadocdir
-
-Static import - Preference -> Java -> Editor -> Content Assist -> Favorites
-and add New Types
-  org.mockito.Mockito
-  org.mockito.Matchers
-  org.mockito.BDDMockito
-  org.assertj.core.api.Assertions
-
-Change author name - edit eclipse.ini and add
--Duser.name=Maithilish
-
-M2E 
----
-
-Download javadoc and sources - Project Context Menu-> Maven->Download Javadoc
-
-Eclipse CheckStyle
-------------------
-
-go to preferences - checkstyle and slide to right side end, click New and enter
- - type - External Configuration
- - name - Gotz Checks
- - location - /orange/data/workspace/gotz/src/main/resources/checkstyle/gotz_checks.xml
-
-this will create new config and select it in project checkstyle setup. Next, 
-edit and modify Gotz Checks
-
- - Javadoc comments - disable all modules
- - Class design - disable Design for extension (forces for javadoc for extension) 
- - Class design - disable Final Class 
-   (forces class singleton with private constructor to be final and final class 
-    can't be mocked)
-  - Filters - suppression filter and set file to
-   /orange/data/workspace/gotz/src/main/resources/checkstyle/suppressions.xml
-   
-in project properties select Gotz Checks module and activate cs
-
-for suppressions configure
-  
- !! abs path is required relative path not allowed
- !! enable Purge Checkstyle caches button in toolbar, purge cache after 
-    any changes to suppressions.xml
-
-Code Style - Formatter
-----------------------
-
-For Checkstyle compliant formatter, import workspace/eclipse-prefs/formatter.xml 
-which creates Eclipse-cs Gotz formatter profile. This is the preferred method and 
-to do that : Import using Preferences -> Java -> Code Style -> Formatter -> Import 
-and then in project properties -> Java Code Style -> Formatter, set Active Profile 
-to Eclipse-cs Gotz 
-
-Alternatively, to create new Eclipse-cs Gotz formatter profile, select checkstyle 
-from project context menu and select Create Formatter-profile. Edit it 
-with Preferences -> Java -> Code Style -> Formatter
-  - Line wrapping - scroll down to Expressions - assignment and set line wrap policy to
-    wrap where necessary
-  - Whitespace - Arrays - Initilizers - no after opening and before closing brace    
-For XML files, change format options in Preferences -> XML -> XML file -> Editor
-  - uncheck format comments
-  - indent using spaces - Indention Size 4
 
     
 Schema Generation
@@ -232,10 +235,4 @@ for app distribution,
   - use maven assemble plugin to copy src/prod/resources to target/config dir 
   - zip it with app jar with dependencies. User can modify config
     files. Config dir and jar are to be added to classpath while running the app    
-    
- 
-  
-
-
-
     
