@@ -152,7 +152,6 @@ download javadoc and source
 
 mvn dependency:resolve -Dclassifier=javadoc
 mvn dependency:sources   
-
     
 Schema Generation
 -----------------
