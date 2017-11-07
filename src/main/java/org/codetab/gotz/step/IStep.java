@@ -3,6 +3,7 @@ package org.codetab.gotz.step;
 import java.util.List;
 
 import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
 
 public interface IStep {
 
@@ -37,4 +38,8 @@ public interface IStep {
     List<FieldsBase> getFields();
 
     String getLabel();
+
+    XField getXField();
+
+    void setXField(XField xField);
 }

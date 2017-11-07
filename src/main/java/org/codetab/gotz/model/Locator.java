@@ -4,7 +4,7 @@
 // See <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
 // Any modifications to this file will be lost upon recompilation of the source
 // schema.
-// Generated on: 2017.06.29 at 12:23:21 PM IST
+// Generated on: 2017.10.31 at 11:19:29 AM IST
 //
 
 package org.codetab.gotz.model;
@@ -39,6 +39,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
  *         &lt;group ref="{http://codetab.org/gotz}fields"/&gt;
+ *         &lt;element name="xField" type="{http://codetab.org/xfield}xField" minOccurs="0"/&gt;
  *         &lt;element name="documents" type="{http://codetab.org/gotz}document" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -51,13 +52,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "locator", propOrder = {"fields", "documents"})
+@XmlType(name = "locator", propOrder = {"fields", "xField", "documents"})
 public class Locator extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElements({@XmlElement(name = "field", type = Field.class),
             @XmlElement(type = Fields.class)})
     private List<FieldsBase> fields;
+    @XmlElement
+    private XField xField;
     @XmlElement
     private List<Document> documents;
     @XmlAttribute(name = "url")
@@ -76,7 +79,7 @@ public class Locator extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     *
+     * 
      * <pre>
      * getFields().add(newItem);
      * </pre>
@@ -96,6 +99,27 @@ public class Locator extends Base implements Serializable {
     }
 
     /**
+     * Gets the value of the xField property.
+     *
+     * @return possible object is {@link XField }
+     *
+     */
+    public XField getXField() {
+        return xField;
+    }
+
+    /**
+     * Sets the value of the xField property.
+     *
+     * @param value
+     *            allowed object is {@link XField }
+     *
+     */
+    public void setXField(XField value) {
+        this.xField = value;
+    }
+
+    /**
      * Gets the value of the documents property.
      *
      * <p>
@@ -106,7 +130,7 @@ public class Locator extends Base implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     *
+     * 
      * <pre>
      * getDocuments().add(newItem);
      * </pre>
@@ -186,8 +210,8 @@ public class Locator extends Base implements Serializable {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId()).append("name", getName())
                 .append("group", group).append("url", url)
-                .append("fields", fields).append("documents", documents)
-                .toString();
+                .append("fields", fields).append("xField", xField)
+                .append("documents", documents).toString();
     }
 
 }

@@ -20,6 +20,7 @@
             </unique>
             <field name="url" persistence-modifier="none" />
             <field name="fields" persistence-modifier="none" />
+            <field name="xField" persistence-modifier="none" />
             <field name="documents">
                 <collection element-type="org.codetab.gotz.model.Document" />
                 <element column="LOCATOR_ID" />

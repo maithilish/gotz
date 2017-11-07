@@ -78,6 +78,25 @@ For XML files, change format options in Preferences -> XML -> XML file -> Editor
   - uncheck format comments
   - indent using spaces - Indention Size 4
 
+Debug 
+-----
+ 
+To  allot maximum space to Variables and editors reorganize the Debug perspective.
+ 
+ - if a view is dropped to top bar of area, view will be added to that area
+ - if dropped on area then area is resized to accommodate new area.   
+
+drag n drop Debug view to Console view area, to split bottom row into two. 
+close Outline view to remove that area 
+Finally, drag n drop Variables and Breakpoints view to editor area to split
+editor area into two.
+
+customize the perspective to remove toolbar items.
+
+In debugger, you will get line number error, even when line number generation is
+enabled in Preferences -> Java -> Compiler option. 
+Disable this error in Java -> Debug option.
+
 DB setup
 --------------
 
@@ -236,3 +255,8 @@ for app distribution,
   - zip it with app jar with dependencies. User can modify config
     files. Config dir and jar are to be added to classpath while running the app    
     
+XML namespace
+-------------
+
+getNamespaceURI() on document returns null but for jaxb elementNSImpl it returns uri.
+better option is to use lookupNamespaceURI() with null for default ns.  

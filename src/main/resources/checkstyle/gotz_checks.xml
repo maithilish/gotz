@@ -109,6 +109,6 @@
   </module>
   <module name="SuppressWarningsFilter"/>
   <module name="SuppressionFilter">
-    <property name="file" value="/orange/data/workspace/gotz/src/main/resources/checkstyle/suppressions.xml"/>
+    <property name="file" value="/orange/data/eclipse-workspace/gotz/src/main/resources/checkstyle/suppressions.xml"/>
   </module>
 </module>

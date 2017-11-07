@@ -5,6 +5,7 @@
         <propertyPattern>gotz/properties/property</propertyPattern>
         <beanFile>/bean.xml</beanFile>
         <schemaFile>/schema/gotz.xsd</schemaFile>
+        <stepsXslFile>/schema/steps.xsl</stepsXslFile>
         <seederClass>org.codetab.gotz.step.extract.LocatorSeeder</seederClass>
         <datastore>
             <name>datastore</name>

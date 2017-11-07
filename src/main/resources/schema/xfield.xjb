@@ -1,0 +1,21 @@
+<jaxb:bindings xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    jaxb:extensionBindingPrefixes="xjc annox" jaxb:version="2.0"
+    xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
+    xmlns:annox="http://annox.dev.java.net">
+
+    <jaxb:bindings schemaLocation="xfield.xsd" node="/xs:schema">
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.codetab.gotz.model" />
+        </jaxb:schemaBindings>
+        
+        <!-- change type of any to Node as Jaxb loads ElementNSImpl objects -->
+        <jaxb:bindings
+            node="//xs:complexType[@name='xField']/xs:sequence/xs:any">
+             <jaxb:property name="nodes" >
+             	<jaxb:baseType name="org.w3c.dom.Node" />
+             </jaxb:property>                
+        </jaxb:bindings>        
+    </jaxb:bindings>
+    
+</jaxb:bindings>

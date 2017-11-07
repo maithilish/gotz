@@ -1,5 +1,5 @@
 
-PROJ_DIR=/orange/data/workspace/gotz
+PROJ_DIR=/orange/data/eclipse-workspace/gotz
 GENERATED_DIR=target/generated-sources/xjc
 SCHEMA_DIR=src/main/resources/schema
 PACKAGE=org.codetab.gotz.model

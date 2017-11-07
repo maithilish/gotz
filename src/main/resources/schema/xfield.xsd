@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema elementFormDefault="qualified" version="1.0"
+    targetNamespace="http://codetab.org/xfield" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xf="http://codetab.org/xfield">
+
+    <xs:element name="xfields" type="xf:xFields" />
+
+    <xs:element name="xfield" type="xf:xField" />
+
+    <xs:complexType name="xFields">
+        <xs:sequence>
+            <xs:element name="xfield" minOccurs="0"
+                maxOccurs="unbounded" type="xf:xField" />            
+        </xs:sequence>        
+    </xs:complexType>
+
+    <xs:complexType name="xField">
+        <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0"
+                maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="class" type="xs:string" />
+        <xs:attribute name="group" type="xs:string" />
+    </xs:complexType>
+
+</xs:schema>

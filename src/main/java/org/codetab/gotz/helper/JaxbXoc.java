@@ -89,9 +89,15 @@ public class JaxbXoc implements IXoc {
         Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
         List<T> list = new ArrayList<T>();
         for (Object e : wrapper.getAny()) {
-            @SuppressWarnings("unchecked")
-            T t = (T) JAXBIntrospector.getValue(e);
-            list.add(t);
+            Object value = JAXBIntrospector.getValue(e);
+            if (ofClass.isInstance(value)) {
+                @SuppressWarnings("unchecked")
+                T t = (T) value;
+                list.add(t);
+            } else {
+                logger.error("unmarshall type {}, but found obj of type {}",
+                        ofClass.getName(), value.getClass().getName());
+            }
         }
         logger.debug("model objects created [{}]", list.size());
         return list;

@@ -2,6 +2,7 @@ package org.codetab.gotz.validation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 import javax.inject.Inject;
 import javax.xml.transform.stream.StreamSource;
@@ -11,6 +12,7 @@ import javax.xml.validation.Validator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.helper.IOHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,21 +65,20 @@ public class XMLValidator {
         Validate.notNull(schemaFile, "schemaFile must not be null");
         Validate.validState(ioHelper != null, "ioHelper is null");
 
-        try (InputStream xmlStream = ioHelper.getInputStream(xmlFile);
-                InputStream schemaStream =
-                        ioHelper.getInputStream(schemaFile)) {
-            validate(xmlStream, schemaStream);
+        try (InputStream xmlStream = ioHelper.getInputStream(xmlFile);) {
+            URL schemaURL = ioHelper.getURL(schemaFile);
+            validate(xmlStream, schemaURL);
             LOGGER.info("validation passed {} + {}", xmlFile, schemaFile);
         } catch (SAXException e) {
-            throw new SAXException("XML validation failed [" + xmlFile + "] ["
-                    + schemaFile + "]");
+            throw new CriticalException("XML validation failed [" + xmlFile
+                    + "] [" + schemaFile + "]", e);
         }
         return true;
     }
 
     /**
      * <p>
-     * Validate XML stream with schema stream. *
+     * Validate XML stream with schema stream.
      * @param xmlStream
      *            XML stream
      * @param schemaStream
@@ -96,6 +97,34 @@ public class XMLValidator {
         SchemaFactory schemaFactory = SchemaFactory
                 .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
         Schema schema = schemaFactory.newSchema(new StreamSource(schemaStream));
+        Validator validator = schema.newValidator();
+        validator.setErrorHandler(new ValidationErrorHandler());
+        validator.validate(new StreamSource(xmlStream));
+        return true;
+    }
+
+    /**
+     * <p>
+     * Validate XML stream with schema URL. Use this for xsd with
+     * imports/includes.
+     * @param xmlStream
+     *            XML stream
+     * @param schemaStream
+     *            schema stream
+     * @return true if valid XML
+     * @throws SAXException
+     *             on parse error
+     * @throws IOException
+     *             on IO error
+     */
+    public boolean validate(final InputStream xmlStream, final URL schemaURL)
+            throws IOException, SAXException {
+        Validate.notNull("xmlStream", "xmlStream must not be null");
+        Validate.notNull("schemaStream", "schemaStream must not be null");
+
+        SchemaFactory schemaFactory = SchemaFactory
+                .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = schemaFactory.newSchema(schemaURL);
         Validator validator = schema.newValidator();
         validator.setErrorHandler(new ValidationErrorHandler());
         validator.validate(new StreamSource(xmlStream));

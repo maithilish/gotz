@@ -5,19 +5,27 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
+import org.codetab.gotz.model.helper.LocatorXFieldHelper;
 import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseSeeder;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
+import org.codetab.gotz.util.XmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+import org.w3c.dom.Document;
 
 /**
  * Creates seeder tasks and handover them to queue.
@@ -48,6 +56,12 @@ public final class LocatorSeeder extends BaseSeeder {
      */
     @Inject
     private LocatorFieldsHelper fieldsHelper;
+
+    /**
+     * helper - provides fields for locators.
+     */
+    @Inject
+    private LocatorXFieldHelper xFieldHelper;
 
     /**
      * helper - create and manage locators.
@@ -117,6 +131,20 @@ public final class LocatorSeeder extends BaseSeeder {
                     fieldsHelper.getLocatorGroupFields(locator.getGroup());
             fieldsHelper.addLabel(locator);
             locator.getFields().addAll(groupFields);
+            try {
+                XField xField = xFieldHelper.getXField(
+                        locator.getClass().getName(), locator.getGroup());
+                locator.setXField(xField);
+                xFieldHelper.addLabel(locator);
+            } catch (TransformerException | ParserConfigurationException e) {
+                throw new StepRunException(
+                        "unable to set XFields copy to locators", e);
+            }
+
+            Document doc = (Document) locator.getXField().getNodes().get(0);
+            System.out.println(locator);
+            System.out.println(doc.getNamespaceURI());
+            System.out.println(XmlUtils.toXML(doc));
         }
         logState("locator after merging fields");
         setConsistent(true);
@@ -133,7 +161,10 @@ public final class LocatorSeeder extends BaseSeeder {
         LOGGER.info("push locators to taskpool");
         int count = 0;
         for (Locator locator : locatorList) {
-            stepService.pushTask(this, locator, locator.getFields());
+            // stepService.pushTask(this, locator, locator.getFields());
+            Step seederStep = getSeederStep(locator);
+            stepService.pushTask(seederStep, locator, locator.getFields(),
+                    locator.getXField());
             count++;
             try {
                 TimeUnit.MILLISECONDS.sleep(SLEEP_MILLIS);
@@ -144,6 +175,23 @@ public final class LocatorSeeder extends BaseSeeder {
                 locatorList.size(), count);
         setStepState(StepState.HANDOVER);
         return true;
+    }
+
+    private Step getSeederStep(final Locator locator) {
+        try {
+            Step seederStep = (Step) stepService
+                    .getStep("org.codetab.gotz.step.extract.LocatorSeeder");
+            seederStep.setConsistent(true);
+            seederStep.setFields(locator.getFields());
+            seederStep.setXField(locator.getXField());
+            seederStep.setStepType(this.getStepType());
+            seederStep.setStepState(this.getStepState());
+
+            return seederStep;
+        } catch (ClassNotFoundException | InstantiationException
+                | IllegalAccessException e) {
+            throw new StepRunException("unable spawn seeder", e);
+        }
     }
 
     /**

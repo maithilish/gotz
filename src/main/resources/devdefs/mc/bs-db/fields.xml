@@ -13,7 +13,7 @@
             <fields name="step" value="loader">
                 <field name="class"
                     value="org.codetab.gotz.step.extract.URLLoader" />
-                <field name="nextstep" value="parser" />
+                <field name="nextstep" value="end" />
                 <field name="unique" value="true" />
             </fields>
             <fields name="step" value="parser">

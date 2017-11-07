@@ -1,15 +1,19 @@
 package org.codetab.gotz.shared;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Step;
@@ -18,6 +22,7 @@ import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Node;
 
 @Singleton
 public class StepService {
@@ -30,6 +35,8 @@ public class StepService {
     private ActivityService activityService;
     @Inject
     private TaskPoolService taskPoolService;
+    @Inject
+    private XFieldHelper xFieldHelper;
 
     @Inject
     private StepService() {
@@ -96,6 +103,103 @@ public class StepService {
         }
     }
 
+    public void pushTask(final Step step, final Object input,
+            final List<FieldsBase> nextStepFields,
+            final XField nextStepXField) {
+        String label = step.getLabel();
+        addLabelField(step, nextStepFields);
+        try {
+            addLabelField(step, nextStepXField);
+        } catch (XPathExpressionException e) {
+            LOGGER.warn("unable to add label field to next step {}", e);
+        }
+
+        String givenUpMessage = Util.buildString("[", label, "] step [",
+                step.getStepType(), "] create next step failed");
+        try {
+            String nextStepType =
+                    getNextStepType(step.getXField(), step.getStepType());
+            if (nextStepType == null) {
+                nextStepType =
+                        getNextStepType(step.getFields(), step.getStepType());
+            }
+
+            if (nextStepType.equalsIgnoreCase("end")) {
+                return;
+            }
+
+            List<String> stepClasses =
+                    getNextStepClasses(nextStepXField, nextStepType);
+            if (stepClasses.size() == 0) {
+                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType,
+                        "field found");
+            }
+
+            // TODO remove if after xfield refactor
+            if (stepClasses.size() != 0) {
+                for (String stepClassName : stepClasses) {
+                    if (step.isConsistent()) {
+                        Runnable task = null;
+                        task = createTask(nextStepType, stepClassName, input,
+                                nextStepFields, nextStepXField);
+                        taskPoolService.submit(nextStepType, task);
+                        LOGGER.debug(
+                                "{} instance [{}] pushed to pool, entity [{}]",
+                                nextStepType, task.getClass(), label);
+                    } else {
+                        LOGGER.warn("step inconsistent, entity [{}]", label);
+                        activityService.addActivity(Type.GIVENUP,
+                                Util.buildString(givenUpMessage,
+                                        ", step inconsistent"));
+                    }
+                }
+                return;
+            }
+
+            List<FieldsBase> stepClassesZ =
+                    getNextStepClasses(nextStepFields, nextStepType);
+            if (stepClassesZ.size() == 0) {
+                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType,
+                        "field found");
+            }
+            for (FieldsBase stepClassField : stepClassesZ) {
+                if (step.isConsistent()) {
+                    String stepClassName = stepClassField.getValue();
+                    Runnable task = null;
+                    task = createTask(nextStepType, stepClassName, input,
+                            nextStepFields);
+                    taskPoolService.submit(nextStepType, task);
+                    LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
+                            nextStepType, task.getClass(), label);
+                } else {
+                    LOGGER.warn("step inconsistent, entity [{}]", label);
+                    activityService.addActivity(Type.GIVENUP, Util.buildString(
+                            givenUpMessage, ", step inconsistent"));
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.debug("{}", e);
+            LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
+            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+        }
+    }
+
+    private void addLabelField(final Step step, final XField nextStepXField)
+            throws XPathExpressionException {
+        if (xFieldHelper.isDefined("label", nextStepXField.getNodes())) {
+            return;
+        }
+        String label = step.getLabel();
+        if (label == null) {
+            LOGGER.warn("unable to add label field to next step");
+            return;
+        }
+        Optional<Node> node = xFieldHelper.getLast(nextStepXField.getNodes());
+        if (node.isPresent()) {
+            xFieldHelper.addElement("label", label, node.get());
+        }
+    }
+
     private void addLabelField(final Step step,
             final List<FieldsBase> nextStepFields) {
         if (FieldsUtil.isDefined(nextStepFields, "label")) {
@@ -138,11 +242,37 @@ public class StepService {
         return stepClasses;
     }
 
+    private List<String> getNextStepClasses(final XField xField,
+            final String stepType) throws XPathExpressionException {
+        
+        String xpath =
+                Util.buildString("/:xfield/:tasks/:task/:steps/:step[@name='",
+                        stepType, "']/@class");
+        List<String> stepClasses =
+                xFieldHelper.getValues(xpath, xField.getNodes());
+
+        // TODO handle unique step
+        stepClasses =
+                stepClasses.stream().distinct().collect(Collectors.toList());
+
+        return stepClasses;
+    }
+
     public String getNextStepType(final List<FieldsBase> fields,
             final String stepType) throws FieldNotFoundException {
         List<FieldsBase> step =
                 FieldsUtil.filterByValue(fields, "step", stepType);
         return FieldsUtil.getValue(step, "nextstep");
+    }
+
+    public String getNextStepType(final XField xField, final String stepType)
+            throws XPathExpressionException {
+        String xpath =
+                Util.buildString("/:xfield/:tasks/:task/:steps/:step[@name='",
+                        stepType, "']/:nextStep");
+        String nextStepType =
+                xFieldHelper.getFirstValue(xpath, xField.getNodes());
+        return nextStepType;
     }
 
     /**
@@ -172,6 +302,19 @@ public class StepService {
         step.setStepType(stepType);
         step.setInput(input);
         step.setFields(fields);
+        Task task = createTask(step);
+        return task;
+    }
+
+    private Task createTask(final String stepType, final String taskClassName,
+            final Object input, final List<FieldsBase> fields,
+            final XField xField) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
+        IStep step = getStep(taskClassName).instance();
+        step.setStepType(stepType);
+        step.setInput(input);
+        step.setFields(fields);
+        step.setXField(xField);
         Task task = createTask(step);
         return task;
     }
