@@ -1,13 +1,12 @@
 package org.codetab.gotz.step.base;
 
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.step.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,8 +54,8 @@ public abstract class BaseFilter extends Step {
     @Override
     public boolean handover() {
         Validate.validState(data != null, "data must not be null");
-        List<FieldsBase> nextStepFields = createNextStepFields();
-        stepService.pushTask(this, data, nextStepFields);
+        XField nextStepXField = createNextStepXField();
+        stepService.pushTask(this, data, nextStepXField);
         return true;
     }
 
@@ -68,15 +67,15 @@ public abstract class BaseFilter extends Step {
      * @throws StepRunException
      *             if nextStepFields list is empty
      */
-    private List<FieldsBase> createNextStepFields() {
-        List<FieldsBase> nextStepFields = getFields();
-        if (nextStepFields.size() == 0) {
+    private XField createNextStepXField() {
+        XField nextStepXField = getXField();
+        if (nextStepXField.getNodes().size() == 0) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
             activityService.addActivity(Type.GIVENUP, message);
             throw new StepRunException(message);
         }
-        return nextStepFields;
+        return nextStepXField;
     }
 
     /**
