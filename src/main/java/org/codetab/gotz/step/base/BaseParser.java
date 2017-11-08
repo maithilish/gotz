@@ -19,6 +19,7 @@ import org.apache.commons.lang3.Range;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -27,6 +28,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.FieldsUtil;
@@ -53,14 +55,15 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean initialize() {
         try {
-            dataDefName = FieldsUtil.getValue(getFields(), "datadef");
-            String locatorName =
-                    FieldsUtil.getValue(getFields(), "locatorName");
-            String locatorGroup =
-                    FieldsUtil.getValue(getFields(), "locatorGroup");
+            dataDefName = xFieldHelper.getLastValue("/:xfield/:task/@dataDef",
+                    getXField());
+            String locatorName = xFieldHelper
+                    .getLastValue("/:xfield/:locatorName", getXField());
+            String locatorGroup = xFieldHelper
+                    .getLastValue("/:xfield/:locatorGroup", getXField());
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
                     dataDefName);
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
             throw new StepRunException("unable to initialize parser", e);
         }
         return postInitialize();
@@ -122,8 +125,9 @@ public abstract class BaseParser extends Step {
     public boolean store() {
         boolean persist = true;
         try {
-            persist = FieldsUtil.isTrue(getFields(), "persist", "data");
-        } catch (FieldNotFoundException e) {
+            persist = xFieldHelper.isTrue("/:xfield/:task/:persist/:data",
+                    getXField());
+        } catch (XFieldException e) {
         }
         if (persist) {
             dataPersistence.storeData(data);
@@ -143,20 +147,20 @@ public abstract class BaseParser extends Step {
      */
     @Override
     public boolean handover() {
-        List<FieldsBase> nextStepFields = createNextStepFields();
-        stepService.pushTask(this, data, nextStepFields);
+        XField nextStepXField = createNextStepXField();
+        stepService.pushTask(this, data, nextStepXField);
         return true;
     }
 
-    private List<FieldsBase> createNextStepFields() {
-        List<FieldsBase> nextStepFields = getFields();
-        if (nextStepFields.size() == 0) {
+    private XField createNextStepXField() {
+        XField nextStepXField = getXField();
+        if (nextStepXField.getNodes().size() == 0) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
             activityService.addActivity(Type.GIVENUP, message);
             throw new StepRunException(message);
         }
-        return nextStepFields;
+        return nextStepXField;
     }
 
     protected abstract void setValue(DataDef dataDef, Member member)

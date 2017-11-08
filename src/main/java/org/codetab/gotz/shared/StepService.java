@@ -129,8 +129,8 @@ public class StepService {
             List<String> stepClasses =
                     getNextStepClasses(nextStepXField, nextStepType);
             if (stepClasses.size() == 0) {
-                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType,
-                        "field found");
+                LOGGER.warn("next step [{}], no stepClasses defined. {}",
+                        nextStepType, givenUpMessage);
             }
 
             for (String stepClassName : stepClasses) {
@@ -212,9 +212,8 @@ public class StepService {
     private List<String> getNextStepClasses(final XField xField,
             final String stepType) throws XFieldException {
 
-        String xpath =
-                Util.buildString("/:xfield/:tasks/:task/:steps/:step[@name='",
-                        stepType, "']/@class");
+        String xpath = Util.buildString("//:task/:steps/:step[@name='",
+                stepType, "']/@class");
         List<String> stepClasses = xFieldHelper.getValues(xpath, xField);
 
         // TODO handle unique step
@@ -233,8 +232,9 @@ public class StepService {
 
     public String getNextStepType(final XField xField, final String stepType)
             throws XFieldException {
+        // TODO need to check behavior when multiple matching nodes exists
         String xpath =
-                Util.buildString("/:xfield/:tasks/:task/:steps/:step[@name='",
+                Util.buildString("//:task/:steps/:step[@name='",
                         stepType, "']/:nextStep");
         String nextStepType = xFieldHelper.getFirstValue(xpath, xField);
         return nextStepType;
