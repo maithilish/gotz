@@ -19,8 +19,10 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.CompressionUtil;
 import org.codetab.gotz.util.FieldsUtil;
@@ -50,6 +52,9 @@ public class DocumentHelper {
      */
     @Inject
     private DInjector dInjector;
+
+    @Inject
+    private XFieldHelper xFieldHelper;
 
     /**
      * private constructor.
@@ -129,6 +134,82 @@ public class DocumentHelper {
             live = FieldsUtil.getValue(fields, "live");
         } catch (FieldNotFoundException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e, label);
+        }
+        if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
+            live = "PT0S"; // zero second
+        }
+
+        // calculate toDate
+        try {
+            TemporalAmount ta = Util.parseTemporalAmount(live);
+            toDate = fromDateTime.plus(ta);
+        } catch (DateTimeParseException e) {
+            // if live is not Duration string then parse it as Date
+            try {
+                String[] patterns =
+                        configService.getConfigArray("gotz.dateParsePattern");
+                // multiple patterns so needs DateUtils
+                Date td = DateUtils.parseDateStrictly(live, patterns);
+                toDate = ZonedDateTime.ofInstant(td.toInstant(),
+                        ZoneId.systemDefault());
+            } catch (ParseException | ConfigNotFoundException pe) {
+                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", label,
+                        live, e);
+                TemporalAmount ta = Util.parseTemporalAmount("PT0S");
+                toDate = fromDateTime.plus(ta);
+            }
+        }
+
+        LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live,
+                toDate, label);
+        return Date.from(Instant.from(toDate));
+    }
+
+    /**
+     * <p>
+     * Calculates document expire date from live field and from date.
+     * <p>
+     * Live field can hold duration (ISO-8601 duration format PnDTnHnMn.nS) or
+     * date string. When live is duration then it is added to fromDate else
+     * string is parsed as to date based on parse pattern provided by
+     * ConfigService.
+     * <p>
+     * In case, live is not defined or it is zero or blank then from date is
+     * returned.
+     * @param fromDate
+     *            document from date, not null
+     * @param xField
+     *            list of fields, not null
+     * @return a Date which is document expire date, not null
+     * @see java.time.Duration
+     */
+    public Date getToDate(final Date fromDate, final XField xField) {
+
+        Validate.notNull(fromDate, "fromDate must not be null");
+        Validate.notNull(xField, "xField must not be null");
+
+        Validate.validState(configService != null, "configService is null");
+
+        // set label
+        String label = "not defined";
+        try {
+            label = xFieldHelper.getLabel(xField);
+        } catch (XFieldException e) {
+            LOGGER.warn("{}", e.getLocalizedMessage());
+        }
+
+        // convert fromDate to DateTime
+        ZonedDateTime fromDateTime = ZonedDateTime
+                .ofInstant(fromDate.toInstant(), ZoneId.systemDefault());
+        ZonedDateTime toDate = null;
+
+        // extract live value
+        String live = null;
+        try {
+            live = xFieldHelper.getLastValue("/:xfield/:tasks/live", xField);
+        } catch (XFieldException e) {
+            LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
+                    label);
         }
         if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
             live = "PT0S"; // zero second

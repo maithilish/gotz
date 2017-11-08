@@ -1,15 +1,14 @@
 package org.codetab.gotz.shared;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.XField;
@@ -22,7 +21,6 @@ import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Node;
 
 @Singleton
 public class StepService {
@@ -110,7 +108,7 @@ public class StepService {
         addLabelField(step, nextStepFields);
         try {
             addLabelField(step, nextStepXField);
-        } catch (XPathExpressionException e) {
+        } catch (XFieldException e) {
             LOGGER.warn("unable to add label field to next step {}", e);
         }
 
@@ -185,19 +183,16 @@ public class StepService {
     }
 
     private void addLabelField(final Step step, final XField nextStepXField)
-            throws XPathExpressionException {
-        if (xFieldHelper.isDefined("label", nextStepXField.getNodes())) {
+            throws XFieldException {
+        if (xFieldHelper.isDefined("label", nextStepXField)) {
             return;
         }
         String label = step.getLabel();
         if (label == null) {
-            LOGGER.warn("unable to add label field to next step");
+            LOGGER.warn("label is null, unable to add to next step xfield");
             return;
         }
-        Optional<Node> node = xFieldHelper.getLast(nextStepXField.getNodes());
-        if (node.isPresent()) {
-            xFieldHelper.addElement("label", label, node.get());
-        }
+        xFieldHelper.addElement("label", label, nextStepXField);
     }
 
     private void addLabelField(final Step step,
@@ -243,13 +238,12 @@ public class StepService {
     }
 
     private List<String> getNextStepClasses(final XField xField,
-            final String stepType) throws XPathExpressionException {
-        
+            final String stepType) throws XFieldException {
+
         String xpath =
                 Util.buildString("/:xfield/:tasks/:task/:steps/:step[@name='",
                         stepType, "']/@class");
-        List<String> stepClasses =
-                xFieldHelper.getValues(xpath, xField.getNodes());
+        List<String> stepClasses = xFieldHelper.getValues(xpath, xField);
 
         // TODO handle unique step
         stepClasses =
@@ -266,12 +260,11 @@ public class StepService {
     }
 
     public String getNextStepType(final XField xField, final String stepType)
-            throws XPathExpressionException {
+            throws XFieldException {
         String xpath =
                 Util.buildString("/:xfield/:tasks/:task/:steps/:step[@name='",
                         stepType, "']/:nextStep");
-        String nextStepType =
-                xFieldHelper.getFirstValue(xpath, xField.getNodes());
+        String nextStepType = xFieldHelper.getFirstValue(xpath, xField);
         return nextStepType;
     }
 

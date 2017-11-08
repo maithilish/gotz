@@ -3,7 +3,6 @@ package org.codetab.gotz.model.helper;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,11 +13,11 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
@@ -81,7 +80,7 @@ public class LocatorXFieldHelper {
     }
 
     public XField getXField(final String clazz, final String group)
-            throws TransformerException, ParserConfigurationException {
+            throws XFieldException {
         // return deep copy
         for (XField xField : xFields) {
             if (xField.getClazz().equals(clazz)
@@ -104,25 +103,14 @@ public class LocatorXFieldHelper {
      */
     public void addLabel(final Locator locator) {
         Validate.notNull(locator, "locator must not be null");
-
         String label =
                 Util.buildString(locator.getName(), ":", locator.getGroup());
-
-        Optional<Node> node =
-                xFieldHelper.getLast(locator.getXField().getNodes());
-
-        if (node.isPresent()) {
-            xFieldHelper.addElement("label", label, node.get());
-        } else {
-            LOGGER.error("xfield is empty, unable to add locator label {}",
-                    label);
-        }
+        xFieldHelper.addElement("label", label, locator.getXField());
     }
 
-    private List<XField> getXFields()
-            throws ParserConfigurationException, FileNotFoundException,
-            TransformerFactoryConfigurationError, TransformerException,
-            ConfigNotFoundException, XPathExpressionException {
+    private List<XField> getXFields() throws ParserConfigurationException,
+            FileNotFoundException, TransformerFactoryConfigurationError,
+            TransformerException, ConfigNotFoundException, XFieldException {
         List<XField> xBeans = beanService.getBeans(XField.class);
 
         List<XField> xFieldList = new ArrayList<>();
@@ -140,28 +128,35 @@ public class LocatorXFieldHelper {
         return xFieldList;
     }
 
-    private String getGroup(final Node node) throws XPathExpressionException {
+    private String getGroup(final Node node) throws XFieldException {
         String xpath = "/:xfield/:tasks/@group";
         return xFieldHelper.getValue(xpath, node);
     }
 
-    private Document mergeSteps(final Document doc)
-            throws FileNotFoundException, TransformerFactoryConfigurationError,
-            TransformerException, ConfigNotFoundException {
-        String stepsXslFile = configService.getConfig("gotz.stepsXslFile");
-        StreamSource xslSource = ioHelper.getStreamSource(stepsXslFile);
-        Transformer tr =
-                TransformerFactory.newInstance().newTransformer(xslSource);
+    private Document mergeSteps(final Document doc) throws XFieldException {
+        String stepsXslFile = "";
+        try {
+            stepsXslFile = configService.getConfig("gotz.stepsXslFile");
 
-        DOMResult domResult = new DOMResult();
-        tr.transform(new DOMSource(doc), domResult);
+            StreamSource xslSource = ioHelper.getStreamSource(stepsXslFile);
+            Transformer tr =
+                    TransformerFactory.newInstance().newTransformer(xslSource);
 
-        Document transformedDoc = (Document) domResult.getNode();
+            DOMResult domResult = new DOMResult();
+            tr.transform(new DOMSource(doc), domResult);
 
-        System.out.println("---" + doc.getNamespaceURI()
-                + transformedDoc.getNamespaceURI());
+            Document transformedDoc = (Document) domResult.getNode();
 
-        return transformedDoc;
+            System.out.println("---" + doc.getNamespaceURI()
+                    + transformedDoc.getNamespaceURI());
+
+            return transformedDoc;
+        } catch (ConfigNotFoundException | FileNotFoundException
+                | TransformerFactoryConfigurationError
+                | TransformerException e) {
+            throw new XFieldException(Util.buildString(
+                    "unable to merge steps [", stepsXslFile, "]"), e);
+        }
     }
 
 }

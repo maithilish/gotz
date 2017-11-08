@@ -11,7 +11,7 @@
                 <unique>true</unique>
             </step>
             <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
-                <nextStep>parser</nextStep>
+                <nextStep>end</nextStep>
                 <unique>true</unique>
             </step>
             <step name="parser"
@@ -44,11 +44,13 @@
                         </converter>
                     </step>
                 </steps>
-                <persist>
-                    <document>true</document>
+                <persist>               
                     <data>true</data>
                 </persist>
             </task>
+            <persist>               
+                    <document>true</document>
+                </persist>
             <live>P0D</live>
         </tasks>
 

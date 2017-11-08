@@ -230,7 +230,8 @@ public class DocumentHelperTest {
         }
 
         try {
-            documentHelper.getToDate(new Date(), null);
+            List<FieldsBase> list = null;
+            documentHelper.getToDate(new Date(), list);
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("fields must not be null");

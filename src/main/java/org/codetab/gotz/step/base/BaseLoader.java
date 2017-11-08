@@ -11,10 +11,12 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DocumentPersistence;
@@ -115,6 +117,7 @@ public abstract class BaseLoader extends Step {
         } else {
             // update existing locator with new fields and URL
             savedLocator.getFields().addAll(locator.getFields());
+            savedLocator.setXField(locator.getXField());
             savedLocator.setUrl(locator.getUrl());
 
             // switch locator to persisted locator (detached locator)
@@ -178,7 +181,7 @@ public abstract class BaseLoader extends Step {
             // document metadata
             Date fromDate = configService.getRunDateTime();
             Date toDate =
-                    documentHelper.getToDate(fromDate, locator.getFields());
+                    documentHelper.getToDate(fromDate, locator.getXField());
 
             // create new document
             document = documentHelper.createDocument(locator.getName(),
@@ -238,10 +241,12 @@ public abstract class BaseLoader extends Step {
 
         boolean persist = true;
         try {
-            persist = FieldsUtil.isTrue(locator.getFields(), "persist",
-                    "document");
-        } catch (FieldNotFoundException e) {
+            persist = xFieldHelper.isTrue(
+                    "/g:xfield/g:tasks/g:persist/g:document",
+                    locator.getXField());
+        } catch (XFieldException e) {
         }
+
         if (persist) {
             /*
              * fields are not persistable, so need to set them from the
@@ -249,10 +254,14 @@ public abstract class BaseLoader extends Step {
              */
             try {
                 List<FieldsBase> fields = locator.getFields();
+                XField xField = locator.getXField();
+
+                // store and reload locator and document
                 locatorPersistence.storeLocator(locator);
-                // reload locator and document
                 locator = locatorPersistence.loadLocator(locator.getId());
                 locator.getFields().addAll(fields);
+                locator.setXField(xField);
+
                 document = documentPersistence.loadDocument(document.getId());
                 LOGGER.debug("stored Locator[{}:{}]", locator.getName(),
                         locator.getGroup());
@@ -289,6 +298,44 @@ public abstract class BaseLoader extends Step {
         String errorMessage =
                 Util.buildString("create parser failed ", getLabel());
 
+        List<XField> tasks = null;
+        try {
+            tasks = xFieldHelper.split("/:xfield/:tasks/:task",
+                    locator.getXField());
+        } catch (XFieldException e) {
+            LOGGER.error("{} {}", errorMessage, e);
+            activityService.addActivity(Type.GIVENUP, errorMessage, e);
+            // TODO enable after xfield refactor
+            // throw new StepRunException(errorMessage, e);
+        }
+
+        // TODO remove this
+        List<FieldsBase> nextStepFieldsZ = new ArrayList<>();
+
+        if (tasks.size() > 0) {
+            for (XField task : tasks) {
+                if (isDocumentLoaded()) {
+                    try {
+                        XField nextStepXField = createNextStepFields(task);
+                        stepService.pushTask(this, document, nextStepFieldsZ,
+                                nextStepXField);
+                    } catch (RuntimeException e) {
+                        String message = "unable to get next step fields";
+                        LOGGER.error("{} {}", message, locator);
+                        activityService.addActivity(Type.GIVENUP,
+                                Util.buildString(errorMessage, " : ", message));
+                    }
+                } else {
+                    String message = "document not loaded";
+                    LOGGER.error("{} {}", message, locator);
+                    activityService.addActivity(Type.GIVENUP,
+                            Util.buildString(errorMessage, " : ", message));
+                }
+            }
+            setStepState(StepState.HANDOVER);
+            return true;
+        }
+
         // get dataDef fields defined for the locator
         List<FieldsBase> dataDefFields = null;
         try {
@@ -300,7 +347,7 @@ public abstract class BaseLoader extends Step {
             throw new StepRunException(errorMessage, e);
         }
 
-        // for each datadef push task, in case document is not loaded then log
+        // for each task push task, in case document is not loaded then log
         // given-up activity
         for (FieldsBase dataDefField : dataDefFields) {
             if (isDocumentLoaded()) {
@@ -323,6 +370,37 @@ public abstract class BaseLoader extends Step {
         }
         setStepState(StepState.HANDOVER);
         return true;
+    }
+
+    /**
+     * <p>
+     * Create next step fields by deep cloning the fields. Also, adds locator
+     * name,group and url fields which are useful for other steps.
+     * @param xField
+     *            to add to next step
+     * @return list of fields for next step
+     */
+    private XField createNextStepFields(final XField xField) {
+        /*
+         * need to deep copy the fields as each locator may have multiple tasks
+         * with different datadef and steps
+         */
+        XField nextStepXField = null;
+        try {
+            nextStepXField = xFieldHelper.deepCopy(xField);
+        } catch (XFieldException e) {
+            String message = "unable to clone next step xfield";
+            LOGGER.error("{} {}", message, e.getLocalizedMessage());
+            throw new StepRunException(message, e);
+        }
+
+        xFieldHelper.addElement("locatorName", locator.getName(),
+                nextStepXField);
+        xFieldHelper.addElement("locatorGroup", locator.getGroup(),
+                nextStepXField);
+        xFieldHelper.addElement("locatorUrl", locator.getUrl(), nextStepXField);
+
+        return nextStepXField;
     }
 
     /**

@@ -3,9 +3,9 @@ package org.codetab.gotz.step;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.xml.xpath.XPathExpressionException;
 
 import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.XFieldHelper;
@@ -76,12 +76,11 @@ public abstract class Step implements IStep {
 
     @Override
     public void setXField(final XField xField) {
-        this.xField = xField;
         try {
-            label = xFieldHelper.getLastValue("/:xfield/:label",
-                    xField.getNodes());
-        } catch (XPathExpressionException e) {
+            label = xFieldHelper.getLastValue("/:xfield/:label", xField);
+        } catch (XFieldException e) {
         }
+        this.xField = xField;
     }
 
     /*

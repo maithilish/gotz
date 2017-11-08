@@ -1,21 +1,18 @@
 package org.codetab.gotz.util;
 
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.dom.DOMSource;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
@@ -80,6 +77,22 @@ public class XmlUtils {
         return document;
     }
 
+    public static Document createDocument(final NodeList nodes,
+            final String rootTagName) throws ParserConfigurationException {
+        List<Node> list = new ArrayList<>();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            list.add(nodes.item(i));
+        }
+        return createDocument(list, rootTagName);
+    }
+
+    public static Document createDocument(final Node node,
+            final String rootTagName) throws ParserConfigurationException {
+        List<Node> list = new ArrayList<>();
+        list.add(node);
+        return createDocument(list, rootTagName);
+    }
+
     // public static Document deepCopy(final Document document)
     // throws TransformerException {
     // TransformerFactory tfactory = TransformerFactory.newInstance();
@@ -123,4 +136,5 @@ public class XmlUtils {
         lsSerializer.write(document, lsOutput);
         return stringWriter.toString();
     }
+
 }

@@ -97,6 +97,8 @@ In debugger, you will get line number error, even when line number generation is
 enabled in Preferences -> Java -> Compiler option. 
 Disable this error in Java -> Debug option.
 
+Debug XML objects - search debug or xml in pocket
+
 DB setup
 --------------
 

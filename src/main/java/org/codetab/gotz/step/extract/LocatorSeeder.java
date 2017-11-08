@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
@@ -136,7 +135,7 @@ public final class LocatorSeeder extends BaseSeeder {
                         locator.getClass().getName(), locator.getGroup());
                 locator.setXField(xField);
                 xFieldHelper.addLabel(locator);
-            } catch (TransformerException | ParserConfigurationException e) {
+            } catch (XFieldException e) {
                 throw new StepRunException(
                         "unable to set XFields copy to locators", e);
             }
@@ -177,16 +176,23 @@ public final class LocatorSeeder extends BaseSeeder {
         return true;
     }
 
+    /**
+     * Creates new instance of this type and set it fields from locator and this
+     * object. We need to pass step fields to push the task and as this step is
+     * push task for multiple locator we can't pass this step and hence new step
+     * is created just to hold the step fields.
+     * @param locator
+     * @return step
+     */
     private Step getSeederStep(final Locator locator) {
         try {
-            Step seederStep = (Step) stepService
-                    .getStep("org.codetab.gotz.step.extract.LocatorSeeder");
+            Step seederStep =
+                    (Step) stepService.getStep(this.getClass().getName());
             seederStep.setConsistent(true);
             seederStep.setFields(locator.getFields());
             seederStep.setXField(locator.getXField());
             seederStep.setStepType(this.getStepType());
             seederStep.setStepState(this.getStepState());
-
             return seederStep;
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException e) {
