@@ -1,7 +1,6 @@
 package org.codetab.gotz.step.base;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -9,7 +8,6 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
@@ -18,12 +16,10 @@ import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DocumentHelper;
-import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DocumentPersistence;
 import org.codetab.gotz.persistence.LocatorPersistence;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -74,11 +70,6 @@ public abstract class BaseLoader extends Step {
      */
     @Inject
     private DocumentHelper documentHelper;
-    /**
-     * helper.
-     */
-    @Inject
-    private FieldsHelper fieldsHelper;
 
     /**
      * Creates log marker from locator name and group.
@@ -305,56 +296,14 @@ public abstract class BaseLoader extends Step {
         } catch (XFieldException e) {
             LOGGER.error("{} {}", errorMessage, e);
             activityService.addActivity(Type.GIVENUP, errorMessage, e);
-            // TODO enable after xfield refactor
-            // throw new StepRunException(errorMessage, e);
-        }
-
-        // TODO remove this
-        List<FieldsBase> nextStepFieldsZ = new ArrayList<>();
-
-        if (tasks.size() > 0) {
-            for (XField task : tasks) {
-                if (isDocumentLoaded()) {
-                    try {
-                        XField nextStepXField = createNextStepFields(task);
-                        stepService.pushTask(this, document, nextStepFieldsZ,
-                                nextStepXField);
-                    } catch (RuntimeException e) {
-                        String message = "unable to get next step fields";
-                        LOGGER.error("{} {}", message, locator);
-                        activityService.addActivity(Type.GIVENUP,
-                                Util.buildString(errorMessage, " : ", message));
-                    }
-                } else {
-                    String message = "document not loaded";
-                    LOGGER.error("{} {}", message, locator);
-                    activityService.addActivity(Type.GIVENUP,
-                            Util.buildString(errorMessage, " : ", message));
-                }
-            }
-            setStepState(StepState.HANDOVER);
-            return true;
-        }
-
-        // get dataDef fields defined for the locator
-        List<FieldsBase> dataDefFields = null;
-        try {
-            dataDefFields =
-                    FieldsUtil.filterByGroup(locator.getFields(), "datadef");
-        } catch (FieldNotFoundException e) {
-            LOGGER.error("{} {}", errorMessage, e);
-            activityService.addActivity(Type.GIVENUP, errorMessage, e);
             throw new StepRunException(errorMessage, e);
         }
 
-        // for each task push task, in case document is not loaded then log
-        // given-up activity
-        for (FieldsBase dataDefField : dataDefFields) {
+        for (XField task : tasks) {
             if (isDocumentLoaded()) {
                 try {
-                    List<FieldsBase> nextStepFields =
-                            createNextStepFields(dataDefField);
-                    stepService.pushTask(this, document, nextStepFields);
+                    XField nextStepXField = createNextStepFields(task);
+                    stepService.pushTask(this, document, nextStepXField);
                 } catch (RuntimeException e) {
                     String message = "unable to get next step fields";
                     LOGGER.error("{} {}", message, locator);
@@ -401,40 +350,6 @@ public abstract class BaseLoader extends Step {
         xFieldHelper.addElement("locatorUrl", locator.getUrl(), nextStepXField);
 
         return nextStepXField;
-    }
-
-    /**
-     * <p>
-     * Create next step fields by deep cloning the dataDef field. Also, adds
-     * locator name,group and url fields which are useful for other steps.
-     * @param dataDefField
-     *            to add to next step
-     * @return list of fields for next step
-     */
-    private List<FieldsBase> createNextStepFields(
-            final FieldsBase dataDefField) {
-        /*
-         * need to deep copy the fields as each locator may have multiple
-         * datadefs and parsers
-         */
-        List<FieldsBase> nextStepFields = new ArrayList<>();
-        FieldsBase dataDefFieldCopy = null;
-        try {
-            dataDefFieldCopy = fieldsHelper.deepClone(dataDefField);
-        } catch (RuntimeException e) {
-            LOGGER.error("{} {}", "unable to clone datadef fields",
-                    e.getLocalizedMessage());
-            throw e;
-        }
-        nextStepFields.add(dataDefFieldCopy);
-        // we add info fields here, as parser also push locator to loader
-        nextStepFields
-                .add(FieldsUtil.createField("locatorName", locator.getName()));
-        nextStepFields.add(
-                FieldsUtil.createField("locatorGroup", locator.getGroup()));
-        nextStepFields
-                .add(FieldsUtil.createField("locatorUrl", locator.getUrl()));
-        return nextStepFields;
     }
 
     /**

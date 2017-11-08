@@ -54,6 +54,12 @@ public class StepService {
         return step;
     }
 
+    /**
+     * Create task and assign step.
+     * @param step
+     *            to assign
+     * @return task
+     */
     public Task createTask(final IStep step) {
         Task task = dInjector.instance(Task.class);
         task.setStep(step);
@@ -102,10 +108,8 @@ public class StepService {
     }
 
     public void pushTask(final Step step, final Object input,
-            final List<FieldsBase> nextStepFields,
             final XField nextStepXField) {
         String label = step.getLabel();
-        addLabelField(step, nextStepFields);
         try {
             addLabelField(step, nextStepXField);
         } catch (XFieldException e) {
@@ -117,10 +121,6 @@ public class StepService {
         try {
             String nextStepType =
                     getNextStepType(step.getXField(), step.getStepType());
-            if (nextStepType == null) {
-                nextStepType =
-                        getNextStepType(step.getFields(), step.getStepType());
-            }
 
             if (nextStepType.equalsIgnoreCase("end")) {
                 return;
@@ -133,39 +133,11 @@ public class StepService {
                         "field found");
             }
 
-            // TODO remove if after xfield refactor
-            if (stepClasses.size() != 0) {
-                for (String stepClassName : stepClasses) {
-                    if (step.isConsistent()) {
-                        Runnable task = null;
-                        task = createTask(nextStepType, stepClassName, input,
-                                nextStepFields, nextStepXField);
-                        taskPoolService.submit(nextStepType, task);
-                        LOGGER.debug(
-                                "{} instance [{}] pushed to pool, entity [{}]",
-                                nextStepType, task.getClass(), label);
-                    } else {
-                        LOGGER.warn("step inconsistent, entity [{}]", label);
-                        activityService.addActivity(Type.GIVENUP,
-                                Util.buildString(givenUpMessage,
-                                        ", step inconsistent"));
-                    }
-                }
-                return;
-            }
-
-            List<FieldsBase> stepClassesZ =
-                    getNextStepClasses(nextStepFields, nextStepType);
-            if (stepClassesZ.size() == 0) {
-                LOGGER.warn("{}, no {} {}", givenUpMessage, nextStepType,
-                        "field found");
-            }
-            for (FieldsBase stepClassField : stepClassesZ) {
+            for (String stepClassName : stepClasses) {
                 if (step.isConsistent()) {
-                    String stepClassName = stepClassField.getValue();
                     Runnable task = null;
                     task = createTask(nextStepType, stepClassName, input,
-                            nextStepFields);
+                            nextStepXField);
                     taskPoolService.submit(nextStepType, task);
                     LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
                             nextStepType, task.getClass(), label);
@@ -281,11 +253,11 @@ public class StepService {
      *            task fields
      * @return task
      * @throws ClassNotFoundException
-     *             expection
+     *             exception
      * @throws InstantiationException
-     *             expection
+     *             exception
      * @throws IllegalAccessException
-     *             expection
+     *             exception
      */
     private Task createTask(final String stepType, final String taskClassName,
             final Object input, final List<FieldsBase> fields)
@@ -299,14 +271,32 @@ public class StepService {
         return task;
     }
 
+    /**
+     * Create step and assign it to task.
+     *
+     * @param stepType
+     *            type
+     * @param taskClassName
+     *            task class
+     * @param input
+     *            task input
+     * @param xField
+     *            task fields
+     * @return task
+     * @throws ClassNotFoundException
+     *             exception
+     * @throws InstantiationException
+     *             exception
+     * @throws IllegalAccessException
+     *             exception
+     */
     private Task createTask(final String stepType, final String taskClassName,
-            final Object input, final List<FieldsBase> fields,
-            final XField xField) throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException {
+            final Object input, final XField xField)
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException {
         IStep step = getStep(taskClassName).instance();
         step.setStepType(stepType);
         step.setInput(input);
-        step.setFields(fields);
         step.setXField(xField);
         Task task = createTask(step);
         return task;
