@@ -1,8 +1,6 @@
 package org.codetab.gotz.converter;
 
-import java.util.List;
-
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
 
 /**
  * <p>
@@ -33,5 +31,5 @@ public interface IConverter<T, U> {
      * @param fields
      *            list of fields
      */
-    void setFields(List<FieldsBase> fields);
+    void setXField(XField xField);
 }

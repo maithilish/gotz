@@ -196,6 +196,8 @@ public class XFieldHelper {
      */
     public List<XField> split(final String xpathExpression, final XField xField)
             throws XFieldException {
+        // TODO try for optimization (in same or separate method) deep copy or
+        // reference to nodes
         List<XField> xFieldList = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
@@ -293,4 +295,16 @@ public class XFieldHelper {
         }
     }
 
+    public XField createXField() throws XFieldException {
+        Document doc;
+        try {
+            doc = XmlUtils.createDocument("xfield",
+                    "http://codetab.org/xfield");
+            XField xField = new XField();
+            xField.getNodes().add(doc);
+            return xField;
+        } catch (ParserConfigurationException e) {
+            throw new XFieldException("unable to create xfield", e);
+        }
+    }
 }

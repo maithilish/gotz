@@ -55,6 +55,19 @@ public class StepService {
     }
 
     /**
+     * Safely create instance from clzName string using DI. Steps should use
+     * this method to create any objects such as converters etc.
+     * @param clzName
+     * @return
+     * @throws ClassNotFoundException
+     */
+    public Object createInstance(final String clzName)
+            throws ClassNotFoundException {
+        Class<?> clz = Class.forName(clzName);
+        return dInjector.instance(clz);
+    }
+
+    /**
      * Create task and assign step.
      * @param step
      *            to assign
@@ -233,9 +246,8 @@ public class StepService {
     public String getNextStepType(final XField xField, final String stepType)
             throws XFieldException {
         // TODO need to check behavior when multiple matching nodes exists
-        String xpath =
-                Util.buildString("//:task/:steps/:step[@name='",
-                        stepType, "']/:nextStep");
+        String xpath = Util.buildString("//:task/:steps/:step[@name='",
+                stepType, "']/:nextStep");
         String nextStepType = xFieldHelper.getFirstValue(xpath, xField);
         return nextStepType;
     }

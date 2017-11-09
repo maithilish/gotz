@@ -71,7 +71,6 @@ public class XmlUtils {
                 root.appendChild(importedNode);
             }
         }
-        System.out.println("---" + document.getNamespaceURI());
         document.appendChild(root);
 
         return document;
@@ -91,6 +90,19 @@ public class XmlUtils {
         List<Node> list = new ArrayList<>();
         list.add(node);
         return createDocument(list, rootTagName);
+    }
+
+    public static Document createDocument(final String rootTagName,
+            final String namespace) throws ParserConfigurationException {
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.newDocument();
+
+        Element root = document.createElementNS(namespace, rootTagName);
+        document.appendChild(root);
+        return document;
     }
 
     // public static Document deepCopy(final Document document)

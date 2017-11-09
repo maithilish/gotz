@@ -6,20 +6,18 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.converter.IConverter;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
 import org.codetab.gotz.model.DataSet;
-import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseDataConverter;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,15 +62,17 @@ public final class DataSetConverter extends BaseDataConverter {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getFields() != null, "fields must not be null");
+        Validate.validState(getXField() != null, "xfield must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName = FieldsUtil.getValue(getFields(), "locatorName");
-            locatorGroup = FieldsUtil.getValue(getFields(), "locatorGroup");
-        } catch (FieldNotFoundException e) {
+            locatorName = xFieldHelper.getLastValue("/:xfield/:locatorName",
+                    getXField());
+            locatorGroup = xFieldHelper.getLastValue("/:xfield/:locatorGroup",
+                    getXField());
+        } catch (XFieldException e) {
             String message = "unable to get locator name and group";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
@@ -88,10 +88,12 @@ public final class DataSetConverter extends BaseDataConverter {
 
         List<DataSet> dataSets = new ArrayList<>();
 
-        List<FieldsBase> converters = new ArrayList<>();
+        List<XField> converters = new ArrayList<>();
         try {
-            converters = FieldsUtil.filterByName(getFields(), "converter");
-        } catch (FieldNotFoundException e) {
+            converters = xFieldHelper.split(
+                    "/:xfield/:task/:steps/:step[@name='converter']/:converter",
+                    getXField());
+        } catch (XFieldException e) {
         }
 
         // encode and append data
@@ -117,26 +119,26 @@ public final class DataSetConverter extends BaseDataConverter {
 
     @SuppressWarnings("unchecked")
     private String convert(final AxisName axis, final String value,
-            final List<FieldsBase> converters) {
+            final List<XField> converters) {
         String rvalue = value;
-        for (FieldsBase c : converters) {
-            Fields cf = (Fields) c;
+        for (XField xField : converters) {
             try {
-                String axisName = FieldsUtil.getValue(cf.getFields(), "axis");
+                String axisName =
+                        xFieldHelper.getLastValue("//:converter/:axis", xField);
                 if (axis.name().equalsIgnoreCase(axisName)) {
-                    String className =
-                            FieldsUtil.getValue(cf.getFields(), "class");
+                    String className = xFieldHelper
+                            .getLastValue("//:converter/@class", xField);
                     try {
                         @SuppressWarnings("rawtypes")
-                        IConverter converter = (IConverter) Class
-                                .forName(className).newInstance();
-                        converter.setFields(cf.getFields());
+                        IConverter converter = (IConverter) stepService
+                                .createInstance(className);
+                        converter.setXField(xField);
                         rvalue = (String) converter.convert(rvalue);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-            } catch (FieldNotFoundException e) {
+            } catch (XFieldException e) {
             }
         }
         return rvalue;
