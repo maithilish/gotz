@@ -12,6 +12,7 @@ import java.io.InputStream;
 import javax.xml.bind.JAXBException;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.helper.IOHelper;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,21 +56,20 @@ public class XMLValidatorTest {
     }
 
     @Test
-    public void testValidateNonexistentFile()
-            throws JAXBException, IOException, SAXException {
+    public void testValidateNonexistentFile() throws IOException {
 
         try {
             validator.validate("/testdefs/validation/valid.xml",
                     "/testdefs/validation/schema/xyz.xsd");
-        } catch (IOException e) {
-            testRule.expect(IOException.class);
+        } catch (CriticalException e) {
+            testRule.expect(CriticalException.class);
             validator.validate("/testdefs/validation/xyz.xml",
                     "/testdefs/validation/schema/valid.xsd");
         }
     }
 
     @Test
-    public void testValidateResourceClose() throws IOException, SAXException {
+    public void testValidateResourceClose() throws IOException {
         String xmlFile = "/testdefs/validation/valid.xml";
         String schemaFile = "/testdefs/validation/schema/valid.xsd";
 
@@ -81,32 +81,32 @@ public class XMLValidatorTest {
 
         try {
             validator.validate(xmlFile, schemaFile);
-        } catch (SAXException e) {
-            verify(xmlStream).close();
-            verify(schemaStream, times(2)).close();
+        } catch (CriticalException e) {
+            verify(xmlStream, times(2)).close();
+            // verify(schemaStream, times(2)).close();
         }
     }
 
     @Test
     public void testValidateInvalidXmlShouldThrowException()
-            throws IOException, SAXException {
+            throws IOException {
 
-        testRule.expect(SAXException.class);
+        testRule.expect(CriticalException.class);
         validator.validate("/testdefs/validation/invalid.xml",
                 "/testdefs/validation/schema/valid.xsd");
     }
 
     @Test
     public void testValidateNoNamespaceShouldThrowException()
-            throws IOException, SAXException {
+            throws IOException {
 
-        testRule.expect(SAXException.class);
+        testRule.expect(CriticalException.class);
         validator.validate("/testdefs/validation/noNS.xml",
                 "/testdefs/validation/schema/valid.xsd");
     }
 
     @Test
-    public void testValidateNullParams() throws IOException, SAXException {
+    public void testValidateNullParams() throws IOException {
         try {
             validator.validate(null, "x");
             fail("should throw NullPointerException");
@@ -124,7 +124,7 @@ public class XMLValidatorTest {
 
     @Test
     public void testValidateIllegalState()
-            throws IOException, SAXException, IllegalAccessException {
+            throws IOException, IllegalAccessException {
         FieldUtils.writeDeclaredField(validator, "ioHelper", null, true);
         try {
             validator.validate("x", "y");

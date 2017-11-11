@@ -32,7 +32,7 @@ public class StepServiceTest {
     public void testGetStep() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException {
         // given
-        String clzName = "org.codetab.gotz.steps.URLLoader";
+        String clzName = "org.codetab.gotz.step.extract.URLLoader";
         Class<?> stepClass = Class.forName(clzName);
 
         // when

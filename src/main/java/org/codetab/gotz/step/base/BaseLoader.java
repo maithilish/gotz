@@ -232,8 +232,7 @@ public abstract class BaseLoader extends Step {
 
         boolean persist = true;
         try {
-            persist = xFieldHelper.isTrue(
-                    "/g:xfield/g:tasks/g:persist/g:document",
+            persist = xFieldHelper.isTrue("/:xfield/:tasks/:persist/:document",
                     locator.getXField());
         } catch (XFieldException e) {
         }

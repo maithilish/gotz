@@ -3,19 +3,23 @@ package org.codetab.gotz.step.extract;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
+import org.codetab.gotz.model.helper.LocatorXFieldHelper;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,6 +27,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 /**
  * <p>
@@ -40,6 +45,12 @@ public class LocatorSeederTest {
     private LocatorHelper locatorHelper;
     @Mock
     private LocatorFieldsHelper fieldsHelper;
+    @Mock
+    private LocatorXFieldHelper locatorXFieldHelper;
+    @Spy
+    private XFieldHelper xFieldHelper;
+    @Spy
+    private DInjector dInjector;
 
     @InjectMocks
     private LocatorSeeder locatorSeeder;
@@ -170,79 +181,71 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testProcess() {
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("x", "xv"));
-        List<Locator> locators = new ArrayList<>();
-
-        given(fieldsHelper.getStepFields()).willReturn(fields);
-        given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
-        locatorSeeder.initialize();
-
-        // when
-        boolean actual = locatorSeeder.process();
-
-        // then
-        assertThat(actual).isTrue();
-        assertThat(locatorSeeder.getStepState()).isEqualTo(StepState.PROCESS);
-        assertThat(locatorSeeder.isConsistent()).isTrue();
-
-        assertThat(locatorSeeder.getFields()).isEqualTo(fields);
-    }
-
-    @Test
-    public void testProcessSetGroupFields() {
+    public void testProcessSetGroupFields() throws XFieldException {
         List<Locator> locators = createTestObjects();
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
         locatorSeeder.initialize();
 
-        List<FieldsBase> groupOneFields =
-                TestUtil.asList(TestUtil.createField("x", "xv"));
-        List<FieldsBase> groupTwoFields =
-                TestUtil.asList(TestUtil.createField("y", "yv"));
+        XField groupOneXField = xFieldHelper.createXField();
+        xFieldHelper.addElement("x", "xv", groupOneXField);
+        XField groupTwoXField = xFieldHelper.createXField();
+        xFieldHelper.addElement("y", "yv", groupOneXField);
 
-        given(fieldsHelper.getLocatorGroupFields("g1"))
-                .willReturn(groupOneFields);
-        given(fieldsHelper.getLocatorGroupFields("g2"))
-                .willReturn(groupTwoFields);
+        given(locatorXFieldHelper.getXField(Locator.class.getName(), "g1"))
+                .willReturn(groupOneXField);
+        given(locatorXFieldHelper.getXField(Locator.class.getName(), "g2"))
+                .willReturn(groupTwoXField);
 
         // when
         locatorSeeder.process();
 
-        assertThat(locators.get(0).getFields()).isEqualTo(groupOneFields);
-        assertThat(locators.get(1).getFields()).isEqualTo(groupOneFields);
-        assertThat(locators.get(2).getFields()).isEqualTo(groupTwoFields);
+        assertThat(locators.get(0).getXField()).isEqualTo(groupOneXField);
+        assertThat(locators.get(1).getXField()).isEqualTo(groupOneXField);
+        assertThat(locators.get(2).getXField()).isEqualTo(groupTwoXField);
 
-        InOrder inOrder = inOrder(fieldsHelper);
-        inOrder.verify(fieldsHelper).addLabel(locators.get(0));
-        inOrder.verify(fieldsHelper).addLabel(locators.get(1));
-        inOrder.verify(fieldsHelper).addLabel(locators.get(2));
+        InOrder inOrder = inOrder(locatorXFieldHelper);
+        inOrder.verify(locatorXFieldHelper).addLabel(locators.get(0));
+        inOrder.verify(locatorXFieldHelper).addLabel(locators.get(1));
+        inOrder.verify(locatorXFieldHelper).addLabel(locators.get(2));
     }
 
     @Test
-    public void testHandover() {
+    public void testHandover() throws XFieldException, ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
+        XField xField1 = xFieldHelper.createXField();
+        xFieldHelper.addElement("x", "xv", xField1);
+        XField xField2 = xFieldHelper.createXField();
+        xFieldHelper.addElement("y", "yv", xField2);
+        XField xField3 = xFieldHelper.createXField();
+        xFieldHelper.addElement("z", "zv", xField3);
+
         List<Locator> locators = createTestObjects();
         Locator locator1 = locators.get(0);
-        locator1.getFields().add(TestUtil.createField("x", "xv"));
+        locator1.setXField(xField1);
         Locator locator2 = locators.get(1);
-        locator2.getFields().add(TestUtil.createField("y", "yv"));
+        locator2.setXField(xField2);
         Locator locator3 = locators.get(2);
-        locator3.getFields().add(TestUtil.createField("z", "zv"));
+        locator3.setXField(xField3);
+
+        LocatorSeeder locatorSeeder1 = dInjector.instance(LocatorSeeder.class);
+        LocatorSeeder locatorSeeder2 = dInjector.instance(LocatorSeeder.class);
+        LocatorSeeder locatorSeeder3 = dInjector.instance(LocatorSeeder.class);
 
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
+        when(stepService.getStep(LocatorSeeder.class.getName()))
+                .thenReturn(locatorSeeder1, locatorSeeder2, locatorSeeder3);
+
         locatorSeeder.initialize();
 
         locatorSeeder.handover();
 
         InOrder inOrder = inOrder(stepService);
-        inOrder.verify(stepService).pushTask(locatorSeeder, locator1,
-                locator1.getFields());
-        inOrder.verify(stepService).pushTask(locatorSeeder, locator2,
-                locator2.getFields());
-        inOrder.verify(stepService).pushTask(locatorSeeder, locator3,
-                locator3.getFields());
-
-        verifyNoMoreInteractions(stepService);
+        inOrder.verify(stepService).pushTask(locatorSeeder1, locator1,
+                locator1.getXField());
+        inOrder.verify(stepService).pushTask(locatorSeeder2, locator2,
+                locator2.getXField());
+        inOrder.verify(stepService).pushTask(locatorSeeder3, locator3,
+                locator3.getXField());
     }
 
     private List<Locator> createTestObjects() {

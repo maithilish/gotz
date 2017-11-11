@@ -57,8 +57,7 @@ public class XMLValidator {
      * @throws IOException
      *             on IO error
      */
-    public boolean validate(final String xmlFile, final String schemaFile)
-            throws IOException, SAXException {
+    public boolean validate(final String xmlFile, final String schemaFile) {
         LOGGER.debug("validate : [{}] with [{}]", xmlFile, schemaFile);
 
         Validate.notNull(xmlFile, "xmlFile must not be null");
@@ -69,7 +68,7 @@ public class XMLValidator {
             URL schemaURL = ioHelper.getURL(schemaFile);
             validate(xmlStream, schemaURL);
             LOGGER.info("validation passed {} + {}", xmlFile, schemaFile);
-        } catch (SAXException e) {
+        } catch (SAXException | IOException e) {
             throw new CriticalException("XML validation failed [" + xmlFile
                     + "] [" + schemaFile + "]", e);
         }

@@ -3,18 +3,15 @@ package org.codetab.gotz.step.base;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.convert.DataFilter;
-import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +19,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 /**
  * <p>
@@ -37,6 +35,8 @@ public class BaseFilterTest {
     private ActivityService activityService;
     @Mock
     private DataDefService dataDefService;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private DataFilter filter;
@@ -75,27 +75,28 @@ public class BaseFilterTest {
     }
 
     @Test
-    public void testHandover() {
+    public void testHandover() throws XFieldException {
+
+        XField xField = xFieldHelper.createXField();
+        xFieldHelper.addElement("x", "xv", xField);
+        filter.setXField(xField);
+
         Data data = new Data();
         filter.setInput(data);
-
-        Field field = TestUtil.createField("k", "v");
-        List<FieldsBase> fields = TestUtil.asList(field);
-        filter.setFields(fields);
 
         boolean actual = filter.handover();
 
         assertThat(actual).isTrue();
-        verify(stepService).pushTask(filter, data, fields);
+        verify(stepService).pushTask(filter, data, xField);
     }
 
     @Test
-    public void testHandoverEmptyFieldsShouldThrowException() {
+    public void testHandoverEmptyFieldsShouldThrowException()
+            throws XFieldException {
         Data data = new Data();
         filter.setInput(data);
 
-        List<FieldsBase> fields = new ArrayList<>();
-        filter.setFields(fields);
+        filter.setXField(new XField());
 
         testRule.expect(StepRunException.class);
         filter.handover();

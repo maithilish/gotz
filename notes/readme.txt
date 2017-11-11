@@ -31,6 +31,12 @@ M2E
 ---
 
 Download javadoc and sources - Project Context Menu-> Maven->Download Javadoc
+or
+mvn dependency:sources dependency:resolve -Dclassifier=javadoc
+
+if doc location not set error is thrown then
+Build Path -> Configure Build Path -> Libraries remove extra entries of M2_REPO 
+only JRE and Maven Dependencies is enough. Update Maven.
 
 Eclipse CheckStyle
 ------------------
