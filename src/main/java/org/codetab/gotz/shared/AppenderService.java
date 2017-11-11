@@ -1,7 +1,6 @@
 package org.codetab.gotz.shared;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -10,10 +9,10 @@ import javax.inject.Singleton;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +30,8 @@ public class AppenderService {
     private DInjector dInjector;
     @Inject
     private AppenderPoolService appenderPoolService;
+    @Inject
+    private XFieldHelper xFieldHelper;
 
     @Inject
     private AppenderService() {
@@ -41,10 +42,10 @@ public class AppenderService {
     }
 
     public synchronized void createAppender(final String appenderName,
-            final List<FieldsBase> fields)
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldNotFoundException {
-        String appenderClzName = FieldsUtil.getValue(fields, "class");
+            final XField xField) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException, XFieldException {
+        String appenderClzName =
+                xFieldHelper.getLastValue("//:appender/@class", xField);
         if (appenders.containsKey(appenderName)) {
             return;
         }
@@ -59,7 +60,7 @@ public class AppenderService {
                     "Class " + appenderClzName + " is not of type Appender");
         }
         appender.setName(appenderName);
-        appender.setFields(fields);
+        appender.setXField(xField);
         appender.initializeQueue();
         appenderPoolService.submit("appender", appender);
         appenders.put(appenderName, appender);

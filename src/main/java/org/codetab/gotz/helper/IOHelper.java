@@ -1,12 +1,15 @@
 package org.codetab.gotz.helper;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +40,17 @@ public class IOHelper {
         return new StreamSource(is);
     }
 
+    /**
+     * Creates parent directory if not exists and returns print writer.
+     * @param fileName
+     *            file name
+     * @return PrintWriter
+     * @throws IOException
+     */
     public PrintWriter getPrintWriter(final String fileName)
-            throws FileNotFoundException {
-        return new PrintWriter(fileName);
+            throws IOException {
+        File file = new File(fileName);
+        FileUtils.forceMkdirParent(file);
+        return new PrintWriter(file);
     }
 }

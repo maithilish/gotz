@@ -13,7 +13,10 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender.Marker;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
@@ -24,6 +27,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 /**
  * <p>
@@ -37,6 +41,8 @@ public class ListAppenderTest {
     private ConfigService configService;
     @Mock
     private ActivityService activityService;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private ListAppender appender;
@@ -52,6 +58,9 @@ public class ListAppenderTest {
     @Test
     public void testAppend() throws InterruptedException {
         String obj = "test object";
+
+        XField xField = new XField();
+        appender.setXField(xField);
 
         appender.initializeQueue();
 
@@ -71,9 +80,12 @@ public class ListAppenderTest {
     }
 
     @Test
-    public void testRun() throws InterruptedException {
+    public void testRun() throws InterruptedException, XFieldException {
         String obj1 = "test1";
         String obj2 = "test2";
+
+        XField xField = new XField();
+        appender.setXField(xField);
 
         appender.initializeQueue();
 

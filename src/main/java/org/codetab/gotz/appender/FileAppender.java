@@ -6,10 +6,9 @@ import java.io.PrintWriter;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,8 +51,9 @@ public final class FileAppender extends Appender {
 
         String fileName = null;
         try {
-            fileName = FieldsUtil.getValue(getFields(), "file");
-        } catch (FieldNotFoundException e) {
+            fileName =
+                    xFieldHelper.getLastValue("//:appender/:file", getXField());
+        } catch (XFieldException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

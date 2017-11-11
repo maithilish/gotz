@@ -91,7 +91,8 @@ public final class DataSetConverter extends BaseDataConverter {
         List<XField> converters = new ArrayList<>();
         try {
             converters = xFieldHelper.split(
-                    "/:xfield/:task/:steps/:step[@name='converter']/:converter",
+                    Util.buildString("/:xfield/:task/:steps/:step[@name='",
+                            getStepType(), "']/:converter"),
                     getXField());
         } catch (XFieldException e) {
         }

@@ -11,19 +11,19 @@ import static org.mockito.Mockito.verify;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender.Marker;
-import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.w3c.dom.Node;
 
 /**
  * <p>
@@ -48,6 +49,8 @@ public class FileAppenderTest {
     private ActivityService activityService;
     @Spy
     private IOHelper ioHelper;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private FileAppender appender;
@@ -61,8 +64,12 @@ public class FileAppenderTest {
     }
 
     @Test
-    public void testAppend() throws InterruptedException {
+    public void testAppend() throws InterruptedException,
+            ConfigNotFoundException, XFieldException {
+
         String str = "test object";
+
+        appender.setXField(new XField());
 
         appender.initializeQueue();
 
@@ -82,8 +89,12 @@ public class FileAppenderTest {
     }
 
     @Test
-    public void testRunFileFieldNotSet() throws InterruptedException {
+    public void testRunFileFieldNotSet() throws InterruptedException,
+            XFieldException, ConfigNotFoundException {
+
         String str1 = "test1";
+
+        appender.setXField(new XField());
 
         appender.initializeQueue();
 
@@ -96,21 +107,24 @@ public class FileAppenderTest {
         t.join();
 
         verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
-                any(FieldNotFoundException.class));
+                any(XFieldException.class));
     }
 
     @Test
-    public void testRun() throws InterruptedException, IOException {
+    public void testRun() throws InterruptedException, IOException,
+            XFieldException, ConfigNotFoundException {
+
         String fileName = "target/test.txt";
 
         String str1 = "test1";
         String str2 = "test2";
 
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("file", fileName));
+        XField xField = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addElement("file", fileName, parent);
+        appender.setXField(xField);
 
         appender.initializeQueue();
-        appender.setFields(fields);
 
         Thread t = new Thread(appender);
         t.start();
@@ -132,16 +146,19 @@ public class FileAppenderTest {
     }
 
     @Test
-    public void testRunWriterClose() throws InterruptedException, IOException {
+    public void testRunWriterClose() throws InterruptedException, IOException,
+            XFieldException, ConfigNotFoundException {
+
         String fileName = "target/test.txt";
 
         String str1 = "test1";
 
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("file", fileName));
+        XField xField = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addElement("file", fileName, parent);
+        appender.setXField(xField);
 
         appender.initializeQueue();
-        appender.setFields(fields);
 
         PrintWriter writer = Mockito.mock(PrintWriter.class);
         given(ioHelper.getPrintWriter(fileName)).willReturn(writer);
@@ -161,12 +178,14 @@ public class FileAppenderTest {
 
     @Test
     public void testRunShouldLogAcivityOnInterruptedException()
-            throws InterruptedException, IllegalAccessException, IOException {
+            throws InterruptedException, IllegalAccessException, IOException,
+            XFieldException {
         String fileName = "target/test.txt";
 
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("file", fileName));
-        appender.setFields(fields);
+        XField xField = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addElement("file", fileName, parent);
+        appender.setXField(xField);
 
         @SuppressWarnings("unchecked")
         BlockingQueue<Object> queue = Mockito.mock(BlockingQueue.class);
@@ -183,12 +202,14 @@ public class FileAppenderTest {
 
     @Test
     public void testRunShouldLogAcivityOnIOException()
-            throws InterruptedException, IllegalAccessException, IOException {
+            throws InterruptedException, IllegalAccessException, IOException,
+            XFieldException {
         String fileName = "/home/xyzz/test.txt";
 
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("file", fileName));
-        appender.setFields(fields);
+        XField xField = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addElement("file", fileName, parent);
+        appender.setXField(xField);
 
         @SuppressWarnings("unchecked")
         BlockingQueue<Object> queue = Mockito.mock(BlockingQueue.class);

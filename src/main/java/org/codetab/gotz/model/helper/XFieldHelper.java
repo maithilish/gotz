@@ -198,6 +198,10 @@ public class XFieldHelper {
             throws XFieldException {
         // TODO try for optimization (in same or separate method) deep copy or
         // reference to nodes
+        if (xField.getNodes().isEmpty()) {
+            throw new XFieldException(
+                    "unable to split xfield, node list is empty");
+        }
         List<XField> xFieldList = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
@@ -221,7 +225,7 @@ public class XFieldHelper {
 
             } catch (XPathExpressionException
                     | ParserConfigurationException e) {
-                throw new XFieldException("unable to split", e);
+                throw new XFieldException("unable to split xfield", e);
             }
         }
         return xFieldList;
@@ -268,7 +272,7 @@ public class XFieldHelper {
         return firstNode;
     }
 
-    public void addElement(final String name, final String text,
+    public Element addElement(final String name, final String text,
             final XField xField) {
         Optional<Node> node = getLastNode(xField);
         if (node.isPresent()) {
@@ -287,12 +291,104 @@ public class XFieldHelper {
                         doc.createElementNS(doc.lookupNamespaceURI(null), name);
                 element.setTextContent(text);
                 doc.getDocumentElement().appendChild(element);
+                return element;
             }
         } else {
             LOGGER.warn(
                     "unable to add new element [{}][{}]. xfield has no nodes",
                     name, text);
         }
+        return null;
+    }
+
+    public Element addElement(final String name, final String text,
+            final String parentNodeXPath, final XField xField)
+            throws XFieldException {
+        Optional<Node> node = getLastNode(xField);
+        if (node.isPresent()) {
+            Document doc = null;
+            if (node.get() instanceof Document) {
+                doc = (Document) node.get();
+            } else {
+                doc = node.get().getOwnerDocument();
+            }
+            if (doc == null) {
+                LOGGER.warn(
+                        "unable to add new element [{}][{}]. owner document is null",
+                        name, text);
+            } else {
+                Element element =
+                        doc.createElementNS(doc.lookupNamespaceURI(null), name);
+                element.setTextContent(text);
+                try {
+                    NodeList nodes = getNodes(doc, parentNodeXPath);
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        Node location = nodes.item(i);
+                        location.appendChild(element);
+                    }
+                } catch (XPathExpressionException e) {
+                    throw new XFieldException(Util.buildString(
+                            "unable to add element [", name, "][", text,
+                            "] at xpath [", parentNodeXPath, "]"), e);
+                }
+                return element;
+            }
+        } else {
+            LOGGER.warn(
+                    "unable to add new element [{}][{}]. xfield has no nodes",
+                    name, text);
+        }
+        return null;
+    }
+
+    public Element addElement(final String name, final String text,
+            final Node parent) {
+        Document doc = null;
+        if (parent instanceof Document) {
+            doc = (Document) parent;
+        } else {
+            doc = parent.getOwnerDocument();
+        }
+        if (doc == null) {
+            LOGGER.warn(
+                    "unable to add new element [{}][{}]. owner document is null",
+                    name, text);
+        } else {
+            Element element =
+                    doc.createElementNS(doc.lookupNamespaceURI(null), name);
+            element.setTextContent(text);
+            parent.appendChild(element);
+            return element;
+        }
+        return null;
+    }
+
+    public void addAttribute(final String name, final String text,
+            final Node node) {
+        Document doc = null;
+        doc = node.getOwnerDocument();
+        if (doc == null) {
+            LOGGER.warn(
+                    "unable to add new element [{}][{}]. owner document is null",
+                    name, text);
+        } else {
+            // ((Element) node).setAttributeNS(doc.lookupNamespaceURI(null),
+            // name,
+            // text);
+            ((Element) node).setAttribute(name, text);
+        }
+    }
+
+    private NodeList getNodes(final Node node, final String xpathExpression)
+            throws XPathExpressionException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        String ns = node.lookupNamespaceURI(null); // default ns
+        NamespaceContext nsc =
+                new SimpleNamespaceContext(XMLConstants.DEFAULT_NS_PREFIX, ns);
+        xpath.setNamespaceContext(nsc);
+
+        return (NodeList) xpath.evaluate(xpathExpression, node,
+                XPathConstants.NODESET);
     }
 
     public XField createXField() throws XFieldException {
@@ -307,4 +403,5 @@ public class XFieldHelper {
             throw new XFieldException("unable to create xfield", e);
         }
     }
+
 }

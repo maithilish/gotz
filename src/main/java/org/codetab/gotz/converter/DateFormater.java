@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.XFieldHelper;

@@ -8,14 +8,13 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,25 +58,28 @@ public abstract class BaseAppender extends Step {
      */
     @Override
     public boolean initialize() {
-        Validate.validState(getFields() != null, "fields must not be null");
+        Validate.validState(getXField() != null, "xField must not be null");
         try {
-            List<FieldsBase> appenders =
-                    FieldsUtil.filterByName(getFields(), "appender");
-            for (FieldsBase appender : appenders) {
-                List<FieldsBase> fields = FieldsUtil.asList(appender);
+            List<XField> appenders = xFieldHelper.split(
+                    Util.buildString("/:xfield/:task/:steps/:step[@name='",
+                            getStepType(), "']/:appender"),
+                    getXField());
+
+            for (XField xField : appenders) {
                 try {
-                    String appenderName = appender.getValue();
-                    appenderService.createAppender(appenderName, fields);
+                    String appenderName = xFieldHelper
+                            .getLastValue("//:appender/@name", xField);
+                    appenderService.createAppender(appenderName, xField);
                     appenderNames.add(appenderName);
                 } catch (ClassNotFoundException | InstantiationException
-                        | IllegalAccessException | FieldNotFoundException e) {
+                        | IllegalAccessException | XFieldException e) {
                     String message = "unable to append";
                     LOGGER.error("{} {}", message, Util.getMessage(e));
                     LOGGER.debug("{}", e);
                     activityService.addActivity(Type.GIVENUP, message, e);
                 }
             }
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
             String message = "unable to find appender fields";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

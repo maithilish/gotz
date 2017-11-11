@@ -6,9 +6,7 @@ import static org.mockito.Mockito.verify;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -18,8 +16,9 @@ import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,6 +29,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.w3c.dom.Node;
 
 public class AppenderServiceTest {
 
@@ -39,6 +39,8 @@ public class AppenderServiceTest {
     private AppenderPoolService appenderPoolService;
     @Mock
     private Appender appender1, appender2;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private AppenderService appenderService;
@@ -54,79 +56,75 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppender()
             throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldNotFoundException {
-        List<FieldsBase> fields = new ArrayList<>();
-        Field field = new Field();
-        field.setName("name");
-        field.setValue("x");
-        fields.add(field);
+            IllegalAccessException, FieldNotFoundException, XFieldException {
 
-        field = new Field();
-        field.setName("class");
-        field.setValue("org.codetab.gotz.appender.FileAppender");
-        fields.add(field);
+        String className = "org.codetab.gotz.appender.FileAppender";
+        XField xField = xFieldHelper.createXField();
+        Node node = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addAttribute("class", className, node);
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
         ConfigService configService = dInjector.instance(ConfigService.class);
         configService.init(userProvidedFile, defaultsFile);
 
-        appenderService.createAppender("x", fields);
+        appenderService.createAppender("x", xField);
 
         Appender appender = appenderService.getAppender("x");
+        appender.setXField(xField);
 
-        assertThat(appender.getFields()).isEqualTo(fields);
+        assertThat(appender.getXField()).isEqualTo(xField);
         verify(appenderPoolService).submit("appender", appender);
     }
 
     @Test
-    public void testCreateAppenderAlreadyExists() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException,
-            FieldNotFoundException, ConfigNotFoundException {
-        List<FieldsBase> fields = new ArrayList<>();
-        Field field = new Field();
-        field.setName("name");
-        field.setValue("x");
-        fields.add(field);
+    public void testCreateAppenderAlreadyExists()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, ConfigNotFoundException, XFieldException {
 
-        field = new Field();
-        field.setName("class");
-        field.setValue("org.codetab.gotz.appender.FileAppender");
-        fields.add(field);
+        String className = "org.codetab.gotz.appender.FileAppender";
+        String appenderName = "x";
+        XField xField = xFieldHelper.createXField();
+        Node node = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addAttribute("name", appenderName, node);
+        xFieldHelper.addAttribute("class", className, node);
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
         ConfigService configService = dInjector.instance(ConfigService.class);
         configService.init(userProvidedFile, defaultsFile);
 
-        appenderService.createAppender("x", fields);
+        appenderService.createAppender("x", xField);
         Appender appender = appenderService.getAppender("x");
 
-        assertThat(appender.getFields()).isEqualTo(fields);
+        assertThat(appender.getXField()).isEqualTo(xField);
         verify(appenderPoolService).submit("appender", appender);
 
-        // change class name to trigger error
-        ((Field) fields.get(1)).setValue("xyz");
-        appenderService.createAppender("x", fields);
+        // change class name to trigger error, but as appender with same name
+        // exists it should not throw ClassCastException
+        className = "org.codetab.gotz.appender.FileAppenderX";
+        xField = xFieldHelper.createXField();
+        node = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addAttribute("name", appenderName, node);
+        xFieldHelper.addAttribute("class", className, node);
+
+        appenderService.createAppender("x", xField);
     }
 
     @Test
     public void testCreateAppenderExpectException()
             throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldNotFoundException {
-        List<FieldsBase> fields = new ArrayList<>();
-        Field field = new Field();
-        field.setName("name");
-        field.setValue("x");
-        fields.add(field);
+            IllegalAccessException, XFieldException {
 
-        field = new Field();
-        field.setName("class");
-        field.setValue("org.codetab.gotz.model.Axis");
-        fields.add(field);
+        String className = "org.codetab.gotz.model.Axis";
+        String appenderName = "x";
+        XField xField = xFieldHelper.createXField();
+        Node node = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addAttribute("name", appenderName, node);
+        xFieldHelper.addAttribute("class", className, node);
 
         exceptionRule.expect(ClassCastException.class);
-        appenderService.createAppender("x", fields);
+        appenderService.createAppender("x", xField);
     }
 
     @Test
@@ -164,7 +162,7 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppenderSynchronized() {
         Method method = MethodUtils.getMatchingMethod(AppenderService.class,
-                "createAppender", String.class, List.class);
+                "createAppender", String.class, XField.class);
         assertThat(method).isNotNull();
         assertThat(Modifier.isSynchronized(method.getModifiers())).isTrue();
     }

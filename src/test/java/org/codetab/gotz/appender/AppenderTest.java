@@ -7,18 +7,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,6 +25,8 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.w3c.dom.Node;
 
 /**
  * <p>
@@ -39,6 +40,8 @@ public class AppenderTest {
     private ConfigService configService;
     @Mock
     private ActivityService activityService;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private ListAppender appender;
@@ -52,7 +55,14 @@ public class AppenderTest {
     }
 
     @Test
-    public void testInitializeQueueDefaultSize() {
+    public void testInitializeQueueDefaultSize()
+            throws XFieldException, ConfigNotFoundException {
+        given(configService.getConfig("gotz.appender.queuesize"))
+                .willThrow(ConfigNotFoundException.class);
+
+        XField xField = xFieldHelper.createXField();
+        appender.setXField(xField);
+
         appender.initializeQueue();
 
         assertThat(appender.getQueue()).isNotNull();
@@ -61,9 +71,12 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueDefaultSizeNoGlobalConfig()
-            throws ConfigNotFoundException {
+            throws ConfigNotFoundException, XFieldException {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willThrow(ConfigNotFoundException.class);
+
+        XField xField = xFieldHelper.createXField();
+        appender.setXField(xField);
 
         appender.initializeQueue();
 
@@ -73,9 +86,12 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueSizeFromGlobalConfig()
-            throws ConfigNotFoundException {
+            throws ConfigNotFoundException, XFieldException {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
+
+        XField xField = xFieldHelper.createXField();
+        appender.setXField(xField);
 
         appender.initializeQueue();
 
@@ -85,15 +101,16 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueSizeFromAppenderField()
-            throws ConfigNotFoundException {
+            throws ConfigNotFoundException, XFieldException {
 
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
 
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("queuesize", "2048"));
+        XField xField = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", xField);
+        xFieldHelper.addElement("queueSize", "2048", parent);
 
-        appender.setFields(fields);
+        appender.setXField(xField);
 
         appender.initializeQueue();
 
@@ -103,11 +120,13 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueInvalidSize()
-            throws ConfigNotFoundException {
+            throws ConfigNotFoundException, XFieldException {
 
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("x");
 
+        XField xField = xFieldHelper.createXField();
+        appender.setXField(xField);
         appender.initializeQueue();
 
         verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
@@ -148,23 +167,23 @@ public class AppenderTest {
     }
 
     @Test
-    public void testSetGetFields() {
+    public void testSetGetXField() throws XFieldException {
 
-        List<FieldsBase> fields = new ArrayList<>();
-        appender.setFields(fields);
+        XField xField = xFieldHelper.createXField();
+        appender.setXField(xField);
 
-        List<FieldsBase> actual = appender.getFields();
+        XField actual = appender.getXField();
 
-        assertThat(actual).isSameAs(fields);
+        assertThat(actual).isSameAs(xField);
     }
 
     @Test
-    public void testSetFieldsNullParams() {
+    public void testSetXFieldNullParams() {
         try {
-            appender.setFields(null);
+            appender.setXField(null);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).isEqualTo("fields must not be null");
+            assertThat(e.getMessage()).isEqualTo("xField must not be null");
         }
     }
 

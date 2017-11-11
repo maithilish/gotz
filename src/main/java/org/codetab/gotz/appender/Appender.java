@@ -1,19 +1,19 @@
 package org.codetab.gotz.appender;
 
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public abstract class Appender implements Runnable {
     /**
      * Appender fields.
      */
-    private List<FieldsBase> fields;
+    private XField xField;
     /**
      * Queue to hold objects pushed to appenders.
      */
@@ -71,6 +71,10 @@ public abstract class Appender implements Runnable {
     @Inject
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected ActivityService activityService;
+
+    @Inject
+    @SuppressWarnings("checkstyle:visibilitymodifier")
+    protected XFieldHelper xFieldHelper;
 
     /**
      * <p>
@@ -105,10 +109,15 @@ public abstract class Appender implements Runnable {
         } catch (ConfigNotFoundException e) {
         }
         try {
-            queueSize = FieldsUtil.getValue(fields, "queuesize");
-        } catch (FieldNotFoundException e) {
+            queueSize =
+                    xFieldHelper.getLastValue("//:appender/:queueSize", xField);
+        } catch (XFieldException e) {
         }
-        if (queueSize == null) {
+        /*
+         * default queue size. configService mock returns null so default is set
+         * here
+         */
+        if (StringUtils.isBlank(queueSize)) {
             queueSize = "4096";
         }
         try {
@@ -136,21 +145,21 @@ public abstract class Appender implements Runnable {
     /**
      * <p>
      * Set appender fields.
-     * @param fields
-     *            fields, not null
+     * @param xField
+     *            xField
      */
-    public void setFields(final List<FieldsBase> fields) {
-        Validate.notNull(fields, "fields must not be null");
-        this.fields = fields;
+    public void setXField(final XField xField) {
+        Validate.notNull(xField, "xField must not be null");
+        this.xField = xField;
     }
 
     /**
      * <p>
      * Get appender fields.
-     * @return list of fields.
+     * @return xField
      */
-    public List<FieldsBase> getFields() {
-        return fields;
+    public XField getXField() {
+        return xField;
     }
 
     /**
