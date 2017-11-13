@@ -4,6 +4,9 @@
     "http://java.sun.com/dtd/jdo_2_0.dtd">
 
 <!-- Fields are not persisted so we need to copy them from beans -->
+
+<!-- Metadata reference : http://www.datanucleus.org:15080/products/accessplatform_5_0/jdo/metadata_xml.html -->
+<!-- Java types persistable by default : http://www.datanucleus.org/products/accessplatform_4_1/jdo/types.html -->
 <jdo>
     <package name="org.codetab.gotz.model">
         <class name="Base" detachable="true">
@@ -47,11 +50,13 @@
             <field name="axis" serialized="true" />
             <!-- <field name="memberSets" persistence-modifier="none" /> -->
             <field name="fields" serialized="true" />
+            <field name="xfield" persistence-modifier="persistent" serialized="true" />
             <fetch-group name="detachAxis">
                 <field name="axis" />
             </fetch-group>
             <fetch-group name="detachFields">
                 <field name="fields" />
+                <field name="xfield" />
             </fetch-group>
         </class>
         <class name="Data">

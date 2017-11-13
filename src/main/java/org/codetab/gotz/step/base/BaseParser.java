@@ -26,12 +26,10 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -249,26 +247,26 @@ public abstract class BaseParser extends Step {
             throws NumberFormatException, FieldNotFoundException {
         boolean noField = true;
         try {
-            String breakAfter =
-                    FieldsUtil.getValue(axis.getFields(), "breakAfter");
+            String breakAfter = xFieldHelper
+                    .getLastValue("//xf:breakAfter/@value", axis.getXField());
             noField = false;
             String value = axis.getValue().trim();
             if (value.equals(breakAfter)) {
                 return true;
             }
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
         } catch (NullPointerException e) {
             String message = Util.buildString(
                     "check breakAfter value in datadef ", getLabel());
             throw new NullPointerException(message);
         }
         try {
-            Integer endIndex = getEndIndex(axis.getFields());
+            Integer endIndex = getEndIndex(axis.getXField());
             noField = false;
             if (axis.getIndex() + 1 > endIndex) {
                 return true;
             }
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
         }
         if (noField) {
             String message = Util.buildString(
@@ -369,18 +367,20 @@ public abstract class BaseParser extends Step {
     /*
      *
      */
-    protected Integer getStartIndex(final List<FieldsBase> fields)
-            throws NumberFormatException, FieldNotFoundException {
-        Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
+    protected Integer getStartIndex(final XField xField)
+            throws NumberFormatException, XFieldException {
+        Range<Integer> indexRange =
+                xFieldHelper.getRange("//xf:indexRange/@value", xField);
         return indexRange.getMinimum();
     }
 
     /*
      *
      */
-    protected Integer getEndIndex(final List<FieldsBase> fields)
-            throws NumberFormatException, FieldNotFoundException {
-        Range<Integer> indexRange = FieldsUtil.getRange(fields, "indexRange");
+    protected Integer getEndIndex(final XField xField)
+            throws NumberFormatException, XFieldException {
+        Range<Integer> indexRange =
+                xFieldHelper.getRange("//xf:indexRange/@value", xField);
         return indexRange.getMaximum();
     }
 

@@ -1,10 +1,12 @@
 package org.codetab.gotz.model.helper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
@@ -12,10 +14,15 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.text.StrSubstitutor;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.misc.SimpleNamespaceContext;
+import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.util.XmlUtils;
@@ -34,10 +41,7 @@ public class XFieldHelper {
     public String getValue(final String xpathExpression, final Node node)
             throws XFieldException {
         XPath xpath = XPathFactory.newInstance().newXPath();
-        String ns = node.lookupNamespaceURI(null); // default ns
-        NamespaceContext nsc =
-                new SimpleNamespaceContext(XMLConstants.DEFAULT_NS_PREFIX, ns);
-        xpath.setNamespaceContext(nsc);
+        xpath.setNamespaceContext(getNamespaceContext(node));
         try {
             String value = xpath.evaluate(xpathExpression, node);
             if (StringUtils.isBlank(value)) {
@@ -64,11 +68,7 @@ public class XFieldHelper {
             final XField xField) throws XFieldException {
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
-            String ns = node.lookupNamespaceURI(null); // default ns
-            NamespaceContext nsc = new SimpleNamespaceContext(
-                    XMLConstants.DEFAULT_NS_PREFIX, ns);
-            xpath.setNamespaceContext(nsc);
-
+            xpath.setNamespaceContext(getNamespaceContext(node));
             try {
                 String value = xpath.evaluate(xpathExpression, node);
                 if (StringUtils.isNotBlank(value)) {
@@ -97,10 +97,7 @@ public class XFieldHelper {
         String value = "";
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
-            String ns = node.lookupNamespaceURI(null); // default ns
-            NamespaceContext nsc = new SimpleNamespaceContext(
-                    XMLConstants.DEFAULT_NS_PREFIX, ns);
-            xpath.setNamespaceContext(nsc);
+            xpath.setNamespaceContext(getNamespaceContext(node));
             String val;
             try {
                 val = xpath.evaluate(xpathExpression, node);
@@ -123,26 +120,30 @@ public class XFieldHelper {
         List<String> values = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
-            String ns = node.lookupNamespaceURI(null); // default ns
-            NamespaceContext nsc = new SimpleNamespaceContext(
-                    XMLConstants.DEFAULT_NS_PREFIX, ns);
-            xpath.setNamespaceContext(nsc);
-
-            String value;
+            xpath.setNamespaceContext(getNamespaceContext(node));
             try {
-                value = xpath.evaluate(xpathExpression, node);
+                NodeList items = getNodes(node, xpathExpression);
+                for (int i = 0; i < items.getLength(); i++) {
+                    Node item = items.item(i);
+                    String value = item.getTextContent();
+                    values.add(value);
+                }
             } catch (XPathExpressionException e) {
                 throw new XFieldException(e);
-            }
-            if (StringUtils.isNotBlank(value)) {
-                values.add(value);
             }
         }
         return values;
     }
 
-    public boolean isDefined(final String xpathExpression, final XField xField)
-            throws XFieldException {
+    private NamespaceContext getNamespaceContext(final Node node) {
+        String prefix = node.getPrefix();
+        String ns = node.lookupNamespaceURI(prefix);
+        SimpleNamespaceContext nsc = new SimpleNamespaceContext(prefix, ns);
+        return nsc;
+    }
+
+    public boolean isDefined(final String xpathExpression,
+            final XField xField) {
         /*
          * getFirstValue returns non blank value or throws XFieldException when
          * value is blank/null or when parse error. If it returns value then
@@ -154,8 +155,15 @@ public class XFieldHelper {
             getFirstValue(xpathExpression, xField);
             return true;
         } catch (XFieldException e) {
-            if (e.getCause() instanceof XPathExpressionException) {
-                throw e;
+            return false;
+        }
+    }
+
+    public boolean isAnyDefined(final XField xField,
+            final String... xpathExpressions) {
+        for (String xpathExpression : xpathExpressions) {
+            if (isDefined(xpathExpression, xField)) {
+                return true;
             }
         }
         return false;
@@ -198,17 +206,14 @@ public class XFieldHelper {
             throws XFieldException {
         // TODO try for optimization (in same or separate method) deep copy or
         // reference to nodes
-        if (xField.getNodes().isEmpty()) {
-            throw new XFieldException(
-                    "unable to split xfield, node list is empty");
-        }
+
         List<XField> xFieldList = new ArrayList<>();
+        if (xField.getNodes().isEmpty()) {
+            return xFieldList;
+        }
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
-            String ns = node.lookupNamespaceURI(null); // default ns
-            NamespaceContext nsc = new SimpleNamespaceContext(
-                    XMLConstants.DEFAULT_NS_PREFIX, ns);
-            xpath.setNamespaceContext(nsc);
+            xpath.setNamespaceContext(getNamespaceContext(node));
             try {
                 NodeList nodeList = (NodeList) xpath.evaluate(xpathExpression,
                         node, XPathConstants.NODESET);
@@ -382,13 +387,55 @@ public class XFieldHelper {
     private NodeList getNodes(final Node node, final String xpathExpression)
             throws XPathExpressionException {
         XPath xpath = XPathFactory.newInstance().newXPath();
-        String ns = node.lookupNamespaceURI(null); // default ns
-        NamespaceContext nsc =
-                new SimpleNamespaceContext(XMLConstants.DEFAULT_NS_PREFIX, ns);
-        xpath.setNamespaceContext(nsc);
-
+        xpath.setNamespaceContext(getNamespaceContext(node));
         return (NodeList) xpath.evaluate(xpathExpression, node,
                 XPathConstants.NODESET);
+    }
+
+    /**
+     * <p>
+     * Get value as Range.
+     * @param fields
+     *            list
+     * @param name
+     *            field name
+     * @return range
+     * @throws XFieldException
+     *             if no such field
+     * @throws NumberFormatException
+     *             value is not range or minimum is greater than maximum
+     */
+    public Range<Integer> getRange(final String xpathExpression,
+            final XField xField) throws XFieldException, NumberFormatException {
+        String value = getLastValue(xpathExpression, xField);
+
+        if (value.startsWith("-")) {
+            NumberFormatException e =
+                    new NumberFormatException("Invalid Range " + value);
+            throw e;
+        }
+        String[] tokens = StringUtils.split(value, '-');
+        if (tokens.length < 1 || tokens.length > 2) {
+            NumberFormatException e =
+                    new NumberFormatException("Invalid Range " + value);
+            throw e;
+        }
+        Integer min = 0, max = 0;
+        if (tokens.length == 1) {
+            min = Integer.parseInt(tokens[0]);
+            max = Integer.parseInt(tokens[0]);
+        }
+        if (tokens.length == 2) {
+            min = Integer.parseInt(tokens[0]);
+            max = Integer.parseInt(tokens[1]);
+
+        }
+        if (min > max) {
+            NumberFormatException e = new NumberFormatException(
+                    "Invalid Range [min > max] " + value);
+            throw e;
+        }
+        return Range.between(min, max);
     }
 
     public XField createXField() throws XFieldException {
@@ -402,6 +449,80 @@ public class XFieldHelper {
         } catch (ParserConfigurationException e) {
             throw new XFieldException("unable to create xfield", e);
         }
+    }
+
+    public void replaceVariables(final Map<String, String> queries,
+            final Map<String, Axis> axisMap) throws IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
+
+        // TODO provide some examples and full explanation in javadoc
+
+        for (String key : queries.keySet()) {
+            String str = queries.get(key);
+            Map<String, String> valueMap = getValueMap(str, axisMap);
+            StrSubstitutor ss = new StrSubstitutor(valueMap);
+            ss.setVariablePrefix("%{");
+            ss.setVariableSuffix("}");
+            ss.setEscapeChar('%');
+            String patchedStr = ss.replace(str);
+            queries.put(key, patchedStr);
+        }
+    }
+
+    /**
+     * <p>
+     * Get value map.
+     * @param str
+     *            string to parse
+     * @param map
+     *            axis map
+     * @return axis value map
+     * @throws IllegalAccessException
+     *             on error
+     * @throws InvocationTargetException
+     *             on error
+     * @throws NoSuchMethodException
+     *             on error
+     */
+    private Map<String, String> getValueMap(final String str,
+            final Map<String, ?> map) throws IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
+        String[] keys = StringUtils.substringsBetween(str, "%{", "}");
+        if (keys == null) {
+            return null;
+        }
+        Map<String, String> valueMap = new HashMap<>();
+        for (String key : keys) {
+            String[] parts = key.split("\\.");
+            String objKey = parts[0];
+            String property = parts[1];
+            Object obj = map.get(objKey.toUpperCase());
+            // call getter and type convert to String
+            Object o = PropertyUtils.getProperty(obj, property);
+            valueMap.put(key, ConvertUtils.convert(o));
+        }
+        return valueMap;
+    }
+
+    /**
+     * <p>
+     * From the input list, Field values are concated in reverse order and
+     * suffixed with input string.
+     * <p>
+     * Example : for value xyz and two suffixes foo and bar, it returns string
+     * barfooxyz.
+     * @param prefixes
+     *            input list
+     * @param value
+     *            string to prefix
+     * @return string prefixed concated values
+     */
+    public String suffixValue(final String value, final List<String> suffixes) {
+        String suffixedValues = value;
+        for (String suffix : suffixes) {
+            suffixedValues = suffix + suffixedValues;
+        }
+        return suffixedValues;
     }
 
 }

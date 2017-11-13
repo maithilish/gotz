@@ -148,6 +148,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
+                    <xs:element ref="xf:xfield"
+                        minOccurs="0" maxOccurs="1" />
                     <xs:element ref="tns:axis" minOccurs="0"
                         maxOccurs="unbounded" />
                 </xs:sequence>
@@ -162,6 +164,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
+                    <xs:element ref="xf:xfield"
+                        minOccurs="0" maxOccurs="1" />
                     <xs:element ref="tns:member" minOccurs="0"
                         maxOccurs="unbounded" />
                     <xs:element ref="tns:filter" minOccurs="0" />
@@ -175,6 +179,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
+                    <xs:element ref="xf:xfield"
+                        minOccurs="0" maxOccurs="1" />
                 </xs:sequence>
                 <xs:attribute name="axis" type="xs:string" />
                 <xs:attribute name="index" type="xs:int" />
@@ -190,6 +196,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
+                    <xs:element ref="xf:xfield"
+                        minOccurs="0" maxOccurs="1" />
                 </xs:sequence>
                 <xs:attribute name="axis" type="xs:string" />
             </xs:extension>

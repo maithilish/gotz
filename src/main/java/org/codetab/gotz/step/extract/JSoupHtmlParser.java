@@ -14,16 +14,16 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
-import org.codetab.gotz.exception.FieldNotFoundException;
+import org.apache.commons.lang3.StringUtils;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.step.base.BaseParser;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -77,8 +77,8 @@ public abstract class JSoupHtmlParser extends BaseParser {
             if (axis.getIndex() == null) {
                 Integer startIndex;
                 try {
-                    startIndex = getStartIndex(axis.getFields());
-                } catch (FieldNotFoundException e) {
+                    startIndex = getStartIndex(axis.getXField());
+                } catch (XFieldException e) {
                     startIndex = 1;
                 }
                 axis.setIndex(startIndex);
@@ -104,41 +104,54 @@ public abstract class JSoupHtmlParser extends BaseParser {
         // to return value else raise StepRunException
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
-        List<FieldsBase> list =
-                dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
+        XField xField =
+                dataDefHelper.getAxis(dataDef, axis.getName()).getXfield();
         try {
-            List<FieldsBase> scripts = FieldsUtil.filterByGroup(list, "script");
+            Map<String, String> scripts = new HashMap<>();
+            scripts.put("script",
+                    xFieldHelper.getLastValue("//xf:script/@value", xField));
             setTraceString(sb, scripts, "<<<");
-            scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
+            xFieldHelper.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, ">>>>");
             LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryByScript(scripts);
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
         }
 
         try {
-            List<FieldsBase> queries = FieldsUtil.filterByGroup(list, "query");
+            Map<String, String> queries = new HashMap<>();
+            queries.put("region",
+                    xFieldHelper.getLastValue("//xf:query/@region", xField));
+            queries.put("field",
+                    xFieldHelper.getLastValue("//xf:query/@field", xField));
+            try {
+                queries.put("attribute", xFieldHelper
+                        .getLastValue("//xf:query/@attribute", xField));
+            } catch (XFieldException e) {
+                queries.put("attribute", "");
+            }
             setTraceString(sb, queries, "<<<");
-            queries = FieldsUtil.replaceVariables(queries, member.getAxisMap());
+            xFieldHelper.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, ">>>>");
             LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryBySelector(page, queries);
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
         }
 
         try {
-            List<FieldsBase> prefix = FieldsUtil.filterByGroup(list, "prefix");
-            value = FieldsUtil.suffixValue(prefix, value);
-        } catch (FieldNotFoundException e) {
+            List<String> suffixes =
+                    xFieldHelper.getValues("//xf:suffix", xField);
+            value = xFieldHelper.suffixValue(value, suffixes);
+        } catch (XFieldException e) {
         }
 
         return value;
     }
 
-    private String queryByScript(final List<FieldsBase> scripts)
-            throws ScriptException, FieldNotFoundException {
+    private String queryByScript(final Map<String, String> scripts)
+            throws ScriptException, XFieldException {
         // TODO - check whether thread safety is involved
         if (jsEngine == null) {
             initializeScriptEngine();
@@ -147,7 +160,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
         LOGGER.trace(getMarker(), "Scripts {} ", scripts);
         jsEngine.put("configs", configService);
         jsEngine.put("document", getDocument());
-        String scriptStr = FieldsUtil.getValue(scripts, "script");
+        String scriptStr = scripts.get("script");
         Object val = jsEngine.eval(scriptStr);
         String value = ConvertUtils.convert(val);
         LOGGER.trace(getMarker(), "result {}", value);
@@ -167,21 +180,17 @@ public abstract class JSoupHtmlParser extends BaseParser {
     }
 
     private String queryBySelector(final Document page,
-            final List<FieldsBase> queries) throws FieldNotFoundException {
-        if (FieldsUtil.countField(queries) < 2) {
+            final Map<String, String> queries) {
+        if (queries.size() < 2) {
             LOGGER.warn("Insufficient queries in DataDef [{}]",
                     getDataDefName());
             return null;
         }
         LOGGER.trace(getMarker(), "------ query data ------");
         LOGGER.trace(getMarker(), "Queries {} ", queries);
-        String regionXpathExpr = FieldsUtil.getValue(queries, "region");
-        String xpathExpr = FieldsUtil.getValue(queries, "field");
-        String attr = null;
-        try {
-            attr = FieldsUtil.getValue(queries, "attribute"); // optional
-        } catch (FieldNotFoundException e) {
-        }
+        String regionXpathExpr = queries.get("region");
+        String xpathExpr = queries.get("field");
+        String attr = queries.get("attribute"); // optional
         String value = getBySelector(page, regionXpathExpr, xpathExpr, attr);
         return value;
     }
@@ -231,7 +240,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
         LOGGER.trace(
                 "Nodes " + subElements.size() + " for XPATH: " + xpathExpr);
         for (Element element : subElements) {
-            if (attr == null) {
+            if (StringUtils.isBlank(attr)) {
                 value = element.ownText();
             } else {
                 value = element.attr(attr); // get value by attribute key
@@ -247,15 +256,18 @@ public abstract class JSoupHtmlParser extends BaseParser {
     }
 
     private void setTraceString(final StringBuilder sb,
-            final List<FieldsBase> fields, final String header) {
+            final Map<String, String> strings, final String header) {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }
         sb.append(Util.LINE);
         sb.append("  ");
         sb.append(header);
-        for (FieldsBase field : fields) {
-            sb.append(field);
+        for (String key : strings.keySet()) {
+            sb.append(key);
+            sb.append(" : ");
+            sb.append(strings.get(key));
+            sb.append(Util.LINE);
         }
     }
 }

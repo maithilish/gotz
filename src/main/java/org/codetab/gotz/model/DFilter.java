@@ -4,7 +4,7 @@
 // See <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
 // Any modifications to this file will be lost upon recompilation of the source
 // schema.
-// Generated on: 2017.06.29 at 12:23:21 PM IST
+// Generated on: 2017.11.12 at 07:58:21 AM IST
 //
 
 package org.codetab.gotz.model;
@@ -39,6 +39,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
  *         &lt;group ref="{http://codetab.org/gotz}fields"/&gt;
+ *         &lt;element ref="{http://codetab.org/xfield}xfield" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/extension&gt;
@@ -49,13 +50,15 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dFilter", propOrder = {"fields"})
+@XmlType(name = "dFilter", propOrder = {"fields", "xfield"})
 public class DFilter extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElements({@XmlElement(name = "field", type = Field.class),
             @XmlElement(type = Fields.class)})
     private List<FieldsBase> fields;
+    @XmlElement(namespace = "http://codetab.org/xfield")
+    private XField xfield;
     @XmlAttribute(name = "axis")
     private String axis;
 
@@ -87,6 +90,27 @@ public class DFilter extends Base implements Serializable {
             fields = new ArrayList<FieldsBase>();
         }
         return this.fields;
+    }
+
+    /**
+     * Gets the value of the xfield property.
+     *
+     * @return possible object is {@link XField }
+     *
+     */
+    public XField getXfield() {
+        return xfield;
+    }
+
+    /**
+     * Sets the value of the xfield property.
+     *
+     * @param value
+     *            allowed object is {@link XField }
+     *
+     */
+    public void setXfield(XField value) {
+        this.xfield = value;
     }
 
     /**

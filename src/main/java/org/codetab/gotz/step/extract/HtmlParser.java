@@ -20,6 +20,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -112,8 +113,8 @@ public abstract class HtmlParser extends BaseParser {
             if (axis.getIndex() == null) {
                 Integer startIndex;
                 try {
-                    startIndex = getStartIndex(axis.getFields());
-                } catch (FieldNotFoundException e) {
+                    startIndex = getStartIndex(axis.getXField());
+                } catch (XFieldException e) {
                     startIndex = 1;
                 }
                 axis.setIndex(startIndex);

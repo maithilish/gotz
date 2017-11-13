@@ -16,7 +16,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.SerializationUtils;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -25,12 +25,11 @@ import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.validation.DataDefValidator;
@@ -54,7 +53,7 @@ public class DataDefService {
     @Inject
     private DataDefValidator validator;
     @Inject
-    private DataDefHelper dataDefDefaults;
+    private DataDefHelper dataDefHelper;
 
     @Inject
     private DataDefService() {
@@ -64,7 +63,9 @@ public class DataDefService {
         logger.info("initialize DataDefs singleton");
 
         List<DataDef> newDataDefs = beanService.getBeans(DataDef.class);
+
         setDefaults(newDataDefs);
+
         validateDataDefs(newDataDefs);
 
         dataDefs = dataDefPersistence.loadDataDefs();
@@ -102,10 +103,16 @@ public class DataDefService {
 
     private void setDefaults(final List<DataDef> newDataDefs) {
         for (DataDef dataDef : newDataDefs) {
-            dataDefDefaults.addFact(dataDef);
-            dataDefDefaults.setOrder(dataDef);
-            dataDefDefaults.setDates(dataDef);
-            dataDefDefaults.addIndexRange(dataDef);
+            try {
+                dataDefHelper.addFact(dataDef);
+                dataDefHelper.setOrder(dataDef);
+                dataDefHelper.setDates(dataDef);
+                dataDefHelper.addIndexRange(dataDef);
+                dataDefHelper.addXField(dataDef);
+            } catch (XFieldException e) {
+                throw new CriticalException(
+                        "datadef [" + dataDef.getName() + "] set defaults", e);
+            }
         }
     }
 
@@ -140,6 +147,8 @@ public class DataDefService {
             for (Set<DMember> members : memberSetsMap.get(dataDefName)) {
                 Member dataMember = new Member();
                 dataMember.setName(""); // there is no name for member
+                dataMember.setXField(new XField());
+
                 // add axis and its fields
                 for (DMember dMember : members) {
                     Axis axis = createAxis(dMember);
@@ -147,18 +156,21 @@ public class DataDefService {
                     try {
                         // fields from DMember level are added in createAxis()
                         // fields from datadef level are added here
-                        List<FieldsBase> fields =
-                                FieldsUtil.filterByValue(dataDef.getFields(),
-                                        "member", dMember.getName());
-                        dataMember.getFields().addAll(fields);
-                    } catch (FieldNotFoundException e) {
+                        List<XField> xFields =
+                                dataDefHelper.getDataDefMemberFields(
+                                        dMember.getName(), dataDef.getXfield());
+                        for (XField xField : xFields) {
+                            dataMember.getXField().getNodes()
+                                    .addAll(xField.getNodes());
+                        }
+                    } catch (XFieldException e) {
                     }
                 }
                 try {
-                    String group = FieldsUtil.getValue(dataMember.getFields(),
-                            "group");
+                    String group = dataDefHelper
+                            .getDataMemberGroup(dataMember.getXField());
                     dataMember.setGroup(group);
-                } catch (FieldNotFoundException e) {
+                } catch (XFieldException e) {
                 }
                 data.addMember(dataMember);
             }
@@ -177,6 +189,7 @@ public class DataDefService {
         axis.setValue(dMember.getValue());
         // fields from DMember level
         axis.getFields().addAll(dMember.getFields());
+        axis.setXField(dMember.getXfield());
         return axis;
     }
 
@@ -202,15 +215,15 @@ public class DataDefService {
         memberSetsMap.put(dataDef.getName(), dataDefMemberSets);
     }
 
-    public Map<AxisName, List<FieldsBase>> getFilterMap(final String dataDef)
+    public Map<AxisName, XField> getFilterMap(final String dataDef)
             throws DataDefNotFoundException {
-        Map<AxisName, List<FieldsBase>> filterMap = new HashMap<>();
+        Map<AxisName, XField> filterMap = new HashMap<>();
         List<DAxis> axes = getDataDef(dataDef).getAxis();
         for (DAxis axis : axes) {
             AxisName axisName = AxisName.valueOf(axis.getName().toUpperCase());
             DFilter filter = axis.getFilter();
             if (filter != null) {
-                filterMap.put(axisName, filter.getFields());
+                filterMap.put(axisName, filter.getXfield());
             }
         }
         return filterMap;

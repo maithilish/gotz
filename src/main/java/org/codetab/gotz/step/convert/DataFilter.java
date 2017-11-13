@@ -3,22 +3,22 @@ package org.codetab.gotz.step.convert;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.iterator.FieldsIterator;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseFilter;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public final class DataFilter extends BaseFilter {
         Validate.validState(getData() != null, "data must not be null");
 
         List<Member> forRemovalMembers = new ArrayList<Member>();
-        Map<AxisName, List<FieldsBase>> filterMap = null;
+        Map<AxisName, XField> filterMap = null;
         try {
             filterMap = dataDefService.getFilterMap(getData().getDataDef());
         } catch (DataDefNotFoundException e) {
@@ -90,8 +90,8 @@ public final class DataFilter extends BaseFilter {
      * @return true if axis candidate for filter otherwise false
      */
     private boolean requireFilter(final Axis axis,
-            final Map<AxisName, List<FieldsBase>> filterMap) {
-        List<FieldsBase> filters = filterMap.get(axis.getName());
+            final Map<AxisName, XField> filterMap) {
+        XField filters = filterMap.get(axis.getName());
         if (filters == null) {
             return false;
         }
@@ -110,38 +110,42 @@ public final class DataFilter extends BaseFilter {
      * candidate for filter.
      * @param axis
      *            to filter
-     * @param filters
+     * @param xField
      *            filter fields from datadef
      * @param filterGroup
      *            if "match" then axis.getMatch() is compared with field value
      *            if "value" then axis.getValue() is compared with field value
      * @return true if axis candidate for filter.
      */
-    private boolean requireFilter(final Axis axis,
-            final List<FieldsBase> filters, final String filterGroup) {
+    private boolean requireFilter(final Axis axis, final XField xField,
+            final String filterType) {
+        String value = "";
+        if (filterType.equals("match")) {
+            value = axis.getMatch();
+        }
+        if (filterType.equals("value")) {
+            value = axis.getValue();
+        }
+        if (value == null) {
+            return false;
+        }
         try {
-            List<FieldsBase> fil =
-                    FieldsUtil.filterByGroup(filters, filterGroup);
-            FieldsIterator ite = new FieldsIterator(fil);
-            while (ite.hasNext()) {
-                FieldsBase field = ite.next();
-                if (field instanceof Field) {
-                    String value = "";
-                    if (filterGroup.equals("match")) {
-                        value = axis.getMatch();
-                    }
-                    if (filterGroup.equals("value")) {
-                        value = axis.getValue();
-                    }
-                    if (value == null) {
-                        return false;
-                    }
-                    if (value.equals(field.getValue())) {
+            String xpath = Util.buildString("//xf:filters[@type='", filterType,
+                    "']/xf:filter/@pattern");
+            List<String> patterns = xFieldHelper.getValues(xpath, xField);
+            for (String pattern : patterns) {
+                if (value.equals(pattern)) {
+                    return true;
+                }
+                try {
+                    if (Pattern.matches(pattern, value)) {
                         return true;
                     }
+                } catch (PatternSyntaxException e) {
+                    LOGGER.warn("unable to filter {} {}", pattern, e);
                 }
             }
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
         }
         return false;
     }

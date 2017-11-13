@@ -4,7 +4,7 @@
 // See <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a>
 // Any modifications to this file will be lost upon recompilation of the source
 // schema.
-// Generated on: 2017.10.31 at 11:19:29 AM IST
+// Generated on: 2017.11.12 at 07:58:21 AM IST
 //
 
 package org.codetab.gotz.model;
@@ -52,6 +52,8 @@ public class ObjectFactory {
             new QName("http://codetab.org/gotz", "member");
     private final static QName _Filter_QNAME =
             new QName("http://codetab.org/gotz", "filter");
+    private final static QName _Xfields_QNAME =
+            new QName("http://codetab.org/xfield", "xfields");
     private final static QName _Xfield_QNAME =
             new QName("http://codetab.org/xfield", "xfield");
 
@@ -165,6 +167,14 @@ public class ObjectFactory {
      */
     public Field createField() {
         return new Field();
+    }
+
+    /**
+     * Create an instance of {@link XFields }
+     *
+     */
+    public XFields createXFields() {
+        return new XFields();
     }
 
     /**
@@ -301,6 +311,17 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "filter")
     public JAXBElement<DFilter> createFilter(DFilter value) {
         return new JAXBElement<DFilter>(_Filter_QNAME, DFilter.class, null,
+                value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link XFields
+     * }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://codetab.org/xfield", name = "xfields")
+    public JAXBElement<XFields> createXfields(XFields value) {
+        return new JAXBElement<XFields>(_Xfields_QNAME, XFields.class, null,
                 value);
     }
 

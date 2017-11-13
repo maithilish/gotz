@@ -25,18 +25,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * <p>
- * Java class for dataDefs complex type.
+ * Java class for xFields complex type.
  *
  * <p>
  * The following schema fragment specifies the expected content contained within
  * this class.
  *
  * <pre>
- * &lt;complexType name="dataDefs"&gt;
+ * &lt;complexType name="xFields"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://codetab.org/gotz}datadef" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="xfield" type="{http://codetab.org/xfield}xField" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -45,41 +45,42 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  *
  */
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dataDefs", propOrder = {"datadef"})
-public class DataDefs implements Serializable {
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "xFields", namespace = "http://codetab.org/xfield",
+        propOrder = {"xfield"})
+public class XFields implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElement
-    private List<DataDef> datadef;
+    private List<XField> xfield;
 
     /**
-     * Gets the value of the datadef property.
+     * Gets the value of the xfield property.
      *
      * <p>
      * This accessor method returns a reference to the live list, not a
      * snapshot. Therefore any modification you make to the returned list will
      * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the datadef property.
+     * <CODE>set</CODE> method for the xfield property.
      *
      * <p>
      * For example, to add a new item, do as follows:
      * 
      * <pre>
-     * getDatadef().add(newItem);
+     * getXfield().add(newItem);
      * </pre>
      *
      *
      * <p>
-     * Objects of the following type(s) are allowed in the list {@link DataDef }
+     * Objects of the following type(s) are allowed in the list {@link XField }
      *
      *
      */
-    public List<DataDef> getDatadef() {
-        if (datadef == null) {
-            datadef = new ArrayList<DataDef>();
+    public List<XField> getXfield() {
+        if (xfield == null) {
+            xfield = new ArrayList<XField>();
         }
-        return this.datadef;
+        return this.xfield;
     }
 
     @Override

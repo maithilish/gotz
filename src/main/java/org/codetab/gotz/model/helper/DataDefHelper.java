@@ -1,15 +1,18 @@
 package org.codetab.gotz.model.helper;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.Field;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.util.Util;
 
 /**
  * <p>
@@ -24,6 +27,8 @@ public class DataDefHelper {
      */
     @Inject
     private ConfigService configService;
+    @Inject
+    private XFieldHelper xFieldHelper;
 
     /**
      * <p>
@@ -38,8 +43,9 @@ public class DataDefHelper {
      * For all DAxis of datadef, adds default fact.
      * @param dataDef
      *            datadef, not null
+     * @throws XFieldException
      */
-    public void addFact(final DataDef dataDef) {
+    public void addFact(final DataDef dataDef) throws XFieldException {
         Validate.notNull(dataDef, "dataDef must not be null");
 
         for (DAxis axis : dataDef.getAxis()) {
@@ -49,6 +55,7 @@ public class DataDefHelper {
                 fact.setName("fact");
                 fact.setOrder(0);
                 fact.setValue(null);
+                fact.setXfield(xFieldHelper.createXField());
                 axis.getMember().add(fact);
             }
         }
@@ -84,23 +91,23 @@ public class DataDefHelper {
      * as 7-7)
      * @param dataDef
      *            datadef, not null
+     * @throws XFieldException
      */
-    public void addIndexRange(final DataDef dataDef) {
+    public void addIndexRange(final DataDef dataDef) throws XFieldException {
         Validate.notNull(dataDef, "dataDef must not be null");
 
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {
-                if (!FieldsUtil.isAnyDefined(dMember.getFields(), "indexRange",
-                        "breakAfter")) {
-                    Field field = new Field();
-                    field.setName("indexRange");
+                XField xField = dMember.getXfield();
+                if (!xFieldHelper.isAnyDefined(xField, "//xf:indexRange/@value",
+                        "//xf:breakAfter/@value")) {
+                    String defaultIndexRange = "1-1";
                     Integer index = dMember.getIndex();
-                    if (index == null) {
-                        field.setValue("1-1");
-                    } else {
-                        field.setValue(index + "-" + index);
+                    if (index != null) {
+                        defaultIndexRange = index + "-" + index;
                     }
-                    dMember.getFields().add(field);
+                    xFieldHelper.addElement("indexRange", defaultIndexRange,
+                            xField);
                 }
             }
         }
@@ -141,5 +148,31 @@ public class DataDefHelper {
             }
         }
         return null;
+    }
+
+    public List<XField> getDataDefMemberFields(final String name,
+            final XField xField) throws XFieldException {
+        String xpath = Util.buildString("/xf:member[@value='", name, "']");
+        return xFieldHelper.split(xpath, xField);
+    }
+
+    public String getDataMemberGroup(final XField xField)
+            throws XFieldException {
+        String xpath = "/xf:member/xf:group";
+        String group = xFieldHelper.getLastValue(xpath, xField);
+        return group;
+    }
+
+    /**
+     * Set default XField.
+     * @param dataDef
+     */
+    public void addXField(final DataDef dataDef) {
+        if (dataDef.getXfield() == null) {
+            XField xfield = new XField();
+            xfield.setName(dataDef.getName());
+            xfield.setClazz(dataDef.getClass().getName());
+            dataDef.setXfield(xfield);
+        }
     }
 }

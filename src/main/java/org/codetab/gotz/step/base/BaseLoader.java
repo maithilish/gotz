@@ -12,7 +12,6 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DocumentHelper;
@@ -243,13 +242,11 @@ public abstract class BaseLoader extends Step {
              * fields.xml every time
              */
             try {
-                List<FieldsBase> fields = locator.getFields();
                 XField xField = locator.getXField();
 
                 // store and reload locator and document
                 locatorPersistence.storeLocator(locator);
                 locator = locatorPersistence.loadLocator(locator.getId());
-                locator.getFields().addAll(fields);
                 locator.setXField(xField);
 
                 document = documentPersistence.loadDocument(document.getId());

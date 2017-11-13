@@ -20,6 +20,7 @@ public final class Axis implements Comparable<Axis>, Serializable {
     private Integer index;
     private Integer order;
     private List<FieldsBase> fields;
+    private XField xField;
 
     public Axis() {
     }
@@ -62,6 +63,14 @@ public final class Axis implements Comparable<Axis>, Serializable {
 
     public void setOrder(final Integer order) {
         this.order = order;
+    }
+
+    public XField getXField() {
+        return xField;
+    }
+
+    public void setXField(XField xField) {
+        this.xField = xField;
     }
 
     public List<FieldsBase> getFields() {
