@@ -186,6 +186,7 @@
                     <cleanPackageDirectories>true</cleanPackageDirectories>
                     <generatePackage>org.codetab.gotz.model</generatePackage>
                     <args>
+                        <arg>-no-header</arg>
                         <arg>-Xinject-code</arg>
                         <arg>-Xannotate</arg>
                         <arg>-Xae</arg>

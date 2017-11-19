@@ -22,6 +22,7 @@
 
     <xsl:template match="xf:xfield/xf:tasks/xf:task/xf:steps">
         <xsl:variable name="stepsRef" select="@ref" />
+        <xsl:variable name="taskName" select="../../xf:task/@name" />
 
         <steps name="{$stepsRef}" xmlns="http://codetab.org/xfield">         
             
@@ -41,7 +42,7 @@
                 <xsl:variable name="globalStepName" select="@name" />
 
                 <xsl:variable name="matchingLocalStepCount"
-                    select="count(ancestor::xf:xfield/child::xf:tasks/xf:task/xf:steps/xf:step[@name=$globalStepName])" />
+                    select="count(ancestor::xf:xfield/child::xf:tasks/xf:task[@name=$taskName]/xf:steps/xf:step[@name=$globalStepName])" />
 
                 <xsl:if test="$matchingLocalStepCount = 0">
                     <xsl:copy-of select="." />                       

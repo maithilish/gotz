@@ -174,6 +174,7 @@ public class LocatorFieldsHelper {
                     Locator.class.getName());
         } catch (FieldNotFoundException e) {
             classFields = new ArrayList<>();
+            LOGGER.debug("{}", e);
             LOGGER.warn("{}", e.getLocalizedMessage());
         }
     }
@@ -193,6 +194,7 @@ public class LocatorFieldsHelper {
             stepFields = FieldsUtil.filterByName(stepsGroup, "step");
         } catch (FieldNotFoundException e) {
             stepFields = new ArrayList<>();
+            LOGGER.debug("{}", e);
             LOGGER.warn("{}", e.getLocalizedMessage());
         }
     }

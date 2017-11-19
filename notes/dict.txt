@@ -34,3 +34,5 @@ namespace
 namespaces
 xfield
 refactor
+qname
+xml

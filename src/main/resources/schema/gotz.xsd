@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!-- we need plurals such as dataDefs for validation -->
+
 <xs:schema elementFormDefault="qualified" version="1.0"
     targetNamespace="http://codetab.org/gotz" xmlns:tns="http://codetab.org/gotz"
     xmlns:xf="http://codetab.org/xfield" xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -148,8 +151,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
-                    <xs:element ref="xf:xfield"
-                        minOccurs="0" maxOccurs="1" />
+                    <xs:element ref="xf:xfield" minOccurs="0"
+                        maxOccurs="1" />
                     <xs:element ref="tns:axis" minOccurs="0"
                         maxOccurs="unbounded" />
                 </xs:sequence>
@@ -164,8 +167,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
-                    <xs:element ref="xf:xfield"
-                        minOccurs="0" maxOccurs="1" />
+                    <xs:element ref="xf:xfield" minOccurs="0"
+                        maxOccurs="1" />
                     <xs:element ref="tns:member" minOccurs="0"
                         maxOccurs="unbounded" />
                     <xs:element ref="tns:filter" minOccurs="0" />
@@ -179,8 +182,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
-                    <xs:element ref="xf:xfield"
-                        minOccurs="0" maxOccurs="1" />
+                    <xs:element ref="xf:xfield" minOccurs="0"
+                        maxOccurs="1" />
                 </xs:sequence>
                 <xs:attribute name="axis" type="xs:string" />
                 <xs:attribute name="index" type="xs:int" />
@@ -196,8 +199,8 @@
             <xs:extension base="tns:base">
                 <xs:sequence>
                     <xs:group ref="tns:fields" />
-                    <xs:element ref="xf:xfield"
-                        minOccurs="0" maxOccurs="1" />
+                    <xs:element ref="xf:xfield" minOccurs="0"
+                        maxOccurs="1" />
                 </xs:sequence>
                 <xs:attribute name="axis" type="xs:string" />
             </xs:extension>

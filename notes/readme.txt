@@ -5,15 +5,22 @@ Eclipse setup
 install eclipse-cs and ecl-emma
 import preferences  !!! only after cs and emma are installed
 
-attach Java javadoc
+attach Java javadoc and source
 
 # dnf install java-1.8.0-openjdk-javadoc
-  
-# alternatives --list
-javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.121-8.b14.fc24/api
+# dnf install java-1.8.0-openjdk-src
 
-Preferences -> Installed JRE -> OpenJdk x.x.x -> Edit -> select rt.jar -> 
+use alternatives to find location of javadoc  
+# alternatives --list
+javadocdir auto /usr/share/javadoc/java-1.8.0-openjdk-1.8.0.xxx/api
+
+source src.zip is installed under /usr/lib/jvm/jdk<xxx>/  
+
+Preferences -> Installed JRE -> OpenJdk x.x.x -> Edit -> select rt.jar ->
+ 
 Javadoc Location - enter Javadoc URL as file:///etc/alternatives/javadocdir
+
+Source Attachment - external location -> path as /usr/lib/jvm/jdk1.8.0_xxx/src.zip
 
 add imports
 

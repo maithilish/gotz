@@ -17,7 +17,6 @@ import javax.script.ScriptException;
 
 import org.apache.commons.lang3.Range;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
@@ -102,7 +101,7 @@ public abstract class BaseParser extends Step {
                     | IOException | NumberFormatException
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
-                    | FieldNotFoundException | DataFormatException e) {
+                    | DataFormatException | XFieldException e) {
                 String message =
                         Util.buildString("unable to parse ", getLabel());
                 throw new StepRunException(message, e);
@@ -189,9 +188,8 @@ public abstract class BaseParser extends Step {
      */
     public void parse() throws DataDefNotFoundException, ScriptException,
             ClassNotFoundException, IOException, NumberFormatException,
-            FieldNotFoundException, IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException,
-            DataFormatException {
+            IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException, DataFormatException, XFieldException {
         DataDef dataDef = dataDefService.getDataDef(dataDefName);
         Deque<Member> mStack = new ArrayDeque<>();
         for (Member member : data.getMembers()) {
@@ -213,7 +211,7 @@ public abstract class BaseParser extends Step {
 
     private void pushNewMember(final Deque<Member> mStack, final Member member)
             throws IOException, ClassNotFoundException, NumberFormatException,
-            FieldNotFoundException {
+            XFieldException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;
             try {
@@ -244,7 +242,7 @@ public abstract class BaseParser extends Step {
     }
 
     private boolean hasFinished(final Axis axis)
-            throws NumberFormatException, FieldNotFoundException {
+            throws NumberFormatException, XFieldException {
         boolean noField = true;
         try {
             String breakAfter = xFieldHelper
@@ -271,7 +269,7 @@ public abstract class BaseParser extends Step {
         if (noField) {
             String message = Util.buildString(
                     "breakAfter or indexRange undefined ", getLabel());
-            throw new FieldNotFoundException(message);
+            throw new XFieldException(message);
         }
         return false;
     }
@@ -369,6 +367,9 @@ public abstract class BaseParser extends Step {
      */
     protected Integer getStartIndex(final XField xField)
             throws NumberFormatException, XFieldException {
+        if (xField == null) {
+            throw new XFieldException("xField is null");
+        }
         Range<Integer> indexRange =
                 xFieldHelper.getRange("//xf:indexRange/@value", xField);
         return indexRange.getMinimum();
@@ -379,6 +380,9 @@ public abstract class BaseParser extends Step {
      */
     protected Integer getEndIndex(final XField xField)
             throws NumberFormatException, XFieldException {
+        if (xField == null) {
+            throw new XFieldException("xField is null");
+        }
         Range<Integer> indexRange =
                 xFieldHelper.getRange("//xf:indexRange/@value", xField);
         return indexRange.getMaximum();

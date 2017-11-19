@@ -44,4 +44,44 @@
         </axis>
     </datadef>
 
+    <datadef name="pl">
+        <axis name="col">
+            <xf:xfield>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(1) > td:nth-child(%{col.index})" />
+            </xf:xfield>
+            <member name="year">
+                <xf:xfield>
+                    <xf:indexRange value="2-6" />
+                </xf:xfield>
+            </member>
+        </axis>
+        <axis name="row">
+            <xf:xfield>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+            </xf:xfield>
+            <member name="item" index="6">
+                <xf:xfield>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:xfield>
+            </member>
+            <filter axis="row">
+                <xf:xfield>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Expenditure" />
+                        <xf:filter name="f2"
+                            pattern="Per share data (annualised)" />
+                    </xf:filters>
+                </xf:xfield>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <xf:xfield>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
+            </xf:xfield>
+        </axis>
+    </datadef>
 </datadefs>

@@ -339,12 +339,16 @@ public abstract class BaseLoader extends Step {
             throw new StepRunException(message, e);
         }
 
-        xFieldHelper.addElement("locatorName", locator.getName(),
-                nextStepXField);
-        xFieldHelper.addElement("locatorGroup", locator.getGroup(),
-                nextStepXField);
-        xFieldHelper.addElement("locatorUrl", locator.getUrl(), nextStepXField);
-
+        try {
+            xFieldHelper.addElement("locatorName", locator.getName(),
+                    nextStepXField);
+            xFieldHelper.addElement("locatorGroup", locator.getGroup(),
+                    nextStepXField);
+            xFieldHelper.addElement("locatorUrl", locator.getUrl(),
+                    nextStepXField);
+        } catch (XFieldException e) {
+            throw new StepRunException("unable to create next step fields", e);
+        }
         return nextStepXField;
     }
 

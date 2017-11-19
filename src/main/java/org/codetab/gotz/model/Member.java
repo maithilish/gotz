@@ -48,7 +48,7 @@ public final class Member extends Base {
         return xField;
     }
 
-    public void setXField(XField xField) {
+    public void setXField(final XField xField) {
         this.xField = xField;
     }
 

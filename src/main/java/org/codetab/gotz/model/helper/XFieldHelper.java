@@ -138,6 +138,12 @@ public class XFieldHelper {
     private NamespaceContext getNamespaceContext(final Node node) {
         String prefix = node.getPrefix();
         String ns = node.lookupNamespaceURI(prefix);
+        // node is document then get prefix and ns from root element
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            Element root = ((Document) node).getDocumentElement();
+            prefix = root.getPrefix();
+            ns = root.lookupNamespaceURI(prefix);
+        }
         SimpleNamespaceContext nsc = new SimpleNamespaceContext(prefix, ns);
         return nsc;
     }
@@ -218,8 +224,12 @@ public class XFieldHelper {
                 NodeList nodeList = (NodeList) xpath.evaluate(xpathExpression,
                         node, XPathConstants.NODESET);
                 for (int i = 0; i < nodeList.getLength(); i++) {
-                    Document doc =
-                            XmlUtils.createDocument(nodeList.item(i), "xfield");
+                    Node splitNode = nodeList.item(i);
+                    String prefix = splitNode.getPrefix();
+                    String ns = splitNode.lookupNamespaceURI(prefix);
+                    Document doc = XmlUtils.createDocument(nodeList.item(i),
+                            "xfield", prefix, ns);
+
                     XField copy = new XField();
                     copy.setName(xField.getName());
                     copy.setClazz(xField.getClazz());
@@ -277,8 +287,9 @@ public class XFieldHelper {
         return firstNode;
     }
 
-    public Element addElement(final String name, final String text,
-            final XField xField) {
+    public Element addElement(final String namespacePrefix, final String name,
+            final String text, final String parentNodeXPath,
+            final XField xField) throws XFieldException {
         Optional<Node> node = getLastNode(xField);
         if (node.isPresent()) {
             Document doc = null;
@@ -288,62 +299,45 @@ public class XFieldHelper {
                 doc = node.get().getOwnerDocument();
             }
             if (doc == null) {
-                LOGGER.warn(
-                        "unable to add new element [{}][{}]. owner document is null",
-                        name, text);
+                String message = Util.buildString("unable to add new element [",
+                        name, "][", text, "]. owner document is null");
+                throw new XFieldException(message);
             } else {
-                Element element =
-                        doc.createElementNS(doc.lookupNamespaceURI(null), name);
+                String qName = name;
+                if (namespacePrefix != null) {
+                    qName = Util.buildString(namespacePrefix, ":", name);
+                }
+                Element element = doc.createElementNS(
+                        doc.lookupNamespaceURI(namespacePrefix), qName);
                 element.setTextContent(text);
-                doc.getDocumentElement().appendChild(element);
-                return element;
-            }
-        } else {
-            LOGGER.warn(
-                    "unable to add new element [{}][{}]. xfield has no nodes",
-                    name, text);
-        }
-        return null;
-    }
-
-    public Element addElement(final String name, final String text,
-            final String parentNodeXPath, final XField xField)
-            throws XFieldException {
-        Optional<Node> node = getLastNode(xField);
-        if (node.isPresent()) {
-            Document doc = null;
-            if (node.get() instanceof Document) {
-                doc = (Document) node.get();
-            } else {
-                doc = node.get().getOwnerDocument();
-            }
-            if (doc == null) {
-                LOGGER.warn(
-                        "unable to add new element [{}][{}]. owner document is null",
-                        name, text);
-            } else {
-                Element element =
-                        doc.createElementNS(doc.lookupNamespaceURI(null), name);
-                element.setTextContent(text);
-                try {
-                    NodeList nodes = getNodes(doc, parentNodeXPath);
-                    for (int i = 0; i < nodes.getLength(); i++) {
-                        Node location = nodes.item(i);
-                        location.appendChild(element);
+                if (parentNodeXPath == null) {
+                    doc.getDocumentElement().appendChild(element);
+                } else {
+                    try {
+                        NodeList nodes = getNodes(doc, parentNodeXPath);
+                        for (int i = 0; i < nodes.getLength(); i++) {
+                            Node location = nodes.item(i);
+                            location.appendChild(element);
+                        }
+                    } catch (XPathExpressionException e) {
+                        throw new XFieldException(Util.buildString(
+                                "unable to add element [", name, "][", text,
+                                "] at xpath [", parentNodeXPath, "]"), e);
                     }
-                } catch (XPathExpressionException e) {
-                    throw new XFieldException(Util.buildString(
-                            "unable to add element [", name, "][", text,
-                            "] at xpath [", parentNodeXPath, "]"), e);
                 }
                 return element;
             }
         } else {
-            LOGGER.warn(
-                    "unable to add new element [{}][{}]. xfield has no nodes",
-                    name, text);
+            String message = Util.buildString("unable to add new element [",
+                    name, "][", text, "]. xfield has no nodes");
+            throw new XFieldException(message);
         }
-        return null;
+    }
+
+    public Element addElement(final String name, final String text,
+            final XField xField) throws XFieldException {
+        // default namespace
+        return addElement(null, name, text, null, xField);
     }
 
     public Element addElement(final String name, final String text,
@@ -359,8 +353,8 @@ public class XFieldHelper {
                     "unable to add new element [{}][{}]. owner document is null",
                     name, text);
         } else {
-            Element element =
-                    doc.createElementNS(doc.lookupNamespaceURI(null), name);
+            Element element = doc.createElementNS(
+                    doc.lookupNamespaceURI(parent.getPrefix()), name);
             element.setTextContent(text);
             parent.appendChild(element);
             return element;
@@ -439,9 +433,15 @@ public class XFieldHelper {
     }
 
     public XField createXField() throws XFieldException {
+        // no prefix
+        return createXField(null);
+    }
+
+    public XField createXField(final String namespacePrefix)
+            throws XFieldException {
         Document doc;
         try {
-            doc = XmlUtils.createDocument("xfield",
+            doc = XmlUtils.createDocument("xfield", namespacePrefix,
                     "http://codetab.org/xfield");
             XField xField = new XField();
             xField.getNodes().add(doc);

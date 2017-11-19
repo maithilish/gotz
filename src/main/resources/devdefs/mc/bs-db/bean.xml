@@ -5,8 +5,6 @@
         xmlFile="datadef.xml" />
     <bean name="locator" className="org.codetab.gotz.model.Locators"
         xmlFile="locator.xml" />
-    <bean name="fields" className="org.codetab.gotz.model.Fields"
-        xmlFile="fields.xml" />
     <bean name="xfield" className="org.codetab.gotz.model.XField"
-        xmlFile="steps.xml" schemaFile="/schema/xfield.xsd" />
+    xmlFile="steps.xml" schemaFile="/schema/xfield.xsd" />
 </beans>

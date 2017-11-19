@@ -15,7 +15,77 @@
              <jaxb:property name="nodes" >
              	<jaxb:baseType name="org.w3c.dom.Node" />
              </jaxb:property>                
-        </jaxb:bindings>        
+        </jaxb:bindings>
+                
+        <jaxb:bindings node="//xs:complexType[@name='xField']">
+            <ci:code>                                
+              <![CDATA[
+               
+               @Override
+               public String toString() {
+                   StringBuilder builder = new StringBuilder();
+                   builder.append("xfield : {name: ");
+                   builder.append(name);
+                   builder.append(", group: ");
+                   builder.append(group);
+                   builder.append(", clazz: ");
+                   builder.append(clazz);
+                   builder.append("}");
+                   builder.append(System.lineSeparator());
+                   try {
+                       builder.append(XmlUtils.toXML(nodes, true, 4));
+                   } catch (TransformerException e) {
+                       builder.append(e.getLocalizedMessage());
+                   }
+                   return builder.toString();
+               }
+              
+               /**
+               * two nodes with same contents are not equal, so nodes 
+               * are converted to xml and compared.
+               */
+               @Override
+               public boolean equals(final Object obj) {
+                   String[] excludes =
+                           {"id", "nodes", "dnDetachedState", "dnFlags", "dnStateManager"};
+                   boolean isEqual = EqualsBuilder.reflectionEquals(this, obj, excludes);
+           
+                   try {
+                       String lXml = XmlUtils.toXML(getNodes());
+                       String rXml = (obj == null) ? null
+                               : XmlUtils.toXML(((XField) obj).getNodes());
+                       if (!lXml.equals(rXml)) {
+                           isEqual = false;
+                       }
+                   } catch (TransformerException e) {
+                       isEqual = false;
+                   }
+                   return isEqual;
+               }
+               
+               /**
+               * two nodes with same contents returns hash, so nodes converted to 
+               * xml and hash is calculated.
+               */
+               @Override
+               public int hashCode() {
+                   final int prime = 31;
+                   int result = 1;
+                   result = prime * result + ((clazz == null) ? 0 : clazz.hashCode());
+                   result = prime * result + ((group == null) ? 0 : group.hashCode());
+                   result = prime * result + ((name == null) ? 0 : name.hashCode());
+                   // get nodes as string and uses its hash
+                   try {
+                       result = prime * result + XmlUtils.toXML(getNodes()).hashCode();
+                   } catch (Exception e) {
+                   }
+                   return result;
+               }
+              
+              ]]>
+            </ci:code>
+        </jaxb:bindings>
+                
     </jaxb:bindings>
     
 </jaxb:bindings>

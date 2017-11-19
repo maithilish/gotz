@@ -13,6 +13,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
+import org.w3c.dom.Element;
 
 /**
  * <p>
@@ -55,7 +56,7 @@ public class DataDefHelper {
                 fact.setName("fact");
                 fact.setOrder(0);
                 fact.setValue(null);
-                fact.setXfield(xFieldHelper.createXField());
+                fact.setXfield(xFieldHelper.createXField("xf"));
                 axis.getMember().add(fact);
             }
         }
@@ -99,6 +100,10 @@ public class DataDefHelper {
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {
                 XField xField = dMember.getXfield();
+                if (xField == null) {
+                    xField = xFieldHelper.createXField("xf");
+                    dMember.setXfield(xField);
+                }
                 if (!xFieldHelper.isAnyDefined(xField, "//xf:indexRange/@value",
                         "//xf:breakAfter/@value")) {
                     String defaultIndexRange = "1-1";
@@ -106,9 +111,11 @@ public class DataDefHelper {
                     if (index != null) {
                         defaultIndexRange = index + "-" + index;
                     }
-                    xFieldHelper.addElement("indexRange", defaultIndexRange,
-                            xField);
+                    Element node = xFieldHelper.addElement("xf", "indexRange",
+                            "", null, xField);
+                    xFieldHelper.addAttribute("value", defaultIndexRange, node);
                 }
+
             }
         }
     }
@@ -152,13 +159,13 @@ public class DataDefHelper {
 
     public List<XField> getDataDefMemberFields(final String name,
             final XField xField) throws XFieldException {
-        String xpath = Util.buildString("/xf:member[@value='", name, "']");
+        String xpath = Util.buildString("/xf:member[@name='", name, "']");
         return xFieldHelper.split(xpath, xField);
     }
 
     public String getDataMemberGroup(final XField xField)
             throws XFieldException {
-        String xpath = "/xf:member/xf:group";
+        String xpath = "//xf:member/xf:group";
         String group = xFieldHelper.getLastValue(xpath, xField);
         return group;
     }
@@ -166,8 +173,9 @@ public class DataDefHelper {
     /**
      * Set default XField.
      * @param dataDef
+     * @throws XFieldException
      */
-    public void addXField(final DataDef dataDef) {
+    public void addXField(final DataDef dataDef) throws XFieldException {
         if (dataDef.getXfield() == null) {
             XField xfield = new XField();
             xfield.setName(dataDef.getName());

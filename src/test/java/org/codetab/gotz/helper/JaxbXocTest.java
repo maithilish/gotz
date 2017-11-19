@@ -2,6 +2,7 @@ package org.codetab.gotz.helper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.beans.Beans;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +16,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.model.Bean;
-import org.codetab.gotz.model.Beans;
 import org.codetab.gotz.model.ObjectFactory;
 import org.junit.Before;
 import org.junit.Test;

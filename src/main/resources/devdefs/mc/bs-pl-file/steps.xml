@@ -23,8 +23,6 @@
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataSetAppender">
                 <nextStep>end</nextStep>
-                <appender name="db"
-                    class="org.codetab.gotz.appender.DbAppender" />
                 <appender name="file"
                     class="org.codetab.gotz.appender.FileAppender">
                     <file>output/x.txt</file>
@@ -55,6 +53,26 @@
             <persist>
                 <document>true</document>
             </persist>
+            <live>P0D</live>
+        </tasks>
+
+        <tasks name="pl" group="pl">
+            <task name="pl" dataDef="pl">
+                <steps ref="stepsSeq">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataSetConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>YYYY-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
             <live>P0D</live>
         </tasks>
 

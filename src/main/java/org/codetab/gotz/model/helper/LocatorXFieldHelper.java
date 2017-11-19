@@ -28,7 +28,6 @@ import org.codetab.gotz.util.XmlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import com.google.inject.Singleton;
 
@@ -100,8 +99,9 @@ public class LocatorXFieldHelper {
      * adds label field to locator. Label is name:group pair. *
      * @param locator
      *            {@link Locator}
+     * @throws XFieldException
      */
-    public void addLabel(final Locator locator) {
+    public void addLabel(final Locator locator) throws XFieldException {
         Validate.notNull(locator, "locator must not be null");
         String label =
                 Util.buildString(locator.getName(), ":", locator.getGroup());
@@ -111,46 +111,54 @@ public class LocatorXFieldHelper {
     private List<XField> getXFields() throws ParserConfigurationException,
             FileNotFoundException, TransformerFactoryConfigurationError,
             TransformerException, ConfigNotFoundException, XFieldException {
-        List<XField> xBeans = beanService.getBeans(XField.class);
 
         List<XField> xFieldList = new ArrayList<>();
 
+        List<XField> xBeans = beanService.getBeans(XField.class);
         for (XField xBean : xBeans) {
-            Document doc = XmlUtils.createDocument(xBean.getNodes(), "xfield");
+            // merge global steps to tasks steps
+            String defaultNs = XmlUtils.getDefaultNs(xBean.getNodes().get(0));
+            Document doc = XmlUtils.createDocument(xBean.getNodes(), "xfield",
+                    null, defaultNs);
             Document effectiveDoc = mergeSteps(doc);
-            XField xField = new XField();
-            xField.setName(xBean.getName());
-            xField.setClazz(xBean.getClazz());
-            xField.setGroup(getGroup(effectiveDoc));
-            xField.getNodes().add(effectiveDoc);
-            xFieldList.add(xField);
+
+            // split on tasks to new XFields
+            XField holder = new XField();
+            holder.getNodes().add(effectiveDoc);
+            List<XField> newXFields =
+                    xFieldHelper.split("/:xfield/:tasks", holder);
+
+            // set new xfield fields
+            for (XField xField : newXFields) {
+                xField.setName(xBean.getName());
+                xField.setClazz(xBean.getClazz());
+                xField.setGroup(getGroupFromNodes(xField));
+            }
+
+            xFieldList.addAll(newXFields);
         }
         return xFieldList;
     }
 
-    private String getGroup(final Node node) throws XFieldException {
+    private String getGroupFromNodes(final XField xField)
+            throws XFieldException {
         String xpath = "/:xfield/:tasks/@group";
-        return xFieldHelper.getValue(xpath, node);
+        return xFieldHelper.getLastValue(xpath, xField);
     }
 
     private Document mergeSteps(final Document doc) throws XFieldException {
         String stepsXslFile = "";
         try {
             stepsXslFile = configService.getConfig("gotz.stepsXslFile");
-
             StreamSource xslSource = ioHelper.getStreamSource(stepsXslFile);
+            DOMResult domResult = new DOMResult();
+
             Transformer tr =
                     TransformerFactory.newInstance().newTransformer(xslSource);
-
-            DOMResult domResult = new DOMResult();
             tr.transform(new DOMSource(doc), domResult);
 
-            Document transformedDoc = (Document) domResult.getNode();
-
-            System.out.println("---" + doc.getNamespaceURI()
-                    + transformedDoc.getNamespaceURI());
-
-            return transformedDoc;
+            Document tDoc = (Document) domResult.getNode();
+            return tDoc;
         } catch (ConfigNotFoundException | FileNotFoundException
                 | TransformerFactoryConfigurationError
                 | TransformerException e) {
