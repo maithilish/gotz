@@ -141,9 +141,9 @@ public abstract class JSoupHtmlParser extends BaseParser {
         }
 
         try {
-            List<String> suffixes =
-                    xFieldHelper.getValues("//xf:suffix", xField);
-            value = xFieldHelper.suffixValue(value, suffixes);
+            List<String> prefixes =
+                    xFieldHelper.getValues("//xf:prefix", xField);
+            value = xFieldHelper.prefixValue(value, prefixes);
         } catch (XFieldException e) {
         }
 
@@ -190,7 +190,8 @@ public abstract class JSoupHtmlParser extends BaseParser {
         LOGGER.trace(getMarker(), "Queries {} ", queries);
         String regionXpathExpr = queries.get("region");
         String xpathExpr = queries.get("field");
-        String attr = queries.get("attribute"); // optional
+        // optional attribute, only for jsoup
+        String attr = queries.get("attribute");
         String value = getBySelector(page, regionXpathExpr, xpathExpr, attr);
         return value;
     }

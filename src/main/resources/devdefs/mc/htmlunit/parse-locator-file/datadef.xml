@@ -22,20 +22,16 @@
         </axis>
         <axis name="row">
             <xf:xfield>
-                <xf:query
-                    region="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul"
-                    field="li:nth-child(%{row.index}) > a[href]" />
+                <xf:query region="//*[@id='quickLinkPrc']/table"
+                    field="//li/a[contains(.,'%{row.match}')]" />
             </xf:xfield>
-            <member name="bs" index="2" />
-            <member name="pl" index="3" />
+            <member name="bs" match="Balance Sheet" />
+            <member name="pl" match="Profit &amp; Loss" />
         </axis>
         <axis name="fact">
             <xf:xfield>
-                <xf:query
-                    region="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul"
-                    field="li:nth-child(%{row.index}) > a[href]"
-                    attribute="href">
-                </xf:query>
+                <xf:query region="//*[@id='quickLinkPrc']/table"
+                    field="*//a[contains(.,'%{row.match}')]/@href" />
                 <!-- uses local file (quote page) so no prefix  -->
                 <xf:prefix></xf:prefix>
             </xf:xfield>
@@ -51,8 +47,8 @@
         </axis>
         <axis name="row">
             <xf:xfield>
-                <xf:query region="div#mktdet_2"
-                    field="div:containsOwn(%{row.match})" />
+                <xf:query region="//*[@id='mktdet_2']"
+                    field="div/div/div[starts-with(child::text(),'%{row.match}')]/child::text()" />
             </xf:xfield>
             <member name="MC" match="MARKET CAP" />
             <member name="EPS" match="EPS (TTM)" />
@@ -67,8 +63,8 @@
         </axis>
         <axis name="fact">
             <xf:xfield>
-                <xf:query region="div#mktdet_2"
-                    field="div:containsOwn(%{row.match}) + div" />
+                <xf:query region="//*[@id='mktdet_2']"
+                    field="div/div/div[starts-with(child::text(),'%{row.match}')]/following-sibling::div[1]" />
             </xf:xfield>
         </axis>
     </datadef>
@@ -84,7 +80,8 @@
         </axis>
         <axis name="fact">
             <xf:xfield>
-                <xf:query region="div#Nse_Prc_tick_div" field="*" />
+                <xf:query region="//*[@id='Nse_Prc_tick']"
+                    field="strong" />
             </xf:xfield>
         </axis>
     </datadef>
@@ -92,19 +89,21 @@
     <datadef name="bs">
         <axis name="col">
             <xf:xfield>
-                <xf:query region="table:contains(Sources Of Funds)"
-                    field="tr:nth-child(1) > td:nth-child(%{col.index})" />
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
+                    field="*//tr[1]/td[%{col.index}+1]" />
             </xf:xfield>
             <member name="year">
                 <xf:xfield>
-                    <xf:indexRange value="2-6" />
+                    <xf:indexRange value="1-5" />
                 </xf:xfield>
             </member>
         </axis>
         <axis name="row">
             <xf:xfield>
-                <xf:query region="table:contains(Sources Of Funds)"
-                    field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
+                    field="*//tr[%{row.index}+1]/td[1]" />
             </xf:xfield>
             <member name="item" index="5">
                 <xf:xfield>
@@ -123,8 +122,9 @@
         </axis>
         <axis name="fact">
             <xf:xfield>
-                <xf:query region="table:contains(Sources Of Funds)"
-                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
+                    field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
             </xf:xfield>
         </axis>
     </datadef>
@@ -132,21 +132,21 @@
     <datadef name="pl">
         <axis name="col">
             <xf:xfield>
-                <xf:query region="table:contains(Employee Cost)"
-                    field="tr:nth-child(1) > td:nth-child(%{col.index})">
-                </xf:query>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//tr[1]/td[%{col.index}+1]" />
             </xf:xfield>
             <member name="year">
                 <xf:xfield>
-                    <xf:indexRange value="2-6" />
+                    <xf:indexRange value="1-5" />
                 </xf:xfield>
             </member>
         </axis>
         <axis name="row">
             <xf:xfield>
-                <xf:query region="table:contains(Employee Cost)"
-                    field="tr:nth-child(%{row.index}) > td:nth-child(1)">
-                </xf:query>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//tr[%{row.index}+0]/td[1]" />
             </xf:xfield>
             <member name="item" index="6">
                 <xf:xfield>
@@ -166,9 +166,9 @@
         </axis>
         <axis name="fact">
             <xf:xfield>
-                <xf:query region="table:contains(Employee Cost)"
-                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})">
-                </xf:query>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
             </xf:xfield>
         </axis>
     </datadef>

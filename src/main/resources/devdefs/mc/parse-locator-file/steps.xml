@@ -21,6 +21,10 @@
             <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
                 <nextStep>converter</nextStep>
             </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataSetConverter">
+                <nextStep>appender</nextStep>
+            </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataSetAppender">
                 <nextStep>end</nextStep>
                 <appender name="file"
@@ -38,6 +42,12 @@
                         <nextStep>seeder</nextStep>
                     </step>
                 </steps>
+            </task>
+            <task name="quotePage" dataDef="quotePage">
+                <steps ref="stepsSeq" />
+            </task>
+            <task name="price" dataDef="price">
+                <steps ref="stepsSeq" />
             </task>
             <live>P0D</live>
         </tasks>
@@ -58,13 +68,7 @@
                         </converter>
                     </step>
                 </steps>
-                <persist>
-                    <data>true</data>
-                </persist>
             </task>
-            <persist>
-                <document>true</document>
-            </persist>
             <live>P0D</live>
         </tasks>
 

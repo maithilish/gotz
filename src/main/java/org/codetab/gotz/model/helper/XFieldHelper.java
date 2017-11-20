@@ -506,10 +506,10 @@ public class XFieldHelper {
 
     /**
      * <p>
-     * From the input list, Field values are concated in reverse order and
-     * suffixed with input string.
+     * Values from prefix list are concated in reverse order and prefixed to
+     * input string.
      * <p>
-     * Example : for value xyz and two suffixes foo and bar, it returns string
+     * Example : for value xyz and two prefixes foo and bar, it returns string
      * barfooxyz.
      * @param prefixes
      *            input list
@@ -517,12 +517,12 @@ public class XFieldHelper {
      *            string to prefix
      * @return string prefixed concated values
      */
-    public String suffixValue(final String value, final List<String> suffixes) {
-        String suffixedValues = value;
-        for (String suffix : suffixes) {
-            suffixedValues = suffix + suffixedValues;
+    public String prefixValue(final String value, final List<String> prefixes) {
+        String pValue = value;
+        for (String prefix : prefixes) {
+            pValue = prefix + pValue;
         }
-        return suffixedValues;
+        return pValue;
     }
 
 }

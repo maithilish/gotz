@@ -71,22 +71,21 @@ public class LocatorHelper {
     }
 
     /**
-     * if forklocator system property is set, then each locator is forked n
-     * (forklocator value) times. Returned list contains original locator and
-     * forked locators.
+     * If gotz.fork.locator config is set, returns list of original locator plus
+     * forked locators else returns empty list.
      * @param locators
      *            - original list of locator
      * @return list of locators - original plus forked
      */
     public List<Locator> forkLocators(final List<Locator> locators) {
         Validate.notNull(locators, "locators must not be null");
-
         Validate.validState(configService != null, "configService is null");
 
+        List<Locator> forkedLocators = new ArrayList<>();
         try {
-            int count =
-                    Integer.parseInt(configService.getConfig("forklocator"));
-            List<Locator> forkedLocators = new ArrayList<>();
+            int count = Integer
+                    .parseInt(configService.getConfig("gotz.fork.locator"));
+
             for (Locator locator : locators) {
                 forkedLocators.add(locator);
                 for (int i = 0; i < count; i++) {
@@ -95,10 +94,9 @@ public class LocatorHelper {
                     forkedLocators.add(forkedLocator);
                 }
             }
-            return forkedLocators;
         } catch (ConfigNotFoundException e) {
-            return locators;
         }
+        return forkedLocators;
     }
 
     /**

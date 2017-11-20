@@ -46,13 +46,7 @@
                         </converter>
                     </step>
                 </steps>
-                <persist>
-                    <data>true</data>
-                </persist>
             </task>
-            <persist>
-                <document>true</document>
-            </persist>
             <live>P0D</live>
         </tasks>
 

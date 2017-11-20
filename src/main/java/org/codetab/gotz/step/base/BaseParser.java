@@ -226,7 +226,8 @@ public abstract class BaseParser extends Step {
                 Integer[] nextMemberIndexes =
                         nextMemberIndexes(member, axisName);
                 if (!alreadyProcessed(nextMemberIndexes)) {
-                    Member newMember = Util.deepClone(Member.class, member);
+                    // Member newMember = Util.deepClone(Member.class, member);
+                    Member newMember = createMember(member);
                     Axis newAxis = newMember.getAxis(axisName);
                     newAxis.setIndex(newAxis.getIndex() + 1);
                     newAxis.setOrder(newAxis.getOrder() + 1);
@@ -239,6 +240,30 @@ public abstract class BaseParser extends Step {
                 }
             }
         }
+    }
+
+    /**
+     * Deep copy member, but for performance xfield are not cloned instead
+     * reference is passed to copy.
+     * @param member
+     * @return
+     */
+    private Member createMember(final Member member) {
+        Member cMember = new Member();
+        cMember.setName(member.getName());
+        cMember.setGroup(member.getGroup());
+        for (Axis axis : member.getAxes()) {
+            Axis cAxis = new Axis();
+            cAxis.setName(axis.getName());
+            cAxis.setMatch(axis.getMatch());
+            cAxis.setOrder(Integer.valueOf(axis.getOrder()));
+            cAxis.setIndex(Integer.valueOf(axis.getIndex()));
+            cAxis.setValue(axis.getValue());
+            cAxis.setXField(axis.getXField());
+            cMember.addAxis(cAxis);
+        }
+        cMember.setXField(member.getXField());
+        return cMember;
     }
 
     private boolean hasFinished(final Axis axis)

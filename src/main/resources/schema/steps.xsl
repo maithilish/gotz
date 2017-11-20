@@ -22,7 +22,7 @@
 
     <xsl:template match="xf:xfield/xf:tasks/xf:task/xf:steps">
         <xsl:variable name="stepsRef" select="@ref" />
-        <xsl:variable name="taskName" select="../../xf:task/@name" />
+        <xsl:variable name="taskName" select="parent::xf:task/@name"/>
 
         <steps name="{$stepsRef}" xmlns="http://codetab.org/xfield">         
             

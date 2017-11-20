@@ -18,20 +18,18 @@ import javax.script.ScriptException;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseParser;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,41 +172,55 @@ public abstract class HtmlParser extends BaseParser {
             InvocationTargetException, NoSuchMethodException {
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
-        List<FieldsBase> list =
-                dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
+        XField xField =
+                dataDefHelper.getAxis(dataDef, axis.getName()).getXfield();
         try {
-            List<FieldsBase> scripts = FieldsUtil.filterByGroup(list, "script");
+            Map<String, String> scripts = new HashMap<>();
+            scripts.put("script",
+                    xFieldHelper.getLastValue("//xf:script/@value", xField));
             setTraceString(sb, scripts, "<<<");
-            scripts = FieldsUtil.replaceVariables(scripts, member.getAxisMap());
+            xFieldHelper.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, ">>>>");
             LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryByScript(scripts);
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
         }
 
         try {
-            List<FieldsBase> queries = FieldsUtil.filterByGroup(list, "query");
+            Map<String, String> queries = new HashMap<>();
+            queries.put("region",
+                    xFieldHelper.getLastValue("//xf:query/@region", xField));
+            queries.put("field",
+                    xFieldHelper.getLastValue("//xf:query/@field", xField));
+            try {
+                queries.put("attribute", xFieldHelper
+                        .getLastValue("//xf:query/@attribute", xField));
+            } catch (XFieldException e) {
+                queries.put("attribute", "");
+            }
             setTraceString(sb, queries, "<<<");
-            queries = FieldsUtil.replaceVariables(queries, member.getAxisMap());
+            xFieldHelper.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, ">>>>");
             LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
+
             value = queryByXPath(page, queries);
-        } catch (FieldNotFoundException e) {
+        } catch (XFieldException e) {
         }
 
         try {
-            List<FieldsBase> prefix = FieldsUtil.filterByGroup(list, "prefix");
-            value = FieldsUtil.suffixValue(prefix, value);
-        } catch (FieldNotFoundException e) {
+            List<String> prefixes =
+                    xFieldHelper.getValues("//xf:prefix", xField);
+            value = xFieldHelper.prefixValue(value, prefixes);
+        } catch (XFieldException e) {
         }
 
         return value;
     }
 
-    private String queryByScript(final List<FieldsBase> scripts)
-            throws ScriptException, FieldNotFoundException {
+    private String queryByScript(final Map<String, String> scripts)
+            throws ScriptException, XFieldException {
         // TODO - check whether thread safety is involved
         if (jsEngine == null) {
             initializeScriptEngine();
@@ -217,7 +229,7 @@ public abstract class HtmlParser extends BaseParser {
         LOGGER.trace(getMarker(), "Scripts {} ", scripts);
         jsEngine.put("configs", configService);
         jsEngine.put("document", getDocument());
-        String scriptStr = FieldsUtil.getValue(scripts, "script");
+        String scriptStr = scripts.get("script");
         Object val = jsEngine.eval(scriptStr);
         String value = ConvertUtils.convert(val);
         LOGGER.trace(getMarker(), "result {}", value);
@@ -237,16 +249,16 @@ public abstract class HtmlParser extends BaseParser {
     }
 
     private String queryByXPath(final HtmlPage page,
-            final List<FieldsBase> queries) throws FieldNotFoundException {
-        if (FieldsUtil.countField(queries) < 2) {
+            final Map<String, String> queries) throws XFieldException {
+        if (queries.size() < 2) {
             LOGGER.warn("Insufficient queries in DataDef [{}]",
                     getDataDefName());
             return null;
         }
         LOGGER.trace(getMarker(), "------ query data ------");
         LOGGER.trace(getMarker(), "Queries {} ", queries);
-        String regionXpathExpr = FieldsUtil.getValue(queries, "region");
-        String xpathExpr = FieldsUtil.getValue(queries, "field");
+        String regionXpathExpr = queries.get("region");
+        String xpathExpr = queries.get("field");
         String value = getByXPath(page, regionXpathExpr, xpathExpr);
         return value;
     }
@@ -310,16 +322,18 @@ public abstract class HtmlParser extends BaseParser {
     }
 
     private void setTraceString(final StringBuilder sb,
-            final List<FieldsBase> fields, final String header) {
+            final Map<String, String> strings, final String header) {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }
         sb.append(Util.LINE);
         sb.append("  ");
         sb.append(header);
-        for (FieldsBase field : fields) {
-            sb.append(field);
+        for (String key : strings.keySet()) {
+            sb.append(key);
+            sb.append(" : ");
+            sb.append(strings.get(key));
+            sb.append(Util.LINE);
         }
     }
-
 }
