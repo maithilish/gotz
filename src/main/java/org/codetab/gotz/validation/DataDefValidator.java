@@ -3,14 +3,16 @@ package org.codetab.gotz.validation;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.FieldNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.FieldsBase;
-import org.codetab.gotz.util.FieldsUtil;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 
 /**
  * <p>
@@ -21,6 +23,9 @@ import org.codetab.gotz.util.FieldsUtil;
  *
  */
 public class DataDefValidator {
+
+    @Inject
+    private XFieldHelper xFieldHelper;
 
     /**
      * <p>
@@ -47,12 +52,15 @@ public class DataDefValidator {
      */
     private boolean validateIndexRange(final DataDef dataDef) {
         boolean valid = true;
-        for (List<FieldsBase> fc : getAllFields(dataDef)) {
+        List<XField> xFields = getAllXFields(dataDef);
+        for (XField xField : xFields) {
             try {
-                FieldsUtil.getRange(fc, "indexRange");
+                if (xField != null) {
+                    xFieldHelper.getRange("//xf:indexRange/@value", xField);
+                }
             } catch (NumberFormatException e) {
                 valid = false;
-            } catch (FieldNotFoundException e) {
+            } catch (XFieldException e) {
             }
         }
         return valid;
@@ -66,18 +74,18 @@ public class DataDefValidator {
      *            which contains indexRange fields
      * @return list of indexRange fields
      */
-    private List<List<FieldsBase>> getAllFields(final DataDef dataDef) {
-        List<List<FieldsBase>> lists = new ArrayList<>();
+    private List<XField> getAllXFields(final DataDef dataDef) {
+        List<XField> lists = new ArrayList<>();
 
-        lists.add(dataDef.getFields());
+        lists.add(dataDef.getXfield());
         for (DAxis axis : dataDef.getAxis()) {
-            lists.add(axis.getFields());
+            lists.add(axis.getXfield());
             for (DMember member : axis.getMember()) {
-                lists.add(member.getFields());
+                lists.add(member.getXfield());
             }
             DFilter filter = axis.getFilter();
             if (filter != null) {
-                lists.add(filter.getFields());
+                lists.add(filter.getXfield());
             }
         }
         return lists;

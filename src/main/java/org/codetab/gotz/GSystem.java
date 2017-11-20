@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.misc.ShutdownHook;
-import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorXFieldHelper;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
@@ -32,8 +31,6 @@ public class GSystem {
     private DataDefService dataDefService;
     @Inject
     private StepService stepService;
-    @Inject
-    private LocatorFieldsHelper fieldsHelper;
     @Inject
     private LocatorXFieldHelper xFieldsHelper;
 
@@ -74,7 +71,6 @@ public class GSystem {
         int dataDefsCount = dataDefService.getCount();
         LOGGER.info("DataDefs loaded {}", dataDefsCount);
 
-        fieldsHelper.init();
         xFieldsHelper.init();
 
         return true;

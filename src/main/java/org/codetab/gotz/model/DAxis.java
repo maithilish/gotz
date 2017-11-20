@@ -2,15 +2,12 @@
 package org.codetab.gotz.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -31,7 +28,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
- *         &lt;group ref="{http://codetab.org/gotz}fields"/&gt;
  *         &lt;element ref="{http://codetab.org/xfield}xfield" minOccurs="0"/&gt;
  *         &lt;element ref="{http://codetab.org/gotz}member" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://codetab.org/gotz}filter" minOccurs="0"/&gt;
@@ -44,49 +40,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dAxis", propOrder = {"fields", "xfield", "member", "filter"})
+@XmlType(name = "dAxis", propOrder = {"xfield", "member", "filter"})
 public class DAxis extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
-    @XmlElements({@XmlElement(name = "field", type = Field.class),
-            @XmlElement(type = Fields.class)})
-    private List<FieldsBase> fields;
     @XmlElement(namespace = "http://codetab.org/xfield")
     private XField xfield;
     @XmlElement
     private Set<DMember> member = new HashSet<DMember>();
     @XmlElement
     private DFilter filter;
-
-    /**
-     * Gets the value of the fields property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the fields property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * 
-     * <pre>
-     * getFields().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list {@link Field }
-     * {@link Fields }
-     *
-     *
-     */
-    public List<FieldsBase> getFields() {
-        if (fields == null) {
-            fields = new ArrayList<FieldsBase>();
-        }
-        return this.fields;
-    }
 
     /**
      * Gets the value of the xfield property.

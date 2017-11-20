@@ -1,9 +1,7 @@
 package org.codetab.gotz.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,7 +16,6 @@ public final class Member extends Base {
 
     private String group;
     private Set<Axis> axes = new HashSet<Axis>();
-    private List<FieldsBase> fields;
     private XField xField;
 
     public String getGroup() {
@@ -35,13 +32,6 @@ public final class Member extends Base {
 
     public void setAxes(final Set<Axis> axes) {
         this.axes = axes;
-    }
-
-    public List<FieldsBase> getFields() {
-        if (fields == null) {
-            fields = new ArrayList<FieldsBase>();
-        }
-        return this.fields;
     }
 
     public XField getXField() {
@@ -97,6 +87,6 @@ public final class Member extends Base {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("axes", axes).append("fields", fields).toString();
+                .append("axes", axes).toString();
     }
 }

@@ -188,7 +188,6 @@ public class DataDefService {
         axis.setMatch(dMember.getMatch());
         axis.setValue(dMember.getValue());
         // fields from DMember level
-        axis.getFields().addAll(dMember.getFields());
         axis.setXField(dMember.getXfield());
         return axis;
     }
@@ -265,7 +264,7 @@ public class DataDefService {
         Collections.sort(data.getMembers(), new ColComparator());
         for (Member member : data.getMembers()) {
             sb.append("Member [");
-            sb.append(member.getFields());
+            sb.append(member.getXField());
             sb.append(line);
             List<Axis> axes = new ArrayList<Axis>(member.getAxes());
             Collections.sort(axes);

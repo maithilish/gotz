@@ -18,16 +18,9 @@ main(){
     rm $GENERATED_DIR/$MODEL_DIR/DataDefs.java
     rm $GENERATED_DIR/$MODEL_DIR/XFields.java
     
-    
-    file=FieldsBase.java
-    import_iterator $file
-    
-    file=Field.java
-    import_iterator $file
-    remove_toString $file
-    
-    file=Fields.java
-    import_iterator $file
+    file=XField.java
+    remove_equals $file
+    remove_hashCode $file
     remove_toString $file
     
     file=DAxis.java
@@ -42,11 +35,6 @@ main(){
     remove_toString $file
     
     file=Locator.java
-    remove_toString $file
-    
-    file=XField.java
-    remove_equals $file
-    remove_hashCode $file
     remove_toString $file
     
     file=DAxis.java

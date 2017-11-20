@@ -1,8 +1,6 @@
 package org.codetab.gotz.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -19,7 +17,6 @@ public final class Axis implements Comparable<Axis>, Serializable {
     private String match;
     private Integer index;
     private Integer order;
-    private List<FieldsBase> fields;
     private XField xField;
 
     public Axis() {
@@ -69,15 +66,8 @@ public final class Axis implements Comparable<Axis>, Serializable {
         return xField;
     }
 
-    public void setXField(XField xField) {
+    public void setXField(final XField xField) {
         this.xField = xField;
-    }
-
-    public List<FieldsBase> getFields() {
-        if (fields == null) {
-            fields = new ArrayList<FieldsBase>();
-        }
-        return this.fields;
     }
 
     @Override
@@ -103,7 +93,7 @@ public final class Axis implements Comparable<Axis>, Serializable {
         String str = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("name", name).append("value", value)
                 .append("match", match).append("index", index)
-                .append("order", order).append("fields", fields).toString();
+                .append("order", order).toString();
         return Util.buildString(Util.LINE, "  ", str);
     }
 }

@@ -82,7 +82,8 @@ public final class LocatorSeeder extends BaseSeeder {
             Locator locator = (Locator) input;
             // locatorseeder adds new set of fields based on group, so clear the
             // existing fields
-            locator.getFields().clear();
+            // TODO check whether clear is required for xfield
+            // locator.getFields().clear();
             locatorList = new ArrayList<>();
             locatorList.add(locator);
         }
@@ -167,7 +168,6 @@ public final class LocatorSeeder extends BaseSeeder {
             Step seederStep =
                     (Step) stepService.getStep(this.getClass().getName());
             seederStep.setConsistent(true);
-            seederStep.setFields(locator.getFields());
             seederStep.setXField(locator.getXField());
             seederStep.setStepType(this.getStepType());
             seederStep.setStepState(this.getStepState());

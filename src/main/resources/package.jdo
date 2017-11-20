@@ -21,8 +21,7 @@
                 <field name="name" />
                 <field name="group" />
             </unique>
-            <field name="url" persistence-modifier="none" />
-            <field name="fields" persistence-modifier="none" />
+            <field name="url" persistence-modifier="none" />            
             <field name="xField" persistence-modifier="none" />
             <field name="documents">
                 <collection element-type="org.codetab.gotz.model.Document" />
@@ -48,14 +47,12 @@
                 <field name="toDate" />
             </unique>
             <field name="axis" serialized="true" />
-            <!-- <field name="memberSets" persistence-modifier="none" /> -->
-            <field name="fields" serialized="true" />
+            <!-- <field name="memberSets" persistence-modifier="none" /> -->            
             <field name="xfield" persistence-modifier="persistent" serialized="true" />
             <fetch-group name="detachAxis">
                 <field name="axis" />
             </fetch-group>
-            <fetch-group name="detachFields">
-                <field name="fields" />
+            <fetch-group name="detachFields">                
                 <field name="xfield" />
             </fetch-group>
         </class>

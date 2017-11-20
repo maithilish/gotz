@@ -24,8 +24,6 @@ public class ObjectFactory {
 
     private final static QName _Wrapper_QNAME =
             new QName("http://codetab.org/gotz", "wrapper");
-    private final static QName _Fields_QNAME =
-            new QName("http://codetab.org/gotz", "fields");
     private final static QName _Locator_QNAME =
             new QName("http://codetab.org/gotz", "locator");
     private final static QName _Locators_QNAME =
@@ -61,14 +59,6 @@ public class ObjectFactory {
      */
     public Wrapper createWrapper() {
         return new Wrapper();
-    }
-
-    /**
-     * Create an instance of {@link Fields }
-     *
-     */
-    public Fields createFields() {
-        return new Fields();
     }
 
     /**
@@ -144,14 +134,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Field }
-     *
-     */
-    public Field createField() {
-        return new Field();
-    }
-
-    /**
      * Create an instance of {@link XField }
      *
      */
@@ -167,17 +149,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "wrapper")
     public JAXBElement<Wrapper> createWrapper(Wrapper value) {
         return new JAXBElement<Wrapper>(_Wrapper_QNAME, Wrapper.class, null,
-                value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Fields
-     * }{@code >}}
-     *
-     */
-    @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "fields")
-    public JAXBElement<Fields> createFields(Fields value) {
-        return new JAXBElement<Fields>(_Fields_QNAME, Fields.class, null,
                 value);
     }
 

@@ -3,8 +3,8 @@ package org.codetab.gotz.step.convert;
 import java.util.Collections;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -13,7 +13,6 @@ import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseEncoder;
-import org.codetab.gotz.util.FieldsUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,15 +56,17 @@ public final class CsvEncoder extends BaseEncoder {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getFields() != null, "fields must not be null");
+        Validate.validState(getXField() != null, "xfield must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName = FieldsUtil.getValue(getFields(), "locatorName");
-            locatorGroup = FieldsUtil.getValue(getFields(), "locatorGroup");
-        } catch (FieldNotFoundException e) {
+            locatorName = xFieldHelper.getLastValue("/:xfield/:locatorName",
+                    getXField());
+            locatorGroup = xFieldHelper.getLastValue("/:xfield/:locatorGroup",
+                    getXField());
+        } catch (XFieldException e) {
             String message = "unable to get locator name and group";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

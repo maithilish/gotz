@@ -106,7 +106,6 @@ public abstract class BaseLoader extends Step {
                     getLabel());
         } else {
             // update existing locator with new fields and URL
-            savedLocator.getFields().addAll(locator.getFields());
             savedLocator.setXField(locator.getXField());
             savedLocator.setUrl(locator.getUrl());
 

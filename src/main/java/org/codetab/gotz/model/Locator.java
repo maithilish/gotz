@@ -9,7 +9,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -30,7 +29,6 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
- *         &lt;group ref="{http://codetab.org/gotz}fields"/&gt;
  *         &lt;element name="xField" type="{http://codetab.org/xfield}xField" minOccurs="0"/&gt;
  *         &lt;element name="documents" type="{http://codetab.org/gotz}document" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
@@ -44,13 +42,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "locator", propOrder = {"fields", "xField", "documents"})
+@XmlType(name = "locator", propOrder = {"xField", "documents"})
 public class Locator extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
-    @XmlElements({@XmlElement(name = "field", type = Field.class),
-            @XmlElement(type = Fields.class)})
-    private List<FieldsBase> fields;
     @XmlElement
     private XField xField;
     @XmlElement
@@ -59,36 +54,6 @@ public class Locator extends Base implements Serializable {
     private String url;
     @XmlAttribute(name = "group")
     private String group;
-
-    /**
-     * Gets the value of the fields property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the fields property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * 
-     * <pre>
-     * getFields().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list {@link Field }
-     * {@link Fields }
-     *
-     *
-     */
-    public List<FieldsBase> getFields() {
-        if (fields == null) {
-            fields = new ArrayList<FieldsBase>();
-        }
-        return this.fields;
-    }
 
     /**
      * Gets the value of the xField property.
@@ -202,8 +167,8 @@ public class Locator extends Base implements Serializable {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId()).append("name", getName())
                 .append("group", group).append("url", url)
-                .append("fields", fields).append("xField", xField)
-                .append("documents", documents).toString();
+                .append("xField", xField).append("documents", documents)
+                .toString();
     }
 
 }

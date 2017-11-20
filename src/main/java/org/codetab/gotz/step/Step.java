@@ -1,19 +1,14 @@
 package org.codetab.gotz.step;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.XFieldException;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.util.FieldsUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +23,6 @@ public abstract class Step implements IStep {
     private String label = "not set";
     private String stepType;
     private boolean consistent = false;
-    private List<FieldsBase> fields;
     private XField xField;
     private StepState stepState;
 
@@ -51,23 +45,6 @@ public abstract class Step implements IStep {
     @Inject
     @SuppressWarnings("checkstyle:visibilitymodifier")
     protected XFieldHelper xFieldHelper;
-
-    @Override
-    public final void setFields(final List<FieldsBase> fields) {
-        this.fields = fields;
-        try {
-            label = FieldsUtil.getValue(fields, "label");
-        } catch (FieldNotFoundException e1) {
-        }
-    }
-
-    /*
-     *
-     */
-    @Override
-    public List<FieldsBase> getFields() {
-        return fields;
-    }
 
     @Override
     public XField getXField() {
