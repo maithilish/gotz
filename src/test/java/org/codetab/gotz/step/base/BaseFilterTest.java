@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
@@ -77,9 +77,9 @@ public class BaseFilterTest {
     @Test
     public void testHandover() throws FieldsException {
 
-        XField xField = xFieldHelper.createXField();
-        xFieldHelper.addElement("x", "xv", xField);
-        filter.setXField(xField);
+        Fields fields = xFieldHelper.createXField();
+        xFieldHelper.addElement("x", "xv", fields);
+        filter.setFields(fields);
 
         Data data = new Data();
         filter.setInput(data);
@@ -87,7 +87,7 @@ public class BaseFilterTest {
         boolean actual = filter.handover();
 
         assertThat(actual).isTrue();
-        verify(stepService).pushTask(filter, data, xField);
+        verify(stepService).pushTask(filter, data, fields);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class BaseFilterTest {
         Data data = new Data();
         filter.setInput(data);
 
-        filter.setXField(new XField());
+        filter.setFields(new Fields());
 
         testRule.expect(StepRunException.class);
         filter.handover();

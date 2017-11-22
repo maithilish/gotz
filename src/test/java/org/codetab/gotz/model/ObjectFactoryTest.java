@@ -2,8 +2,6 @@ package org.codetab.gotz.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.beans.Beans;
-
 import javax.xml.bind.JAXBElement;
 
 import org.junit.Before;
@@ -35,17 +33,17 @@ public class ObjectFactoryTest {
 
     @Test
     public void testCreateXField() {
-        XField actual = of.createXField();
-        assertThat(actual).isInstanceOf(XField.class);
-        assertThat(actual).isNotSameAs(of.createXField());
+        Fields actual = of.createFields();
+        assertThat(actual).isInstanceOf(Fields.class);
+        assertThat(actual).isNotSameAs(of.createFields());
     }
 
     @Test
     public void testCreateXFields() {
-        XField value = of.createXField();
-        JAXBElement<XField> actual = of.createXfield(value);
+        Fields value = of.createFields();
+        JAXBElement<Fields> actual = of.createFields(value);
         assertThat(actual).isInstanceOf(JAXBElement.class);
-        assertThat(actual).isNotSameAs(of.createXfield(value));
+        assertThat(actual).isNotSameAs(of.createFields(value));
     }
 
     @Test
@@ -106,13 +104,6 @@ public class ObjectFactoryTest {
         JAXBElement<Bean> actual = of.createBean(value);
         assertThat(actual).isInstanceOf(JAXBElement.class);
         assertThat(actual).isNotSameAs(of.createBean(value));
-    }
-
-    @Test
-    public void testCreateBeans() {
-        Beans actual = of.createBeans();
-        assertThat(actual).isInstanceOf(Beans.class);
-        assertThat(actual).isNotSameAs(of.createBeans());
     }
 
     @Test

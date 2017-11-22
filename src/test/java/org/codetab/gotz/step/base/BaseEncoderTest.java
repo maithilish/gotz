@@ -18,7 +18,7 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.AppenderService;
@@ -86,23 +86,23 @@ public class BaseEncoderTest {
             InstantiationException, IllegalAccessException, FieldsException {
 
         // xfield/task/steps/step[@name='encoder']/appender
-        XField xField = xFieldHelper.createXField();
-        Node step = createStepNode(xField);
+        Fields fields = xFieldHelper.createXField();
+        Node step = createStepNode(fields);
 
         Node node = xFieldHelper.addElement("appender", "", step);
         xFieldHelper.addElement("name", "x", node);
         node = xFieldHelper.addElement("appender", "", step);
         xFieldHelper.addElement("name", "y", node);
 
-        encoder.setXField(xField);
+        encoder.setFields(fields);
         encoder.setStepType("encoder");
 
         String splitXpath =
                 Util.buildString("/:xfield/:task/:steps/:step[@name='",
                         "encoder", "']/:appender");
-        List<XField> appenders = xFieldHelper.split(splitXpath, xField);
+        List<Fields> appenders = xFieldHelper.split(splitXpath, fields);
 
-        given(xFieldHelper.split(splitXpath, xField)).willReturn(appenders);
+        given(xFieldHelper.split(splitXpath, fields)).willReturn(appenders);
 
         boolean actual = encoder.initialize();
 
@@ -123,7 +123,7 @@ public class BaseEncoderTest {
     @Test
     public void testInitializeEmptyFieldsShouldThrowException() {
 
-        encoder.setXField(new XField());
+        encoder.setFields(new Fields());
 
         // when
         try {
@@ -141,18 +141,18 @@ public class BaseEncoderTest {
     public void testInitializeCreateAppenderErrorShouldLogActivity()
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, FieldsException, FieldsException {
-        XField xField = xFieldHelper.createXField();
-        Node step = createStepNode(xField);
+        Fields fields = xFieldHelper.createXField();
+        Node step = createStepNode(fields);
         Node node = xFieldHelper.addElement("appender", "", step);
         xFieldHelper.addElement("name", "x", node);
 
-        encoder.setXField(xField);
+        encoder.setFields(fields);
         encoder.setStepType("encoder");
 
         // when
         try {
             doThrow(new ClassNotFoundException()).when(appenderService)
-                    .createAppender("x", xField);
+                    .createAppender("x", fields);
             encoder.initialize();
         } catch (ClassNotFoundException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
@@ -162,7 +162,7 @@ public class BaseEncoderTest {
         // when
         try {
             doThrow(new InstantiationException()).when(appenderService)
-                    .createAppender("x", xField);
+                    .createAppender("x", fields);
             encoder.initialize();
         } catch (InstantiationException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
@@ -172,7 +172,7 @@ public class BaseEncoderTest {
         // when
         try {
             doThrow(new IllegalAccessException()).when(appenderService)
-                    .createAppender("x", xField);
+                    .createAppender("x", fields);
             encoder.initialize();
         } catch (IllegalAccessException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
@@ -182,7 +182,7 @@ public class BaseEncoderTest {
         // when
         try {
             doThrow(new FieldsException("f")).when(appenderService)
-                    .createAppender("x", xField);
+                    .createAppender("x", fields);
             encoder.initialize();
         } catch (FieldsException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
@@ -190,9 +190,9 @@ public class BaseEncoderTest {
         }
     }
 
-    private Node createStepNode(final XField xField) throws FieldsException {
+    private Node createStepNode(final Fields fields) throws FieldsException {
         // xfield/task/steps/step[@name='encoder']/appender
-        Node task = xFieldHelper.addElement("task", "", xField);
+        Node task = xFieldHelper.addElement("task", "", fields);
         Node steps = xFieldHelper.addElement("steps", "", task);
         Node step = xFieldHelper.addElement("step", "", steps);
         xFieldHelper.addAttribute("name", "encoder", step);
@@ -231,12 +231,12 @@ public class BaseEncoderTest {
     @Test
     public void testDoAppendShouldThrowException()
             throws InterruptedException, FieldsException {
-        XField xField = xFieldHelper.createXField();
-        Node step = createStepNode(xField);
+        Fields fields = xFieldHelper.createXField();
+        Node step = createStepNode(fields);
         Node node = xFieldHelper.addElement("appender", "", step);
         xFieldHelper.addElement("name", "x", node);
 
-        encoder.setXField(xField);
+        encoder.setFields(fields);
         encoder.setStepType("encoder");
         encoder.initialize();
 

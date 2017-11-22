@@ -26,7 +26,7 @@ import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
@@ -248,21 +248,21 @@ public class DataDefServiceTest {
         DataDef dataDef = dataDefs.get(0);
 
         //@formatter:off
-        XField xField = new XFieldBuilder()
+        Fields fields = new XFieldBuilder()
                 .add("<xf:member name='row'>")
                 .add("  <xf:group>xyz</xf:group>")
                 .add("</xf:member>")
                 .build("xf");
         //@formatter:on
-        List<XField> list = new ArrayList<>();
-        list.add(xField);
+        List<Fields> list = new ArrayList<>();
+        list.add(fields);
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
         given(validator.validate(dataDefs.get(0))).willReturn(true);
-        given(dataDefHelper.getDataDefMemberFields("row", dataDef.getXfield()))
+        given(dataDefHelper.getDataDefMemberFields("row", dataDef.getFields()))
                 .willReturn(list);
-        given(dataDefHelper.getDataMemberGroup(xField)).willReturn("xyz");
+        given(dataDefHelper.getDataMemberGroup(fields)).willReturn("xyz");
 
         dataDefService.init();
 
@@ -270,7 +270,7 @@ public class DataDefServiceTest {
 
         Member member = data.getMembers().get(0);
 
-        assertThat(member.getXField()).isEqualTo(dataDef.getXfield());
+        assertThat(member.getFields()).isEqualTo(dataDef.getFields());
         assertThat(member.getGroup()).isEqualTo("xyz");
     }
 
@@ -279,7 +279,7 @@ public class DataDefServiceTest {
             DataDefNotFoundException, IOException {
         List<DataDef> dataDefs = createTestDataDefs();
         DataDef dataDef = dataDefs.get(0);
-        dataDef.getXfield().getNodes().clear();
+        dataDef.getFields().getNodes().clear();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
@@ -291,7 +291,7 @@ public class DataDefServiceTest {
 
         Member member = data.getMembers().get(0);
 
-        assertThat(member.getXField()).isEqualTo(dataDef.getXfield());
+        assertThat(member.getFields()).isEqualTo(dataDef.getFields());
         assertThat(member.getGroup()).isNull();
     }
 
@@ -305,12 +305,12 @@ public class DataDefServiceTest {
 
         dataDefService.init();
 
-        Map<AxisName, XField> filterMap = dataDefService.getFilterMap("x");
+        Map<AxisName, Fields> filterMap = dataDefService.getFilterMap("x");
 
         DFilter filter = createFilter();
         assertThat(filterMap.get(AxisName.FACT)).isNull();
         assertThat(filterMap.get(AxisName.COL)).isNull();
-        assertThat(filterMap.get(AxisName.ROW)).isEqualTo(filter.getXfield());
+        assertThat(filterMap.get(AxisName.ROW)).isEqualTo(filter.getFields());
     }
 
     @Test
@@ -395,7 +395,7 @@ public class DataDefServiceTest {
         row.setFilter(dFilter);
 
         //@formatter:off
-        XField xField = new XFieldBuilder()
+        Fields fields = new XFieldBuilder()
                 .add("<xf:member name='row'>")
                 .add("  <xf:group>xyz</xf:group>")
                 .add("</xf:member>")
@@ -407,7 +407,7 @@ public class DataDefServiceTest {
         dataDef.getAxis().add(col);
         dataDef.getAxis().add(row);
         dataDef.getAxis().add(fact);
-        dataDef.setXfield(xField);
+        dataDef.setFields(fields);
 
         List<DataDef> dataDefs = new ArrayList<>();
         dataDefs.add(dataDef);
@@ -418,7 +418,7 @@ public class DataDefServiceTest {
     private DFilter createFilter() {
 
         //@formatter:off
-        XField f1 = new XFieldBuilder()
+        Fields f1 = new XFieldBuilder()
 
                 .add("<xf:filters type='value' >")
                 .add("  <xf:filter name='f1' pattern='v1' />")
@@ -429,7 +429,7 @@ public class DataDefServiceTest {
 
         DFilter dFilter = new DFilter();
         dFilter.setAxis("row");
-        dFilter.setXfield(f1);
+        dFilter.setFields(f1);
         return dFilter;
     }
 
@@ -441,7 +441,7 @@ public class DataDefServiceTest {
         axis.setMatch(match);
         axis.setIndex(index);
         axis.setOrder(order);
-        // axis.setXField(new XField());
+        // axis.setFields(new Fields());
         return axis;
     }
 

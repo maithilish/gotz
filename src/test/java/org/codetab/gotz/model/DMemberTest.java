@@ -75,13 +75,13 @@ public class DMemberTest {
     @Test
     public void testGetXField() {
 
-        assertThat(dMember.getXfield()).isNull();
+        assertThat(dMember.getFields()).isNull();
 
-        XField xField = new XField();
-        dMember.setXfield(xField);
+        Fields fields = new Fields();
+        dMember.setFields(fields);
 
         // for test coverage when not null
-        assertThat(dMember.getXfield()).isSameAs(xField);
+        assertThat(dMember.getFields()).isSameAs(fields);
     }
 
     @Test

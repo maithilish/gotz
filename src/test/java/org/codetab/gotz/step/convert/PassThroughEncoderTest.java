@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.testutil.XFieldBuilder;
@@ -58,7 +58,7 @@ public class PassThroughEncoderTest {
     public void testProcess() throws InterruptedException {
 
         //@formatter:off
-        XField a1 = new XFieldBuilder()
+        Fields a1 = new XFieldBuilder()
                 .add("<task>")
                 .add(" <steps>")
                 .add("  <step name='encoder'>")
@@ -76,7 +76,7 @@ public class PassThroughEncoderTest {
                 .build(null); // default ns
         //@formatter:on
 
-        encoder.setXField(a1);
+        encoder.setFields(a1);
 
         String obj = "xyz";
         encoder.setInput(obj);

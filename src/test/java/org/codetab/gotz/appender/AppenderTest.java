@@ -14,7 +14,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
@@ -60,8 +60,8 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willThrow(ConfigNotFoundException.class);
 
-        XField xField = xFieldHelper.createXField();
-        appender.setXField(xField);
+        Fields fields = xFieldHelper.createXField();
+        appender.setFields(fields);
 
         appender.initializeQueue();
 
@@ -75,8 +75,8 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willThrow(ConfigNotFoundException.class);
 
-        XField xField = xFieldHelper.createXField();
-        appender.setXField(xField);
+        Fields fields = xFieldHelper.createXField();
+        appender.setFields(fields);
 
         appender.initializeQueue();
 
@@ -90,8 +90,8 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
 
-        XField xField = xFieldHelper.createXField();
-        appender.setXField(xField);
+        Fields fields = xFieldHelper.createXField();
+        appender.setFields(fields);
 
         appender.initializeQueue();
 
@@ -106,11 +106,11 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
 
-        XField xField = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addElement("queueSize", "2048", parent);
 
-        appender.setXField(xField);
+        appender.setFields(fields);
 
         appender.initializeQueue();
 
@@ -125,8 +125,8 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("x");
 
-        XField xField = xFieldHelper.createXField();
-        appender.setXField(xField);
+        Fields fields = xFieldHelper.createXField();
+        appender.setFields(fields);
         appender.initializeQueue();
 
         verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
@@ -169,21 +169,21 @@ public class AppenderTest {
     @Test
     public void testSetGetXField() throws FieldsException {
 
-        XField xField = xFieldHelper.createXField();
-        appender.setXField(xField);
+        Fields fields = xFieldHelper.createXField();
+        appender.setFields(fields);
 
-        XField actual = appender.getXField();
+        Fields actual = appender.getFields();
 
-        assertThat(actual).isSameAs(xField);
+        assertThat(actual).isSameAs(fields);
     }
 
     @Test
     public void testSetXFieldNullParams() {
         try {
-            appender.setXField(null);
+            appender.setFields(null);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).isEqualTo("xField must not be null");
+            assertThat(e.getMessage()).isEqualTo("fields must not be null");
         }
     }
 

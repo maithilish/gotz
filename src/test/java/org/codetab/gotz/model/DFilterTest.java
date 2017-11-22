@@ -77,13 +77,13 @@ public class DFilterTest {
     @Test
     public void testGetXField() {
 
-        assertThat(dFilter.getXfield()).isNull();
+        assertThat(dFilter.getFields()).isNull();
 
-        XField xField = new XField();
-        dFilter.setXfield(xField);
+        Fields fields = new Fields();
+        dFilter.setFields(fields);
 
         // for test coverage when not null
-        assertThat(dFilter.getXfield()).isSameAs(xField);
+        assertThat(dFilter.getFields()).isSameAs(fields);
     }
 
     @Test

@@ -7,7 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -16,14 +16,14 @@ import org.xml.sax.SAXException;
 public class XFieldBuilder {
 
     private StringBuilder sb = new StringBuilder();
-    private XField instance = new XField();
+    private Fields instance = new Fields();
 
     public XFieldBuilder add(final String xmlSnippet) {
         sb.append(xmlSnippet);
         return this;
     }
 
-    public XField build(final String nsPrefix) {
+    public Fields build(final String nsPrefix) {
         try {
             Node node = createNode(nsPrefix);
             instance.getNodes().add(node);

@@ -20,7 +20,7 @@ import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
@@ -69,7 +69,7 @@ public class FileAppenderTest {
 
         String str = "test object";
 
-        appender.setXField(new XField());
+        appender.setFields(new Fields());
 
         appender.initializeQueue();
 
@@ -94,7 +94,7 @@ public class FileAppenderTest {
 
         String str1 = "test1";
 
-        appender.setXField(new XField());
+        appender.setFields(new Fields());
 
         appender.initializeQueue();
 
@@ -119,10 +119,10 @@ public class FileAppenderTest {
         String str1 = "test1";
         String str2 = "test2";
 
-        XField xField = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addElement("file", fileName, parent);
-        appender.setXField(xField);
+        appender.setFields(fields);
 
         appender.initializeQueue();
 
@@ -153,10 +153,10 @@ public class FileAppenderTest {
 
         String str1 = "test1";
 
-        XField xField = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addElement("file", fileName, parent);
-        appender.setXField(xField);
+        appender.setFields(fields);
 
         appender.initializeQueue();
 
@@ -182,10 +182,10 @@ public class FileAppenderTest {
             FieldsException {
         String fileName = "target/test.txt";
 
-        XField xField = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addElement("file", fileName, parent);
-        appender.setXField(xField);
+        appender.setFields(fields);
 
         @SuppressWarnings("unchecked")
         BlockingQueue<Object> queue = Mockito.mock(BlockingQueue.class);
@@ -206,10 +206,10 @@ public class FileAppenderTest {
             FieldsException {
         String fileName = "/home/xyzz/test.txt";
 
-        XField xField = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node parent = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addElement("file", fileName, parent);
-        appender.setXField(xField);
+        appender.setFields(fields);
 
         @SuppressWarnings("unchecked")
         BlockingQueue<Object> queue = Mockito.mock(BlockingQueue.class);

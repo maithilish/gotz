@@ -15,7 +15,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
@@ -59,8 +59,8 @@ public class ListAppenderTest {
     public void testAppend() throws InterruptedException {
         String obj = "test object";
 
-        XField xField = new XField();
-        appender.setXField(xField);
+        Fields fields = new Fields();
+        appender.setFields(fields);
 
         appender.initializeQueue();
 
@@ -84,8 +84,8 @@ public class ListAppenderTest {
         String obj1 = "test1";
         String obj2 = "test2";
 
-        XField xField = new XField();
-        appender.setXField(xField);
+        Fields fields = new Fields();
+        appender.setFields(fields);
 
         appender.initializeQueue();
 

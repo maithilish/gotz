@@ -13,7 +13,7 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
@@ -58,7 +58,7 @@ public class DataDefHelperTest {
         fact.setName("fact");
         fact.setOrder(0);
         fact.setValue(null);
-        fact.setXfield(TestUtil.buildXField("", "xf")); // only xfield element
+        fact.setFields(TestUtil.buildXField("", "xf")); // only xfield element
 
         DAxis factAxis = getAxis(dataDef, "fact");
         DAxis colAxis = getAxis(dataDef, "col");
@@ -96,11 +96,11 @@ public class DataDefHelperTest {
         DMember m1 = new DMember();
         m1.setAxis("col");
         m1.setOrder(0);
-        m1.setXfield(TestUtil.createXField("xf"));
+        m1.setFields(TestUtil.createXField("xf"));
         DMember m2 = new DMember();
         m2.setAxis("col");
         m2.setOrder(1);
-        m2.setXfield(TestUtil.createXField("xf"));
+        m2.setFields(TestUtil.createXField("xf"));
         DMember m3 = new DMember();
         m3.setAxis("row");
         m3.setOrder(10);
@@ -132,19 +132,19 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        XField xField =
+        Fields fields =
                 TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
 
         DAxis colAxis = getAxis(dataDef, "col");
         DAxis rowAxis = getAxis(dataDef, "row");
 
         DMember m1 = new DMember();
-        m1.setXfield(xField);
+        m1.setFields(fields);
         DMember m2 = new DMember();
-        m2.setXfield(xField);
+        m2.setFields(fields);
         DMember m3 = new DMember();
         m3.setOrder(10);
-        m3.setXfield(xField);
+        m3.setFields(fields);
 
         assertThat(colAxis.getMember().size()).isEqualTo(2);
         assertThat(colAxis.getMember()).contains(m1);
@@ -171,8 +171,8 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        XField xField = TestUtil.createXField("indexRange", "5-5");
-        m1.setXfield(xField);
+        Fields fields = TestUtil.createXField("indexRange", "5-5");
+        m1.setFields(fields);
 
         assertThat(colAxis.getMember().size()).isEqualTo(1);
         assertThat(colAxis.getMember()).contains(m1);
@@ -181,11 +181,11 @@ public class DataDefHelperTest {
     @Test
     public void testAddIndexRangeWithIndexRange() throws FieldsException {
         // given
-        XField xField =
+        Fields fields =
                 TestUtil.buildXField("<xf:indexRange value='3-10' />", "xf");
 
         DMember m1 = new DMember();
-        m1.setXfield(xField);
+        m1.setFields(fields);
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");
@@ -198,18 +198,18 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        assertThat(m1.getXfield().getNodes().size()).isEqualTo(1);
+        assertThat(m1.getFields().getNodes().size()).isEqualTo(1);
         assertThat(colAxis.getMember()).contains(m1);
     }
 
     @Test
     public void testAddIndexRangeWithBreakAfter() throws FieldsException {
         // given
-        XField xField =
+        Fields fields =
                 TestUtil.buildXField("<xf:breakAfter value='xyz' />", "xf");
 
         DMember m1 = new DMember();
-        m1.setXfield(xField);
+        m1.setFields(fields);
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");
@@ -222,7 +222,7 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        assertThat(m1.getXfield().getNodes().size()).isEqualTo(1);
+        assertThat(m1.getFields().getNodes().size()).isEqualTo(1);
         assertThat(colAxis.getMember()).contains(m1);
     }
 
@@ -338,8 +338,8 @@ public class DataDefHelperTest {
         DMember m1 = new DMember();
         DMember m2 = new DMember();
         m2.setAxis("x");
-        m1.setXfield(TestUtil.createXField("xf"));
-        m2.setXfield(TestUtil.createXField("xf"));
+        m1.setFields(TestUtil.createXField("xf"));
+        m2.setFields(TestUtil.createXField("xf"));
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");

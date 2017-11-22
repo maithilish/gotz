@@ -36,13 +36,13 @@ public class DataDefTest {
     @Test
     public void testGetXField() {
 
-        assertThat(dataDef.getXfield()).isNull();
+        assertThat(dataDef.getFields()).isNull();
 
-        XField xField = new XField();
-        dataDef.setXfield(xField);
+        Fields fields = new Fields();
+        dataDef.setFields(fields);
 
         // for test coverage when not null
-        assertThat(dataDef.getXfield()).isSameAs(xField);
+        assertThat(dataDef.getFields()).isSameAs(fields);
     }
 
     @Test

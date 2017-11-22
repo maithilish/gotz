@@ -16,7 +16,7 @@ import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
@@ -70,7 +70,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, XField> filterMap =
+        Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "m0-col-value");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -88,7 +88,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, XField> filterMap =
+        Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "match", "m1-col-match");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -106,7 +106,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, XField> filterMap =
+        Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "mx-col-match");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -124,7 +124,7 @@ public class DataFilterTest {
         filter.setInput(data);
 
         // axis - row but value is from col axis
-        Map<AxisName, XField> filterMap =
+        Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.ROW, "value", "m1-col-value");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -142,7 +142,7 @@ public class DataFilterTest {
         filter.setInput(data);
 
         // fact axis not in test data
-        Map<AxisName, XField> filterMap =
+        Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.FACT, "value", "m1-col-value");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -159,7 +159,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, XField> filterMap =
+        Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "m0-col-value");
         filterMap.putAll(
                 getTestFilterMap(AxisName.ROW, "match", "m2-row-match"));
@@ -239,7 +239,7 @@ public class DataFilterTest {
         return data;
     }
 
-    private Map<AxisName, XField> getTestFilterMap(final AxisName axis,
+    private Map<AxisName, Fields> getTestFilterMap(final AxisName axis,
             final String group, final String... filterStrings) {
 
         StringBuilder filters = new StringBuilder();
@@ -249,13 +249,13 @@ public class DataFilterTest {
             filters.append("' />");
         }
 
-        XField xField = new XFieldBuilder()
+        Fields fields = new XFieldBuilder()
                 .add("<xf:filters type='" + group + "'>")
                 .add(filters.toString()).add("</xf:filters>").build("xf");
 
-        Map<AxisName, XField> filterMap = new HashMap<>();
+        Map<AxisName, Fields> filterMap = new HashMap<>();
 
-        filterMap.put(axis, xField);
+        filterMap.put(axis, fields);
         return filterMap;
     }
 

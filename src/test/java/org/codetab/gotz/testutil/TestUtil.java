@@ -23,7 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.misc.SimpleNamespaceContext;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.util.XmlUtils;
 import org.junit.Assert;
@@ -37,54 +37,54 @@ public final class TestUtil {
     private TestUtil() {
     }
 
-    public static XField buildXField(final String xml, final String nsPrefix) {
+    public static Fields buildXField(final String xml, final String nsPrefix) {
         return new XFieldBuilder().add(xml).build(nsPrefix);
     }
 
-    public static XField createXField() throws FieldsException {
+    public static Fields createXField() throws FieldsException {
         // no prefix
         return createXField(null);
     }
 
-    public static XField createXField(final String namespacePrefix)
+    public static Fields createXField(final String namespacePrefix)
             throws FieldsException {
         Document doc;
         try {
             doc = XmlUtils.createDocument("xfield", namespacePrefix,
                     "http://codetab.org/xfield");
-            XField xField = new XField();
-            xField.getNodes().add(doc);
-            return xField;
+            Fields fields = new Fields();
+            fields.getNodes().add(doc);
+            return fields;
         } catch (ParserConfigurationException e) {
             throw new FieldsException("unable to create xfield", e);
         }
     }
 
-    public static XField createXField(final String name, final String value)
+    public static Fields createXField(final String name, final String value)
             throws FieldsException {
         return createXField(name, value, null);
     }
 
-    public static XField createXField(final String name, final String value,
+    public static Fields createXField(final String name, final String value,
             final String namespacePrefix) throws FieldsException {
-        XField xField = createXField(namespacePrefix);
-        addElement(name, value, namespacePrefix, xField);
-        return xField;
+        Fields fields = createXField(namespacePrefix);
+        addElement(name, value, namespacePrefix, fields);
+        return fields;
     }
 
-    public static XField createXField(final String name, final String attrName,
+    public static Fields createXField(final String name, final String attrName,
             final String value, final String namespacePrefix)
             throws FieldsException {
-        XField xField = createXField(namespacePrefix);
-        Node node = addElement(name, "", namespacePrefix, xField);
+        Fields fields = createXField(namespacePrefix);
+        Node node = addElement(name, "", namespacePrefix, fields);
         addAttribute(attrName, value, node);
-        return xField;
+        return fields;
     }
 
     public static Element addElement(final String namespacePrefix,
             final String name, final String text, final String parentNodeXPath,
-            final XField xField) throws FieldsException {
-        Optional<Node> node = getLastNode(xField);
+            final Fields fields) throws FieldsException {
+        Optional<Node> node = getLastNode(fields);
         if (node.isPresent()) {
             Document doc = null;
             if (node.get() instanceof Document) {
@@ -129,16 +129,16 @@ public final class TestUtil {
     }
 
     public static Element addElement(final String name, final String text,
-            final String namespacePrefix, final XField xField)
+            final String namespacePrefix, final Fields fields)
             throws FieldsException {
         // default namespace
-        return addElement(namespacePrefix, name, text, null, xField);
+        return addElement(namespacePrefix, name, text, null, fields);
     }
 
     public static Element addElement(final String name, final String text,
-            final XField xField) throws FieldsException {
+            final Fields fields) throws FieldsException {
         // default namespace
-        return addElement(null, name, text, null, xField);
+        return addElement(null, name, text, null, fields);
     }
 
     public static Element addElement(final String name, final String text,
@@ -173,13 +173,13 @@ public final class TestUtil {
         }
     }
 
-    public static Optional<Node> getLastNode(final XField xField) {
-        Validate.notNull(xField, "xField must not be null");
+    public static Optional<Node> getLastNode(final Fields fields) {
+        Validate.notNull(fields, "fields must not be null");
 
         Node node = null;
-        int last = xField.getNodes().size() - 1;
+        int last = fields.getNodes().size() - 1;
         if (last >= 0) {
-            node = xField.getNodes().get(last);
+            node = fields.getNodes().get(last);
         }
         Optional<Node> lastNode = Optional.ofNullable(node);
         return lastNode;

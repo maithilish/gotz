@@ -18,7 +18,7 @@ import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.After;
@@ -498,7 +498,7 @@ public class DataDefDaoTest {
         dataDef.setToDate(toDate);
 
         dataDef.getAxis().addAll(createAxis());
-        dataDef.setXfield(createFields());
+        dataDef.setFields(createFields());
 
         return dataDef;
     }
@@ -507,7 +507,7 @@ public class DataDefDaoTest {
         DataDef dataDef2 = createDataDef();
         Date toDate = DateUtils.addDays(dataDef2.getToDate(), 10);
         dataDef2.setToDate(toDate);
-        dataDef2.setXfield(
+        dataDef2.setFields(
                 TestUtil.buildXField("<xf:member name='x' />", "xf"));
         return dataDef2;
     }
@@ -525,11 +525,11 @@ public class DataDefDaoTest {
         return list;
     }
 
-    private XField createFields() {
+    private Fields createFields() {
 
         // @formatter:off
 
-        XField xField = new XFieldBuilder()
+        Fields fields = new XFieldBuilder()
                 .add("<xf:a>")
                 .add("  <xf:b>b</xf:b>")
                 .add("  <xf:c>c</xf:c>")
@@ -538,7 +538,7 @@ public class DataDefDaoTest {
 
         //@formatter:on
 
-        return xField;
+        return fields;
     }
 
 }

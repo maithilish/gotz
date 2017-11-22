@@ -17,7 +17,7 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.util.CompressionUtil;
@@ -133,10 +133,10 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        XField xField = TestUtil.buildXField("", "xf");
+        Fields fields = TestUtil.buildXField("", "xf");
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, xField);
+        Date actual = documentHelper.getToDate(fromDate, fields);
 
         assertThat(actual).isEqualTo(fromDate);
     }
@@ -148,15 +148,15 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        XField xField = TestUtil.createXField(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", xField);
+        Fields fields = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", "P2D", tasks);
-        TestUtil.addElement("label", "x:y", xField);
+        TestUtil.addElement("label", "x:y", fields);
 
         Date expected = DateUtils.addDays(fromDate, 2);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, xField);
+        Date actual = documentHelper.getToDate(fromDate, fields);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -167,21 +167,21 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        XField xField = TestUtil.createXField(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", xField);
+        Fields fields = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", "", tasks);
-        TestUtil.addElement("label", "x:y", xField);
+        TestUtil.addElement("label", "x:y", fields);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, xField);
+        Date actual = documentHelper.getToDate(fromDate, fields);
         assertThat(actual).isEqualTo(fromDate);
 
-        xField = TestUtil.createXField(); // default ns
-        tasks = TestUtil.addElement("tasks", "", xField);
+        fields = TestUtil.createXField(); // default ns
+        tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", "0", tasks);
-        TestUtil.addElement("label", "x:y", xField);
+        TestUtil.addElement("label", "x:y", fields);
 
-        actual = documentHelper.getToDate(fromDate, xField);
+        actual = documentHelper.getToDate(fromDate, fields);
         assertThat(actual).isEqualTo(fromDate);
     }
 
@@ -192,17 +192,17 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-08-2017 11:00:00.000";
 
-        XField xField = TestUtil.createXField(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", xField);
+        Fields fields = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", toDateStr, tasks);
-        TestUtil.addElement("label", "x:y", xField);
+        TestUtil.addElement("label", "x:y", fields);
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);
         Date expected = DateUtils.parseDate(toDateStr, parsePatterns);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, xField);
+        Date actual = documentHelper.getToDate(fromDate, fields);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -213,16 +213,16 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
 
-        XField xField = TestUtil.createXField(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", xField);
+        Fields fields = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", toDateStr, tasks);
-        TestUtil.addElement("label", "x:y", xField);
+        TestUtil.addElement("label", "x:y", fields);
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, xField);
+        Date actual = documentHelper.getToDate(fromDate, fields);
         assertThat(actual).isEqualTo(fromDate);
     }
 
@@ -232,31 +232,31 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
 
-        XField xField = TestUtil.createXField(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", xField);
+        Fields fields = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", toDateStr, tasks);
-        TestUtil.addElement("label", "x:y", xField);
+        TestUtil.addElement("label", "x:y", fields);
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willThrow(ConfigNotFoundException.class);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, xField);
+        Date actual = documentHelper.getToDate(fromDate, fields);
         assertThat(actual).isEqualTo(fromDate);
     }
 
     @Test
     public void testGetToDateNullParams() {
         try {
-            documentHelper.getToDate(null, new XField());
+            documentHelper.getToDate(null, new Fields());
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("fromDate must not be null");
         }
 
         try {
-            XField xField = null;
-            documentHelper.getToDate(new Date(), xField);
+            Fields fields = null;
+            documentHelper.getToDate(new Date(), fields);
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("xfield must not be null");
@@ -268,7 +268,7 @@ public class DocumentHelperTest {
         FieldUtils.writeDeclaredField(documentHelper, "configService", null,
                 true);
         try {
-            documentHelper.getToDate(new Date(), new XField());
+            documentHelper.getToDate(new Date(), new Fields());
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
             assertThat(e.getMessage()).isEqualTo("configService is null");

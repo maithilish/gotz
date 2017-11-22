@@ -16,7 +16,7 @@ import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.AppenderService;
@@ -71,7 +71,7 @@ public class CsvRecordEncoderTest {
     public void testProcessSortCol() throws InterruptedException {
 
         //@formatter:off
-        XField a1 = new XFieldBuilder()
+        Fields a1 = new XFieldBuilder()
                 .add("<task>")
                 .add(" <steps>")
                 .add("  <step name='encoder'>")
@@ -86,7 +86,7 @@ public class CsvRecordEncoderTest {
                 .build(null); // default ns
         //@formatter:on
 
-        encoder.setXField(a1);
+        encoder.setFields(a1);
 
         // col order field is set to non zero, row and fact order is 0
         Data data = getTestData();
@@ -119,7 +119,7 @@ public class CsvRecordEncoderTest {
     @Test
     public void testProcessNoLocatorNameFieldShouldThrowException() {
 
-        encoder.setXField(new XField());
+        encoder.setFields(new Fields());
         encoder.setInput(new Data());
 
         // when
@@ -143,7 +143,7 @@ public class CsvRecordEncoderTest {
             assertThat(e.getMessage()).isEqualTo("xfield must not be null");
         }
 
-        encoder.setXField(new XField());
+        encoder.setFields(new Fields());
 
         try {
             encoder.process();

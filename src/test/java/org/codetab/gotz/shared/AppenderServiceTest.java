@@ -16,7 +16,7 @@ import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.junit.Before;
@@ -57,8 +57,8 @@ public class AppenderServiceTest {
             InstantiationException, IllegalAccessException, FieldsException {
 
         String className = "org.codetab.gotz.appender.FileAppender";
-        XField xField = xFieldHelper.createXField();
-        Node node = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node node = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addAttribute("class", className, node);
 
         String userProvidedFile = "gotz.properties";
@@ -66,12 +66,12 @@ public class AppenderServiceTest {
         ConfigService configService = dInjector.instance(ConfigService.class);
         configService.init(userProvidedFile, defaultsFile);
 
-        appenderService.createAppender("x", xField);
+        appenderService.createAppender("x", fields);
 
         Appender appender = appenderService.getAppender("x");
-        appender.setXField(xField);
+        appender.setFields(fields);
 
-        assertThat(appender.getXField()).isEqualTo(xField);
+        assertThat(appender.getFields()).isEqualTo(fields);
         verify(appenderPoolService).submit("appender", appender);
     }
 
@@ -82,8 +82,8 @@ public class AppenderServiceTest {
 
         String className = "org.codetab.gotz.appender.FileAppender";
         String appenderName = "x";
-        XField xField = xFieldHelper.createXField();
-        Node node = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node node = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addAttribute("name", appenderName, node);
         xFieldHelper.addAttribute("class", className, node);
 
@@ -92,21 +92,21 @@ public class AppenderServiceTest {
         ConfigService configService = dInjector.instance(ConfigService.class);
         configService.init(userProvidedFile, defaultsFile);
 
-        appenderService.createAppender("x", xField);
+        appenderService.createAppender("x", fields);
         Appender appender = appenderService.getAppender("x");
 
-        assertThat(appender.getXField()).isEqualTo(xField);
+        assertThat(appender.getFields()).isEqualTo(fields);
         verify(appenderPoolService).submit("appender", appender);
 
         // change class name to trigger error, but as appender with same name
         // exists it should not throw ClassCastException
         className = "org.codetab.gotz.appender.FileAppenderX";
-        xField = xFieldHelper.createXField();
-        node = xFieldHelper.addElement("appender", "", xField);
+        fields = xFieldHelper.createXField();
+        node = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addAttribute("name", appenderName, node);
         xFieldHelper.addAttribute("class", className, node);
 
-        appenderService.createAppender("x", xField);
+        appenderService.createAppender("x", fields);
     }
 
     @Test
@@ -116,13 +116,13 @@ public class AppenderServiceTest {
 
         String className = "org.codetab.gotz.model.Axis";
         String appenderName = "x";
-        XField xField = xFieldHelper.createXField();
-        Node node = xFieldHelper.addElement("appender", "", xField);
+        Fields fields = xFieldHelper.createXField();
+        Node node = xFieldHelper.addElement("appender", "", fields);
         xFieldHelper.addAttribute("name", appenderName, node);
         xFieldHelper.addAttribute("class", className, node);
 
         exceptionRule.expect(ClassCastException.class);
-        appenderService.createAppender("x", xField);
+        appenderService.createAppender("x", fields);
     }
 
     @Test
@@ -160,7 +160,7 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppenderSynchronized() {
         Method method = MethodUtils.getMatchingMethod(AppenderService.class,
-                "createAppender", String.class, XField.class);
+                "createAppender", String.class, Fields.class);
         assertThat(method).isNotNull();
         assertThat(Modifier.isSynchronized(method.getModifiers())).isTrue();
     }

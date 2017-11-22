@@ -11,7 +11,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
@@ -215,12 +215,12 @@ public class LocatorHelperTest {
 
         Locator locator1 = new Locator();
         locator1.setName("n1");
-        locator1.setXField(new XField());
+        locator1.setFields(new Fields());
         // locator1.getFields().add(field);
 
         Locator locator2 = new Locator();
         locator2.setName("n2");
-        locator1.setXField(new XField());
+        locator1.setFields(new Fields());
         // locator2.getFields().add(field);
 
         Locators locators1 = new Locators();
@@ -231,7 +231,7 @@ public class LocatorHelperTest {
         Locator locator3 = new Locator();
         locator3.setName("n3");
         // locator3.getFields().add(field);
-        locator3.setXField(new XField());
+        locator3.setFields(new Fields());
 
         Locators locators2 = new Locators();
         locators2.getLocator().add(locator3);
