@@ -26,7 +26,7 @@ import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.MarkerUtil;
@@ -52,12 +52,12 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean initialize() {
         try {
-            dataDefName = xFieldHelper.getLastValue("/:xfield/:task/@dataDef",
-                    getXField());
-            String locatorName = xFieldHelper
-                    .getLastValue("/:xfield/:locatorName", getXField());
-            String locatorGroup = xFieldHelper
-                    .getLastValue("/:xfield/:locatorGroup", getXField());
+            dataDefName = fieldsHelper.getLastValue("/:xfield/:task/@dataDef",
+                    getFields());
+            String locatorName = fieldsHelper
+                    .getLastValue("/:xfield/:locatorName", getFields());
+            String locatorGroup = fieldsHelper
+                    .getLastValue("/:xfield/:locatorGroup", getFields());
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
                     dataDefName);
         } catch (FieldsException e) {
@@ -122,8 +122,8 @@ public abstract class BaseParser extends Step {
     public boolean store() {
         boolean persist = true;
         try {
-            persist = xFieldHelper.isTrue("/:xfield/:task/:persist/:data",
-                    getXField());
+            persist = fieldsHelper.isTrue("/:xfield/:task/:persist/:data",
+                    getFields());
         } catch (FieldsException e) {
         }
         if (persist) {
@@ -144,13 +144,13 @@ public abstract class BaseParser extends Step {
      */
     @Override
     public boolean handover() {
-        XField nextStepXField = createNextStepXField();
+        Fields nextStepXField = createNextStepXField();
         stepService.pushTask(this, data, nextStepXField);
         return true;
     }
 
-    private XField createNextStepXField() {
-        XField nextStepXField = getXField();
+    private Fields createNextStepXField() {
+        Fields nextStepXField = getFields();
         if (nextStepXField.getNodes().size() == 0) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
@@ -259,10 +259,10 @@ public abstract class BaseParser extends Step {
             cAxis.setOrder(Integer.valueOf(axis.getOrder()));
             cAxis.setIndex(Integer.valueOf(axis.getIndex()));
             cAxis.setValue(axis.getValue());
-            cAxis.setXField(axis.getXField());
+            cAxis.setFields(axis.getFields());
             cMember.addAxis(cAxis);
         }
-        cMember.setXField(member.getXField());
+        cMember.setFields(member.getFields());
         return cMember;
     }
 
@@ -270,8 +270,8 @@ public abstract class BaseParser extends Step {
             throws NumberFormatException, FieldsException {
         boolean noField = true;
         try {
-            String breakAfter = xFieldHelper
-                    .getLastValue("//xf:breakAfter/@value", axis.getXField());
+            String breakAfter = fieldsHelper
+                    .getLastValue("//xf:breakAfter/@value", axis.getFields());
             noField = false;
             String value = axis.getValue().trim();
             if (value.equals(breakAfter)) {
@@ -284,7 +284,7 @@ public abstract class BaseParser extends Step {
             throw new NullPointerException(message);
         }
         try {
-            Integer endIndex = getEndIndex(axis.getXField());
+            Integer endIndex = getEndIndex(axis.getFields());
             noField = false;
             if (axis.getIndex() + 1 > endIndex) {
                 return true;
@@ -390,26 +390,26 @@ public abstract class BaseParser extends Step {
     /*
      *
      */
-    protected Integer getStartIndex(final XField xField)
+    protected Integer getStartIndex(final Fields fields)
             throws NumberFormatException, FieldsException {
-        if (xField == null) {
-            throw new FieldsException("xField is null");
+        if (fields == null) {
+            throw new FieldsException("fields is null");
         }
         Range<Integer> indexRange =
-                xFieldHelper.getRange("//xf:indexRange/@value", xField);
+                fieldsHelper.getRange("//xf:indexRange/@value", fields);
         return indexRange.getMinimum();
     }
 
     /*
      *
      */
-    protected Integer getEndIndex(final XField xField)
+    protected Integer getEndIndex(final Fields fields)
             throws NumberFormatException, FieldsException {
-        if (xField == null) {
-            throw new FieldsException("xField is null");
+        if (fields == null) {
+            throw new FieldsException("fields is null");
         }
         Range<Integer> indexRange =
-                xFieldHelper.getRange("//xf:indexRange/@value", xField);
+                fieldsHelper.getRange("//xf:indexRange/@value", fields);
         return indexRange.getMaximum();
     }
 

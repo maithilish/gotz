@@ -20,7 +20,7 @@ import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Locator;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
@@ -45,12 +45,12 @@ public class LocatorFieldsHelper {
     private ConfigService configService;
 
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @Inject
     private IOHelper ioHelper;
 
-    private List<XField> xFields;
+    private List<Fields> xFields;
 
     /**
      * private constructor.
@@ -76,21 +76,21 @@ public class LocatorFieldsHelper {
         return true;
     }
 
-    public XField getXField(final String clazz, final String group)
+    public Fields getFields(final String clazz, final String group)
             throws FieldsException {
         // return deep copy
-        for (XField xField : xFields) {
-            if (xField.getClazz().equals(clazz)
-                    && xField.getGroup().equals(group)) {
-                return xFieldHelper.deepCopy(xField);
+        for (Fields fields : xFields) {
+            if (fields.getClazz().equals(clazz)
+                    && fields.getGroup().equals(group)) {
+                return fieldsHelper.deepCopy(fields);
             }
         }
         // if not found, return empty xfield
-        XField xField = new XField();
-        xField.setName("locator");
-        xField.setGroup(group);
-        xField.setClazz(clazz);
-        return xField;
+        Fields fields = new Fields();
+        fields.setName("locator");
+        fields.setGroup(group);
+        fields.setClazz(clazz);
+        return fields;
     }
 
     /**
@@ -103,17 +103,17 @@ public class LocatorFieldsHelper {
         Validate.notNull(locator, "locator must not be null");
         String label =
                 Util.buildString(locator.getName(), ":", locator.getGroup());
-        xFieldHelper.addElement("label", label, locator.getXField());
+        fieldsHelper.addElement("label", label, locator.getFields());
     }
 
-    private List<XField> getXFields() throws ParserConfigurationException,
+    private List<Fields> getXFields() throws ParserConfigurationException,
             FileNotFoundException, TransformerFactoryConfigurationError,
             TransformerException, ConfigNotFoundException, FieldsException {
 
-        List<XField> xFieldList = new ArrayList<>();
+        List<Fields> xFieldList = new ArrayList<>();
 
-        List<XField> xBeans = beanService.getBeans(XField.class);
-        for (XField xBean : xBeans) {
+        List<Fields> xBeans = beanService.getBeans(Fields.class);
+        for (Fields xBean : xBeans) {
             // merge global steps to tasks steps
             String defaultNs = XmlUtils.getDefaultNs(xBean.getNodes().get(0));
             Document doc = XmlUtils.createDocument(xBean.getNodes(), "xfield",
@@ -121,16 +121,16 @@ public class LocatorFieldsHelper {
             Document effectiveDoc = mergeSteps(doc);
 
             // split on tasks to new XFields
-            XField holder = new XField();
+            Fields holder = new Fields();
             holder.getNodes().add(effectiveDoc);
-            List<XField> newXFields =
-                    xFieldHelper.split("/:xfield/:tasks", holder);
+            List<Fields> newXFields =
+                    fieldsHelper.split("/:xfield/:tasks", holder);
 
             // set new xfield fields
-            for (XField xField : newXFields) {
-                xField.setName(xBean.getName());
-                xField.setClazz(xBean.getClazz());
-                xField.setGroup(getGroupFromNodes(xField));
+            for (Fields fields : newXFields) {
+                fields.setName(xBean.getName());
+                fields.setClazz(xBean.getClazz());
+                fields.setGroup(getGroupFromNodes(fields));
             }
 
             xFieldList.addAll(newXFields);
@@ -138,10 +138,10 @@ public class LocatorFieldsHelper {
         return xFieldList;
     }
 
-    private String getGroupFromNodes(final XField xField)
+    private String getGroupFromNodes(final Fields fields)
             throws FieldsException {
         String xpath = "/:xfield/:tasks/@group";
-        return xFieldHelper.getLastValue(xpath, xField);
+        return fieldsHelper.getLastValue(xpath, fields);
     }
 
     private Document mergeSteps(final Document doc) throws FieldsException {

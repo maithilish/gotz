@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Locator;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.step.IStep;
@@ -117,9 +117,9 @@ public final class LocatorSeeder extends BaseSeeder {
     public boolean process() {
         for (Locator locator : locatorList) {
             try {
-                XField xField = locatorXFieldHelper.getXField(
+                Fields fields = locatorXFieldHelper.getFields(
                         locator.getClass().getName(), locator.getGroup());
-                locator.setXField(xField);
+                locator.setFields(fields);
                 locatorXFieldHelper.addLabel(locator);
             } catch (FieldsException e) {
                 throw new StepRunException(
@@ -143,7 +143,7 @@ public final class LocatorSeeder extends BaseSeeder {
         for (Locator locator : locatorList) {
             // create new instance of seeder step for each locator
             Step seederStep = getSeederStep(locator);
-            stepService.pushTask(seederStep, locator, locator.getXField());
+            stepService.pushTask(seederStep, locator, locator.getFields());
             count++;
             try {
                 TimeUnit.MILLISECONDS.sleep(SLEEP_MILLIS);
@@ -168,7 +168,7 @@ public final class LocatorSeeder extends BaseSeeder {
             Step seederStep =
                     (Step) stepService.getStep(this.getClass().getName());
             seederStep.setConsistent(true);
-            seederStep.setXField(locator.getXField());
+            seederStep.setFields(locator.getFields());
             seederStep.setStepType(this.getStepType());
             seederStep.setStepState(this.getStepState());
             return seederStep;

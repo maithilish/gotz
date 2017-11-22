@@ -81,7 +81,7 @@ public final class CsvRecordEncoder extends BaseEncoder {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getXField() != null, "xfield must not be null");
+        Validate.validState(getFields() != null, "xfield must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         StringBuilder builder = null;
@@ -131,10 +131,10 @@ public final class CsvRecordEncoder extends BaseEncoder {
      */
     private void appendLocatorInfo() {
         try {
-            String locatorName = xFieldHelper
-                    .getLastValue("/:xfield/:locatorName", getXField());
-            String locatorGroup = xFieldHelper
-                    .getLastValue("/:xfield/:locatorGroup", getXField());
+            String locatorName = fieldsHelper
+                    .getLastValue("/:xfield/:locatorName", getFields());
+            String locatorGroup = fieldsHelper
+                    .getLastValue("/:xfield/:locatorGroup", getFields());
             doAppend(locatorName + "|" + locatorGroup);
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";

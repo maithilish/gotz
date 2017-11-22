@@ -23,7 +23,7 @@ import org.apache.commons.text.StrSubstitutor;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.misc.SimpleNamespaceContext;
 import org.codetab.gotz.model.Axis;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.util.XmlUtils;
 import org.slf4j.Logger;
@@ -65,9 +65,9 @@ public class FieldsHelper {
      *             on XPath error or if no matching node
      */
     public String getFirstValue(final String xpathExpression,
-            final XField xField) throws FieldsException {
+            final Fields fields) throws FieldsException {
         XPath xpath = XPathFactory.newInstance().newXPath();
-        for (Node node : xField.getNodes()) {
+        for (Node node : fields.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
             try {
                 String value = xpath.evaluate(xpathExpression, node);
@@ -93,10 +93,10 @@ public class FieldsHelper {
      *             on XPath error or if no matching node
      */
     public String getLastValue(final String xpathExpression,
-            final XField xField) throws FieldsException {
+            final Fields fields) throws FieldsException {
         String value = "";
         XPath xpath = XPathFactory.newInstance().newXPath();
-        for (Node node : xField.getNodes()) {
+        for (Node node : fields.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
             String val;
             try {
@@ -116,10 +116,10 @@ public class FieldsHelper {
     }
 
     public List<String> getValues(final String xpathExpression,
-            final XField xField) throws FieldsException {
+            final Fields fields) throws FieldsException {
         List<String> values = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
-        for (Node node : xField.getNodes()) {
+        for (Node node : fields.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
             try {
                 NodeList items = getNodes(node, xpathExpression);
@@ -149,7 +149,7 @@ public class FieldsHelper {
     }
 
     public boolean isDefined(final String xpathExpression,
-            final XField xField) {
+            final Fields fields) {
         /*
          * getFirstValue returns non blank value or throws XFieldException when
          * value is blank/null or when parse error. If it returns value then
@@ -158,32 +158,32 @@ public class FieldsHelper {
          *
          */
         try {
-            getFirstValue(xpathExpression, xField);
+            getFirstValue(xpathExpression, fields);
             return true;
         } catch (FieldsException e) {
             return false;
         }
     }
 
-    public boolean isAnyDefined(final XField xField,
+    public boolean isAnyDefined(final Fields fields,
             final String... xpathExpressions) {
         for (String xpathExpression : xpathExpressions) {
-            if (isDefined(xpathExpression, xField)) {
+            if (isDefined(xpathExpression, fields)) {
                 return true;
             }
         }
         return false;
     }
 
-    public boolean isTrue(final String xpathExpression, final XField xField)
+    public boolean isTrue(final String xpathExpression, final Fields fields)
             throws FieldsException {
-        String value = getLastValue(xpathExpression, xField);
+        String value = getLastValue(xpathExpression, fields);
         return StringUtils.equalsIgnoreCase(value, "true");
     }
 
-    public String getLabel(final XField xField) throws FieldsException {
+    public String getLabel(final Fields fields) throws FieldsException {
         String xpath = "/:xfield/:label";
-        return getLastValue(xpath, xField);
+        return getLastValue(xpath, fields);
     }
 
     // others
@@ -204,21 +204,21 @@ public class FieldsHelper {
      * </pre>
      *
      * @param xpathExpression
-     * @param xField
+     * @param fields
      * @return
      * @throws FieldsException
      */
-    public List<XField> split(final String xpathExpression, final XField xField)
+    public List<Fields> split(final String xpathExpression, final Fields fields)
             throws FieldsException {
         // TODO try for optimization (in same or separate method) deep copy or
         // reference to nodes
 
-        List<XField> xFieldList = new ArrayList<>();
-        if (xField.getNodes().isEmpty()) {
+        List<Fields> xFieldList = new ArrayList<>();
+        if (fields.getNodes().isEmpty()) {
             return xFieldList;
         }
         XPath xpath = XPathFactory.newInstance().newXPath();
-        for (Node node : xField.getNodes()) {
+        for (Node node : fields.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
             try {
                 NodeList nodeList = (NodeList) xpath.evaluate(xpathExpression,
@@ -230,10 +230,10 @@ public class FieldsHelper {
                     Document doc = XmlUtils.createDocument(nodeList.item(i),
                             "xfield", prefix, ns);
 
-                    XField copy = new XField();
-                    copy.setName(xField.getName());
-                    copy.setClazz(xField.getClazz());
-                    copy.setGroup(xField.getGroup());
+                    Fields copy = new Fields();
+                    copy.setName(fields.getName());
+                    copy.setClazz(fields.getClazz());
+                    copy.setGroup(fields.getGroup());
                     copy.getNodes().add(doc);
                     xFieldList.add(copy);
                 }
@@ -246,15 +246,15 @@ public class FieldsHelper {
         return xFieldList;
     }
 
-    public XField deepCopy(final XField xField) throws FieldsException {
-        Validate.notNull(xField, "xField must not be null");
+    public Fields deepCopy(final Fields fields) throws FieldsException {
+        Validate.notNull(fields, "fields must not be null");
 
         try {
-            XField copy = new XField();
-            copy.setName(xField.getName());
-            copy.setClazz(xField.getClazz());
-            copy.setGroup(xField.getGroup());
-            for (Node node : xField.getNodes()) {
+            Fields copy = new Fields();
+            copy.setName(fields.getName());
+            copy.setClazz(fields.getClazz());
+            copy.setGroup(fields.getGroup());
+            for (Node node : fields.getNodes()) {
                 copy.getNodes().add(XmlUtils.deepCopy(node));
             }
             return copy;
@@ -263,25 +263,25 @@ public class FieldsHelper {
         }
     }
 
-    public Optional<Node> getLastNode(final XField xField) {
-        Validate.notNull(xField, "xField must not be null");
+    public Optional<Node> getLastNode(final Fields fields) {
+        Validate.notNull(fields, "fields must not be null");
 
         Node node = null;
-        int last = xField.getNodes().size() - 1;
+        int last = fields.getNodes().size() - 1;
         if (last >= 0) {
-            node = xField.getNodes().get(last);
+            node = fields.getNodes().get(last);
         }
         Optional<Node> lastNode = Optional.ofNullable(node);
         return lastNode;
     }
 
-    public Optional<Node> getFirstNode(final XField xField) {
-        Validate.notNull(xField, "xfield must not be null");
+    public Optional<Node> getFirstNode(final Fields fields) {
+        Validate.notNull(fields, "xfield must not be null");
 
         Node node = null;
         int first = 0;
-        if (xField.getNodes().size() > 0) {
-            node = xField.getNodes().get(first);
+        if (fields.getNodes().size() > 0) {
+            node = fields.getNodes().get(first);
         }
         Optional<Node> firstNode = Optional.ofNullable(node);
         return firstNode;
@@ -289,8 +289,8 @@ public class FieldsHelper {
 
     public Element addElement(final String namespacePrefix, final String name,
             final String text, final String parentNodeXPath,
-            final XField xField) throws FieldsException {
-        Optional<Node> node = getLastNode(xField);
+            final Fields fields) throws FieldsException {
+        Optional<Node> node = getLastNode(fields);
         if (node.isPresent()) {
             Document doc = null;
             if (node.get() instanceof Document) {
@@ -335,9 +335,9 @@ public class FieldsHelper {
     }
 
     public Element addElement(final String name, final String text,
-            final XField xField) throws FieldsException {
+            final Fields fields) throws FieldsException {
         // default namespace
-        return addElement(null, name, text, null, xField);
+        return addElement(null, name, text, null, fields);
     }
 
     public Element addElement(final String name, final String text,
@@ -400,8 +400,8 @@ public class FieldsHelper {
      *             value is not range or minimum is greater than maximum
      */
     public Range<Integer> getRange(final String xpathExpression,
-            final XField xField) throws FieldsException, NumberFormatException {
-        String value = getLastValue(xpathExpression, xField);
+            final Fields fields) throws FieldsException, NumberFormatException {
+        String value = getLastValue(xpathExpression, fields);
 
         if (value.startsWith("-")) {
             NumberFormatException e =
@@ -432,20 +432,20 @@ public class FieldsHelper {
         return Range.between(min, max);
     }
 
-    public XField createXField() throws FieldsException {
+    public Fields createXField() throws FieldsException {
         // no prefix
         return createXField(null);
     }
 
-    public XField createXField(final String namespacePrefix)
+    public Fields createXField(final String namespacePrefix)
             throws FieldsException {
         Document doc;
         try {
             doc = XmlUtils.createDocument("xfield", namespacePrefix,
                     "http://codetab.org/xfield");
-            XField xField = new XField();
-            xField.getNodes().add(doc);
-            return xField;
+            Fields fields = new Fields();
+            fields.getNodes().add(doc);
+            return fields;
         } catch (ParserConfigurationException e) {
             throw new FieldsException("unable to create xfield", e);
         }

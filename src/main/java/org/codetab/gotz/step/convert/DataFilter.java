@@ -14,7 +14,7 @@ import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseFilter;
@@ -50,7 +50,7 @@ public final class DataFilter extends BaseFilter {
         Validate.validState(getData() != null, "data must not be null");
 
         List<Member> forRemovalMembers = new ArrayList<Member>();
-        Map<AxisName, XField> filterMap = null;
+        Map<AxisName, Fields> filterMap = null;
         try {
             filterMap = dataDefService.getFilterMap(getData().getDataDef());
         } catch (DataDefNotFoundException e) {
@@ -90,8 +90,8 @@ public final class DataFilter extends BaseFilter {
      * @return true if axis candidate for filter otherwise false
      */
     private boolean requireFilter(final Axis axis,
-            final Map<AxisName, XField> filterMap) {
-        XField filters = filterMap.get(axis.getName());
+            final Map<AxisName, Fields> filterMap) {
+        Fields filters = filterMap.get(axis.getName());
         if (filters == null) {
             return false;
         }
@@ -110,14 +110,14 @@ public final class DataFilter extends BaseFilter {
      * candidate for filter.
      * @param axis
      *            to filter
-     * @param xField
+     * @param fields
      *            filter fields from datadef
      * @param filterGroup
      *            if "match" then axis.getMatch() is compared with field value
      *            if "value" then axis.getValue() is compared with field value
      * @return true if axis candidate for filter.
      */
-    private boolean requireFilter(final Axis axis, final XField xField,
+    private boolean requireFilter(final Axis axis, final Fields fields,
             final String filterType) {
         String value = "";
         if (filterType.equals("match")) {
@@ -132,7 +132,7 @@ public final class DataFilter extends BaseFilter {
         try {
             String xpath = Util.buildString("//xf:filters[@type='", filterType,
                     "']/xf:filter/@pattern");
-            List<String> patterns = xFieldHelper.getValues(xpath, xField);
+            List<String> patterns = fieldsHelper.getValues(xpath, fields);
             for (String pattern : patterns) {
                 if (value.equals(pattern)) {
                     return true;

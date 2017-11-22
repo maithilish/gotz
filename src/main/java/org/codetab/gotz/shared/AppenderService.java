@@ -10,7 +10,7 @@ import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.util.Util;
@@ -31,7 +31,7 @@ public class AppenderService {
     @Inject
     private AppenderPoolService appenderPoolService;
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @Inject
     private AppenderService() {
@@ -42,10 +42,10 @@ public class AppenderService {
     }
 
     public synchronized void createAppender(final String appenderName,
-            final XField xField) throws ClassNotFoundException,
+            final Fields fields) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException, FieldsException {
         String appenderClzName =
-                xFieldHelper.getLastValue("//:appender/@class", xField);
+                fieldsHelper.getLastValue("//:appender/@class", fields);
         if (appenders.containsKey(appenderName)) {
             return;
         }
@@ -60,7 +60,7 @@ public class AppenderService {
                     "Class " + appenderClzName + " is not of type Appender");
         }
         appender.setName(appenderName);
-        appender.setXField(xField);
+        appender.setFields(fields);
         appender.initializeQueue();
         appenderPoolService.submit("appender", appender);
         appenders.put(appenderName, appender);

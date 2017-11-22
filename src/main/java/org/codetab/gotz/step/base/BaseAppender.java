@@ -11,7 +11,7 @@ import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
@@ -58,18 +58,18 @@ public abstract class BaseAppender extends Step {
      */
     @Override
     public boolean initialize() {
-        Validate.validState(getXField() != null, "xField must not be null");
+        Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<XField> appenders = xFieldHelper.split(
+            List<Fields> appenders = fieldsHelper.split(
                     Util.buildString("/:xfield/:task/:steps/:step[@name='",
                             getStepType(), "']/:appender"),
-                    getXField());
+                    getFields());
 
-            for (XField xField : appenders) {
+            for (Fields fields : appenders) {
                 try {
-                    String appenderName = xFieldHelper
-                            .getLastValue("//:appender/@name", xField);
-                    appenderService.createAppender(appenderName, xField);
+                    String appenderName = fieldsHelper
+                            .getLastValue("//:appender/@name", fields);
+                    appenderService.createAppender(appenderName, fields);
                     appenderNames.add(appenderName);
                 } catch (ClassNotFoundException | InstantiationException
                         | IllegalAccessException | FieldsException e) {

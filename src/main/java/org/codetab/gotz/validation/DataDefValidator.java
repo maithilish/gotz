@@ -11,7 +11,7 @@ import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 
 /**
@@ -25,7 +25,7 @@ import org.codetab.gotz.model.helper.FieldsHelper;
 public class DataDefValidator {
 
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     /**
      * <p>
@@ -52,11 +52,11 @@ public class DataDefValidator {
      */
     private boolean validateIndexRange(final DataDef dataDef) {
         boolean valid = true;
-        List<XField> xFields = getAllXFields(dataDef);
-        for (XField xField : xFields) {
+        List<Fields> xFields = getAllXFields(dataDef);
+        for (Fields fields : xFields) {
             try {
-                if (xField != null) {
-                    xFieldHelper.getRange("//xf:indexRange/@value", xField);
+                if (fields != null) {
+                    fieldsHelper.getRange("//xf:indexRange/@value", fields);
                 }
             } catch (NumberFormatException e) {
                 valid = false;
@@ -74,18 +74,18 @@ public class DataDefValidator {
      *            which contains indexRange fields
      * @return list of indexRange fields
      */
-    private List<XField> getAllXFields(final DataDef dataDef) {
-        List<XField> lists = new ArrayList<>();
+    private List<Fields> getAllXFields(final DataDef dataDef) {
+        List<Fields> lists = new ArrayList<>();
 
-        lists.add(dataDef.getXfield());
+        lists.add(dataDef.getFields());
         for (DAxis axis : dataDef.getAxis()) {
-            lists.add(axis.getXfield());
+            lists.add(axis.getFields());
             for (DMember member : axis.getMember()) {
-                lists.add(member.getXfield());
+                lists.add(member.getFields());
             }
             DFilter filter = axis.getFilter();
             if (filter != null) {
-                lists.add(filter.getXfield());
+                lists.add(filter.getFields());
             }
         }
         return lists;

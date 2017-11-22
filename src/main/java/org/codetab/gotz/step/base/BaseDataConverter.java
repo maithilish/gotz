@@ -6,7 +6,7 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public abstract class BaseDataConverter extends Step {
     @Override
     public boolean handover() {
         Validate.validState(convertedData != null, "dataSets must not be null");
-        XField nextStepXField = createNextStepXField();
+        Fields nextStepXField = createNextStepXField();
         stepService.pushTask(this, convertedData, nextStepXField);
         return true;
     }
@@ -58,8 +58,8 @@ public abstract class BaseDataConverter extends Step {
      * @throws StepRunException
      *             if nextStepFields list is empty
      */
-    private XField createNextStepXField() {
-        XField nextStepXField = getXField();
+    private Fields createNextStepXField() {
+        Fields nextStepXField = getFields();
         if (nextStepXField.getNodes().size() == 0) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());

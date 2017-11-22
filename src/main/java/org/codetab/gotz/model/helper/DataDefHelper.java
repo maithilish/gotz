@@ -10,7 +10,7 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
 import org.w3c.dom.Element;
@@ -29,7 +29,7 @@ public class DataDefHelper {
     @Inject
     private ConfigService configService;
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     /**
      * <p>
@@ -56,7 +56,7 @@ public class DataDefHelper {
                 fact.setName("fact");
                 fact.setOrder(0);
                 fact.setValue(null);
-                fact.setXfield(xFieldHelper.createXField("xf"));
+                fact.setFields(fieldsHelper.createXField("xf"));
                 axis.getMember().add(fact);
             }
         }
@@ -99,21 +99,21 @@ public class DataDefHelper {
 
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {
-                XField xField = dMember.getXfield();
-                if (xField == null) {
-                    xField = xFieldHelper.createXField("xf");
-                    dMember.setXfield(xField);
+                Fields fields = dMember.getFields();
+                if (fields == null) {
+                    fields = fieldsHelper.createXField("xf");
+                    dMember.setFields(fields);
                 }
-                if (!xFieldHelper.isAnyDefined(xField, "//xf:indexRange/@value",
+                if (!fieldsHelper.isAnyDefined(fields, "//xf:indexRange/@value",
                         "//xf:breakAfter/@value")) {
                     String defaultIndexRange = "1-1";
                     Integer index = dMember.getIndex();
                     if (index != null) {
                         defaultIndexRange = index + "-" + index;
                     }
-                    Element node = xFieldHelper.addElement("xf", "indexRange",
-                            "", null, xField);
-                    xFieldHelper.addAttribute("value", defaultIndexRange, node);
+                    Element node = fieldsHelper.addElement("xf", "indexRange",
+                            "", null, fields);
+                    fieldsHelper.addAttribute("value", defaultIndexRange, node);
                 }
 
             }
@@ -157,30 +157,30 @@ public class DataDefHelper {
         return null;
     }
 
-    public List<XField> getDataDefMemberFields(final String name,
-            final XField xField) throws FieldsException {
+    public List<Fields> getDataDefMemberFields(final String name,
+            final Fields fields) throws FieldsException {
         String xpath = Util.buildString("/xf:member[@name='", name, "']");
-        return xFieldHelper.split(xpath, xField);
+        return fieldsHelper.split(xpath, fields);
     }
 
-    public String getDataMemberGroup(final XField xField)
+    public String getDataMemberGroup(final Fields fields)
             throws FieldsException {
         String xpath = "//xf:member/xf:group";
-        String group = xFieldHelper.getLastValue(xpath, xField);
+        String group = fieldsHelper.getLastValue(xpath, fields);
         return group;
     }
 
     /**
-     * Set default XField.
+     * Set default Fields.
      * @param dataDef
      * @throws FieldsException
      */
     public void addXField(final DataDef dataDef) throws FieldsException {
-        if (dataDef.getXfield() == null) {
-            XField xfield = new XField();
+        if (dataDef.getFields() == null) {
+            Fields xfield = new Fields();
             xfield.setName(dataDef.getName());
             xfield.setClazz(dataDef.getClass().getName());
-            dataDef.setXfield(xfield);
+            dataDef.setFields(xfield);
         }
     }
 }

@@ -2,7 +2,7 @@ package org.codetab.gotz.exception;
 
 /**
  * <p>
- * Exception thrown when error accessing XField.
+ * Exception thrown when error accessing Fields.
  * <p>
  * RuntimeException : recoverable
  */

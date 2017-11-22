@@ -20,7 +20,7 @@ import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.step.base.BaseParser;
@@ -77,7 +77,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
             if (axis.getIndex() == null) {
                 Integer startIndex;
                 try {
-                    startIndex = getStartIndex(axis.getXField());
+                    startIndex = getStartIndex(axis.getFields());
                 } catch (FieldsException e) {
                     startIndex = 1;
                 }
@@ -104,14 +104,14 @@ public abstract class JSoupHtmlParser extends BaseParser {
         // to return value else raise StepRunException
         StringBuilder sb = new StringBuilder(); // to trace query strings
         String value = null;
-        XField xField =
-                dataDefHelper.getAxis(dataDef, axis.getName()).getXfield();
+        Fields fields =
+                dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
         try {
             Map<String, String> scripts = new HashMap<>();
             scripts.put("script",
-                    xFieldHelper.getLastValue("//xf:script/@value", xField));
+                    fieldsHelper.getLastValue("//xf:script/@value", fields));
             setTraceString(sb, scripts, "<<<");
-            xFieldHelper.replaceVariables(scripts, member.getAxisMap());
+            fieldsHelper.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, ">>>>");
             LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
@@ -122,17 +122,17 @@ public abstract class JSoupHtmlParser extends BaseParser {
         try {
             Map<String, String> queries = new HashMap<>();
             queries.put("region",
-                    xFieldHelper.getLastValue("//xf:query/@region", xField));
+                    fieldsHelper.getLastValue("//xf:query/@region", fields));
             queries.put("field",
-                    xFieldHelper.getLastValue("//xf:query/@field", xField));
+                    fieldsHelper.getLastValue("//xf:query/@field", fields));
             try {
-                queries.put("attribute", xFieldHelper
-                        .getLastValue("//xf:query/@attribute", xField));
+                queries.put("attribute", fieldsHelper
+                        .getLastValue("//xf:query/@attribute", fields));
             } catch (FieldsException e) {
                 queries.put("attribute", "");
             }
             setTraceString(sb, queries, "<<<");
-            xFieldHelper.replaceVariables(queries, member.getAxisMap());
+            fieldsHelper.replaceVariables(queries, member.getAxisMap());
             setTraceString(sb, queries, ">>>>");
             LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
@@ -142,8 +142,8 @@ public abstract class JSoupHtmlParser extends BaseParser {
 
         try {
             List<String> prefixes =
-                    xFieldHelper.getValues("//xf:prefix", xField);
-            value = xFieldHelper.prefixValue(value, prefixes);
+                    fieldsHelper.getValues("//xf:prefix", fields);
+            value = fieldsHelper.prefixValue(value, prefixes);
         } catch (FieldsException e) {
         }
 

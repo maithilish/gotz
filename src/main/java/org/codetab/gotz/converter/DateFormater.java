@@ -9,7 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 
 /**
@@ -23,10 +23,10 @@ public class DateFormater implements IConverter<String, String> {
     /**
      * fields.
      */
-    private XField xField;
+    private Fields fields;
 
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     /**
      * Convert input string to date and round it off to month end.
@@ -42,18 +42,18 @@ public class DateFormater implements IConverter<String, String> {
     public String convert(final String input)
             throws FieldsException, ParseException {
         Validate.notNull(input, "input date string must not be null");
-        Validate.validState(xField != null, "xfield is null");
+        Validate.validState(fields != null, "xfield is null");
 
-        String patternIn = xFieldHelper.getLastValue("//:inPattern", xField);
-        String patternOut = xFieldHelper.getLastValue("//:outPattern", xField);
+        String patternIn = fieldsHelper.getLastValue("//:inPattern", fields);
+        String patternOut = fieldsHelper.getLastValue("//:outPattern", fields);
 
         Date date = DateUtils.parseDate(input, patternIn);
         return DateFormatUtils.format(date, patternOut);
     }
 
     @Override
-    public void setXField(final XField xField) {
-        this.xField = xField;
+    public void setFields(final Fields fields) {
+        this.fields = fields;
     }
 
 }

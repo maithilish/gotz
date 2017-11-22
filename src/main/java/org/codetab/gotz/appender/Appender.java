@@ -10,7 +10,7 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
@@ -52,7 +52,7 @@ public abstract class Appender implements Runnable {
     /**
      * Appender fields.
      */
-    private XField xField;
+    private Fields fields;
     /**
      * Queue to hold objects pushed to appenders.
      */
@@ -74,7 +74,7 @@ public abstract class Appender implements Runnable {
 
     @Inject
     @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected FieldsHelper xFieldHelper;
+    protected FieldsHelper fieldsHelper;
 
     /**
      * <p>
@@ -110,7 +110,7 @@ public abstract class Appender implements Runnable {
         }
         try {
             queueSize =
-                    xFieldHelper.getLastValue("//:appender/:queueSize", xField);
+                    fieldsHelper.getLastValue("//:appender/:queueSize", fields);
         } catch (FieldsException e) {
         }
         /*
@@ -145,21 +145,21 @@ public abstract class Appender implements Runnable {
     /**
      * <p>
      * Set appender fields.
-     * @param xField
-     *            xField
+     * @param fields
+     *            fields
      */
-    public void setXField(final XField xField) {
-        Validate.notNull(xField, "xField must not be null");
-        this.xField = xField;
+    public void setFields(final Fields fields) {
+        Validate.notNull(fields, "fields must not be null");
+        this.fields = fields;
     }
 
     /**
      * <p>
      * Get appender fields.
-     * @return xField
+     * @return fields
      */
-    public XField getXField() {
-        return xField;
+    public Fields getFields() {
+        return fields;
     }
 
     /**

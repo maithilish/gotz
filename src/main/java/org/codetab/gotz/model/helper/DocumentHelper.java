@@ -20,7 +20,7 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.CompressionUtil;
 import org.codetab.gotz.util.Util;
@@ -51,7 +51,7 @@ public class DocumentHelper {
     private DInjector dInjector;
 
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     /**
      * private constructor.
@@ -100,22 +100,22 @@ public class DocumentHelper {
      * returned.
      * @param fromDate
      *            document from date, not null
-     * @param xField
+     * @param fields
      *            list of fields, not null
      * @return a Date which is document expire date, not null
      * @see java.time.Duration
      */
-    public Date getToDate(final Date fromDate, final XField xField) {
+    public Date getToDate(final Date fromDate, final Fields fields) {
 
         Validate.notNull(fromDate, "fromDate must not be null");
-        Validate.notNull(xField, "xfield must not be null");
+        Validate.notNull(fields, "xfield must not be null");
 
         Validate.validState(configService != null, "configService is null");
 
         // set label
         String label = "not defined";
         try {
-            label = xFieldHelper.getLabel(xField);
+            label = fieldsHelper.getLabel(fields);
         } catch (FieldsException e) {
             LOGGER.warn("{}", e.getLocalizedMessage());
         }
@@ -128,7 +128,7 @@ public class DocumentHelper {
         // extract live value
         String live = null;
         try {
-            live = xFieldHelper.getLastValue("/:xfield/:tasks/:live", xField);
+            live = fieldsHelper.getLastValue("/:xfield/:tasks/:live", fields);
         } catch (FieldsException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
                     label);

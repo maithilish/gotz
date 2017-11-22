@@ -8,7 +8,7 @@ import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.Util;
@@ -41,7 +41,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
-            XField nextStepField = createNextStepFields(locator);
+            Fields nextStepField = createNextStepFields(locator);
             // List<Locator> locatorList = new ArrayList<>();
             // locatorList.add(locator);
             stepService.pushTask(this, locator, nextStepField);
@@ -56,7 +56,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
     private Locator createLocator(final Member member) throws FieldsException {
         Locator locator = new Locator();
         locator.setName(
-                xFieldHelper.getLastValue("//:locatorName", getXField()));
+                fieldsHelper.getLastValue("//:locatorName", getFields()));
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
             String message = Util.buildString(
@@ -65,12 +65,12 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             throw new FieldsException(message);
         } else {
             locator.setGroup(member.getGroup());
-            XField xField = locatorXFieldHelper.getXField(
+            Fields fields = locatorXFieldHelper.getFields(
                     locator.getClass().getName(), locator.getGroup());
-            locator.setXField(xField);
-            if (member.getXField() != null) {
-                locator.getXField().getNodes()
-                        .addAll(member.getXField().getNodes());
+            locator.setFields(fields);
+            if (member.getFields() != null) {
+                locator.getFields().getNodes()
+                        .addAll(member.getFields().getNodes());
             }
             locatorXFieldHelper.addLabel(locator);
         }
@@ -78,9 +78,9 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
         return locator;
     }
 
-    private XField createNextStepFields(final Locator locator) {
+    private Fields createNextStepFields(final Locator locator) {
         try {
-            XField nextStepXField = locatorXFieldHelper.getXField(
+            Fields nextStepXField = locatorXFieldHelper.getFields(
                     locator.getClass().getName(), locator.getGroup());
             if (nextStepXField.getNodes().size() == 0) {
                 throw new FieldsException("no nodes in xfield");

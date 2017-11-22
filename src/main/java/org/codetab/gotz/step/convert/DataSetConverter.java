@@ -14,7 +14,7 @@ import org.codetab.gotz.model.ColComparator;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseDataConverter;
@@ -62,16 +62,16 @@ public final class DataSetConverter extends BaseDataConverter {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getXField() != null, "xfield must not be null");
+        Validate.validState(getFields() != null, "xfield must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName = xFieldHelper.getLastValue("/:xfield/:locatorName",
-                    getXField());
-            locatorGroup = xFieldHelper.getLastValue("/:xfield/:locatorGroup",
-                    getXField());
+            locatorName = fieldsHelper.getLastValue("/:xfield/:locatorName",
+                    getFields());
+            locatorGroup = fieldsHelper.getLastValue("/:xfield/:locatorGroup",
+                    getFields());
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";
             LOGGER.error("{} {}", message, Util.getMessage(e));
@@ -88,12 +88,12 @@ public final class DataSetConverter extends BaseDataConverter {
 
         List<DataSet> dataSets = new ArrayList<>();
 
-        List<XField> converters = new ArrayList<>();
+        List<Fields> converters = new ArrayList<>();
         try {
-            converters = xFieldHelper.split(
+            converters = fieldsHelper.split(
                     Util.buildString("/:xfield/:task/:steps/:step[@name='",
                             getStepType(), "']/:converter"),
-                    getXField());
+                    getFields());
         } catch (FieldsException e) {
         }
 
@@ -120,20 +120,20 @@ public final class DataSetConverter extends BaseDataConverter {
 
     @SuppressWarnings("unchecked")
     private String convert(final AxisName axis, final String value,
-            final List<XField> converters) {
+            final List<Fields> converters) {
         String rvalue = value;
-        for (XField xField : converters) {
+        for (Fields fields : converters) {
             try {
                 String axisName =
-                        xFieldHelper.getLastValue("//:converter/:axis", xField);
+                        fieldsHelper.getLastValue("//:converter/:axis", fields);
                 if (axis.name().equalsIgnoreCase(axisName)) {
-                    String className = xFieldHelper
-                            .getLastValue("//:converter/@class", xField);
+                    String className = fieldsHelper
+                            .getLastValue("//:converter/@class", fields);
                     try {
                         @SuppressWarnings("rawtypes")
                         IConverter converter = (IConverter) stepService
                                 .createInstance(className);
-                        converter.setXField(xField);
+                        converter.setFields(fields);
                         rvalue = (String) converter.convert(rvalue);
                     } catch (Exception e) {
                         e.printStackTrace();

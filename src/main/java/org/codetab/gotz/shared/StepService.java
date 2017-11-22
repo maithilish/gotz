@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.step.IStep;
@@ -31,7 +31,7 @@ public class StepService {
     @Inject
     private TaskPoolService taskPoolService;
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @Inject
     private StepService() {
@@ -77,7 +77,7 @@ public class StepService {
     }
 
     public void pushTask(final Step step, final Object input,
-            final XField nextStepXField) {
+            final Fields nextStepXField) {
         String label = step.getLabel();
         try {
             addLabelField(step, nextStepXField);
@@ -89,7 +89,7 @@ public class StepService {
                 step.getStepType(), "] create next step failed");
         try {
             String nextStepType =
-                    getNextStepType(step.getXField(), step.getStepType());
+                    getNextStepType(step.getFields(), step.getStepType());
 
             if (nextStepType.equalsIgnoreCase("end")) {
                 return;
@@ -123,9 +123,9 @@ public class StepService {
         }
     }
 
-    private void addLabelField(final Step step, final XField nextStepXField)
+    private void addLabelField(final Step step, final Fields nextStepXField)
             throws FieldsException {
-        if (xFieldHelper.isDefined("label", nextStepXField)) {
+        if (fieldsHelper.isDefined("label", nextStepXField)) {
             return;
         }
         String label = step.getLabel();
@@ -133,15 +133,15 @@ public class StepService {
             LOGGER.warn("label is null, unable to add to next step xfield");
             return;
         }
-        xFieldHelper.addElement("label", label, nextStepXField);
+        fieldsHelper.addElement("label", label, nextStepXField);
     }
 
-    private List<String> getNextStepClasses(final XField xField,
+    private List<String> getNextStepClasses(final Fields fields,
             final String stepType) throws FieldsException {
 
         String xpath = Util.buildString("//:task/:steps/:step[@name='",
                 stepType, "']/@class");
-        List<String> stepClasses = xFieldHelper.getValues(xpath, xField);
+        List<String> stepClasses = fieldsHelper.getValues(xpath, fields);
 
         // TODO handle unique step
         stepClasses =
@@ -150,12 +150,12 @@ public class StepService {
         return stepClasses;
     }
 
-    public String getNextStepType(final XField xField, final String stepType)
+    public String getNextStepType(final Fields fields, final String stepType)
             throws FieldsException {
         // TODO need to check behavior when multiple matching nodes exists
         String xpath = Util.buildString("//:task/:steps/:step[@name='",
                 stepType, "']/:nextStep");
-        String nextStepType = xFieldHelper.getFirstValue(xpath, xField);
+        String nextStepType = fieldsHelper.getFirstValue(xpath, fields);
         return nextStepType;
     }
 
@@ -168,7 +168,7 @@ public class StepService {
      *            task class
      * @param input
      *            task input
-     * @param xField
+     * @param fields
      *            task fields
      * @return task
      * @throws ClassNotFoundException
@@ -179,13 +179,13 @@ public class StepService {
      *             exception
      */
     private Task createTask(final String stepType, final String taskClassName,
-            final Object input, final XField xField)
+            final Object input, final Fields fields)
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException {
         IStep step = getStep(taskClassName).instance();
         step.setStepType(stepType);
         step.setInput(input);
-        step.setXField(xField);
+        step.setFields(fields);
         Task task = createTask(step);
         return task;
     }

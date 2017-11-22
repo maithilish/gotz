@@ -52,7 +52,7 @@ public final class FileAppender extends Appender {
         String fileName = null;
         try {
             fileName =
-                    xFieldHelper.getLastValue("//:appender/:file", getXField());
+                    fieldsHelper.getLastValue("//:appender/:file", getFields());
         } catch (FieldsException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));

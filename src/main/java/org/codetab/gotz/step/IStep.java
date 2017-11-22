@@ -1,6 +1,6 @@
 package org.codetab.gotz.step;
 
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 
 public interface IStep {
 
@@ -32,7 +32,7 @@ public interface IStep {
 
     String getLabel();
 
-    XField getXField();
+    Fields getFields();
 
-    void setXField(XField xField);
+    void setFields(Fields fields);
 }

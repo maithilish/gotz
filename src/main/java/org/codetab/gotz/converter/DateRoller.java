@@ -13,7 +13,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.util.Util;
 
@@ -28,10 +28,10 @@ public class DateRoller implements IConverter<String, String> {
     /**
      * fields.
      */
-    private XField xField;
+    private Fields fields;
 
     @Inject
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     /**
      * <p>
@@ -60,16 +60,16 @@ public class DateRoller implements IConverter<String, String> {
     public String convert(final String input)
             throws FieldsException, ParseException, IllegalAccessException {
         Validate.notNull(input, "input date string must not be null");
-        Validate.validState(xField != null, "xfield is null");
+        Validate.validState(fields != null, "xfield is null");
 
-        String patternIn = xFieldHelper.getLastValue("//:inPattern", xField);
-        String patternOut = xFieldHelper.getLastValue("//:outPattern", xField);
+        String patternIn = fieldsHelper.getLastValue("//:inPattern", fields);
+        String patternOut = fieldsHelper.getLastValue("//:outPattern", fields);
 
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(DateUtils.parseDate(input, patternIn));
 
         // get map of calendar fields to roll
-        String rollStr = xFieldHelper.getLastValue("//:roll", xField);
+        String rollStr = fieldsHelper.getLastValue("//:roll", fields);
         Map<String, String> rollMap = Util.split(rollStr, "=", " ");
 
         // roll calendar fields
@@ -106,7 +106,7 @@ public class DateRoller implements IConverter<String, String> {
     }
 
     @Override
-    public void setXField(final XField xField) {
-        this.xField = xField;
+    public void setFields(final Fields fields) {
+        this.fields = fields;
     }
 }

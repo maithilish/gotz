@@ -27,7 +27,7 @@ import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
 import org.codetab.gotz.util.MarkerUtil;
@@ -147,7 +147,7 @@ public class DataDefService {
             for (Set<DMember> members : memberSetsMap.get(dataDefName)) {
                 Member dataMember = new Member();
                 dataMember.setName(""); // there is no name for member
-                dataMember.setXField(new XField());
+                dataMember.setFields(new Fields());
 
                 // add axis and its fields
                 for (DMember dMember : members) {
@@ -156,19 +156,19 @@ public class DataDefService {
                     try {
                         // fields from DMember level are added in createAxis()
                         // fields from datadef level are added here
-                        List<XField> xFields =
+                        List<Fields> xFields =
                                 dataDefHelper.getDataDefMemberFields(
-                                        dMember.getName(), dataDef.getXfield());
-                        for (XField xField : xFields) {
-                            dataMember.getXField().getNodes()
-                                    .addAll(xField.getNodes());
+                                        dMember.getName(), dataDef.getFields());
+                        for (Fields fields : xFields) {
+                            dataMember.getFields().getNodes()
+                                    .addAll(fields.getNodes());
                         }
                     } catch (FieldsException e) {
                     }
                 }
                 try {
                     String group = dataDefHelper
-                            .getDataMemberGroup(dataMember.getXField());
+                            .getDataMemberGroup(dataMember.getFields());
                     dataMember.setGroup(group);
                 } catch (FieldsException e) {
                 }
@@ -188,7 +188,7 @@ public class DataDefService {
         axis.setMatch(dMember.getMatch());
         axis.setValue(dMember.getValue());
         // fields from DMember level
-        axis.setXField(dMember.getXfield());
+        axis.setFields(dMember.getFields());
         return axis;
     }
 
@@ -214,15 +214,15 @@ public class DataDefService {
         memberSetsMap.put(dataDef.getName(), dataDefMemberSets);
     }
 
-    public Map<AxisName, XField> getFilterMap(final String dataDef)
+    public Map<AxisName, Fields> getFilterMap(final String dataDef)
             throws DataDefNotFoundException {
-        Map<AxisName, XField> filterMap = new HashMap<>();
+        Map<AxisName, Fields> filterMap = new HashMap<>();
         List<DAxis> axes = getDataDef(dataDef).getAxis();
         for (DAxis axis : axes) {
             AxisName axisName = AxisName.valueOf(axis.getName().toUpperCase());
             DFilter filter = axis.getFilter();
             if (filter != null) {
-                filterMap.put(axisName, filter.getXfield());
+                filterMap.put(axisName, filter.getFields());
             }
         }
         return filterMap;
@@ -264,7 +264,7 @@ public class DataDefService {
         Collections.sort(data.getMembers(), new ColComparator());
         for (Member member : data.getMembers()) {
             sb.append("Member [");
-            sb.append(member.getXField());
+            sb.append(member.getFields());
             sb.append(line);
             List<Axis> axes = new ArrayList<Axis>(member.getAxes());
             Collections.sort(axes);

@@ -3,7 +3,7 @@ package org.codetab.gotz.step;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
@@ -23,7 +23,7 @@ public abstract class Step implements IStep {
     private String label = "not set";
     private String stepType;
     private boolean consistent = false;
-    private XField xField;
+    private Fields fields;
     private StepState stepState;
 
     @Inject
@@ -44,20 +44,20 @@ public abstract class Step implements IStep {
 
     @Inject
     @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected FieldsHelper xFieldHelper;
+    protected FieldsHelper fieldsHelper;
 
     @Override
-    public XField getXField() {
-        return xField;
+    public Fields getFields() {
+        return fields;
     }
 
     @Override
-    public void setXField(final XField xField) {
+    public void setFields(final Fields fields) {
         try {
-            label = xFieldHelper.getLastValue("/:xfield/:label", xField);
+            label = fieldsHelper.getLastValue("/:xfield/:label", fields);
         } catch (FieldsException e) {
         }
-        this.xField = xField;
+        this.fields = fields;
     }
 
     /*

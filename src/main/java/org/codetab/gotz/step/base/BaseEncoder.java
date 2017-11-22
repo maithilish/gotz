@@ -12,7 +12,7 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
@@ -59,21 +59,21 @@ public abstract class BaseEncoder extends Step {
 
     @Override
     public boolean initialize() {
-        Validate.validState(getXField() != null, "xField must not be null");
+        Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<XField> appenders = xFieldHelper.split(
+            List<Fields> appenders = fieldsHelper.split(
                     Util.buildString("/:xfield/:task/:steps/:step[@name='",
                             getStepType(), "']/:appender"),
-                    getXField());
+                    getFields());
 
             if (appenders.isEmpty()) {
                 throw new FieldsException("no appenders");
             }
 
-            for (XField appender : appenders) {
+            for (Fields appender : appenders) {
                 try {
                     String appenderName =
-                            xFieldHelper.getLastValue("//:name", appender);
+                            fieldsHelper.getLastValue("//:name", appender);
                     appenderService.createAppender(appenderName, appender);
                     appenderNames.add(appenderName);
                 } catch (ClassNotFoundException | InstantiationException
