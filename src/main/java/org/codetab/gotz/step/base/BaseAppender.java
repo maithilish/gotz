@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.AppenderService;
@@ -72,14 +72,14 @@ public abstract class BaseAppender extends Step {
                     appenderService.createAppender(appenderName, xField);
                     appenderNames.add(appenderName);
                 } catch (ClassNotFoundException | InstantiationException
-                        | IllegalAccessException | XFieldException e) {
+                        | IllegalAccessException | FieldsException e) {
                     String message = "unable to append";
                     LOGGER.error("{} {}", message, Util.getMessage(e));
                     LOGGER.debug("{}", e);
                     activityService.addActivity(Type.GIVENUP, message, e);
                 }
             }
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             String message = "unable to find appender fields";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

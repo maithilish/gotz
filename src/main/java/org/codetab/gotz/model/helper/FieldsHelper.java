@@ -20,7 +20,7 @@ import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.text.StrSubstitutor;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.misc.SimpleNamespaceContext;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.XField;
@@ -33,25 +33,25 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class XFieldHelper {
+public class FieldsHelper {
 
     private static final Logger LOGGER =
-            LoggerFactory.getLogger(XFieldHelper.class);
+            LoggerFactory.getLogger(FieldsHelper.class);
 
     public String getValue(final String xpathExpression, final Node node)
-            throws XFieldException {
+            throws FieldsException {
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(getNamespaceContext(node));
         try {
             String value = xpath.evaluate(xpathExpression, node);
             if (StringUtils.isBlank(value)) {
-                throw new XFieldException(
+                throw new FieldsException(
                         Util.buildString("blank or no node returned for [",
                                 xpathExpression, "]"));
             }
             return value;
         } catch (XPathExpressionException e) {
-            throw new XFieldException(xpathExpression, e);
+            throw new FieldsException(xpathExpression, e);
         }
     }
 
@@ -61,11 +61,11 @@ public class XFieldHelper {
      * @param xpathExpression
      * @param nodes
      * @return
-     * @throws XFieldException
+     * @throws FieldsException
      *             on XPath error or if no matching node
      */
     public String getFirstValue(final String xpathExpression,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
@@ -75,11 +75,11 @@ public class XFieldHelper {
                     return value;
                 }
             } catch (XPathExpressionException e) {
-                throw new XFieldException(xpathExpression, e);
+                throw new FieldsException(xpathExpression, e);
             }
 
         }
-        throw new XFieldException(Util.buildString(
+        throw new FieldsException(Util.buildString(
                 "blank or no node returned for [", xpathExpression, "]"));
     }
 
@@ -89,11 +89,11 @@ public class XFieldHelper {
      * @param xpathExpression
      * @param nodes
      * @return
-     * @throws XFieldException
+     * @throws FieldsException
      *             on XPath error or if no matching node
      */
     public String getLastValue(final String xpathExpression,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         String value = "";
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
@@ -102,21 +102,21 @@ public class XFieldHelper {
             try {
                 val = xpath.evaluate(xpathExpression, node);
             } catch (XPathExpressionException e) {
-                throw new XFieldException(xpathExpression, e);
+                throw new FieldsException(xpathExpression, e);
             }
             if (StringUtils.isNotBlank(val)) {
                 value = val;
             }
         }
         if (StringUtils.isBlank(value)) {
-            throw new XFieldException(Util.buildString(
+            throw new FieldsException(Util.buildString(
                     "blank or no node returned for [", xpathExpression, "]"));
         }
         return value;
     }
 
     public List<String> getValues(final String xpathExpression,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         List<String> values = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : xField.getNodes()) {
@@ -129,7 +129,7 @@ public class XFieldHelper {
                     values.add(value);
                 }
             } catch (XPathExpressionException e) {
-                throw new XFieldException(e);
+                throw new FieldsException(e);
             }
         }
         return values;
@@ -160,7 +160,7 @@ public class XFieldHelper {
         try {
             getFirstValue(xpathExpression, xField);
             return true;
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             return false;
         }
     }
@@ -176,12 +176,12 @@ public class XFieldHelper {
     }
 
     public boolean isTrue(final String xpathExpression, final XField xField)
-            throws XFieldException {
+            throws FieldsException {
         String value = getLastValue(xpathExpression, xField);
         return StringUtils.equalsIgnoreCase(value, "true");
     }
 
-    public String getLabel(final XField xField) throws XFieldException {
+    public String getLabel(final XField xField) throws FieldsException {
         String xpath = "/:xfield/:label";
         return getLastValue(xpath, xField);
     }
@@ -206,10 +206,10 @@ public class XFieldHelper {
      * @param xpathExpression
      * @param xField
      * @return
-     * @throws XFieldException
+     * @throws FieldsException
      */
     public List<XField> split(final String xpathExpression, final XField xField)
-            throws XFieldException {
+            throws FieldsException {
         // TODO try for optimization (in same or separate method) deep copy or
         // reference to nodes
 
@@ -240,13 +240,13 @@ public class XFieldHelper {
 
             } catch (XPathExpressionException
                     | ParserConfigurationException e) {
-                throw new XFieldException("unable to split xfield", e);
+                throw new FieldsException("unable to split xfield", e);
             }
         }
         return xFieldList;
     }
 
-    public XField deepCopy(final XField xField) throws XFieldException {
+    public XField deepCopy(final XField xField) throws FieldsException {
         Validate.notNull(xField, "xField must not be null");
 
         try {
@@ -259,7 +259,7 @@ public class XFieldHelper {
             }
             return copy;
         } catch (ParserConfigurationException e) {
-            throw new XFieldException("unable to clone xfield", e);
+            throw new FieldsException("unable to clone xfield", e);
         }
     }
 
@@ -289,7 +289,7 @@ public class XFieldHelper {
 
     public Element addElement(final String namespacePrefix, final String name,
             final String text, final String parentNodeXPath,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         Optional<Node> node = getLastNode(xField);
         if (node.isPresent()) {
             Document doc = null;
@@ -301,7 +301,7 @@ public class XFieldHelper {
             if (doc == null) {
                 String message = Util.buildString("unable to add new element [",
                         name, "][", text, "]. owner document is null");
-                throw new XFieldException(message);
+                throw new FieldsException(message);
             } else {
                 String qName = name;
                 if (namespacePrefix != null) {
@@ -320,7 +320,7 @@ public class XFieldHelper {
                             location.appendChild(element);
                         }
                     } catch (XPathExpressionException e) {
-                        throw new XFieldException(Util.buildString(
+                        throw new FieldsException(Util.buildString(
                                 "unable to add element [", name, "][", text,
                                 "] at xpath [", parentNodeXPath, "]"), e);
                     }
@@ -330,12 +330,12 @@ public class XFieldHelper {
         } else {
             String message = Util.buildString("unable to add new element [",
                     name, "][", text, "]. xfield has no nodes");
-            throw new XFieldException(message);
+            throw new FieldsException(message);
         }
     }
 
     public Element addElement(final String name, final String text,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         // default namespace
         return addElement(null, name, text, null, xField);
     }
@@ -394,13 +394,13 @@ public class XFieldHelper {
      * @param name
      *            field name
      * @return range
-     * @throws XFieldException
+     * @throws FieldsException
      *             if no such field
      * @throws NumberFormatException
      *             value is not range or minimum is greater than maximum
      */
     public Range<Integer> getRange(final String xpathExpression,
-            final XField xField) throws XFieldException, NumberFormatException {
+            final XField xField) throws FieldsException, NumberFormatException {
         String value = getLastValue(xpathExpression, xField);
 
         if (value.startsWith("-")) {
@@ -432,13 +432,13 @@ public class XFieldHelper {
         return Range.between(min, max);
     }
 
-    public XField createXField() throws XFieldException {
+    public XField createXField() throws FieldsException {
         // no prefix
         return createXField(null);
     }
 
     public XField createXField(final String namespacePrefix)
-            throws XFieldException {
+            throws FieldsException {
         Document doc;
         try {
             doc = XmlUtils.createDocument("xfield", namespacePrefix,
@@ -447,7 +447,7 @@ public class XFieldHelper {
             xField.getNodes().add(doc);
             return xField;
         } catch (ParserConfigurationException e) {
-            throw new XFieldException("unable to create xfield", e);
+            throw new FieldsException("unable to create xfield", e);
         }
     }
 

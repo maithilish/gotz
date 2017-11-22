@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
@@ -36,7 +36,7 @@ public class BaseFilterTest {
     @Mock
     private DataDefService dataDefService;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private DataFilter filter;
@@ -75,7 +75,7 @@ public class BaseFilterTest {
     }
 
     @Test
-    public void testHandover() throws XFieldException {
+    public void testHandover() throws FieldsException {
 
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("x", "xv", xField);
@@ -92,7 +92,7 @@ public class BaseFilterTest {
 
     @Test
     public void testHandoverEmptyFieldsShouldThrowException()
-            throws XFieldException {
+            throws FieldsException {
         Data data = new Data();
         filter.setInput(data);
 

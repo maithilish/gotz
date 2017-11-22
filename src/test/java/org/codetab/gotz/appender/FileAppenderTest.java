@@ -17,11 +17,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
@@ -50,7 +50,7 @@ public class FileAppenderTest {
     @Spy
     private IOHelper ioHelper;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private FileAppender appender;
@@ -65,7 +65,7 @@ public class FileAppenderTest {
 
     @Test
     public void testAppend() throws InterruptedException,
-            ConfigNotFoundException, XFieldException {
+            ConfigNotFoundException, FieldsException {
 
         String str = "test object";
 
@@ -90,7 +90,7 @@ public class FileAppenderTest {
 
     @Test
     public void testRunFileFieldNotSet() throws InterruptedException,
-            XFieldException, ConfigNotFoundException {
+            FieldsException, ConfigNotFoundException {
 
         String str1 = "test1";
 
@@ -107,12 +107,12 @@ public class FileAppenderTest {
         t.join();
 
         verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
-                any(XFieldException.class));
+                any(FieldsException.class));
     }
 
     @Test
     public void testRun() throws InterruptedException, IOException,
-            XFieldException, ConfigNotFoundException {
+            FieldsException, ConfigNotFoundException {
 
         String fileName = "target/test.txt";
 
@@ -147,7 +147,7 @@ public class FileAppenderTest {
 
     @Test
     public void testRunWriterClose() throws InterruptedException, IOException,
-            XFieldException, ConfigNotFoundException {
+            FieldsException, ConfigNotFoundException {
 
         String fileName = "target/test.txt";
 
@@ -179,7 +179,7 @@ public class FileAppenderTest {
     @Test
     public void testRunShouldLogAcivityOnInterruptedException()
             throws InterruptedException, IllegalAccessException, IOException,
-            XFieldException {
+            FieldsException {
         String fileName = "target/test.txt";
 
         XField xField = xFieldHelper.createXField();
@@ -203,7 +203,7 @@ public class FileAppenderTest {
     @Test
     public void testRunShouldLogAcivityOnIOException()
             throws InterruptedException, IllegalAccessException, IOException,
-            XFieldException {
+            FieldsException {
         String fileName = "/home/xyzz/test.txt";
 
         XField xField = xFieldHelper.createXField();

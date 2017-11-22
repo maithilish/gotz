@@ -15,7 +15,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.ConfigService;
@@ -45,7 +45,7 @@ public class DocumentHelperTest {
     @Mock
     private DInjector dInjector;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private DocumentHelper documentHelper;
@@ -143,7 +143,7 @@ public class DocumentHelperTest {
 
     @Test
     public void testGetToDateWithLiveField()
-            throws ParseException, XFieldException {
+            throws ParseException, FieldsException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
@@ -162,7 +162,7 @@ public class DocumentHelperTest {
 
     @Test
     public void testGetToDateWithBlankOrZeroLiveField()
-            throws ParseException, XFieldException {
+            throws ParseException, FieldsException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
@@ -187,7 +187,7 @@ public class DocumentHelperTest {
 
     @Test
     public void testGetToDateWithDateString()
-            throws ParseException, ConfigNotFoundException, XFieldException {
+            throws ParseException, ConfigNotFoundException, FieldsException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate = new Date();
         String toDateStr = "01-08-2017 11:00:00.000";
@@ -208,7 +208,7 @@ public class DocumentHelperTest {
 
     @Test
     public void testGetToDateWithInvalidDateString()
-            throws ParseException, ConfigNotFoundException, XFieldException {
+            throws ParseException, ConfigNotFoundException, FieldsException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
@@ -228,7 +228,7 @@ public class DocumentHelperTest {
 
     @Test
     public void testGetToDateParsePatternNotFound()
-            throws ParseException, ConfigNotFoundException, XFieldException {
+            throws ParseException, ConfigNotFoundException, FieldsException {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
 

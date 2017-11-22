@@ -5,7 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
@@ -29,7 +29,7 @@ public class DataDefHelper {
     @Inject
     private ConfigService configService;
     @Inject
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     /**
      * <p>
@@ -44,9 +44,9 @@ public class DataDefHelper {
      * For all DAxis of datadef, adds default fact.
      * @param dataDef
      *            datadef, not null
-     * @throws XFieldException
+     * @throws FieldsException
      */
-    public void addFact(final DataDef dataDef) throws XFieldException {
+    public void addFact(final DataDef dataDef) throws FieldsException {
         Validate.notNull(dataDef, "dataDef must not be null");
 
         for (DAxis axis : dataDef.getAxis()) {
@@ -92,9 +92,9 @@ public class DataDefHelper {
      * as 7-7)
      * @param dataDef
      *            datadef, not null
-     * @throws XFieldException
+     * @throws FieldsException
      */
-    public void addIndexRange(final DataDef dataDef) throws XFieldException {
+    public void addIndexRange(final DataDef dataDef) throws FieldsException {
         Validate.notNull(dataDef, "dataDef must not be null");
 
         for (DAxis dAxis : dataDef.getAxis()) {
@@ -158,13 +158,13 @@ public class DataDefHelper {
     }
 
     public List<XField> getDataDefMemberFields(final String name,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         String xpath = Util.buildString("/xf:member[@name='", name, "']");
         return xFieldHelper.split(xpath, xField);
     }
 
     public String getDataMemberGroup(final XField xField)
-            throws XFieldException {
+            throws FieldsException {
         String xpath = "//xf:member/xf:group";
         String group = xFieldHelper.getLastValue(xpath, xField);
         return group;
@@ -173,9 +173,9 @@ public class DataDefHelper {
     /**
      * Set default XField.
      * @param dataDef
-     * @throws XFieldException
+     * @throws FieldsException
      */
-    public void addXField(final DataDef dataDef) throws XFieldException {
+    public void addXField(final DataDef dataDef) throws FieldsException {
         if (dataDef.getXfield() == null) {
             XField xfield = new XField();
             xfield.setName(dataDef.getName());

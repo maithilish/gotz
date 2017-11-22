@@ -8,10 +8,10 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
@@ -74,7 +74,7 @@ public abstract class Appender implements Runnable {
 
     @Inject
     @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected XFieldHelper xFieldHelper;
+    protected FieldsHelper xFieldHelper;
 
     /**
      * <p>
@@ -111,7 +111,7 @@ public abstract class Appender implements Runnable {
         try {
             queueSize =
                     xFieldHelper.getLastValue("//:appender/:queueSize", xField);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
         /*
          * default queue size. configService mock returns null so default is set

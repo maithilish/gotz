@@ -15,7 +15,7 @@ import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
@@ -78,7 +78,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
                 Integer startIndex;
                 try {
                     startIndex = getStartIndex(axis.getXField());
-                } catch (XFieldException e) {
+                } catch (FieldsException e) {
                     startIndex = 1;
                 }
                 axis.setIndex(startIndex);
@@ -116,7 +116,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
             LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryByScript(scripts);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         try {
@@ -128,7 +128,7 @@ public abstract class JSoupHtmlParser extends BaseParser {
             try {
                 queries.put("attribute", xFieldHelper
                         .getLastValue("//xf:query/@attribute", xField));
-            } catch (XFieldException e) {
+            } catch (FieldsException e) {
                 queries.put("attribute", "");
             }
             setTraceString(sb, queries, "<<<");
@@ -137,21 +137,21 @@ public abstract class JSoupHtmlParser extends BaseParser {
             LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryBySelector(page, queries);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         try {
             List<String> prefixes =
                     xFieldHelper.getValues("//xf:prefix", xField);
             value = xFieldHelper.prefixValue(value, prefixes);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         return value;
     }
 
     private String queryByScript(final Map<String, String> scripts)
-            throws ScriptException, XFieldException {
+            throws ScriptException, FieldsException {
         // TODO - check whether thread safety is involved
         if (jsEngine == null) {
             initializeScriptEngine();

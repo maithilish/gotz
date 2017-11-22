@@ -19,7 +19,7 @@ import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -112,7 +112,7 @@ public abstract class HtmlParser extends BaseParser {
                 Integer startIndex;
                 try {
                     startIndex = getStartIndex(axis.getXField());
-                } catch (XFieldException e) {
+                } catch (FieldsException e) {
                     startIndex = 1;
                 }
                 axis.setIndex(startIndex);
@@ -184,7 +184,7 @@ public abstract class HtmlParser extends BaseParser {
             LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryByScript(scripts);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         try {
@@ -196,7 +196,7 @@ public abstract class HtmlParser extends BaseParser {
             try {
                 queries.put("attribute", xFieldHelper
                         .getLastValue("//xf:query/@attribute", xField));
-            } catch (XFieldException e) {
+            } catch (FieldsException e) {
                 queries.put("attribute", "");
             }
             setTraceString(sb, queries, "<<<");
@@ -206,21 +206,21 @@ public abstract class HtmlParser extends BaseParser {
                     sb.toString(), Util.LINE);
 
             value = queryByXPath(page, queries);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         try {
             List<String> prefixes =
                     xFieldHelper.getValues("//xf:prefix", xField);
             value = xFieldHelper.prefixValue(value, prefixes);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         return value;
     }
 
     private String queryByScript(final Map<String, String> scripts)
-            throws ScriptException, XFieldException {
+            throws ScriptException, FieldsException {
         // TODO - check whether thread safety is involved
         if (jsEngine == null) {
             initializeScriptEngine();
@@ -249,7 +249,7 @@ public abstract class HtmlParser extends BaseParser {
     }
 
     private String queryByXPath(final HtmlPage page,
-            final Map<String, String> queries) throws XFieldException {
+            final Map<String, String> queries) throws FieldsException {
         if (queries.size() < 2) {
             LOGGER.warn("Insufficient queries in DataDef [{}]",
                     getDataDefName());

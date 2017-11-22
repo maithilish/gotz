@@ -9,7 +9,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
@@ -33,7 +33,7 @@ public class PassThroughEncoderTest {
     @Mock
     private AppenderService appenderService;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private PassThroughEncoder encoder;

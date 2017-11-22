@@ -4,7 +4,7 @@ import java.util.Collections;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -66,7 +66,7 @@ public final class CsvEncoder extends BaseEncoder {
                     getXField());
             locatorGroup = xFieldHelper.getLastValue("/:xfield/:locatorGroup",
                     getXField());
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             String message = "unable to get locator name and group";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

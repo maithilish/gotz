@@ -8,7 +8,7 @@ import java.util.Date;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
@@ -34,7 +34,7 @@ public class DataDefHelperTest {
     @Mock
     private ConfigService configService;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
     @InjectMocks
     private DataDefHelper dataDefHelper;
 
@@ -44,7 +44,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddFact() throws XFieldException {
+    public void testAddFact() throws FieldsException {
 
         // given
         DataDef dataDef = createTestDataDef();
@@ -72,7 +72,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddFactNullParams() throws XFieldException {
+    public void testAddFactNullParams() throws FieldsException {
         try {
             dataDefHelper.addFact(null);
             fail("should throw NullPointerException");
@@ -82,7 +82,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testSetOrder() throws XFieldException {
+    public void testSetOrder() throws FieldsException {
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -124,7 +124,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddIndexRange() throws XFieldException {
+    public void testAddIndexRange() throws FieldsException {
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -155,7 +155,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddIndexRangeWithIndex() throws XFieldException {
+    public void testAddIndexRangeWithIndex() throws FieldsException {
         // given
         DMember m1 = new DMember();
         m1.setIndex(5);
@@ -179,7 +179,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddIndexRangeWithIndexRange() throws XFieldException {
+    public void testAddIndexRangeWithIndexRange() throws FieldsException {
         // given
         XField xField =
                 TestUtil.buildXField("<xf:indexRange value='3-10' />", "xf");
@@ -203,7 +203,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddIndexRangeWithBreakAfter() throws XFieldException {
+    public void testAddIndexRangeWithBreakAfter() throws FieldsException {
         // given
         XField xField =
                 TestUtil.buildXField("<xf:breakAfter value='xyz' />", "xf");
@@ -227,7 +227,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddIndexRangeNullParams() throws XFieldException {
+    public void testAddIndexRangeNullParams() throws FieldsException {
         try {
             dataDefHelper.addIndexRange(null);
             fail("should throw NullPointerException");
@@ -237,7 +237,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testSetDates() throws XFieldException {
+    public void testSetDates() throws FieldsException {
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -278,7 +278,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testGetAxis() throws XFieldException {
+    public void testGetAxis() throws FieldsException {
         DataDef dataDef = createTestDataDef();
 
         DAxis actual = dataDefHelper.getAxis(dataDef, AxisName.COL);
@@ -291,7 +291,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testGetAxisIgnoreCase() throws XFieldException {
+    public void testGetAxisIgnoreCase() throws FieldsException {
         DataDef dataDef = createTestDataDef();
         DAxis axis = getAxis(dataDef, "row");
         axis.setName("Row");
@@ -302,7 +302,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testGetAxisFromEmptyList() throws XFieldException {
+    public void testGetAxisFromEmptyList() throws FieldsException {
         DataDef dataDef = createTestDataDef();
         dataDef.getAxis().clear();
 
@@ -333,7 +333,7 @@ public class DataDefHelperTest {
                 .filter(d -> d.getName().equals(axisName)).findFirst().get();
     }
 
-    private DataDef createTestDataDef() throws XFieldException {
+    private DataDef createTestDataDef() throws FieldsException {
 
         DMember m1 = new DMember();
         DMember m2 = new DMember();

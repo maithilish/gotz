@@ -12,9 +12,9 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.util.Util;
 
 /**
@@ -31,7 +31,7 @@ public class DateRoller implements IConverter<String, String> {
     private XField xField;
 
     @Inject
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     /**
      * <p>
@@ -47,7 +47,7 @@ public class DateRoller implements IConverter<String, String> {
      * @param input
      *            date string
      * @return date parsed date rounded off to month end.
-     * @throws XFieldException
+     * @throws FieldsException
      *             if pattern field is not found
      * @throws ParseException
      *             if parse error
@@ -58,7 +58,7 @@ public class DateRoller implements IConverter<String, String> {
      */
     @Override
     public String convert(final String input)
-            throws XFieldException, ParseException, IllegalAccessException {
+            throws FieldsException, ParseException, IllegalAccessException {
         Validate.notNull(input, "input date string must not be null");
         Validate.validState(xField != null, "xfield is null");
 

@@ -16,7 +16,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.SerializationUtils;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -109,7 +109,7 @@ public class DataDefService {
                 dataDefHelper.setDates(dataDef);
                 dataDefHelper.addIndexRange(dataDef);
                 dataDefHelper.addXField(dataDef);
-            } catch (XFieldException e) {
+            } catch (FieldsException e) {
                 throw new CriticalException(
                         "datadef [" + dataDef.getName() + "] set defaults", e);
             }
@@ -163,14 +163,14 @@ public class DataDefService {
                             dataMember.getXField().getNodes()
                                     .addAll(xField.getNodes());
                         }
-                    } catch (XFieldException e) {
+                    } catch (FieldsException e) {
                     }
                 }
                 try {
                     String group = dataDefHelper
                             .getDataMemberGroup(dataMember.getXField());
                     dataMember.setGroup(group);
-                } catch (XFieldException e) {
+                } catch (FieldsException e) {
                 }
                 data.addMember(dataMember);
             }

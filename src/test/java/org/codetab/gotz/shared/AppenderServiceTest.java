@@ -15,9 +15,9 @@ import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,7 +39,7 @@ public class AppenderServiceTest {
     @Mock
     private Appender appender1, appender2;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private AppenderService appenderService;
@@ -54,7 +54,7 @@ public class AppenderServiceTest {
 
     @Test
     public void testCreateAppender() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException, XFieldException {
+            InstantiationException, IllegalAccessException, FieldsException {
 
         String className = "org.codetab.gotz.appender.FileAppender";
         XField xField = xFieldHelper.createXField();
@@ -78,7 +78,7 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppenderAlreadyExists()
             throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, ConfigNotFoundException, XFieldException {
+            IllegalAccessException, ConfigNotFoundException, FieldsException {
 
         String className = "org.codetab.gotz.appender.FileAppender";
         String appenderName = "x";
@@ -112,7 +112,7 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppenderExpectException()
             throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, XFieldException {
+            IllegalAccessException, FieldsException {
 
         String className = "org.codetab.gotz.model.Axis";
         String appenderName = "x";

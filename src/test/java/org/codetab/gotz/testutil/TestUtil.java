@@ -21,7 +21,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.misc.SimpleNamespaceContext;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.util.Util;
@@ -41,13 +41,13 @@ public final class TestUtil {
         return new XFieldBuilder().add(xml).build(nsPrefix);
     }
 
-    public static XField createXField() throws XFieldException {
+    public static XField createXField() throws FieldsException {
         // no prefix
         return createXField(null);
     }
 
     public static XField createXField(final String namespacePrefix)
-            throws XFieldException {
+            throws FieldsException {
         Document doc;
         try {
             doc = XmlUtils.createDocument("xfield", namespacePrefix,
@@ -56,17 +56,17 @@ public final class TestUtil {
             xField.getNodes().add(doc);
             return xField;
         } catch (ParserConfigurationException e) {
-            throw new XFieldException("unable to create xfield", e);
+            throw new FieldsException("unable to create xfield", e);
         }
     }
 
     public static XField createXField(final String name, final String value)
-            throws XFieldException {
+            throws FieldsException {
         return createXField(name, value, null);
     }
 
     public static XField createXField(final String name, final String value,
-            final String namespacePrefix) throws XFieldException {
+            final String namespacePrefix) throws FieldsException {
         XField xField = createXField(namespacePrefix);
         addElement(name, value, namespacePrefix, xField);
         return xField;
@@ -74,7 +74,7 @@ public final class TestUtil {
 
     public static XField createXField(final String name, final String attrName,
             final String value, final String namespacePrefix)
-            throws XFieldException {
+            throws FieldsException {
         XField xField = createXField(namespacePrefix);
         Node node = addElement(name, "", namespacePrefix, xField);
         addAttribute(attrName, value, node);
@@ -83,7 +83,7 @@ public final class TestUtil {
 
     public static Element addElement(final String namespacePrefix,
             final String name, final String text, final String parentNodeXPath,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         Optional<Node> node = getLastNode(xField);
         if (node.isPresent()) {
             Document doc = null;
@@ -95,7 +95,7 @@ public final class TestUtil {
             if (doc == null) {
                 String message = Util.buildString("unable to add new element [",
                         name, "][", text, "]. owner document is null");
-                throw new XFieldException(message);
+                throw new FieldsException(message);
             } else {
                 String qName = name;
                 if (namespacePrefix != null) {
@@ -114,7 +114,7 @@ public final class TestUtil {
                             location.appendChild(element);
                         }
                     } catch (XPathExpressionException e) {
-                        throw new XFieldException(Util.buildString(
+                        throw new FieldsException(Util.buildString(
                                 "unable to add element [", name, "][", text,
                                 "] at xpath [", parentNodeXPath, "]"), e);
                     }
@@ -124,19 +124,19 @@ public final class TestUtil {
         } else {
             String message = Util.buildString("unable to add new element [",
                     name, "][", text, "]. xfield has no nodes");
-            throw new XFieldException(message);
+            throw new FieldsException(message);
         }
     }
 
     public static Element addElement(final String name, final String text,
             final String namespacePrefix, final XField xField)
-            throws XFieldException {
+            throws FieldsException {
         // default namespace
         return addElement(namespacePrefix, name, text, null, xField);
     }
 
     public static Element addElement(final String name, final String text,
-            final XField xField) throws XFieldException {
+            final XField xField) throws FieldsException {
         // default namespace
         return addElement(null, name, text, null, xField);
     }

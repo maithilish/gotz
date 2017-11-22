@@ -2,9 +2,9 @@ package org.codetab.gotz.step;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
@@ -44,7 +44,7 @@ public abstract class Step implements IStep {
 
     @Inject
     @SuppressWarnings("checkstyle:visibilitymodifier")
-    protected XFieldHelper xFieldHelper;
+    protected FieldsHelper xFieldHelper;
 
     @Override
     public XField getXField() {
@@ -55,7 +55,7 @@ public abstract class Step implements IStep {
     public void setXField(final XField xField) {
         try {
             label = xFieldHelper.getLastValue("/:xfield/:label", xField);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
         this.xField = xField;
     }

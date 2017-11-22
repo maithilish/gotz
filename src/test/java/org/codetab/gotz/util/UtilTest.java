@@ -17,7 +17,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Rule;
 import org.junit.Test;
@@ -341,7 +341,7 @@ public class UtilTest {
     @Test
     public void testGetMessage() {
         String expected = "XFieldException: test";
-        String actual = Util.getMessage(new XFieldException("test"));
+        String actual = Util.getMessage(new FieldsException("test"));
         assertThat(actual).isEqualTo(expected);
     }
 

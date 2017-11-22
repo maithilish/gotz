@@ -3,13 +3,13 @@ package org.codetab.gotz.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
@@ -27,7 +27,7 @@ import org.mockito.Spy;
 public class DataDefValidatorTest {
 
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
     @InjectMocks
     private DataDefValidator validator;
 
@@ -44,7 +44,7 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateDataDefField() throws XFieldException {
+    public void testValidateDataDefField() throws FieldsException {
         XField xField = TestUtil.createXField("indexRange", "1-1");
         DataDef dataDef = new DataDef();
         dataDef.setXfield(xField);
@@ -55,7 +55,7 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateAxisField() throws XFieldException {
+    public void testValidateAxisField() throws FieldsException {
         XField xField = TestUtil.createXField("indexRange", "1-1");
         DAxis axis = new DAxis();
         axis.setXfield(xField);
@@ -69,7 +69,7 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateMemberField() throws XFieldException {
+    public void testValidateMemberField() throws FieldsException {
         XField xField = TestUtil.createXField("indexRange", "1-1");
 
         DMember member = new DMember();
@@ -89,7 +89,7 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateInvalidRange() throws XFieldException {
+    public void testValidateInvalidRange() throws FieldsException {
         XField dataDefField =
                 TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
         XField axisField =

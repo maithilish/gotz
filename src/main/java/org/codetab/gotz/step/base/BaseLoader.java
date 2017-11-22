@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Locator;
@@ -232,7 +232,7 @@ public abstract class BaseLoader extends Step {
         try {
             persist = xFieldHelper.isTrue("/:xfield/:tasks/:persist/:document",
                     locator.getXField());
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         if (persist) {
@@ -288,7 +288,7 @@ public abstract class BaseLoader extends Step {
         try {
             tasks = xFieldHelper.split("/:xfield/:tasks/:task",
                     locator.getXField());
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             LOGGER.error("{} {}", errorMessage, e);
             activityService.addActivity(Type.GIVENUP, errorMessage, e);
             throw new StepRunException(errorMessage, e);
@@ -332,7 +332,7 @@ public abstract class BaseLoader extends Step {
         XField nextStepXField = null;
         try {
             nextStepXField = xFieldHelper.deepCopy(xField);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             String message = "unable to clone next step xfield";
             LOGGER.error("{} {}", message, e.getLocalizedMessage());
             throw new StepRunException(message, e);
@@ -345,7 +345,7 @@ public abstract class BaseLoader extends Step {
                     nextStepXField);
             xFieldHelper.addElement("locatorUrl", locator.getUrl(),
                     nextStepXField);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             throw new StepRunException("unable to create next step fields", e);
         }
         return nextStepXField;

@@ -12,10 +12,10 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
@@ -41,7 +41,7 @@ public class AppenderTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private ListAppender appender;
@@ -56,7 +56,7 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueDefaultSize()
-            throws XFieldException, ConfigNotFoundException {
+            throws FieldsException, ConfigNotFoundException {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willThrow(ConfigNotFoundException.class);
 
@@ -71,7 +71,7 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueDefaultSizeNoGlobalConfig()
-            throws ConfigNotFoundException, XFieldException {
+            throws ConfigNotFoundException, FieldsException {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willThrow(ConfigNotFoundException.class);
 
@@ -86,7 +86,7 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueSizeFromGlobalConfig()
-            throws ConfigNotFoundException, XFieldException {
+            throws ConfigNotFoundException, FieldsException {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
 
@@ -101,7 +101,7 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueSizeFromAppenderField()
-            throws ConfigNotFoundException, XFieldException {
+            throws ConfigNotFoundException, FieldsException {
 
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
@@ -120,7 +120,7 @@ public class AppenderTest {
 
     @Test
     public void testInitializeQueueInvalidSize()
-            throws ConfigNotFoundException, XFieldException {
+            throws ConfigNotFoundException, FieldsException {
 
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("x");
@@ -167,7 +167,7 @@ public class AppenderTest {
     }
 
     @Test
-    public void testSetGetXField() throws XFieldException {
+    public void testSetGetXField() throws FieldsException {
 
         XField xField = xFieldHelper.createXField();
         appender.setXField(xField);

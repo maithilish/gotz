@@ -18,7 +18,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.ConfigService;
@@ -51,7 +51,7 @@ public class DocumentHelper {
     private DInjector dInjector;
 
     @Inject
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     /**
      * private constructor.
@@ -116,7 +116,7 @@ public class DocumentHelper {
         String label = "not defined";
         try {
             label = xFieldHelper.getLabel(xField);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             LOGGER.warn("{}", e.getLocalizedMessage());
         }
 
@@ -129,7 +129,7 @@ public class DocumentHelper {
         String live = null;
         try {
             live = xFieldHelper.getLastValue("/:xfield/:tasks/:live", xField);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
                     label);
         }

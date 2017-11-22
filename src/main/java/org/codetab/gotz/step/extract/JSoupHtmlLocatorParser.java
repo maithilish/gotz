@@ -3,13 +3,13 @@ package org.codetab.gotz.step.extract;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.LocatorXFieldHelper;
+import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
 
     @Inject
-    private LocatorXFieldHelper locatorXFieldHelper;
+    private LocatorFieldsHelper locatorXFieldHelper;
 
     @Override
     public IStep instance() {
@@ -35,7 +35,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             Locator locator = null;
             try {
                 locator = createLocator(member);
-            } catch (XFieldException e) {
+            } catch (FieldsException e) {
                 String givenUpMessage = "unable to create locator";
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
@@ -53,7 +53,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
         return true;
     }
 
-    private Locator createLocator(final Member member) throws XFieldException {
+    private Locator createLocator(final Member member) throws FieldsException {
         Locator locator = new Locator();
         locator.setName(
                 xFieldHelper.getLastValue("//:locatorName", getXField()));
@@ -62,7 +62,7 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             String message = Util.buildString(
                     "unable to create new locator. define group for member ",
                     "in datadef of locator type ", member.getName());
-            throw new XFieldException(message);
+            throw new FieldsException(message);
         } else {
             locator.setGroup(member.getGroup());
             XField xField = locatorXFieldHelper.getXField(
@@ -83,10 +83,10 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             XField nextStepXField = locatorXFieldHelper.getXField(
                     locator.getClass().getName(), locator.getGroup());
             if (nextStepXField.getNodes().size() == 0) {
-                throw new XFieldException("no nodes in xfield");
+                throw new FieldsException("no nodes in xfield");
             }
             return nextStepXField;
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
             activityService.addActivity(Type.GIVENUP, message);

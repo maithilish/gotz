@@ -11,12 +11,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.LocatorHelper;
-import org.codetab.gotz.model.helper.LocatorXFieldHelper;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.LocatorFieldsHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
@@ -42,9 +42,9 @@ public class LocatorSeederTest {
     @Mock
     private LocatorHelper locatorHelper;
     @Mock
-    private LocatorXFieldHelper locatorXFieldHelper;
+    private LocatorFieldsHelper locatorXFieldHelper;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
     @Spy
     private DInjector dInjector;
 
@@ -64,7 +64,7 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testSetInput() throws IllegalAccessException, XFieldException {
+    public void testSetInput() throws IllegalAccessException, FieldsException {
         Locator locator = new Locator();
         locator.setName("x");
         locator.setGroup("gx");
@@ -177,7 +177,7 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testProcessSetGroupFields() throws XFieldException {
+    public void testProcessSetGroupFields() throws FieldsException {
         List<Locator> locators = createTestObjects();
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
         locatorSeeder.initialize();
@@ -206,7 +206,7 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testHandover() throws XFieldException, ClassNotFoundException,
+    public void testHandover() throws FieldsException, ClassNotFoundException,
             InstantiationException, IllegalAccessException {
         XField xField1 = xFieldHelper.createXField();
         xFieldHelper.addElement("x", "xv", xField1);

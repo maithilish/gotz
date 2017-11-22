@@ -17,7 +17,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
@@ -30,7 +30,7 @@ import org.w3c.dom.Document;
 import com.google.inject.Singleton;
 
 @Singleton
-public class LocatorXFieldHelper {
+public class LocatorFieldsHelper {
 
     // private static final Logger LOGGER =
     // LoggerFactory.getLogger(LocatorXFieldHelper.class);
@@ -45,7 +45,7 @@ public class LocatorXFieldHelper {
     private ConfigService configService;
 
     @Inject
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @Inject
     private IOHelper ioHelper;
@@ -56,7 +56,7 @@ public class LocatorXFieldHelper {
      * private constructor.
      */
     @Inject
-    private LocatorXFieldHelper() {
+    private LocatorFieldsHelper() {
     }
 
     /**
@@ -77,7 +77,7 @@ public class LocatorXFieldHelper {
     }
 
     public XField getXField(final String clazz, final String group)
-            throws XFieldException {
+            throws FieldsException {
         // return deep copy
         for (XField xField : xFields) {
             if (xField.getClazz().equals(clazz)
@@ -97,9 +97,9 @@ public class LocatorXFieldHelper {
      * adds label field to locator. Label is name:group pair. *
      * @param locator
      *            {@link Locator}
-     * @throws XFieldException
+     * @throws FieldsException
      */
-    public void addLabel(final Locator locator) throws XFieldException {
+    public void addLabel(final Locator locator) throws FieldsException {
         Validate.notNull(locator, "locator must not be null");
         String label =
                 Util.buildString(locator.getName(), ":", locator.getGroup());
@@ -108,7 +108,7 @@ public class LocatorXFieldHelper {
 
     private List<XField> getXFields() throws ParserConfigurationException,
             FileNotFoundException, TransformerFactoryConfigurationError,
-            TransformerException, ConfigNotFoundException, XFieldException {
+            TransformerException, ConfigNotFoundException, FieldsException {
 
         List<XField> xFieldList = new ArrayList<>();
 
@@ -139,12 +139,12 @@ public class LocatorXFieldHelper {
     }
 
     private String getGroupFromNodes(final XField xField)
-            throws XFieldException {
+            throws FieldsException {
         String xpath = "/:xfield/:tasks/@group";
         return xFieldHelper.getLastValue(xpath, xField);
     }
 
-    private Document mergeSteps(final Document doc) throws XFieldException {
+    private Document mergeSteps(final Document doc) throws FieldsException {
         String stepsXslFile = "";
         try {
             stepsXslFile = configService.getConfig("gotz.stepsXslFile");
@@ -160,7 +160,7 @@ public class LocatorXFieldHelper {
         } catch (ConfigNotFoundException | FileNotFoundException
                 | TransformerFactoryConfigurationError
                 | TransformerException e) {
-            throw new XFieldException(Util.buildString(
+            throw new FieldsException(Util.buildString(
                     "unable to merge steps [", stepsXslFile, "]"), e);
         }
     }

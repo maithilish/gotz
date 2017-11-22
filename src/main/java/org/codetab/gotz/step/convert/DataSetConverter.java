@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.converter.IConverter;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -72,7 +72,7 @@ public final class DataSetConverter extends BaseDataConverter {
                     getXField());
             locatorGroup = xFieldHelper.getLastValue("/:xfield/:locatorGroup",
                     getXField());
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             String message = "unable to get locator name and group";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
@@ -94,7 +94,7 @@ public final class DataSetConverter extends BaseDataConverter {
                     Util.buildString("/:xfield/:task/:steps/:step[@name='",
                             getStepType(), "']/:converter"),
                     getXField());
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
 
         // encode and append data
@@ -139,7 +139,7 @@ public final class DataSetConverter extends BaseDataConverter {
                         e.printStackTrace();
                     }
                 }
-            } catch (XFieldException e) {
+            } catch (FieldsException e) {
             }
         }
         return rvalue;

@@ -9,7 +9,7 @@ import java.util.regex.PatternSyntaxException;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -145,7 +145,7 @@ public final class DataFilter extends BaseFilter {
                     LOGGER.warn("unable to filter {} {}", pattern, e);
                 }
             }
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
         return false;
     }

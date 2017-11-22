@@ -18,7 +18,7 @@ import javax.script.ScriptException;
 import org.apache.commons.lang3.Range;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -60,7 +60,7 @@ public abstract class BaseParser extends Step {
                     .getLastValue("/:xfield/:locatorGroup", getXField());
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
                     dataDefName);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             throw new StepRunException("unable to initialize parser", e);
         }
         return postInitialize();
@@ -101,7 +101,7 @@ public abstract class BaseParser extends Step {
                     | IOException | NumberFormatException
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
-                    | DataFormatException | XFieldException e) {
+                    | DataFormatException | FieldsException e) {
                 String message =
                         Util.buildString("unable to parse ", getLabel());
                 throw new StepRunException(message, e);
@@ -124,7 +124,7 @@ public abstract class BaseParser extends Step {
         try {
             persist = xFieldHelper.isTrue("/:xfield/:task/:persist/:data",
                     getXField());
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
         if (persist) {
             dataPersistence.storeData(data);
@@ -189,7 +189,7 @@ public abstract class BaseParser extends Step {
     public void parse() throws DataDefNotFoundException, ScriptException,
             ClassNotFoundException, IOException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, DataFormatException, XFieldException {
+            NoSuchMethodException, DataFormatException, FieldsException {
         DataDef dataDef = dataDefService.getDataDef(dataDefName);
         Deque<Member> mStack = new ArrayDeque<>();
         for (Member member : data.getMembers()) {
@@ -211,7 +211,7 @@ public abstract class BaseParser extends Step {
 
     private void pushNewMember(final Deque<Member> mStack, final Member member)
             throws IOException, ClassNotFoundException, NumberFormatException,
-            XFieldException {
+            FieldsException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;
             try {
@@ -267,7 +267,7 @@ public abstract class BaseParser extends Step {
     }
 
     private boolean hasFinished(final Axis axis)
-            throws NumberFormatException, XFieldException {
+            throws NumberFormatException, FieldsException {
         boolean noField = true;
         try {
             String breakAfter = xFieldHelper
@@ -277,7 +277,7 @@ public abstract class BaseParser extends Step {
             if (value.equals(breakAfter)) {
                 return true;
             }
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         } catch (NullPointerException e) {
             String message = Util.buildString(
                     "check breakAfter value in datadef ", getLabel());
@@ -289,12 +289,12 @@ public abstract class BaseParser extends Step {
             if (axis.getIndex() + 1 > endIndex) {
                 return true;
             }
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
         }
         if (noField) {
             String message = Util.buildString(
                     "breakAfter or indexRange undefined ", getLabel());
-            throw new XFieldException(message);
+            throw new FieldsException(message);
         }
         return false;
     }
@@ -391,9 +391,9 @@ public abstract class BaseParser extends Step {
      *
      */
     protected Integer getStartIndex(final XField xField)
-            throws NumberFormatException, XFieldException {
+            throws NumberFormatException, FieldsException {
         if (xField == null) {
-            throw new XFieldException("xField is null");
+            throw new FieldsException("xField is null");
         }
         Range<Integer> indexRange =
                 xFieldHelper.getRange("//xf:indexRange/@value", xField);
@@ -404,9 +404,9 @@ public abstract class BaseParser extends Step {
      *
      */
     protected Integer getEndIndex(final XField xField)
-            throws NumberFormatException, XFieldException {
+            throws NumberFormatException, FieldsException {
         if (xField == null) {
-            throw new XFieldException("xField is null");
+            throw new FieldsException("xField is null");
         }
         Range<Integer> indexRange =
                 xFieldHelper.getRange("//xf:indexRange/@value", xField);

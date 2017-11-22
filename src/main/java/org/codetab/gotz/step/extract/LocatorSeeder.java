@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.LocatorHelper;
-import org.codetab.gotz.model.helper.LocatorXFieldHelper;
+import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
@@ -50,7 +50,7 @@ public final class LocatorSeeder extends BaseSeeder {
      * helper - provides fields for locators.
      */
     @Inject
-    private LocatorXFieldHelper locatorXFieldHelper;
+    private LocatorFieldsHelper locatorXFieldHelper;
 
     /**
      * helper - create and manage locators.
@@ -121,7 +121,7 @@ public final class LocatorSeeder extends BaseSeeder {
                         locator.getClass().getName(), locator.getGroup());
                 locator.setXField(xField);
                 locatorXFieldHelper.addLabel(locator);
-            } catch (XFieldException e) {
+            } catch (FieldsException e) {
                 throw new StepRunException(
                         "unable to set xfield copy to locator", e);
             }

@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.util.Util;
@@ -53,7 +53,7 @@ public final class FileAppender extends Appender {
         try {
             fileName =
                     xFieldHelper.getLastValue("//:appender/:file", getXField());
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

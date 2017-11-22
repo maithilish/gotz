@@ -10,14 +10,14 @@ import static org.mockito.Mockito.verify;
 
 import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.StepState;
@@ -46,7 +46,7 @@ public class CsvEncoderTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private CsvEncoder encoder;
@@ -174,7 +174,7 @@ public class CsvEncoderTest {
             encoder.process();
         } catch (StepRunException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
-                    any(String.class), any(XFieldException.class));
+                    any(String.class), any(FieldsException.class));
         }
 
         testRule.expect(StepRunException.class);

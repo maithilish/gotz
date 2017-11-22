@@ -20,13 +20,13 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DocumentHelper;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DocumentPersistence;
 import org.codetab.gotz.persistence.LocatorPersistence;
 import org.codetab.gotz.shared.ActivityService;
@@ -72,7 +72,7 @@ public class BaseLoaderTest {
     @Mock
     private ConfigService configService;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     private String fileUrl;
 
@@ -408,7 +408,7 @@ public class BaseLoaderTest {
 
     @Test
     public void testStorePersistIsFalse()
-            throws IllegalAccessException, XFieldException {
+            throws IllegalAccessException, FieldsException {
         XField xField = xFieldHelper.createXField();
         Node tasks = xFieldHelper.addElement("tasks", "", xField);
         Node persist = xFieldHelper.addElement("persist", "", tasks);
@@ -434,7 +434,7 @@ public class BaseLoaderTest {
 
     @Test
     public void testStorePersistIsTrue()
-            throws IllegalAccessException, XFieldException {
+            throws IllegalAccessException, FieldsException {
         List<Locator> locators = createTestObjects();
         Locator locator1 = locators.get(0);
         locator1.setId(0L);
@@ -580,13 +580,13 @@ public class BaseLoaderTest {
             fail("should throw StepRunExpection");
         } catch (StepRunException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
-                    any(String.class), any(XFieldException.class));
+                    any(String.class), any(FieldsException.class));
         }
     }
 
     @Test
     public void testHandoverDocumentNotLoaded()
-            throws IllegalAccessException, XFieldException {
+            throws IllegalAccessException, FieldsException {
 
         XField xField = xFieldHelper.createXField();
         Node tasks = xFieldHelper.addElement("tasks", "", xField);
@@ -610,7 +610,7 @@ public class BaseLoaderTest {
     }
 
     @Test
-    public void testHandover() throws IllegalAccessException, XFieldException {
+    public void testHandover() throws IllegalAccessException, FieldsException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
         locator.getXField().getNodes().clear();
@@ -649,7 +649,7 @@ public class BaseLoaderTest {
 
     @Test
     public void testHandoverNextStepFieldsException()
-            throws IllegalAccessException, XFieldException {
+            throws IllegalAccessException, FieldsException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
         locator.getXField().getNodes().clear();
@@ -666,7 +666,7 @@ public class BaseLoaderTest {
             loader.handover();
         } catch (StepRunException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
-                    any(String.class), any(XFieldException.class));
+                    any(String.class), any(FieldsException.class));
         }
     }
 

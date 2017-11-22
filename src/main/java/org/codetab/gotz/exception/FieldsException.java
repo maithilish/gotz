@@ -6,7 +6,7 @@ package org.codetab.gotz.exception;
  * <p>
  * RuntimeException : recoverable
  */
-public class XFieldException extends Exception {
+public class FieldsException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,7 +26,7 @@ public class XFieldException extends Exception {
      * @param message
      *            exception message
      */
-    public XFieldException(final String message) {
+    public FieldsException(final String message) {
         super(message);
         this.message = message;
         this.cause = null;
@@ -40,7 +40,7 @@ public class XFieldException extends Exception {
      * @param cause
      *            exception cause
      */
-    public XFieldException(final String message, final Throwable cause) {
+    public FieldsException(final String message, final Throwable cause) {
         super(message, cause);
         this.message = message;
         this.cause = cause;
@@ -52,7 +52,7 @@ public class XFieldException extends Exception {
      * @param cause
      *            exception cause
      */
-    public XFieldException(final Throwable cause) {
+    public FieldsException(final Throwable cause) {
         super(cause);
         this.message = null;
         this.cause = cause;

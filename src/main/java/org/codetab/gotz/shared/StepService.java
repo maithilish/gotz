@@ -7,10 +7,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.Step;
@@ -31,7 +31,7 @@ public class StepService {
     @Inject
     private TaskPoolService taskPoolService;
     @Inject
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @Inject
     private StepService() {
@@ -81,7 +81,7 @@ public class StepService {
         String label = step.getLabel();
         try {
             addLabelField(step, nextStepXField);
-        } catch (XFieldException e) {
+        } catch (FieldsException e) {
             LOGGER.warn("unable to add label field to next step {}", e);
         }
 
@@ -124,7 +124,7 @@ public class StepService {
     }
 
     private void addLabelField(final Step step, final XField nextStepXField)
-            throws XFieldException {
+            throws FieldsException {
         if (xFieldHelper.isDefined("label", nextStepXField)) {
             return;
         }
@@ -137,7 +137,7 @@ public class StepService {
     }
 
     private List<String> getNextStepClasses(final XField xField,
-            final String stepType) throws XFieldException {
+            final String stepType) throws FieldsException {
 
         String xpath = Util.buildString("//:task/:steps/:step[@name='",
                 stepType, "']/@class");
@@ -151,7 +151,7 @@ public class StepService {
     }
 
     public String getNextStepType(final XField xField, final String stepType)
-            throws XFieldException {
+            throws FieldsException {
         // TODO need to check behavior when multiple matching nodes exists
         String xpath = Util.buildString("//:task/:steps/:step[@name='",
                 stepType, "']/:nextStep");

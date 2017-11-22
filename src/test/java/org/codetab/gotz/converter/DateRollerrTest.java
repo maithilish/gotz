@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -43,7 +43,7 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertCeil() throws Exception {
-        XFieldHelper xFieldHelper = new XFieldHelper();
+        FieldsHelper xFieldHelper = new FieldsHelper();
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("inPattern", "MMM ''YY", xField);
         xFieldHelper.addElement("outPattern", "YYYY-MM-dd", xField);
@@ -62,7 +62,7 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertFloor() throws Exception {
-        XFieldHelper xFieldHelper = new XFieldHelper();
+        FieldsHelper xFieldHelper = new FieldsHelper();
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("inPattern", "MMM ''YY", xField);
         xFieldHelper.addElement("outPattern", "YYYY-MM-dd", xField);
@@ -81,7 +81,7 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertRound() throws Exception {
-        XFieldHelper xFieldHelper = new XFieldHelper();
+        FieldsHelper xFieldHelper = new FieldsHelper();
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("inPattern", "dd-MM-YYYY", xField);
         xFieldHelper.addElement("outPattern", "YYYY-MM-dd", xField);
@@ -118,7 +118,7 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertPatternInParseException() throws Exception {
-        XFieldHelper xFieldHelper = new XFieldHelper();
+        FieldsHelper xFieldHelper = new FieldsHelper();
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("inPattern", "YY", xField);
         xFieldHelper.addElement("outPattern", "YYYY-MM-dd", xField);
@@ -130,7 +130,7 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertPatternOutParseException() throws Exception {
-        XFieldHelper xFieldHelper = new XFieldHelper();
+        FieldsHelper xFieldHelper = new FieldsHelper();
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("inPattern", "MMM ''YY", xField);
         xFieldHelper.addElement("outPattern", "x", xField);
@@ -143,25 +143,25 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertPatternInNotFound() throws Exception {
-        XFieldHelper xFieldHelper = new XFieldHelper();
+        FieldsHelper xFieldHelper = new FieldsHelper();
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("x", "MMM ''YY", xField);
         xFieldHelper.addElement("outPattern", "YYYY-MM-dd", xField);
         dt.setXField(xField);
 
-        testRule.expect(XFieldException.class);
+        testRule.expect(FieldsException.class);
         dt.convert("Mar '17");
     }
 
     @Test
     public void testConvertPatternOutNotFound() throws Exception {
-        XFieldHelper xFieldHelper = new XFieldHelper();
+        FieldsHelper xFieldHelper = new FieldsHelper();
         XField xField = xFieldHelper.createXField();
         xFieldHelper.addElement("inPattern", "MMM ''YY", xField);
         xFieldHelper.addElement("x", "YYYY-MM-dd", xField);
         dt.setXField(xField);
 
-        testRule.expect(XFieldException.class);
+        testRule.expect(FieldsException.class);
         dt.convert("Mar '17");
     }
 }

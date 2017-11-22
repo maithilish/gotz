@@ -17,7 +17,7 @@ import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.testutil.XFieldBuilder;
@@ -43,7 +43,7 @@ public class DataFilterTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private DataFilter filter;

@@ -6,13 +6,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 
 /**
  * <p>
@@ -25,7 +25,7 @@ import org.codetab.gotz.model.helper.XFieldHelper;
 public class DataDefValidator {
 
     @Inject
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     /**
      * <p>
@@ -60,7 +60,7 @@ public class DataDefValidator {
                 }
             } catch (NumberFormatException e) {
                 valid = false;
-            } catch (XFieldException e) {
+            } catch (FieldsException e) {
             }
         }
         return valid;

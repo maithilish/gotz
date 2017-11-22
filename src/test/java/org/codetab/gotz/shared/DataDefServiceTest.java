@@ -17,7 +17,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
@@ -28,7 +28,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DataDefHelper;
-import org.codetab.gotz.model.helper.XFieldHelper;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
 import org.codetab.gotz.testutil.XFieldBuilder;
 import org.codetab.gotz.validation.DataDefValidator;
@@ -55,7 +55,7 @@ public class DataDefServiceTest {
     @Mock
     private DataDefHelper dataDefHelper;
     @Spy
-    private XFieldHelper xFieldHelper;
+    private FieldsHelper xFieldHelper;
 
     @InjectMocks
     private DataDefService dataDefService;
@@ -83,7 +83,7 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testInit() throws IllegalAccessException, XFieldException {
+    public void testInit() throws IllegalAccessException, FieldsException {
         List<DataDef> dataDefs = createSimpleDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -243,7 +243,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testGetDataTemplateMemberFields() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException, XFieldException {
+            DataDefNotFoundException, IOException, FieldsException {
         List<DataDef> dataDefs = createTestDataDefs();
         DataDef dataDef = dataDefs.get(0);
 
