@@ -25,8 +25,6 @@ import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
 import org.codetab.gotz.util.XmlUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.google.inject.Singleton;
@@ -34,8 +32,8 @@ import com.google.inject.Singleton;
 @Singleton
 public class LocatorXFieldHelper {
 
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(LocatorXFieldHelper.class);
+    // private static final Logger LOGGER =
+    // LoggerFactory.getLogger(LocatorXFieldHelper.class);
 
     /**
      * instance of BeanService.

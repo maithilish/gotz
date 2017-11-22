@@ -162,7 +162,7 @@ public class XField implements Serializable {
         builder.append("}");
         builder.append(System.lineSeparator());
         try {
-            builder.append(XmlUtils.toXML(nodes, true, 4));
+            builder.append(XmlUtils.toXML(getNodes(), true, 4));
         } catch (TransformerException e) {
             builder.append(e.getLocalizedMessage());
         }

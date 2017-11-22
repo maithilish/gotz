@@ -12,10 +12,8 @@ import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.XFieldException;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
-import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.model.helper.LocatorXFieldHelper;
 import org.codetab.gotz.model.helper.XFieldHelper;
@@ -44,8 +42,6 @@ public class LocatorSeederTest {
     @Mock
     private LocatorHelper locatorHelper;
     @Mock
-    private LocatorFieldsHelper fieldsHelper;
-    @Mock
     private LocatorXFieldHelper locatorXFieldHelper;
     @Spy
     private XFieldHelper xFieldHelper;
@@ -68,12 +64,12 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testSetInput() throws IllegalAccessException {
+    public void testSetInput() throws IllegalAccessException, XFieldException {
         Locator locator = new Locator();
         locator.setName("x");
         locator.setGroup("gx");
-        FieldsBase field = TestUtil.createField("f1", "v1");
-        locator.getFields().add(field);
+        XField xField = TestUtil.createXField("f1", "v1");
+        locator.setXField(xField);
 
         // when
         locatorSeeder.setInput(locator);
@@ -84,7 +80,7 @@ public class LocatorSeederTest {
 
         assertThat(actual.size()).isEqualTo(1);
         assertThat(actual).contains(locator);
-        assertThat(actual.get(0).getFields().size()).isEqualTo(0);
+        assertThat(actual.get(0).getXField().getNodes().size()).isEqualTo(1);
     }
 
     @Test

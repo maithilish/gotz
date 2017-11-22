@@ -15,8 +15,9 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.util.CompressionUtil;
@@ -27,6 +28,8 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.w3c.dom.Node;
 
 /**
  * <p>
@@ -41,6 +44,8 @@ public class DocumentHelperTest {
     private ConfigService configService;
     @Mock
     private DInjector dInjector;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private DocumentHelper documentHelper;
@@ -127,114 +132,134 @@ public class DocumentHelperTest {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
-        List<FieldsBase> fields = new ArrayList<>();
+
+        XField xField = TestUtil.buildXField("", "xf");
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, xField);
 
         assertThat(actual).isEqualTo(fromDate);
     }
 
     @Test
-    public void testGetToDateWithLiveField() throws ParseException {
+    public void testGetToDateWithLiveField()
+            throws ParseException, XFieldException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        FieldsBase live = TestUtil.createField("live", "P2D");
-        List<FieldsBase> fields = TestUtil.asList(live);
-        fields.add(TestUtil.createField("label", "x:y"));
+        XField xField = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", xField);
+        TestUtil.addElement("live", "P2D", tasks);
+        TestUtil.addElement("label", "x:y", xField);
 
         Date expected = DateUtils.addDays(fromDate, 2);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, xField);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void testGetToDateWithBlankOrZeroLiveField() throws ParseException {
+    public void testGetToDateWithBlankOrZeroLiveField()
+            throws ParseException, XFieldException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("live", ""));
+
+        XField xField = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", xField);
+        TestUtil.addElement("live", "", tasks);
+        TestUtil.addElement("label", "x:y", xField);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, xField);
         assertThat(actual).isEqualTo(fromDate);
 
-        fields = TestUtil.asList(TestUtil.createField("live", "0"));
-        actual = documentHelper.getToDate(fromDate, fields);
+        xField = TestUtil.createXField(); // default ns
+        tasks = TestUtil.addElement("tasks", "", xField);
+        TestUtil.addElement("live", "0", tasks);
+        TestUtil.addElement("label", "x:y", xField);
+
+        actual = documentHelper.getToDate(fromDate, xField);
         assertThat(actual).isEqualTo(fromDate);
     }
 
     @Test
     public void testGetToDateWithDateString()
-            throws ParseException, ConfigNotFoundException {
+            throws ParseException, ConfigNotFoundException, XFieldException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate = new Date();
         String toDateStr = "01-08-2017 11:00:00.000";
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("live", toDateStr));
+
+        XField xField = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", xField);
+        TestUtil.addElement("live", toDateStr, tasks);
+        TestUtil.addElement("label", "x:y", xField);
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);
         Date expected = DateUtils.parseDate(toDateStr, parsePatterns);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, xField);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void testGetToDateWithInvalidDateString()
-            throws ParseException, ConfigNotFoundException {
+            throws ParseException, ConfigNotFoundException, XFieldException {
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("live", toDateStr));
+
+        XField xField = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", xField);
+        TestUtil.addElement("live", toDateStr, tasks);
+        TestUtil.addElement("label", "x:y", xField);
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, xField);
         assertThat(actual).isEqualTo(fromDate);
     }
 
     @Test
     public void testGetToDateParsePatternNotFound()
-            throws ParseException, ConfigNotFoundException {
+            throws ParseException, ConfigNotFoundException, XFieldException {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
-        List<FieldsBase> fields =
-                TestUtil.asList(TestUtil.createField("live", toDateStr));
+
+        XField xField = TestUtil.createXField(); // default ns
+        Node tasks = TestUtil.addElement("tasks", "", xField);
+        TestUtil.addElement("live", toDateStr, tasks);
+        TestUtil.addElement("label", "x:y", xField);
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willThrow(ConfigNotFoundException.class);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, xField);
         assertThat(actual).isEqualTo(fromDate);
     }
 
     @Test
     public void testGetToDateNullParams() {
         try {
-            documentHelper.getToDate(null, new ArrayList<>());
+            documentHelper.getToDate(null, new XField());
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("fromDate must not be null");
         }
 
         try {
-            List<FieldsBase> list = null;
-            documentHelper.getToDate(new Date(), list);
+            XField xField = null;
+            documentHelper.getToDate(new Date(), xField);
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).isEqualTo("fields must not be null");
+            assertThat(e.getMessage()).isEqualTo("xfield must not be null");
         }
     }
 
@@ -243,7 +268,7 @@ public class DocumentHelperTest {
         FieldUtils.writeDeclaredField(documentHelper, "configService", null,
                 true);
         try {
-            documentHelper.getToDate(new Date(), new ArrayList<>());
+            documentHelper.getToDate(new Date(), new XField());
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
             assertThat(e.getMessage()).isEqualTo("configService is null");

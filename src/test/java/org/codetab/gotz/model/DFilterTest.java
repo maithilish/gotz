@@ -75,12 +75,15 @@ public class DFilterTest {
     }
 
     @Test
-    public void testGetFields() {
-        List<FieldsBase> fields = dFilter.getFields();
-        assertThat(fields).isNotNull();
+    public void testGetXField() {
+
+        assertThat(dFilter.getXfield()).isNull();
+
+        XField xField = new XField();
+        dFilter.setXfield(xField);
 
         // for test coverage when not null
-        assertThat(dFilter.getFields()).isSameAs(fields);
+        assertThat(dFilter.getXfield()).isSameAs(xField);
     }
 
     @Test

@@ -52,12 +52,15 @@ public class AxisTest {
     }
 
     @Test
-    public void testGetFields() {
-        List<FieldsBase> fields = axis.getFields();
-        assertThat(fields).isNotNull();
+    public void testGetXField() {
+
+        assertThat(axis.getXField()).isNull();
+
+        XField xField = new XField();
+        axis.setXField(xField);
 
         // for test coverage when not null
-        assertThat(axis.getFields()).isSameAs(fields);
+        assertThat(axis.getXField()).isSameAs(xField);
     }
 
     @Test
@@ -110,6 +113,7 @@ public class AxisTest {
     public void testToString() {
         List<Axis> testObjects = createTestObjects();
         Axis t1 = testObjects.get(0);
+        t1.setXField(new XField());
 
         String expected = expectedString(t1);
         assertThat(t1.toString()).isEqualTo(expected);
@@ -144,7 +148,7 @@ public class AxisTest {
                         .append("match", testAxis.getMatch())
                         .append("index", testAxis.getIndex())
                         .append("order", testAxis.getOrder())
-                        .append("fields", testAxis.getFields()).toString();
+                        .append("xfield", testAxis.getXField()).toString();
         return System.lineSeparator() + "  " + str;
 
     }

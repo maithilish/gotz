@@ -8,23 +8,20 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 /**
  * <p>
@@ -47,6 +45,8 @@ public class CsvEncoderTest {
     private AppenderService appenderService;
     @Mock
     private ActivityService activityService;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private CsvEncoder encoder;
@@ -69,15 +69,29 @@ public class CsvEncoderTest {
 
     @Test
     public void testProcessSortCol() throws InterruptedException {
-        Field a1 = TestUtil.createField("appender", "x");
-        List<FieldsBase> fields = TestUtil.asList(a1);
-        fields.add(TestUtil.createField("locatorName", "l1"));
-        fields.add(TestUtil.createField("locatorGroup", "g1"));
-        encoder.setFields(fields);
+
+        //@formatter:off
+        XField a1 = new XFieldBuilder()
+                .add("<task>")
+                .add(" <steps>")
+                .add("  <step name='encoder'>")
+                .add("     <appender>")
+                .add("        <name>x</name>")
+                .add("     </appender>")
+                .add("  </step>")
+                .add(" </steps>")
+                .add("</task>")
+                .add("<locatorName>l1</locatorName>")
+                .add("<locatorGroup>g1</locatorGroup>")
+                .build(null); // default ns
+        //@formatter:on
+
+        encoder.setXField(a1);
 
         // col order field is set to non zero, row and fact order is 0
         Data data = getTestData(AxisName.COL);
         encoder.setInput(data);
+        encoder.setStepType("encoder");
 
         encoder.initialize();
 
@@ -103,15 +117,29 @@ public class CsvEncoderTest {
 
     @Test
     public void testProcessSortRow() throws InterruptedException {
-        Field a1 = TestUtil.createField("appender", "x");
-        List<FieldsBase> fields = TestUtil.asList(a1);
-        fields.add(TestUtil.createField("locatorName", "l1"));
-        fields.add(TestUtil.createField("locatorGroup", "g1"));
-        encoder.setFields(fields);
+
+        //@formatter:off
+        XField a1 = new XFieldBuilder()
+                .add("<task>")
+                .add(" <steps>")
+                .add("  <step name='encoder'>")
+                .add("     <appender>")
+                .add("        <name>x</name>")
+                .add("     </appender>")
+                .add("  </step>")
+                .add(" </steps>")
+                .add("</task>")
+                .add("<locatorName>l1</locatorName>")
+                .add("<locatorGroup>g1</locatorGroup>")
+                .build(null);  // default ns
+        //@formatter:on
+
+        encoder.setXField(a1);
 
         // row order field is set to non zero, col and fact order is 0
         Data data = getTestData(AxisName.ROW);
         encoder.setInput(data);
+        encoder.setStepType("encoder");
 
         encoder.initialize();
 
@@ -138,7 +166,7 @@ public class CsvEncoderTest {
     @Test
     public void testProcessNoLocatorNameFieldShouldThrowException() {
 
-        encoder.setFields(new ArrayList<>());
+        encoder.setXField(new XField());
         encoder.setInput(new Data());
 
         // when
@@ -146,7 +174,7 @@ public class CsvEncoderTest {
             encoder.process();
         } catch (StepRunException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
-                    any(String.class), any(FieldNotFoundException.class));
+                    any(String.class), any(XFieldException.class));
         }
 
         testRule.expect(StepRunException.class);
@@ -159,10 +187,10 @@ public class CsvEncoderTest {
             encoder.process();
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
-            assertThat(e.getMessage()).isEqualTo("fields must not be null");
+            assertThat(e.getMessage()).isEqualTo("xfield must not be null");
         }
 
-        encoder.setFields(new ArrayList<>());
+        encoder.setXField(new XField());
 
         try {
             encoder.process();

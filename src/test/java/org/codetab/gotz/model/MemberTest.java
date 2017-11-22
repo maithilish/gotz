@@ -65,18 +65,20 @@ public class MemberTest {
 
         String expected =
                 new ToStringBuilder(t1, ToStringStyle.MULTI_LINE_STYLE)
-                        .append("axes", t1.getAxes())
-                        .append("fields", t1.getFields()).toString();
+                        .append("axes", t1.getAxes()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
     @Test
-    public void testGetFields() {
-        List<FieldsBase> fields = member.getFields();
-        assertThat(fields).isNotNull();
+    public void testGetXField() {
+
+        assertThat(member.getXField()).isNull();
+
+        XField xField = new XField();
+        member.setXField(xField);
 
         // for test coverage when not null
-        assertThat(member.getFields()).isSameAs(fields);
+        assertThat(member.getXField()).isSameAs(xField);
     }
 
     @Test

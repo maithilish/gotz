@@ -6,13 +6,12 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import java.util.ArrayList;
-
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 /**
  * <p>
@@ -32,6 +32,8 @@ public class PassThroughEncoderTest {
 
     @Mock
     private AppenderService appenderService;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private PassThroughEncoder encoder;
@@ -54,14 +56,31 @@ public class PassThroughEncoderTest {
 
     @Test
     public void testProcess() throws InterruptedException {
-        FieldsBase a1 = TestUtil.createField("appender", "x");
-        FieldsBase a2 = TestUtil.createField("appender", "y");
-        encoder.setFields(new ArrayList<>());
-        encoder.getFields().add(a1);
-        encoder.getFields().add(a2);
+
+        //@formatter:off
+        XField a1 = new XFieldBuilder()
+                .add("<task>")
+                .add(" <steps>")
+                .add("  <step name='encoder'>")
+                .add("     <appender>")
+                .add("        <name>x</name>")
+                .add("     </appender>")
+                .add("     <appender>")
+                .add("        <name>y</name>")
+                .add("     </appender>")
+                .add("  </step>")
+                .add(" </steps>")
+                .add("</task>")
+                .add("<locatorName>l1</locatorName>")
+                .add("<locatorGroup>g1</locatorGroup>")
+                .build(null); // default ns
+        //@formatter:on
+
+        encoder.setXField(a1);
 
         String obj = "xyz";
         encoder.setInput(obj);
+        encoder.setStepType("encoder");
 
         encoder.initialize();
 
