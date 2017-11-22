@@ -71,18 +71,21 @@ public class LocatorTest {
                         .append("id", t1.getId()).append("name", t1.getName())
                         .append("group", t1.getGroup())
                         .append("url", t1.getUrl())
-                        .append("fields", t1.getFields())
+                        .append("xField", t1.getXField())
                         .append("documents", t1.getDocuments()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 
     @Test
-    public void testGetFields() {
-        List<FieldsBase> fields = locator.getFields();
-        assertThat(fields).isNotNull();
+    public void testGetXField() {
+
+        assertThat(locator.getXField()).isNull();
+
+        XField xField = new XField();
+        locator.setXField(xField);
 
         // for test coverage when not null
-        assertThat(locator.getFields()).isSameAs(fields);
+        assertThat(locator.getXField()).isSameAs(xField);
     }
 
     @Test

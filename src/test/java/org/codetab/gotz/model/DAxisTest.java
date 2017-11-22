@@ -77,12 +77,15 @@ public class DAxisTest {
     }
 
     @Test
-    public void testGetFields() {
-        List<FieldsBase> fields = dAxis.getFields();
-        assertThat(fields).isNotNull();
+    public void testGetXField() {
+
+        assertThat(dAxis.getXfield()).isNull();
+
+        XField xField = new XField();
+        dAxis.setXfield(xField);
 
         // for test coverage when not null
-        assertThat(dAxis.getFields()).isSameAs(fields);
+        assertThat(dAxis.getXfield()).isSameAs(xField);
     }
 
     @Test

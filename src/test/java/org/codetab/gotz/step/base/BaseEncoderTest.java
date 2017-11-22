@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
@@ -141,7 +140,7 @@ public class BaseEncoderTest {
     @Test
     public void testInitializeCreateAppenderErrorShouldLogActivity()
             throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldNotFoundException, XFieldException {
+            IllegalAccessException, XFieldException, XFieldException {
         XField xField = xFieldHelper.createXField();
         Node step = createStepNode(xField);
         Node node = xFieldHelper.addElement("appender", "", step);
@@ -187,11 +186,11 @@ public class BaseEncoderTest {
             encoder.initialize();
         } catch (XFieldException e) {
             verify(activityService).addActivity(eq(Type.GIVENUP),
-                    any(String.class), any(FieldNotFoundException.class));
+                    any(String.class), any(XFieldException.class));
         }
     }
 
-    private Node createStepNode(final XField xField) {
+    private Node createStepNode(final XField xField) throws XFieldException {
         // xfield/task/steps/step[@name='encoder']/appender
         Node task = xFieldHelper.addElement("task", "", xField);
         Node steps = xFieldHelper.addElement("steps", "", task);

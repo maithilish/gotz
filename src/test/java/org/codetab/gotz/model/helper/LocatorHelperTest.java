@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.model.Field;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
@@ -158,7 +158,7 @@ public class LocatorHelperTest {
         List<Locator> locators = new ArrayList<>();
         locators.add(locator1);
 
-        given(configService.getConfig("forklocator")).willReturn("2");
+        given(configService.getConfig("gotz.fork.locator")).willReturn("2");
 
         List<Locator> actual = locatorHelper.forkLocators(locators);
 
@@ -178,14 +178,13 @@ public class LocatorHelperTest {
         List<Locator> locators = new ArrayList<>();
         locators.add(locator1);
 
-        given(configService.getConfig("forklocator"))
+        given(configService.getConfig("gotz.fork.locator"))
                 .willThrow(ConfigNotFoundException.class);
 
         List<Locator> actual = locatorHelper.forkLocators(locators);
 
         // then
-        assertThat(actual.size()).isEqualTo(1);
-        assertThat(actual).contains(locator1);
+        assertThat(actual.size()).isEqualTo(0);
     }
 
     @Test
@@ -211,16 +210,18 @@ public class LocatorHelperTest {
     }
 
     private List<Locators> createTestObjects() {
-        Field field = new Field();
-        field.setName("f");
+        // Field field = new Field();
+        // field.setName("f");
 
         Locator locator1 = new Locator();
         locator1.setName("n1");
-        locator1.getFields().add(field);
+        locator1.setXField(new XField());
+        // locator1.getFields().add(field);
 
         Locator locator2 = new Locator();
         locator2.setName("n2");
-        locator2.getFields().add(field);
+        locator1.setXField(new XField());
+        // locator2.getFields().add(field);
 
         Locators locators1 = new Locators();
         locators1.setGroup("g1");
@@ -229,7 +230,8 @@ public class LocatorHelperTest {
 
         Locator locator3 = new Locator();
         locator3.setName("n3");
-        locator3.getFields().add(field);
+        // locator3.getFields().add(field);
+        locator3.setXField(new XField());
 
         Locators locators2 = new Locators();
         locators2.getLocator().add(locator3);

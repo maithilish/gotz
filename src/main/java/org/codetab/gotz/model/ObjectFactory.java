@@ -32,8 +32,6 @@ public class ObjectFactory {
             new QName("http://codetab.org/gotz", "document");
     private final static QName _Bean_QNAME =
             new QName("http://codetab.org/gotz", "bean");
-    private final static QName _Beans_QNAME =
-            new QName("http://codetab.org/gotz", "beans");
     private final static QName _Datadef_QNAME =
             new QName("http://codetab.org/gotz", "datadef");
     private final static QName _Axis_QNAME =
@@ -193,16 +191,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "bean")
     public JAXBElement<Bean> createBean(Bean value) {
         return new JAXBElement<Bean>(_Bean_QNAME, Bean.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Beans
-     * }{@code >}}
-     *
-     */
-    @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "beans")
-    public JAXBElement<Beans> createBeans(Beans value) {
-        return new JAXBElement<Beans>(_Beans_QNAME, Beans.class, null, value);
     }
 
     /**

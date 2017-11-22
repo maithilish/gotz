@@ -23,12 +23,9 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.DocumentHelper;
-import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.persistence.DocumentPersistence;
 import org.codetab.gotz.persistence.LocatorPersistence;
@@ -38,6 +35,7 @@ import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.extract.URLLoader;
 import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,8 +62,6 @@ public class BaseLoaderTest {
     private DocumentPersistence documentPersistence;
     @Mock
     private DocumentHelper documentHelper;
-    @Mock
-    private FieldsHelper fieldsHelper;
     @Mock
     private StepService stepService;
     @Mock
@@ -140,10 +136,10 @@ public class BaseLoaderTest {
         assertThat(newLocator.getUrl()).isEqualTo(fileUrl);
         assertThat(savedLocator.getUrl()).isEqualTo(fileUrl);
 
-        assertThat(newLocator.getFields().size()).isEqualTo(1);
-        assertThat(savedLocator.getFields().size()).isEqualTo(2);
-        assertThat(savedLocator.getFields())
-                .containsAll(newLocator.getFields());
+        assertThat(newLocator.getXField().getNodes().size()).isEqualTo(1);
+        assertThat(savedLocator.getXField().getNodes().size()).isEqualTo(1);
+        assertThat(savedLocator.getXField().getNodes())
+                .containsAll(newLocator.getXField().getNodes());
     }
 
     @Test
@@ -168,7 +164,7 @@ public class BaseLoaderTest {
 
         assertThat(locator).isSameAs(newLocator);
         assertThat(newLocator.getUrl()).isEqualTo(fileUrl);
-        assertThat(newLocator.getFields().size()).isEqualTo(1);
+        assertThat(newLocator.getXField().getNodes().size()).isEqualTo(1);
     }
 
     @Test
@@ -467,7 +463,8 @@ public class BaseLoaderTest {
         assertThat(loader.getStepState()).isEqualTo(StepState.STORE);
         assertThat(actual).isTrue();
 
-        assertThat(locator2.getFields()).containsAll(locator1.getFields());
+        assertThat(locator2.getXField().getNodes())
+                .containsAll(locator1.getXField().getNodes());
 
         Locator actualLocator =
                 (Locator) FieldUtils.readField(loader, "locator", true);
@@ -508,7 +505,8 @@ public class BaseLoaderTest {
         assertThat(loader.getStepState()).isEqualTo(StepState.STORE);
         assertThat(actual).isTrue();
 
-        assertThat(locator2.getFields()).containsAll(locator1.getFields());
+        assertThat(locator2.getXField().getNodes())
+                .containsAll(locator1.getXField().getNodes());
 
         Locator actualLocator =
                 (Locator) FieldUtils.readField(loader, "locator", true);
@@ -573,7 +571,7 @@ public class BaseLoaderTest {
     public void testHandoverNoDataDefFields() throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
-        locator.setXField(new XField());
+        locator.setXField(TestUtil.buildXField("", "xf"));
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
@@ -615,7 +613,7 @@ public class BaseLoaderTest {
     public void testHandover() throws IllegalAccessException, XFieldException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
-        locator.getFields().clear();
+        locator.getXField().getNodes().clear();
         Document document = locator.getDocuments().get(0);
 
         XField xField = xFieldHelper.createXField();
@@ -654,7 +652,7 @@ public class BaseLoaderTest {
             throws IllegalAccessException, XFieldException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
-        locator.getFields().clear();
+        locator.getXField().getNodes().clear();
         Document document = locator.getDocuments().get(0);
 
         XField xField = new XField();
@@ -710,21 +708,33 @@ public class BaseLoaderTest {
     }
 
     private List<Locator> createTestObjects() {
-        Field l1f1 = TestUtil.createField("l1f1", "l1v1");
-        Field l1f2 = TestUtil.createField("l1f2", "l1v2");
-        Fields l1f = TestUtil.createFields("l1f", "l1v", l1f1, l1f2);
+
+        //@formatter:off
+        XField l1f = new XFieldBuilder()
+                .add("<l1f>")
+                .add(" <l1f1>l1v1</l1f1>")
+                .add(" <l1f2>l1v2</l1f2>")
+                .add("</l1f>")
+                .build("xf");
+        //@formatter:on
 
         Locator locator1 = new Locator();
-        locator1.getFields().add(l1f);
+        locator1.setXField(l1f);
         locator1.setName("l1");
         locator1.setGroup("g1");
         locator1.setUrl("url1");
 
-        Field l2f1 = TestUtil.createField("l2f1", "l2v1");
-        Field l2f2 = TestUtil.createField("l2f2", "l2v2");
-        Fields l2f = TestUtil.createFields("l2f", "l2v", l2f1, l2f2);
+      //@formatter:off
+        XField l2f = new XFieldBuilder()
+                .add("<l2f>")
+                .add(" <l2f1>l2v1</l2f1>")
+                .add(" <l2f2>l2v2</l2f2>")
+                .add("</l2f>")
+                .build("xf");
+        //@formatter:on
+
         Locator locator2 = new Locator();
-        locator2.getFields().add(l2f);
+        locator1.setXField(l2f);
         locator2.setName("l1");
         locator2.setGroup("g1");
         locator2.setUrl("url2");

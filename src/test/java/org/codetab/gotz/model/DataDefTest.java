@@ -34,12 +34,15 @@ public class DataDefTest {
     }
 
     @Test
-    public void testGetFields() {
-        List<FieldsBase> fields = dataDef.getFields();
-        assertThat(fields).isNotNull();
+    public void testGetXField() {
+
+        assertThat(dataDef.getXfield()).isNull();
+
+        XField xField = new XField();
+        dataDef.setXfield(xField);
 
         // for test coverage when not null
-        assertThat(dataDef.getFields()).isSameAs(fields);
+        assertThat(dataDef.getXfield()).isSameAs(xField);
     }
 
     @Test
@@ -108,8 +111,7 @@ public class DataDefTest {
                         .append("id", t1.getId()).append("name", t1.getName())
                         .append("fromDate", t1.getFromDate())
                         .append("toDate", t1.getToDate())
-                        .append("axis", t1.getAxis())
-                        .append("fields", t1.getFields()).toString();
+                        .append("axis", t1.getAxis()).toString();
         assertThat(t1.toString()).isEqualTo(expected);
     }
 

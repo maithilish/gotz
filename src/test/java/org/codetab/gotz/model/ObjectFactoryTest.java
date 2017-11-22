@@ -2,6 +2,8 @@ package org.codetab.gotz.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.beans.Beans;
+
 import javax.xml.bind.JAXBElement;
 
 import org.junit.Before;
@@ -32,18 +34,18 @@ public class ObjectFactoryTest {
     }
 
     @Test
-    public void testCreateFields() {
-        Fields actual = of.createFields();
-        assertThat(actual).isInstanceOf(Fields.class);
-        assertThat(actual).isNotSameAs(of.createFields());
+    public void testCreateXField() {
+        XField actual = of.createXField();
+        assertThat(actual).isInstanceOf(XField.class);
+        assertThat(actual).isNotSameAs(of.createXField());
     }
 
     @Test
-    public void testCreateFieldsFields() {
-        Fields value = of.createFields();
-        JAXBElement<Fields> actual = of.createFields(value);
+    public void testCreateXFields() {
+        XField value = of.createXField();
+        JAXBElement<XField> actual = of.createXfield(value);
         assertThat(actual).isInstanceOf(JAXBElement.class);
-        assertThat(actual).isNotSameAs(of.createFields(value));
+        assertThat(actual).isNotSameAs(of.createXfield(value));
     }
 
     @Test
@@ -114,14 +116,6 @@ public class ObjectFactoryTest {
     }
 
     @Test
-    public void testCreateBeansBeans() {
-        Beans value = of.createBeans();
-        JAXBElement<Beans> actual = of.createBeans(value);
-        assertThat(actual).isInstanceOf(JAXBElement.class);
-        assertThat(actual).isNotSameAs(of.createBeans(value));
-    }
-
-    @Test
     public void testCreateDataDef() {
         DataDef actual = of.createDataDef();
         assertThat(actual).isInstanceOf(DataDef.class);
@@ -134,21 +128,6 @@ public class ObjectFactoryTest {
         JAXBElement<DataDef> actual = of.createDatadef(value);
         assertThat(actual).isInstanceOf(JAXBElement.class);
         assertThat(actual).isNotSameAs(of.createDatadef(value));
-    }
-
-    @Test
-    public void testCreateDataDefs() {
-        DataDefs actual = of.createDataDefs();
-        assertThat(actual).isInstanceOf(DataDefs.class);
-        assertThat(actual).isNotSameAs(of.createDataDefs());
-    }
-
-    @Test
-    public void testCreateDataDefsDataDefs() {
-        DataDefs value = of.createDataDefs();
-        JAXBElement<DataDefs> actual = of.createDatadefs(value);
-        assertThat(actual).isInstanceOf(JAXBElement.class);
-        assertThat(actual).isNotSameAs(of.createDatadefs(value));
     }
 
     @Test
@@ -196,10 +175,4 @@ public class ObjectFactoryTest {
         assertThat(actual).isNotSameAs(of.createFilter(value));
     }
 
-    @Test
-    public void testCreateField() {
-        Field actual = of.createField();
-        assertThat(actual).isInstanceOf(Field.class);
-        assertThat(actual).isNotSameAs(of.createField());
-    }
 }

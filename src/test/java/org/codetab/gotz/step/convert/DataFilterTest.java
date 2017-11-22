@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.codetab.gotz.exception.DataDefNotFoundException;
@@ -16,13 +15,12 @@ import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.FieldsBase;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.model.helper.XFieldHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 /**
  * <p>
@@ -43,6 +42,8 @@ public class DataFilterTest {
     private DataDefService dataDefService;
     @Mock
     private ActivityService activityService;
+    @Spy
+    private XFieldHelper xFieldHelper;
 
     @InjectMocks
     private DataFilter filter;
@@ -69,7 +70,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, List<FieldsBase>> filterMap =
+        Map<AxisName, XField> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "m0-col-value");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -87,7 +88,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, List<FieldsBase>> filterMap =
+        Map<AxisName, XField> filterMap =
                 getTestFilterMap(AxisName.COL, "match", "m1-col-match");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -105,7 +106,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, List<FieldsBase>> filterMap =
+        Map<AxisName, XField> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "mx-col-match");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -123,7 +124,7 @@ public class DataFilterTest {
         filter.setInput(data);
 
         // axis - row but value is from col axis
-        Map<AxisName, List<FieldsBase>> filterMap =
+        Map<AxisName, XField> filterMap =
                 getTestFilterMap(AxisName.ROW, "value", "m1-col-value");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -141,7 +142,7 @@ public class DataFilterTest {
         filter.setInput(data);
 
         // fact axis not in test data
-        Map<AxisName, List<FieldsBase>> filterMap =
+        Map<AxisName, XField> filterMap =
                 getTestFilterMap(AxisName.FACT, "value", "m1-col-value");
         given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
 
@@ -158,7 +159,7 @@ public class DataFilterTest {
         Data data = getTestData();
         filter.setInput(data);
 
-        Map<AxisName, List<FieldsBase>> filterMap =
+        Map<AxisName, XField> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "m0-col-value");
         filterMap.putAll(
                 getTestFilterMap(AxisName.ROW, "match", "m2-row-match"));
@@ -238,22 +239,23 @@ public class DataFilterTest {
         return data;
     }
 
-    private Map<AxisName, List<FieldsBase>> getTestFilterMap(
-            final AxisName axis, final String group,
-            final String... filterStrings) {
+    private Map<AxisName, XField> getTestFilterMap(final AxisName axis,
+            final String group, final String... filterStrings) {
 
-        Fields groupFields = new Fields();
-        groupFields.setName("group");
-        groupFields.setValue(group);
-
+        StringBuilder filters = new StringBuilder();
         for (String filterString : filterStrings) {
-            Field f = TestUtil.createField("f", filterString);
-            groupFields.getFields().add(f);
+            filters.append("<xf:filter name='f' pattern='");
+            filters.append(filterString);
+            filters.append("' />");
         }
 
-        Map<AxisName, List<FieldsBase>> filterMap = new HashMap<>();
+        XField xField = new XFieldBuilder()
+                .add("<xf:filters type='" + group + "'>")
+                .add(filters.toString()).add("</xf:filters>").build("xf");
 
-        filterMap.put(axis, TestUtil.asList(groupFields));
+        Map<AxisName, XField> filterMap = new HashMap<>();
+
+        filterMap.put(axis, xField);
         return filterMap;
     }
 

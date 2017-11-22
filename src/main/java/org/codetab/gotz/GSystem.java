@@ -32,7 +32,7 @@ public class GSystem {
     @Inject
     private StepService stepService;
     @Inject
-    private LocatorXFieldHelper xFieldsHelper;
+    private LocatorXFieldHelper locatorXFieldsHelper;
 
     @Inject
     private ShutdownHook shutdownHook;
@@ -71,7 +71,7 @@ public class GSystem {
         int dataDefsCount = dataDefService.getCount();
         LOGGER.info("DataDefs loaded {}", dataDefsCount);
 
-        xFieldsHelper.init();
+        locatorXFieldsHelper.init();
 
         return true;
     }

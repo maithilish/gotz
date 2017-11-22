@@ -15,7 +15,6 @@ import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.FieldNotFoundException;
 import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.XField;
 import org.codetab.gotz.model.helper.XFieldHelper;
@@ -54,9 +53,8 @@ public class AppenderServiceTest {
     }
 
     @Test
-    public void testCreateAppender()
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldNotFoundException, XFieldException {
+    public void testCreateAppender() throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException, XFieldException {
 
         String className = "org.codetab.gotz.appender.FileAppender";
         XField xField = xFieldHelper.createXField();

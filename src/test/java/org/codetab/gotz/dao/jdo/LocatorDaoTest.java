@@ -99,7 +99,7 @@ public class LocatorDaoTest {
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
         assertNull(actualLocator.getUrl());
-        assertEquals(0, actualLocator.getFields().size());
+        assertNull(locator.getXField());
         assertEquals(0, actualLocator.getDocuments().size());
     }
 
@@ -132,7 +132,7 @@ public class LocatorDaoTest {
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
         assertNull(actualLocator.getUrl());
-        assertEquals(0, actualLocator.getFields().size());
+        assertNull(locator.getXField());
         assertEquals(0, actualLocator.getDocuments().size());
     }
 
@@ -161,7 +161,7 @@ public class LocatorDaoTest {
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
         assertNull(actualLocator.getUrl());
-        assertEquals(0, actualLocator.getFields().size());
+        assertNull(locator.getXField());
 
         assertEquals(1, actualLocator.getDocuments().size());
         // document (without documentObject)
@@ -210,7 +210,7 @@ public class LocatorDaoTest {
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
         assertNull(actualLocator.getUrl());
-        assertEquals(0, actualLocator.getFields().size());
+        assertNull(locator.getXField());
         assertEquals(0, actualLocator.getDocuments().size());
     }
 
@@ -264,7 +264,7 @@ public class LocatorDaoTest {
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
         assertNull(actualLocator.getUrl());
-        assertEquals(0, actualLocator.getFields().size());
+        assertNull(locator.getXField());
         assertEquals(0, actualLocator.getDocuments().size());
     }
 
@@ -294,7 +294,7 @@ public class LocatorDaoTest {
         assertEquals(locator.getName(), actualLocator.getName());
         assertEquals(locator.getGroup(), actualLocator.getGroup());
         assertNull(actualLocator.getUrl());
-        assertEquals(0, actualLocator.getFields().size());
+        assertNull(locator.getXField());
 
         assertEquals(1, actualLocator.getDocuments().size());
         // document (without documentObject)

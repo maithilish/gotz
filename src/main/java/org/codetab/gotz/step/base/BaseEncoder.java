@@ -66,6 +66,10 @@ public abstract class BaseEncoder extends Step {
                             getStepType(), "']/:appender"),
                     getXField());
 
+            if (appenders.isEmpty()) {
+                throw new XFieldException("no appenders");
+            }
+
             for (XField appender : appenders) {
                 try {
                     String appenderName =

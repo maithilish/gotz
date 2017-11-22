@@ -10,42 +10,200 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.FieldsBase;
+import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.exception.XFieldException;
+import org.codetab.gotz.misc.SimpleNamespaceContext;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.util.Util;
+import org.codetab.gotz.util.XmlUtils;
 import org.junit.Assert;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public final class TestUtil {
 
     private TestUtil() {
     }
 
-    public static Field createField(final String name, final String value) {
-        Field field = new Field();
-        field.setName(name);
-        field.setValue(value);
-        return field;
+    public static XField buildXField(final String xml, final String nsPrefix) {
+        return new XFieldBuilder().add(xml).build(nsPrefix);
     }
 
-    public static Fields createFields(final String name, final String value,
-            final FieldsBase... fieldsBase) {
-        Fields fields = new Fields();
-        fields.setName(name);
-        fields.setValue(value);
-        for (FieldsBase fb : fieldsBase) {
-            fields.getFields().add(fb);
-        }
-        return fields;
+    public static XField createXField() throws XFieldException {
+        // no prefix
+        return createXField(null);
     }
 
-    public static List<FieldsBase> asList(final FieldsBase... fbs) {
-        List<FieldsBase> list = new ArrayList<>();
-        for (FieldsBase fb : fbs) {
-            list.add(fb);
+    public static XField createXField(final String namespacePrefix)
+            throws XFieldException {
+        Document doc;
+        try {
+            doc = XmlUtils.createDocument("xfield", namespacePrefix,
+                    "http://codetab.org/xfield");
+            XField xField = new XField();
+            xField.getNodes().add(doc);
+            return xField;
+        } catch (ParserConfigurationException e) {
+            throw new XFieldException("unable to create xfield", e);
         }
-        return list;
+    }
+
+    public static XField createXField(final String name, final String value)
+            throws XFieldException {
+        return createXField(name, value, null);
+    }
+
+    public static XField createXField(final String name, final String value,
+            final String namespacePrefix) throws XFieldException {
+        XField xField = createXField(namespacePrefix);
+        addElement(name, value, namespacePrefix, xField);
+        return xField;
+    }
+
+    public static XField createXField(final String name, final String attrName,
+            final String value, final String namespacePrefix)
+            throws XFieldException {
+        XField xField = createXField(namespacePrefix);
+        Node node = addElement(name, "", namespacePrefix, xField);
+        addAttribute(attrName, value, node);
+        return xField;
+    }
+
+    public static Element addElement(final String namespacePrefix,
+            final String name, final String text, final String parentNodeXPath,
+            final XField xField) throws XFieldException {
+        Optional<Node> node = getLastNode(xField);
+        if (node.isPresent()) {
+            Document doc = null;
+            if (node.get() instanceof Document) {
+                doc = (Document) node.get();
+            } else {
+                doc = node.get().getOwnerDocument();
+            }
+            if (doc == null) {
+                String message = Util.buildString("unable to add new element [",
+                        name, "][", text, "]. owner document is null");
+                throw new XFieldException(message);
+            } else {
+                String qName = name;
+                if (namespacePrefix != null) {
+                    qName = Util.buildString(namespacePrefix, ":", name);
+                }
+                Element element = doc.createElementNS(
+                        doc.lookupNamespaceURI(namespacePrefix), qName);
+                element.setTextContent(text);
+                if (parentNodeXPath == null) {
+                    doc.getDocumentElement().appendChild(element);
+                } else {
+                    try {
+                        NodeList nodes = getNodes(doc, parentNodeXPath);
+                        for (int i = 0; i < nodes.getLength(); i++) {
+                            Node location = nodes.item(i);
+                            location.appendChild(element);
+                        }
+                    } catch (XPathExpressionException e) {
+                        throw new XFieldException(Util.buildString(
+                                "unable to add element [", name, "][", text,
+                                "] at xpath [", parentNodeXPath, "]"), e);
+                    }
+                }
+                return element;
+            }
+        } else {
+            String message = Util.buildString("unable to add new element [",
+                    name, "][", text, "]. xfield has no nodes");
+            throw new XFieldException(message);
+        }
+    }
+
+    public static Element addElement(final String name, final String text,
+            final String namespacePrefix, final XField xField)
+            throws XFieldException {
+        // default namespace
+        return addElement(namespacePrefix, name, text, null, xField);
+    }
+
+    public static Element addElement(final String name, final String text,
+            final XField xField) throws XFieldException {
+        // default namespace
+        return addElement(null, name, text, null, xField);
+    }
+
+    public static Element addElement(final String name, final String text,
+            final Node parent) {
+        Document doc = null;
+        if (parent instanceof Document) {
+            doc = (Document) parent;
+        } else {
+            doc = parent.getOwnerDocument();
+        }
+        if (doc == null) {
+        } else {
+            Element element = doc.createElementNS(
+                    doc.lookupNamespaceURI(parent.getPrefix()), name);
+            element.setTextContent(text);
+            parent.appendChild(element);
+            return element;
+        }
+        return null;
+    }
+
+    public static void addAttribute(final String name, final String text,
+            final Node node) {
+        Document doc = null;
+        doc = node.getOwnerDocument();
+        if (doc == null) {
+        } else {
+            // ((Element) node).setAttributeNS(doc.lookupNamespaceURI(null),
+            // name,
+            // text);
+            ((Element) node).setAttribute(name, text);
+        }
+    }
+
+    public static Optional<Node> getLastNode(final XField xField) {
+        Validate.notNull(xField, "xField must not be null");
+
+        Node node = null;
+        int last = xField.getNodes().size() - 1;
+        if (last >= 0) {
+            node = xField.getNodes().get(last);
+        }
+        Optional<Node> lastNode = Optional.ofNullable(node);
+        return lastNode;
+    }
+
+    private static NodeList getNodes(final Node node,
+            final String xpathExpression) throws XPathExpressionException {
+        XPath xpath = XPathFactory.newInstance().newXPath();
+        xpath.setNamespaceContext(getNamespaceContext(node));
+        return (NodeList) xpath.evaluate(xpathExpression, node,
+                XPathConstants.NODESET);
+    }
+
+    private static NamespaceContext getNamespaceContext(final Node node) {
+        String prefix = node.getPrefix();
+        String ns = node.lookupNamespaceURI(prefix);
+        // node is document then get prefix and ns from root element
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            Element root = ((Document) node).getDocumentElement();
+            prefix = root.getPrefix();
+            ns = root.lookupNamespaceURI(prefix);
+        }
+        SimpleNamespaceContext nsc = new SimpleNamespaceContext(prefix, ns);
+        return nsc;
     }
 
     public static List<String> readFileAsList(final String fileName) {

@@ -8,17 +8,20 @@ import java.util.Date;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.Field;
+import org.codetab.gotz.model.XField;
 import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 /**
  * <p>
@@ -30,7 +33,8 @@ public class DataDefHelperTest {
 
     @Mock
     private ConfigService configService;
-
+    @Spy
+    private XFieldHelper xFieldHelper;
     @InjectMocks
     private DataDefHelper dataDefHelper;
 
@@ -40,7 +44,8 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddFact() {
+    public void testAddFact() throws XFieldException {
+
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -53,6 +58,7 @@ public class DataDefHelperTest {
         fact.setName("fact");
         fact.setOrder(0);
         fact.setValue(null);
+        fact.setXfield(TestUtil.buildXField("", "xf")); // only xfield element
 
         DAxis factAxis = getAxis(dataDef, "fact");
         DAxis colAxis = getAxis(dataDef, "col");
@@ -66,7 +72,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddFactNullParams() {
+    public void testAddFactNullParams() throws XFieldException {
         try {
             dataDefHelper.addFact(null);
             fail("should throw NullPointerException");
@@ -76,7 +82,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testSetOrder() {
+    public void testSetOrder() throws XFieldException {
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -90,9 +96,11 @@ public class DataDefHelperTest {
         DMember m1 = new DMember();
         m1.setAxis("col");
         m1.setOrder(0);
+        m1.setXfield(TestUtil.createXField("xf"));
         DMember m2 = new DMember();
         m2.setAxis("col");
         m2.setOrder(1);
+        m2.setXfield(TestUtil.createXField("xf"));
         DMember m3 = new DMember();
         m3.setAxis("row");
         m3.setOrder(10);
@@ -116,7 +124,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddIndexRange() {
+    public void testAddIndexRange() throws XFieldException {
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -124,20 +132,19 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        Field field = new Field();
-        field.setName("indexRange");
-        field.setValue("1-1");
+        XField xField =
+                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
 
         DAxis colAxis = getAxis(dataDef, "col");
         DAxis rowAxis = getAxis(dataDef, "row");
 
         DMember m1 = new DMember();
-        m1.getFields().add(field);
+        m1.setXfield(xField);
         DMember m2 = new DMember();
-        m2.getFields().add(field);
+        m2.setXfield(xField);
         DMember m3 = new DMember();
         m3.setOrder(10);
-        m3.getFields().add(field);
+        m3.setXfield(xField);
 
         assertThat(colAxis.getMember().size()).isEqualTo(2);
         assertThat(colAxis.getMember()).contains(m1);
@@ -148,7 +155,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testAddIndexRangeWithIndex() {
+    public void testAddIndexRangeWithIndex() throws XFieldException {
         // given
         DMember m1 = new DMember();
         m1.setIndex(5);
@@ -164,25 +171,21 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        Field field = new Field();
-        field.setName("indexRange");
-        field.setValue("5-5");
-
-        m1.getFields().add(field);
+        XField xField = TestUtil.createXField("indexRange", "5-5");
+        m1.setXfield(xField);
 
         assertThat(colAxis.getMember().size()).isEqualTo(1);
         assertThat(colAxis.getMember()).contains(m1);
     }
 
     @Test
-    public void testAddIndexRangeWithIndexRange() {
+    public void testAddIndexRangeWithIndexRange() throws XFieldException {
         // given
-        Field field = new Field();
-        field.setName("indexRange");
-        field.setValue("3-10");
+        XField xField =
+                TestUtil.buildXField("<xf:indexRange value='3-10' />", "xf");
 
         DMember m1 = new DMember();
-        m1.getFields().add(field);
+        m1.setXfield(xField);
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");
@@ -195,20 +198,18 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        assertThat(m1.getFields().size()).isEqualTo(1);
-        assertThat(m1.getFields()).contains(field);
+        assertThat(m1.getXfield().getNodes().size()).isEqualTo(1);
         assertThat(colAxis.getMember()).contains(m1);
     }
 
     @Test
-    public void testAddIndexRangeWithBreakAfter() {
+    public void testAddIndexRangeWithBreakAfter() throws XFieldException {
         // given
-        Field field = new Field();
-        field.setName("breakAfter");
-        field.setValue("xyz");
+        XField xField =
+                TestUtil.buildXField("<xf:breakAfter value='xyz' />", "xf");
 
         DMember m1 = new DMember();
-        m1.getFields().add(field);
+        m1.setXfield(xField);
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");
@@ -221,13 +222,12 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        assertThat(m1.getFields().size()).isEqualTo(1);
-        assertThat(m1.getFields()).contains(field);
+        assertThat(m1.getXfield().getNodes().size()).isEqualTo(1);
         assertThat(colAxis.getMember()).contains(m1);
     }
 
     @Test
-    public void testAddIndexRangeNullParams() {
+    public void testAddIndexRangeNullParams() throws XFieldException {
         try {
             dataDefHelper.addIndexRange(null);
             fail("should throw NullPointerException");
@@ -237,7 +237,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testSetDates() {
+    public void testSetDates() throws XFieldException {
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -278,7 +278,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testGetAxis() {
+    public void testGetAxis() throws XFieldException {
         DataDef dataDef = createTestDataDef();
 
         DAxis actual = dataDefHelper.getAxis(dataDef, AxisName.COL);
@@ -291,7 +291,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testGetAxisIgnoreCase() {
+    public void testGetAxisIgnoreCase() throws XFieldException {
         DataDef dataDef = createTestDataDef();
         DAxis axis = getAxis(dataDef, "row");
         axis.setName("Row");
@@ -302,7 +302,7 @@ public class DataDefHelperTest {
     }
 
     @Test
-    public void testGetAxisFromEmptyList() {
+    public void testGetAxisFromEmptyList() throws XFieldException {
         DataDef dataDef = createTestDataDef();
         dataDef.getAxis().clear();
 
@@ -333,11 +333,13 @@ public class DataDefHelperTest {
                 .filter(d -> d.getName().equals(axisName)).findFirst().get();
     }
 
-    private DataDef createTestDataDef() {
+    private DataDef createTestDataDef() throws XFieldException {
 
         DMember m1 = new DMember();
         DMember m2 = new DMember();
         m2.setAxis("x");
+        m1.setXfield(TestUtil.createXField("xf"));
+        m2.setXfield(TestUtil.createXField("xf"));
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");

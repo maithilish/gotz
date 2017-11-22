@@ -93,7 +93,7 @@ public final class Axis implements Comparable<Axis>, Serializable {
         String str = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("name", name).append("value", value)
                 .append("match", match).append("index", index)
-                .append("order", order).toString();
+                .append("order", order).append("xfield", xField).toString();
         return Util.buildString(Util.LINE, "  ", str);
     }
 }

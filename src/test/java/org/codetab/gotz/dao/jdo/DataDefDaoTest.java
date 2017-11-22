@@ -18,9 +18,9 @@ import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.Field;
-import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.FieldsBase;
+import org.codetab.gotz.model.XField;
+import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -498,7 +498,7 @@ public class DataDefDaoTest {
         dataDef.setToDate(toDate);
 
         dataDef.getAxis().addAll(createAxis());
-        dataDef.getFields().addAll(createFields());
+        dataDef.setXfield(createFields());
 
         return dataDef;
     }
@@ -507,10 +507,8 @@ public class DataDefDaoTest {
         DataDef dataDef2 = createDataDef();
         Date toDate = DateUtils.addDays(dataDef2.getToDate(), 10);
         dataDef2.setToDate(toDate);
-        Field field = new Field();
-        field.setName("newfield");
-        field.setName("newvalue");
-        dataDef2.getFields().add(field);
+        dataDef2.setXfield(
+                TestUtil.buildXField("<xf:member name='x' />", "xf"));
         return dataDef2;
     }
 
@@ -527,26 +525,20 @@ public class DataDefDaoTest {
         return list;
     }
 
-    private List<FieldsBase> createFields() {
-        List<FieldsBase> list = new ArrayList<>();
+    private XField createFields() {
 
-        Fields fields = new Fields();
-        fields.setName("testfields");
-        fields.setValue("testfieldsvalue");
+        // @formatter:off
 
-        Field field = new Field();
-        field.setName("nestedfield");
-        field.setValue("nestedvalue");
-        fields.getFields().add(field);
+        XField xField = new XFieldBuilder()
+                .add("<xf:a>")
+                .add("  <xf:b>b</xf:b>")
+                .add("  <xf:c>c</xf:c>")
+                .add("</xf:a>")
+                .build("xf");
 
-        field = new Field();
-        field.setName("testfield");
-        field.setValue("testfieldvalue");
+        //@formatter:on
 
-        list.add(fields);
-        list.add(field);
-
-        return list;
+        return xField;
     }
 
 }

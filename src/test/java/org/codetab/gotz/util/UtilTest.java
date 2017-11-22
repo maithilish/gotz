@@ -17,8 +17,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.exception.FieldNotFoundException;
-import org.codetab.gotz.model.Field;
+import org.codetab.gotz.exception.XFieldException;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Rule;
 import org.junit.Test;
@@ -162,8 +161,8 @@ public class UtilTest {
     @Test
     public void testGetgetJson() {
         String expected = "{\"name\":\"x\",\"value\":\"y\"}";
-        Field field = TestUtil.createField("x", "y");
-        String actual = Util.getJson(field, false);
+        TestBean bean = new TestBean("x", "y");
+        String actual = Util.getJson(bean, false);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -174,8 +173,8 @@ public class UtilTest {
         String line = System.lineSeparator();
         String expected = Util.buildString("{", line, "  \"name\": \"x\",",
                 line, "  \"value\": \"y\"", line, "}");
-        Field field = TestUtil.createField("x", "y");
-        String actual = Util.getJson(field, true);
+        TestBean bean = new TestBean("x", "y");
+        String actual = Util.getJson(bean, true);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -193,8 +192,8 @@ public class UtilTest {
     @Test
     public void testGetgetIndentedJson() {
         String expected = "\t\t\t{\"name\":\"x\",\"value\":\"y\"}";
-        Field field = TestUtil.createField("x", "y");
-        String actual = Util.getIndentedJson(field, false);
+        TestBean bean = new TestBean("x", "y");
+        String actual = Util.getIndentedJson(bean, false);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -207,8 +206,8 @@ public class UtilTest {
         String expected = Util.buildString(indent, "{", line, indent,
                 "  \"name\": \"x\",", line, indent, "  \"value\": \"y\"", line,
                 indent, "}");
-        Field field = TestUtil.createField("x", "y");
-        String actual = Util.getIndentedJson(field, true);
+        TestBean bean = new TestBean("x", "y");
+        String actual = Util.getIndentedJson(bean, true);
 
         assertThat(expected).isEqualTo(actual);
     }
@@ -341,9 +340,9 @@ public class UtilTest {
 
     @Test
     public void testGetMessage() {
-        String expected = "FieldNotFoundException: [test]";
-        String actual = Util.getMessage(new FieldNotFoundException("test"));
-        assertThat(expected).isEqualTo(actual);
+        String expected = "XFieldException: test";
+        String actual = Util.getMessage(new XFieldException("test"));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
@@ -479,6 +478,27 @@ public class UtilTest {
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("delimiter must not be null");
         }
+    }
+
+}
+
+// for json tests
+class TestBean {
+
+    private String name;
+    private String value;
+
+    TestBean(final String name, final String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
     }
 
 }
