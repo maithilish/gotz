@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
- *         &lt;element ref="{http://codetab.org/xfield}xfield" minOccurs="0"/&gt;
+ *         &lt;element name="fields" type="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/extension&gt;
@@ -38,34 +38,34 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dFilter", propOrder = {"xfield"})
+@XmlType(name = "dFilter", propOrder = {"fields"})
 public class DFilter extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
-    @XmlElement(namespace = "http://codetab.org/xfield")
-    private XField xfield;
+    @XmlElement
+    private Fields fields;
     @XmlAttribute(name = "axis")
     private String axis;
 
     /**
-     * Gets the value of the xfield property.
+     * Gets the value of the fields property.
      *
-     * @return possible object is {@link XField }
+     * @return possible object is {@link Fields }
      *
      */
-    public XField getXfield() {
-        return xfield;
+    public Fields getFields() {
+        return fields;
     }
 
     /**
-     * Sets the value of the xfield property.
+     * Sets the value of the fields property.
      *
      * @param value
-     *            allowed object is {@link XField }
+     *            allowed object is {@link Fields }
      *
      */
-    public void setXfield(XField value) {
-        this.xfield = value;
+    public void setFields(Fields value) {
+        this.fields = value;
     }
 
     /**

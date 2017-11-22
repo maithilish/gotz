@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema elementFormDefault="qualified" version="1.0"
-    targetNamespace="http://codetab.org/xfield" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:xf="http://codetab.org/xfield">
+    targetNamespace="http://codetab.org/xfields" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xf="http://codetab.org/xfields">
 
     <!-- we need xfields for validation -->
     <xs:element name="xfields" type="xf:xFields" />
 
-    <xs:element name="xfield" type="xf:xField" />
+    <xs:element name="fields" type="xf:fields" />
 
     <xs:complexType name="xFields">
         <xs:sequence>
-            <xs:element name="xfield" minOccurs="0"
-                maxOccurs="unbounded" type="xf:xField" />
+            <xs:element name="fields" minOccurs="0"
+                maxOccurs="unbounded" type="xf:fields" />
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="xField">
+    <xs:complexType name="fields">
         <xs:sequence>
             <xs:any processContents="lax" minOccurs="0"
                 maxOccurs="unbounded" />

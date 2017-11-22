@@ -34,7 +34,7 @@
               public String toString() {
                 return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId()).append("name", getName()).append("group", group)
-                .append("url", url).append("xField", xField)
+                .append("url", url).append("fields", fields)
                 .append("documents", documents).toString();
               }
               ]]>

@@ -4,27 +4,27 @@
     xmlns:ci="http://jaxb.dev.java.net/plugin/code-injector"
     xmlns:annox="http://annox.dev.java.net">
 
-    <jaxb:bindings schemaLocation="xfield.xsd" node="/xs:schema">
+    <jaxb:bindings schemaLocation="xfields.xsd" node="/xs:schema">
         <jaxb:schemaBindings>
             <jaxb:package name="org.codetab.gotz.model" />
         </jaxb:schemaBindings>
         
         <!-- change type of any to Node as Jaxb loads ElementNSImpl objects -->
         <jaxb:bindings
-            node="//xs:complexType[@name='xField']/xs:sequence/xs:any">
+            node="//xs:complexType[@name='fields']/xs:sequence/xs:any">
              <jaxb:property name="nodes" >
              	<jaxb:baseType name="org.w3c.dom.Node" />
              </jaxb:property>                
         </jaxb:bindings>
                 
-        <jaxb:bindings node="//xs:complexType[@name='xField']">
+        <jaxb:bindings node="//xs:complexType[@name='fields']">
             <ci:code>                                
               <![CDATA[
                
                @Override
                public String toString() {
                    StringBuilder builder = new StringBuilder();
-                   builder.append("xfield : {name: ");
+                   builder.append("fields : {name: ");
                    builder.append(name);
                    builder.append(", group: ");
                    builder.append(group);
@@ -53,7 +53,7 @@
                    try {
                        String lXml = XmlUtils.toXML(getNodes());
                        String rXml = (obj == null) ? null
-                               : XmlUtils.toXML(((XField) obj).getNodes());
+                               : XmlUtils.toXML(((Fields) obj).getNodes());
                        if (!lXml.equals(rXml)) {
                            isEqual = false;
                        }

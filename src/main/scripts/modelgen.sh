@@ -18,7 +18,7 @@ main(){
     rm $GENERATED_DIR/$MODEL_DIR/DataDefs.java
     rm $GENERATED_DIR/$MODEL_DIR/XFields.java
     
-    file=XField.java
+    file=Fields.java
     remove_equals $file
     remove_hashCode $file
     remove_toString $file
@@ -51,7 +51,7 @@ main(){
     do
         replace_protected_with_private $file
         remove_trailing_spaces $file
-        rectify_xfield $file
+        # rectify_xfield $file ## not required as type is used instead of ref
     done
     
 }
@@ -170,20 +170,20 @@ END
 
 }
 
-# remove extra XmlElement annotation from XField
+# remove extra XmlElement annotation from Fields
 
 rectify_xfield(){
 
     match=$(cat <<-END
-    \@XmlElement\(namespace = "http:\/\/codetab.org\/xfield"\)
+    \@XmlElement\(namespace = "http:\/\/codetab.org\/xfields"\)
     \@XmlElement
-    private XField xfield;
+    private Fields fields;
 END
 )
 
     replace=$(cat <<-END
-    \@XmlElement\(namespace = \"http:\/\/codetab.org\/xfield\"\)
-    private XField xfield;
+    \@XmlElement\(namespace = "http:\/\/codetab.org\/xfields"\)
+    private Fields fields;
 END
 )
 

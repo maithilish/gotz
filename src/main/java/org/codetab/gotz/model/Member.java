@@ -16,7 +16,7 @@ public final class Member extends Base {
 
     private String group;
     private Set<Axis> axes = new HashSet<Axis>();
-    private XField xField;
+    private Fields fields;
 
     public String getGroup() {
         return group;
@@ -34,12 +34,12 @@ public final class Member extends Base {
         this.axes = axes;
     }
 
-    public XField getXField() {
-        return xField;
+    public Fields getFields() {
+        return fields;
     }
 
-    public void setXField(final XField xField) {
-        this.xField = xField;
+    public void setFields(final Fields fields) {
+        this.fields = fields;
     }
 
     public Axis getAxis(final AxisName axisName) {

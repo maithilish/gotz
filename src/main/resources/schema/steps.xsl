@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <xsl:stylesheet version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xf="http://codetab.org/xfield"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xf="http://codetab.org/fields"
     exclude-result-prefixes="xf">
 
     <xsl:output method="xml" indent="yes" />
@@ -15,16 +15,16 @@
     </xsl:template>
 
      <!-- don't output global steps -->
-    <xsl:template match="xf:xfield/xf:steps" />
+    <xsl:template match="xf:fields/xf:steps" />
 
     <!-- merge global steps with local steps using stepsRef attribute 
          if local step is defined then matching global step is ignored -->
 
-    <xsl:template match="xf:xfield/xf:tasks/xf:task/xf:steps">
+    <xsl:template match="xf:fields/xf:tasks/xf:task/xf:steps">
         <xsl:variable name="stepsRef" select="@ref" />
         <xsl:variable name="taskName" select="parent::xf:task/@name"/>
 
-        <steps name="{$stepsRef}" xmlns="http://codetab.org/xfield">         
+        <steps name="{$stepsRef}" xmlns="http://codetab.org/fields">         
             
             <!--  copy all local steps as they have precedence over global steps -->
 
@@ -37,12 +37,12 @@
             <!-- selectively copy global step if it is not defined at local level  -->
 
             <xsl:for-each
-                select="ancestor::xf:xfield/child::xf:steps[@name=$stepsRef]/xf:step">
+                select="ancestor::xf:fields/child::xf:steps[@name=$stepsRef]/xf:step">
 
                 <xsl:variable name="globalStepName" select="@name" />
 
                 <xsl:variable name="matchingLocalStepCount"
-                    select="count(ancestor::xf:xfield/child::xf:tasks/xf:task[@name=$taskName]/xf:steps/xf:step[@name=$globalStepName])" />
+                    select="count(ancestor::xf:fields/child::xf:tasks/xf:task[@name=$taskName]/xf:steps/xf:step[@name=$globalStepName])" />
 
                 <xsl:if test="$matchingLocalStepCount = 0">
                     <xsl:copy-of select="." />                       

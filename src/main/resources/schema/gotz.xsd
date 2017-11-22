@@ -4,10 +4,10 @@
 
 <xs:schema elementFormDefault="qualified" version="1.0"
     targetNamespace="http://codetab.org/gotz" xmlns:tns="http://codetab.org/gotz"
-    xmlns:xf="http://codetab.org/xfield" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    xmlns:xf="http://codetab.org/xfields" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <xs:import namespace="http://codetab.org/xfield"
-        schemaLocation="xfield.xsd" />
+    <xs:import namespace="http://codetab.org/xfields"
+        schemaLocation="xfields.xsd" />
 
     <xs:element name="wrapper" type="tns:wrapper" />
 
@@ -60,7 +60,7 @@
         <xs:complexContent>
             <xs:extension base="tns:base">
                 <xs:sequence>
-                    <xs:element name="xField" type="xf:xField"
+                    <xs:element name="fields" type="xf:fields"
                         minOccurs="0" maxOccurs="1" />
                     <xs:element name="documents" type="tns:document"
                         minOccurs="0" maxOccurs="unbounded" />
@@ -113,8 +113,8 @@
         <xs:complexContent>
             <xs:extension base="tns:base">
                 <xs:sequence>
-                    <xs:element ref="xf:xfield" minOccurs="0"
-                        maxOccurs="1" />
+                    <xs:element name="fields" type="xf:fields"
+                        minOccurs="0" maxOccurs="1" />
                     <xs:element ref="tns:axis" minOccurs="0"
                         maxOccurs="unbounded" />
                 </xs:sequence>
@@ -128,8 +128,8 @@
         <xs:complexContent>
             <xs:extension base="tns:base">
                 <xs:sequence>
-                    <xs:element ref="xf:xfield" minOccurs="0"
-                        maxOccurs="1" />
+                    <xs:element name="fields" type="xf:fields"
+                        minOccurs="0" maxOccurs="1" />
                     <xs:element ref="tns:member" minOccurs="0"
                         maxOccurs="unbounded" />
                     <xs:element ref="tns:filter" minOccurs="0" />
@@ -142,8 +142,8 @@
         <xs:complexContent>
             <xs:extension base="tns:base">
                 <xs:sequence>
-                    <xs:element ref="xf:xfield" minOccurs="0"
-                        maxOccurs="1" />
+                    <xs:element name="fields" type="xf:fields"
+                        minOccurs="0" maxOccurs="1" />
                 </xs:sequence>
                 <xs:attribute name="axis" type="xs:string" />
                 <xs:attribute name="index" type="xs:int" />
@@ -158,8 +158,8 @@
         <xs:complexContent>
             <xs:extension base="tns:base">
                 <xs:sequence>
-                    <xs:element ref="xf:xfield" minOccurs="0"
-                        maxOccurs="1" />
+                    <xs:element name="fields" type="xf:fields"
+                        minOccurs="0" maxOccurs="1" />
                 </xs:sequence>
                 <xs:attribute name="axis" type="xs:string" />
             </xs:extension>

@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="xField" type="{http://codetab.org/xfield}xField" minOccurs="0"/&gt;
+ *         &lt;element name="fields" type="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
  *         &lt;element name="documents" type="{http://codetab.org/gotz}document" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -42,12 +42,12 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "locator", propOrder = {"xField", "documents"})
+@XmlType(name = "locator", propOrder = {"fields", "documents"})
 public class Locator extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElement
-    private XField xField;
+    private Fields fields;
     @XmlElement
     private List<Document> documents;
     @XmlAttribute(name = "url")
@@ -56,24 +56,24 @@ public class Locator extends Base implements Serializable {
     private String group;
 
     /**
-     * Gets the value of the xField property.
+     * Gets the value of the fields property.
      *
-     * @return possible object is {@link XField }
+     * @return possible object is {@link Fields }
      *
      */
-    public XField getXField() {
-        return xField;
+    public Fields getFields() {
+        return fields;
     }
 
     /**
-     * Sets the value of the xField property.
+     * Sets the value of the fields property.
      *
      * @param value
-     *            allowed object is {@link XField }
+     *            allowed object is {@link Fields }
      *
      */
-    public void setXField(XField value) {
-        this.xField = value;
+    public void setFields(Fields value) {
+        this.fields = value;
     }
 
     /**
@@ -167,7 +167,7 @@ public class Locator extends Base implements Serializable {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", getId()).append("name", getName())
                 .append("group", group).append("url", url)
-                .append("xField", xField).append("documents", documents)
+                .append("fields", fields).append("documents", documents)
                 .toString();
     }
 

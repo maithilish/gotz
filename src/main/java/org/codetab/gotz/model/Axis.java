@@ -17,7 +17,7 @@ public final class Axis implements Comparable<Axis>, Serializable {
     private String match;
     private Integer index;
     private Integer order;
-    private XField xField;
+    private Fields fields;
 
     public Axis() {
     }
@@ -62,12 +62,12 @@ public final class Axis implements Comparable<Axis>, Serializable {
         this.order = order;
     }
 
-    public XField getXField() {
-        return xField;
+    public Fields getFields() {
+        return fields;
     }
 
-    public void setXField(final XField xField) {
-        this.xField = xField;
+    public void setFields(final Fields fields) {
+        this.fields = fields;
     }
 
     @Override
@@ -93,7 +93,7 @@ public final class Axis implements Comparable<Axis>, Serializable {
         String str = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append("name", name).append("value", value)
                 .append("match", match).append("index", index)
-                .append("order", order).append("xfield", xField).toString();
+                .append("order", order).append("fields", fields).toString();
         return Util.buildString(Util.LINE, "  ", str);
     }
 }

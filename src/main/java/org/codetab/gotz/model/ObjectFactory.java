@@ -1,8 +1,6 @@
 
 package org.codetab.gotz.model;
 
-import java.beans.Beans;
-
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
@@ -22,6 +20,8 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _Fields_QNAME =
+            new QName("http://codetab.org/xfields", "fields");
     private final static QName _Wrapper_QNAME =
             new QName("http://codetab.org/gotz", "wrapper");
     private final static QName _Locator_QNAME =
@@ -40,8 +40,6 @@ public class ObjectFactory {
             new QName("http://codetab.org/gotz", "member");
     private final static QName _Filter_QNAME =
             new QName("http://codetab.org/gotz", "filter");
-    private final static QName _Xfield_QNAME =
-            new QName("http://codetab.org/xfield", "xfield");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of
@@ -49,6 +47,14 @@ public class ObjectFactory {
      *
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link Fields }
+     *
+     */
+    public Fields createFields() {
+        return new Fields();
     }
 
     /**
@@ -100,6 +106,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link DataDefs }
+     *
+     */
+    public DataDefs createDataDefs() {
+        return new DataDefs();
+    }
+
+    /**
      * Create an instance of {@link DataDef }
      *
      */
@@ -132,11 +146,14 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link XField }
+     * Create an instance of {@link JAXBElement }{@code <}{@link Fields
+     * }{@code >}}
      *
      */
-    public XField createXField() {
-        return new XField();
+    @XmlElementDecl(namespace = "http://codetab.org/xfields", name = "fields")
+    public JAXBElement<Fields> createFields(Fields value) {
+        return new JAXBElement<Fields>(_Fields_QNAME, Fields.class, null,
+                value);
     }
 
     /**
@@ -233,17 +250,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "filter")
     public JAXBElement<DFilter> createFilter(DFilter value) {
         return new JAXBElement<DFilter>(_Filter_QNAME, DFilter.class, null,
-                value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link XField
-     * }{@code >}}
-     *
-     */
-    @XmlElementDecl(namespace = "http://codetab.org/xfield", name = "xfield")
-    public JAXBElement<XField> createXfield(XField value) {
-        return new JAXBElement<XField>(_Xfield_QNAME, XField.class, null,
                 value);
     }
 
