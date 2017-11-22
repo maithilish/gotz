@@ -50,7 +50,7 @@ public class FileAppenderTest {
     @Spy
     private IOHelper ioHelper;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private FileAppender appender;
@@ -119,9 +119,9 @@ public class FileAppenderTest {
         String str1 = "test1";
         String str2 = "test2";
 
-        Fields fields = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addElement("file", fileName, parent);
+        Fields fields = fieldsHelper.createFields();
+        Node parent = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addElement("file", fileName, parent);
         appender.setFields(fields);
 
         appender.initializeQueue();
@@ -153,9 +153,9 @@ public class FileAppenderTest {
 
         String str1 = "test1";
 
-        Fields fields = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addElement("file", fileName, parent);
+        Fields fields = fieldsHelper.createFields();
+        Node parent = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addElement("file", fileName, parent);
         appender.setFields(fields);
 
         appender.initializeQueue();
@@ -182,9 +182,9 @@ public class FileAppenderTest {
             FieldsException {
         String fileName = "target/test.txt";
 
-        Fields fields = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addElement("file", fileName, parent);
+        Fields fields = fieldsHelper.createFields();
+        Node parent = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addElement("file", fileName, parent);
         appender.setFields(fields);
 
         @SuppressWarnings("unchecked")
@@ -206,9 +206,9 @@ public class FileAppenderTest {
             FieldsException {
         String fileName = "/home/xyzz/test.txt";
 
-        Fields fields = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addElement("file", fileName, parent);
+        Fields fields = fieldsHelper.createFields();
+        Node parent = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addElement("file", fileName, parent);
         appender.setFields(fields);
 
         @SuppressWarnings("unchecked")

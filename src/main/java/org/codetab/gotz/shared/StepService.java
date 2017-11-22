@@ -77,10 +77,10 @@ public class StepService {
     }
 
     public void pushTask(final Step step, final Object input,
-            final Fields nextStepXField) {
+            final Fields nextStepFields) {
         String label = step.getLabel();
         try {
-            addLabelField(step, nextStepXField);
+            addLabelField(step, nextStepFields);
         } catch (FieldsException e) {
             LOGGER.warn("unable to add label field to next step {}", e);
         }
@@ -96,7 +96,7 @@ public class StepService {
             }
 
             List<String> stepClasses =
-                    getNextStepClasses(nextStepXField, nextStepType);
+                    getNextStepClasses(nextStepFields, nextStepType);
             if (stepClasses.size() == 0) {
                 LOGGER.warn("next step [{}], no stepClasses defined. {}",
                         nextStepType, givenUpMessage);
@@ -106,7 +106,7 @@ public class StepService {
                 if (step.isConsistent()) {
                     Runnable task = null;
                     task = createTask(nextStepType, stepClassName, input,
-                            nextStepXField);
+                            nextStepFields);
                     taskPoolService.submit(nextStepType, task);
                     LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
                             nextStepType, task.getClass(), label);
@@ -123,17 +123,17 @@ public class StepService {
         }
     }
 
-    private void addLabelField(final Step step, final Fields nextStepXField)
+    private void addLabelField(final Step step, final Fields nextStepFields)
             throws FieldsException {
-        if (fieldsHelper.isDefined("label", nextStepXField)) {
+        if (fieldsHelper.isDefined("label", nextStepFields)) {
             return;
         }
         String label = step.getLabel();
         if (label == null) {
-            LOGGER.warn("label is null, unable to add to next step xfield");
+            LOGGER.warn("label is null, unable to add to next step fields");
             return;
         }
-        fieldsHelper.addElement("label", label, nextStepXField);
+        fieldsHelper.addElement("label", label, nextStepFields);
     }
 
     private List<String> getNextStepClasses(final Fields fields,

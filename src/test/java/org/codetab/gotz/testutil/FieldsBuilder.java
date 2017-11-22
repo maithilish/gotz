@@ -13,12 +13,12 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class XFieldBuilder {
+public class FieldsBuilder {
 
     private StringBuilder sb = new StringBuilder();
     private Fields instance = new Fields();
 
-    public XFieldBuilder add(final String xmlSnippet) {
+    public FieldsBuilder add(final String xmlSnippet) {
         sb.append(xmlSnippet);
         return this;
     }
@@ -37,16 +37,16 @@ public class XFieldBuilder {
 
         if (nsPrefix == null) {
             // default
-            sb.insert(0, "<xfield xmlns='http://codetab.org/xfield'>");
-            sb.append("</xfield>");
+            sb.insert(0, "<fields xmlns='http://codetab.org/fields'>");
+            sb.append("</fields>");
         } else {
             // prefix
-            String str = "<" + nsPrefix + ":xfield xmlns:" + nsPrefix
-                    + "='http://codetab.org/xfield'>";
+            String str = "<" + nsPrefix + ":fields xmlns:" + nsPrefix
+                    + "='http://codetab.org/fields'>";
             sb.insert(0, str);
             sb.append("</");
             sb.append(nsPrefix);
-            sb.append(":xfield>");
+            sb.append(":fields>");
         }
 
         InputSource is = new InputSource();

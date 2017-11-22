@@ -41,7 +41,7 @@ public class AppenderTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private ListAppender appender;
@@ -60,7 +60,7 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willThrow(ConfigNotFoundException.class);
 
-        Fields fields = xFieldHelper.createXField();
+        Fields fields = fieldsHelper.createFields();
         appender.setFields(fields);
 
         appender.initializeQueue();
@@ -75,7 +75,7 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willThrow(ConfigNotFoundException.class);
 
-        Fields fields = xFieldHelper.createXField();
+        Fields fields = fieldsHelper.createFields();
         appender.setFields(fields);
 
         appender.initializeQueue();
@@ -90,7 +90,7 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
 
-        Fields fields = xFieldHelper.createXField();
+        Fields fields = fieldsHelper.createFields();
         appender.setFields(fields);
 
         appender.initializeQueue();
@@ -106,9 +106,9 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("10240");
 
-        Fields fields = xFieldHelper.createXField();
-        Node parent = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addElement("queueSize", "2048", parent);
+        Fields fields = fieldsHelper.createFields();
+        Node parent = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addElement("queueSize", "2048", parent);
 
         appender.setFields(fields);
 
@@ -125,7 +125,7 @@ public class AppenderTest {
         given(configService.getConfig("gotz.appender.queuesize"))
                 .willReturn("x");
 
-        Fields fields = xFieldHelper.createXField();
+        Fields fields = fieldsHelper.createFields();
         appender.setFields(fields);
         appender.initializeQueue();
 
@@ -167,9 +167,9 @@ public class AppenderTest {
     }
 
     @Test
-    public void testSetGetXField() throws FieldsException {
+    public void testSetGetFields() throws FieldsException {
 
-        Fields fields = xFieldHelper.createXField();
+        Fields fields = fieldsHelper.createFields();
         appender.setFields(fields);
 
         Fields actual = appender.getFields();
@@ -178,7 +178,7 @@ public class AppenderTest {
     }
 
     @Test
-    public void testSetXFieldNullParams() {
+    public void testSetFieldsNullParams() {
         try {
             appender.setFields(null);
             fail("should throw NullPointerException");

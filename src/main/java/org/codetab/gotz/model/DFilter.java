@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="fields" type="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
+ *         &lt;element name="fields" type="{http://codetab.org/fieldss}fields" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/extension&gt;

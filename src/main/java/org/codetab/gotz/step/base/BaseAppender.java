@@ -61,7 +61,7 @@ public abstract class BaseAppender extends Step {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
             List<Fields> appenders = fieldsHelper.split(
-                    Util.buildString("/:xfield/:task/:steps/:step[@name='",
+                    Util.buildString("/:fields/:task/:steps/:step[@name='",
                             getStepType(), "']/:appender"),
                     getFields());
 

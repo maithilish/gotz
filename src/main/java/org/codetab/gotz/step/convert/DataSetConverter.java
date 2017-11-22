@@ -62,15 +62,15 @@ public final class DataSetConverter extends BaseDataConverter {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getFields() != null, "xfield must not be null");
+        Validate.validState(getFields() != null, "fields must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName = fieldsHelper.getLastValue("/:xfield/:locatorName",
+            locatorName = fieldsHelper.getLastValue("/:fields/:locatorName",
                     getFields());
-            locatorGroup = fieldsHelper.getLastValue("/:xfield/:locatorGroup",
+            locatorGroup = fieldsHelper.getLastValue("/:fields/:locatorGroup",
                     getFields());
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";
@@ -91,7 +91,7 @@ public final class DataSetConverter extends BaseDataConverter {
         List<Fields> converters = new ArrayList<>();
         try {
             converters = fieldsHelper.split(
-                    Util.buildString("/:xfield/:task/:steps/:step[@name='",
+                    Util.buildString("/:fields/:task/:steps/:step[@name='",
                             getStepType(), "']/:converter"),
                     getFields());
         } catch (FieldsException e) {

@@ -45,8 +45,8 @@ public abstract class BaseDataConverter extends Step {
     @Override
     public boolean handover() {
         Validate.validState(convertedData != null, "dataSets must not be null");
-        Fields nextStepXField = createNextStepXField();
-        stepService.pushTask(this, convertedData, nextStepXField);
+        Fields nextStepFields = createNextStepFields();
+        stepService.pushTask(this, convertedData, nextStepFields);
         return true;
     }
 
@@ -58,15 +58,15 @@ public abstract class BaseDataConverter extends Step {
      * @throws StepRunException
      *             if nextStepFields list is empty
      */
-    private Fields createNextStepXField() {
-        Fields nextStepXField = getFields();
-        if (nextStepXField.getNodes().size() == 0) {
+    private Fields createNextStepFields() {
+        Fields nextStepFields = getFields();
+        if (nextStepFields.getNodes().size() == 0) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
             activityService.addActivity(Type.GIVENUP, message);
             throw new StepRunException(message);
         }
-        return nextStepXField;
+        return nextStepFields;
     }
 
     /**

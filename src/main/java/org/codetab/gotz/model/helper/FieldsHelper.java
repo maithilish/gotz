@@ -56,7 +56,7 @@ public class FieldsHelper {
     }
 
     /**
-     * Returns first non blank value, otherwise, throws XFieldException.
+     * Returns first non blank value, otherwise, throws FieldsException.
      *
      * @param xpathExpression
      * @param nodes
@@ -84,7 +84,7 @@ public class FieldsHelper {
     }
 
     /**
-     * Returns last non blank value, otherwise, throws XFieldException.
+     * Returns last non blank value, otherwise, throws FieldsException.
      *
      * @param xpathExpression
      * @param nodes
@@ -151,7 +151,7 @@ public class FieldsHelper {
     public boolean isDefined(final String xpathExpression,
             final Fields fields) {
         /*
-         * getFirstValue returns non blank value or throws XFieldException when
+         * getFirstValue returns non blank value or throws FieldsException when
          * value is blank/null or when parse error. If it returns value then
          * methods returns true, if throws exception and cause is Parse error
          * methods throws exception, else return false.
@@ -182,24 +182,24 @@ public class FieldsHelper {
     }
 
     public String getLabel(final Fields fields) throws FieldsException {
-        String xpath = "/:xfield/:label";
+        String xpath = "/:fields/:label";
         return getLastValue(xpath, fields);
     }
 
     // others
 
     /**
-     * Splits xfield using xpath. Creates a list of new xfields from the nodes
-     * returned by xpath. For each node, it creates deep copy of xfield and sets
+     * Splits fields using xpath. Creates a list of new fieldss from the nodes
+     * returned by xpath. For each node, it creates deep copy of fields and sets
      * the node returned by xpath.
      *
      * <pre>
-     *     <xfield>
+     *     <fields>
      *        <tasks>
      *           <task name="a">...</task>
      *           <task name="b">...</task>
      *
-     * for xpath /xfield/tasks/task, returns two xfield - one with task a
+     * for xpath /fields/tasks/task, returns two fields - one with task a
      * and another with task b
      * </pre>
      *
@@ -213,9 +213,9 @@ public class FieldsHelper {
         // TODO try for optimization (in same or separate method) deep copy or
         // reference to nodes
 
-        List<Fields> xFieldList = new ArrayList<>();
+        List<Fields> fieldsList = new ArrayList<>();
         if (fields.getNodes().isEmpty()) {
-            return xFieldList;
+            return fieldsList;
         }
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
@@ -228,22 +228,22 @@ public class FieldsHelper {
                     String prefix = splitNode.getPrefix();
                     String ns = splitNode.lookupNamespaceURI(prefix);
                     Document doc = XmlUtils.createDocument(nodeList.item(i),
-                            "xfield", prefix, ns);
+                            "fields", prefix, ns);
 
                     Fields copy = new Fields();
                     copy.setName(fields.getName());
                     copy.setClazz(fields.getClazz());
                     copy.setGroup(fields.getGroup());
                     copy.getNodes().add(doc);
-                    xFieldList.add(copy);
+                    fieldsList.add(copy);
                 }
 
             } catch (XPathExpressionException
                     | ParserConfigurationException e) {
-                throw new FieldsException("unable to split xfield", e);
+                throw new FieldsException("unable to split fields", e);
             }
         }
-        return xFieldList;
+        return fieldsList;
     }
 
     public Fields deepCopy(final Fields fields) throws FieldsException {
@@ -259,7 +259,7 @@ public class FieldsHelper {
             }
             return copy;
         } catch (ParserConfigurationException e) {
-            throw new FieldsException("unable to clone xfield", e);
+            throw new FieldsException("unable to clone fields", e);
         }
     }
 
@@ -276,7 +276,7 @@ public class FieldsHelper {
     }
 
     public Optional<Node> getFirstNode(final Fields fields) {
-        Validate.notNull(fields, "xfield must not be null");
+        Validate.notNull(fields, "fields must not be null");
 
         Node node = null;
         int first = 0;
@@ -329,7 +329,7 @@ public class FieldsHelper {
             }
         } else {
             String message = Util.buildString("unable to add new element [",
-                    name, "][", text, "]. xfield has no nodes");
+                    name, "][", text, "]. fields has no nodes");
             throw new FieldsException(message);
         }
     }
@@ -432,22 +432,22 @@ public class FieldsHelper {
         return Range.between(min, max);
     }
 
-    public Fields createXField() throws FieldsException {
+    public Fields createFields() throws FieldsException {
         // no prefix
-        return createXField(null);
+        return createFields(null);
     }
 
-    public Fields createXField(final String namespacePrefix)
+    public Fields createFields(final String namespacePrefix)
             throws FieldsException {
         Document doc;
         try {
-            doc = XmlUtils.createDocument("xfield", namespacePrefix,
-                    "http://codetab.org/xfield");
+            doc = XmlUtils.createDocument("fields", namespacePrefix,
+                    "http://codetab.org/fields");
             Fields fields = new Fields();
             fields.getNodes().add(doc);
             return fields;
         } catch (ParserConfigurationException e) {
-            throw new FieldsException("unable to create xfield", e);
+            throw new FieldsException("unable to create fields", e);
         }
     }
 

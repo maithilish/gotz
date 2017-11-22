@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="fields" type="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
+ *         &lt;element name="fields" type="{http://codetab.org/fieldss}fields" minOccurs="0"/&gt;
  *         &lt;element ref="{http://codetab.org/gotz}member" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://codetab.org/gotz}filter" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;

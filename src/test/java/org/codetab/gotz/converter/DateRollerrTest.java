@@ -43,11 +43,11 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertCeil() throws Exception {
-        FieldsHelper xFieldHelper = new FieldsHelper();
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("inPattern", "MMM ''YY", fields);
-        xFieldHelper.addElement("outPattern", "YYYY-MM-dd", fields);
-        xFieldHelper.addElement("roll", "DAY_OF_MONTH=ceil", fields);
+        FieldsHelper fieldsHelper = new FieldsHelper();
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("inPattern", "MMM ''YY", fields);
+        fieldsHelper.addElement("outPattern", "YYYY-MM-dd", fields);
+        fieldsHelper.addElement("roll", "DAY_OF_MONTH=ceil", fields);
         dt.setFields(fields);
 
         String actual = dt.convert("Mar '17");
@@ -62,11 +62,11 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertFloor() throws Exception {
-        FieldsHelper xFieldHelper = new FieldsHelper();
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("inPattern", "MMM ''YY", fields);
-        xFieldHelper.addElement("outPattern", "YYYY-MM-dd", fields);
-        xFieldHelper.addElement("roll", "DAY_OF_MONTH=floor", fields);
+        FieldsHelper fieldsHelper = new FieldsHelper();
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("inPattern", "MMM ''YY", fields);
+        fieldsHelper.addElement("outPattern", "YYYY-MM-dd", fields);
+        fieldsHelper.addElement("roll", "DAY_OF_MONTH=floor", fields);
         dt.setFields(fields);
 
         String actual = dt.convert("Mar '17");
@@ -81,11 +81,11 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertRound() throws Exception {
-        FieldsHelper xFieldHelper = new FieldsHelper();
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("inPattern", "dd-MM-YYYY", fields);
-        xFieldHelper.addElement("outPattern", "YYYY-MM-dd", fields);
-        xFieldHelper.addElement("roll", "DAY_OF_MONTH=round", fields);
+        FieldsHelper fieldsHelper = new FieldsHelper();
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("inPattern", "dd-MM-YYYY", fields);
+        fieldsHelper.addElement("outPattern", "YYYY-MM-dd", fields);
+        fieldsHelper.addElement("roll", "DAY_OF_MONTH=round", fields);
         dt.setFields(fields);
 
         String actual = dt.convert("16-03-2017");
@@ -112,16 +112,16 @@ public class DateRollerrTest {
             dt.convert("Mar 17");
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
-            assertThat(e.getMessage()).isEqualTo("xfield is null");
+            assertThat(e.getMessage()).isEqualTo("fields is null");
         }
     }
 
     @Test
     public void testConvertPatternInParseException() throws Exception {
-        FieldsHelper xFieldHelper = new FieldsHelper();
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("inPattern", "YY", fields);
-        xFieldHelper.addElement("outPattern", "YYYY-MM-dd", fields);
+        FieldsHelper fieldsHelper = new FieldsHelper();
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("inPattern", "YY", fields);
+        fieldsHelper.addElement("outPattern", "YYYY-MM-dd", fields);
         dt.setFields(fields);
 
         testRule.expect(ParseException.class);
@@ -130,11 +130,11 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertPatternOutParseException() throws Exception {
-        FieldsHelper xFieldHelper = new FieldsHelper();
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("inPattern", "MMM ''YY", fields);
-        xFieldHelper.addElement("outPattern", "x", fields);
-        xFieldHelper.addElement("roll", "DAY_OF_MONTH=ceil", fields);
+        FieldsHelper fieldsHelper = new FieldsHelper();
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("inPattern", "MMM ''YY", fields);
+        fieldsHelper.addElement("outPattern", "x", fields);
+        fieldsHelper.addElement("roll", "DAY_OF_MONTH=ceil", fields);
         dt.setFields(fields);
 
         testRule.expect(IllegalArgumentException.class);
@@ -143,10 +143,10 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertPatternInNotFound() throws Exception {
-        FieldsHelper xFieldHelper = new FieldsHelper();
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("x", "MMM ''YY", fields);
-        xFieldHelper.addElement("outPattern", "YYYY-MM-dd", fields);
+        FieldsHelper fieldsHelper = new FieldsHelper();
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("x", "MMM ''YY", fields);
+        fieldsHelper.addElement("outPattern", "YYYY-MM-dd", fields);
         dt.setFields(fields);
 
         testRule.expect(FieldsException.class);
@@ -155,10 +155,10 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertPatternOutNotFound() throws Exception {
-        FieldsHelper xFieldHelper = new FieldsHelper();
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("inPattern", "MMM ''YY", fields);
-        xFieldHelper.addElement("x", "YYYY-MM-dd", fields);
+        FieldsHelper fieldsHelper = new FieldsHelper();
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("inPattern", "MMM ''YY", fields);
+        fieldsHelper.addElement("x", "YYYY-MM-dd", fields);
         dt.setFields(fields);
 
         testRule.expect(FieldsException.class);

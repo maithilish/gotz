@@ -21,7 +21,7 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
 
     private final static QName _Fields_QNAME =
-            new QName("http://codetab.org/xfields", "fields");
+            new QName("http://codetab.org/fieldss", "fields");
     private final static QName _Wrapper_QNAME =
             new QName("http://codetab.org/gotz", "wrapper");
     private final static QName _Locator_QNAME =
@@ -150,7 +150,7 @@ public class ObjectFactory {
      * }{@code >}}
      *
      */
-    @XmlElementDecl(namespace = "http://codetab.org/xfields", name = "fields")
+    @XmlElementDecl(namespace = "http://codetab.org/fieldss", name = "fields")
     public JAXBElement<Fields> createFields(Fields value) {
         return new JAXBElement<Fields>(_Fields_QNAME, Fields.class, null,
                 value);

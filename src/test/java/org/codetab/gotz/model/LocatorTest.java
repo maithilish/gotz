@@ -77,7 +77,7 @@ public class LocatorTest {
     }
 
     @Test
-    public void testGetXField() {
+    public void testGetFields() {
 
         assertThat(locator.getFields()).isNull();
 

@@ -30,7 +30,7 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
-import org.codetab.gotz.testutil.XFieldBuilder;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.codetab.gotz.validation.DataDefValidator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,7 +55,7 @@ public class DataDefServiceTest {
     @Mock
     private DataDefHelper dataDefHelper;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private DataDefService dataDefService;
@@ -248,7 +248,7 @@ public class DataDefServiceTest {
         DataDef dataDef = dataDefs.get(0);
 
         //@formatter:off
-        Fields fields = new XFieldBuilder()
+        Fields fields = new FieldsBuilder()
                 .add("<xf:member name='row'>")
                 .add("  <xf:group>xyz</xf:group>")
                 .add("</xf:member>")
@@ -395,7 +395,7 @@ public class DataDefServiceTest {
         row.setFilter(dFilter);
 
         //@formatter:off
-        Fields fields = new XFieldBuilder()
+        Fields fields = new FieldsBuilder()
                 .add("<xf:member name='row'>")
                 .add("  <xf:group>xyz</xf:group>")
                 .add("</xf:member>")
@@ -418,7 +418,7 @@ public class DataDefServiceTest {
     private DFilter createFilter() {
 
         //@formatter:off
-        Fields f1 = new XFieldBuilder()
+        Fields f1 = new FieldsBuilder()
 
                 .add("<xf:filters type='value' >")
                 .add("  <xf:filter name='f1' pattern='v1' />")

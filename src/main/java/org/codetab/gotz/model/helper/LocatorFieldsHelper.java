@@ -33,7 +33,7 @@ import com.google.inject.Singleton;
 public class LocatorFieldsHelper {
 
     // private static final Logger LOGGER =
-    // LoggerFactory.getLogger(LocatorXFieldHelper.class);
+    // LoggerFactory.getLogger(LocatorFieldsHelper.class);
 
     /**
      * instance of BeanService.
@@ -50,7 +50,7 @@ public class LocatorFieldsHelper {
     @Inject
     private IOHelper ioHelper;
 
-    private List<Fields> xFields;
+    private List<Fields> fieldsList;
 
     /**
      * private constructor.
@@ -69,7 +69,7 @@ public class LocatorFieldsHelper {
         Validate.validState(beanService != null, "beanService is null");
 
         try {
-            xFields = getXFields();
+            fieldsList = getFieldss();
         } catch (Exception e) {
             throw new CriticalException(e);
         }
@@ -79,13 +79,13 @@ public class LocatorFieldsHelper {
     public Fields getFields(final String clazz, final String group)
             throws FieldsException {
         // return deep copy
-        for (Fields fields : xFields) {
+        for (Fields fields : fieldsList) {
             if (fields.getClazz().equals(clazz)
                     && fields.getGroup().equals(group)) {
                 return fieldsHelper.deepCopy(fields);
             }
         }
-        // if not found, return empty xfield
+        // if not found, return empty fields
         Fields fields = new Fields();
         fields.setName("locator");
         fields.setGroup(group);
@@ -106,41 +106,41 @@ public class LocatorFieldsHelper {
         fieldsHelper.addElement("label", label, locator.getFields());
     }
 
-    private List<Fields> getXFields() throws ParserConfigurationException,
+    private List<Fields> getFieldss() throws ParserConfigurationException,
             FileNotFoundException, TransformerFactoryConfigurationError,
             TransformerException, ConfigNotFoundException, FieldsException {
 
-        List<Fields> xFieldList = new ArrayList<>();
+        List<Fields> fieldsList = new ArrayList<>();
 
         List<Fields> xBeans = beanService.getBeans(Fields.class);
         for (Fields xBean : xBeans) {
             // merge global steps to tasks steps
             String defaultNs = XmlUtils.getDefaultNs(xBean.getNodes().get(0));
-            Document doc = XmlUtils.createDocument(xBean.getNodes(), "xfield",
+            Document doc = XmlUtils.createDocument(xBean.getNodes(), "fields",
                     null, defaultNs);
             Document effectiveDoc = mergeSteps(doc);
 
-            // split on tasks to new XFields
+            // split on tasks to new Fieldss
             Fields holder = new Fields();
             holder.getNodes().add(effectiveDoc);
-            List<Fields> newXFields =
-                    fieldsHelper.split("/:xfield/:tasks", holder);
+            List<Fields> newFieldss =
+                    fieldsHelper.split("/:fields/:tasks", holder);
 
-            // set new xfield fields
-            for (Fields fields : newXFields) {
+            // set new fields fields
+            for (Fields fields : newFieldss) {
                 fields.setName(xBean.getName());
                 fields.setClazz(xBean.getClazz());
                 fields.setGroup(getGroupFromNodes(fields));
             }
 
-            xFieldList.addAll(newXFields);
+            fieldsList.addAll(newFieldss);
         }
-        return xFieldList;
+        return fieldsList;
     }
 
     private String getGroupFromNodes(final Fields fields)
             throws FieldsException {
-        String xpath = "/:xfield/:tasks/@group";
+        String xpath = "/:fields/:tasks/@group";
         return fieldsHelper.getLastValue(xpath, fields);
     }
 

@@ -70,7 +70,7 @@ public class MemberTest {
     }
 
     @Test
-    public void testGetXField() {
+    public void testGetFields() {
 
         assertThat(member.getFields()).isNull();
 

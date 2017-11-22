@@ -77,7 +77,7 @@ public class DAxisTest {
     }
 
     @Test
-    public void testGetXField() {
+    public void testGetFields() {
 
         assertThat(dAxis.getFields()).isNull();
 

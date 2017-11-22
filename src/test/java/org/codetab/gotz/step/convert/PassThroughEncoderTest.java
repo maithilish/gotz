@@ -11,7 +11,7 @@ import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.testutil.XFieldBuilder;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class PassThroughEncoderTest {
     @Mock
     private AppenderService appenderService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private PassThroughEncoder encoder;
@@ -58,7 +58,7 @@ public class PassThroughEncoderTest {
     public void testProcess() throws InterruptedException {
 
         //@formatter:off
-        Fields a1 = new XFieldBuilder()
+        Fields a1 = new FieldsBuilder()
                 .add("<task>")
                 .add(" <steps>")
                 .add("  <step name='encoder'>")

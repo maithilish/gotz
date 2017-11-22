@@ -34,7 +34,7 @@ public class DataDefHelperTest {
     @Mock
     private ConfigService configService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
     @InjectMocks
     private DataDefHelper dataDefHelper;
 
@@ -58,7 +58,7 @@ public class DataDefHelperTest {
         fact.setName("fact");
         fact.setOrder(0);
         fact.setValue(null);
-        fact.setFields(TestUtil.buildXField("", "xf")); // only xfield element
+        fact.setFields(TestUtil.buildFields("", "xf")); // only fields element
 
         DAxis factAxis = getAxis(dataDef, "fact");
         DAxis colAxis = getAxis(dataDef, "col");
@@ -96,11 +96,11 @@ public class DataDefHelperTest {
         DMember m1 = new DMember();
         m1.setAxis("col");
         m1.setOrder(0);
-        m1.setFields(TestUtil.createXField("xf"));
+        m1.setFields(TestUtil.createFields("xf"));
         DMember m2 = new DMember();
         m2.setAxis("col");
         m2.setOrder(1);
-        m2.setFields(TestUtil.createXField("xf"));
+        m2.setFields(TestUtil.createFields("xf"));
         DMember m3 = new DMember();
         m3.setAxis("row");
         m3.setOrder(10);
@@ -133,7 +133,7 @@ public class DataDefHelperTest {
 
         // then
         Fields fields =
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
 
         DAxis colAxis = getAxis(dataDef, "col");
         DAxis rowAxis = getAxis(dataDef, "row");
@@ -171,7 +171,7 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        Fields fields = TestUtil.createXField("indexRange", "5-5");
+        Fields fields = TestUtil.createFields("indexRange", "5-5");
         m1.setFields(fields);
 
         assertThat(colAxis.getMember().size()).isEqualTo(1);
@@ -182,7 +182,7 @@ public class DataDefHelperTest {
     public void testAddIndexRangeWithIndexRange() throws FieldsException {
         // given
         Fields fields =
-                TestUtil.buildXField("<xf:indexRange value='3-10' />", "xf");
+                TestUtil.buildFields("<xf:indexRange value='3-10' />", "xf");
 
         DMember m1 = new DMember();
         m1.setFields(fields);
@@ -206,7 +206,7 @@ public class DataDefHelperTest {
     public void testAddIndexRangeWithBreakAfter() throws FieldsException {
         // given
         Fields fields =
-                TestUtil.buildXField("<xf:breakAfter value='xyz' />", "xf");
+                TestUtil.buildFields("<xf:breakAfter value='xyz' />", "xf");
 
         DMember m1 = new DMember();
         m1.setFields(fields);
@@ -338,8 +338,8 @@ public class DataDefHelperTest {
         DMember m1 = new DMember();
         DMember m2 = new DMember();
         m2.setAxis("x");
-        m1.setFields(TestUtil.createXField("xf"));
-        m2.setFields(TestUtil.createXField("xf"));
+        m1.setFields(TestUtil.createFields("xf"));
+        m2.setFields(TestUtil.createFields("xf"));
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");

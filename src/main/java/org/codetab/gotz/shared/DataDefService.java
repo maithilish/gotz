@@ -108,7 +108,7 @@ public class DataDefService {
                 dataDefHelper.setOrder(dataDef);
                 dataDefHelper.setDates(dataDef);
                 dataDefHelper.addIndexRange(dataDef);
-                dataDefHelper.addXField(dataDef);
+                dataDefHelper.addFields(dataDef);
             } catch (FieldsException e) {
                 throw new CriticalException(
                         "datadef [" + dataDef.getName() + "] set defaults", e);
@@ -156,10 +156,10 @@ public class DataDefService {
                     try {
                         // fields from DMember level are added in createAxis()
                         // fields from datadef level are added here
-                        List<Fields> xFields =
+                        List<Fields> fieldsList =
                                 dataDefHelper.getDataDefMemberFields(
                                         dMember.getName(), dataDef.getFields());
-                        for (Fields fields : xFields) {
+                        for (Fields fields : fieldsList) {
                             dataMember.getFields().getNodes()
                                     .addAll(fields.getNodes());
                         }

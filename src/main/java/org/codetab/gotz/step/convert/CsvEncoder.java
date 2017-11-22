@@ -56,15 +56,15 @@ public final class CsvEncoder extends BaseEncoder {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getFields() != null, "xfield must not be null");
+        Validate.validState(getFields() != null, "fields must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName = fieldsHelper.getLastValue("/:xfield/:locatorName",
+            locatorName = fieldsHelper.getLastValue("/:fields/:locatorName",
                     getFields());
-            locatorGroup = fieldsHelper.getLastValue("/:xfield/:locatorGroup",
+            locatorGroup = fieldsHelper.getLastValue("/:fields/:locatorGroup",
                     getFields());
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";

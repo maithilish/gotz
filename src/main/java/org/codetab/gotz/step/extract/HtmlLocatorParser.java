@@ -21,7 +21,7 @@ public final class HtmlLocatorParser extends HtmlParser {
             LoggerFactory.getLogger(HtmlLocatorParser.class);
 
     @Inject
-    private LocatorFieldsHelper locatorXFieldHelper;
+    private LocatorFieldsHelper locatorFieldsHelper;
 
     @Override
     public IStep instance() {
@@ -66,14 +66,14 @@ public final class HtmlLocatorParser extends HtmlParser {
             throw new FieldsException(message);
         } else {
             locator.setGroup(member.getGroup());
-            Fields fields = locatorXFieldHelper.getFields(
+            Fields fields = locatorFieldsHelper.getFields(
                     locator.getClass().getName(), locator.getGroup());
             locator.setFields(fields);
             if (member.getFields() != null) {
                 locator.getFields().getNodes()
                         .addAll(member.getFields().getNodes());
             }
-            locatorXFieldHelper.addLabel(locator);
+            locatorFieldsHelper.addLabel(locator);
         }
         LOGGER.trace("created new {} {}", locator, locator.getUrl());
         return locator;
@@ -81,12 +81,12 @@ public final class HtmlLocatorParser extends HtmlParser {
 
     private Fields createNextStepFields(final Locator locator) {
         try {
-            Fields nextStepXField = locatorXFieldHelper.getFields(
+            Fields nextStepFields = locatorFieldsHelper.getFields(
                     locator.getClass().getName(), locator.getGroup());
-            if (nextStepXField.getNodes().size() == 0) {
-                throw new FieldsException("no nodes in xfield");
+            if (nextStepFields.getNodes().size() == 0) {
+                throw new FieldsException("no nodes in fields");
             }
-            return nextStepXField;
+            return nextStepFields;
         } catch (FieldsException e) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());

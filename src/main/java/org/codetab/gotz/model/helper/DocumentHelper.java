@@ -108,7 +108,7 @@ public class DocumentHelper {
     public Date getToDate(final Date fromDate, final Fields fields) {
 
         Validate.notNull(fromDate, "fromDate must not be null");
-        Validate.notNull(fields, "xfield must not be null");
+        Validate.notNull(fields, "fields must not be null");
 
         Validate.validState(configService != null, "configService is null");
 
@@ -128,7 +128,7 @@ public class DocumentHelper {
         // extract live value
         String live = null;
         try {
-            live = fieldsHelper.getLastValue("/:xfield/:tasks/:live", fields);
+            live = fieldsHelper.getLastValue("/:fields/:tasks/:live", fields);
         } catch (FieldsException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
                     label);

@@ -50,7 +50,7 @@ public final class LocatorSeeder extends BaseSeeder {
      * helper - provides fields for locators.
      */
     @Inject
-    private LocatorFieldsHelper locatorXFieldHelper;
+    private LocatorFieldsHelper locatorFieldsHelper;
 
     /**
      * helper - create and manage locators.
@@ -82,7 +82,7 @@ public final class LocatorSeeder extends BaseSeeder {
             Locator locator = (Locator) input;
             // locatorseeder adds new set of fields based on group, so clear the
             // existing fields
-            // TODO check whether clear is required for xfield
+            // TODO check whether clear is required for fields
             // locator.getFields().clear();
             locatorList = new ArrayList<>();
             locatorList.add(locator);
@@ -117,13 +117,13 @@ public final class LocatorSeeder extends BaseSeeder {
     public boolean process() {
         for (Locator locator : locatorList) {
             try {
-                Fields fields = locatorXFieldHelper.getFields(
+                Fields fields = locatorFieldsHelper.getFields(
                         locator.getClass().getName(), locator.getGroup());
                 locator.setFields(fields);
-                locatorXFieldHelper.addLabel(locator);
+                locatorFieldsHelper.addLabel(locator);
             } catch (FieldsException e) {
                 throw new StepRunException(
-                        "unable to set xfield copy to locator", e);
+                        "unable to set fields copy to locator", e);
             }
         }
         logState("locator after merging fields");

@@ -36,7 +36,7 @@ public class BaseFilterTest {
     @Mock
     private DataDefService dataDefService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private DataFilter filter;
@@ -77,8 +77,8 @@ public class BaseFilterTest {
     @Test
     public void testHandover() throws FieldsException {
 
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("x", "xv", fields);
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("x", "xv", fields);
         filter.setFields(fields);
 
         Data data = new Data();
