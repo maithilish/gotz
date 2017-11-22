@@ -56,7 +56,7 @@ public class DataDefHelper {
                 fact.setName("fact");
                 fact.setOrder(0);
                 fact.setValue(null);
-                fact.setFields(fieldsHelper.createXField("xf"));
+                fact.setFields(fieldsHelper.createFields("xf"));
                 axis.getMember().add(fact);
             }
         }
@@ -101,7 +101,7 @@ public class DataDefHelper {
             for (DMember dMember : dAxis.getMember()) {
                 Fields fields = dMember.getFields();
                 if (fields == null) {
-                    fields = fieldsHelper.createXField("xf");
+                    fields = fieldsHelper.createFields("xf");
                     dMember.setFields(fields);
                 }
                 if (!fieldsHelper.isAnyDefined(fields, "//xf:indexRange/@value",
@@ -175,12 +175,12 @@ public class DataDefHelper {
      * @param dataDef
      * @throws FieldsException
      */
-    public void addXField(final DataDef dataDef) throws FieldsException {
+    public void addFields(final DataDef dataDef) throws FieldsException {
         if (dataDef.getFields() == null) {
-            Fields xfield = new Fields();
-            xfield.setName(dataDef.getName());
-            xfield.setClazz(dataDef.getClass().getName());
-            dataDef.setFields(xfield);
+            Fields fields = new Fields();
+            fields.setName(dataDef.getName());
+            fields.setClazz(dataDef.getClass().getName());
+            dataDef.setFields(fields);
         }
     }
 }

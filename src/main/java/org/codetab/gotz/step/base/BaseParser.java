@@ -17,16 +17,16 @@ import javax.script.ScriptException;
 
 import org.apache.commons.lang3.Range;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Member;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.MarkerUtil;
@@ -52,12 +52,12 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean initialize() {
         try {
-            dataDefName = fieldsHelper.getLastValue("/:xfield/:task/@dataDef",
+            dataDefName = fieldsHelper.getLastValue("/:fields/:task/@dataDef",
                     getFields());
             String locatorName = fieldsHelper
-                    .getLastValue("/:xfield/:locatorName", getFields());
+                    .getLastValue("/:fields/:locatorName", getFields());
             String locatorGroup = fieldsHelper
-                    .getLastValue("/:xfield/:locatorGroup", getFields());
+                    .getLastValue("/:fields/:locatorGroup", getFields());
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
                     dataDefName);
         } catch (FieldsException e) {
@@ -122,7 +122,7 @@ public abstract class BaseParser extends Step {
     public boolean store() {
         boolean persist = true;
         try {
-            persist = fieldsHelper.isTrue("/:xfield/:task/:persist/:data",
+            persist = fieldsHelper.isTrue("/:fields/:task/:persist/:data",
                     getFields());
         } catch (FieldsException e) {
         }
@@ -144,20 +144,20 @@ public abstract class BaseParser extends Step {
      */
     @Override
     public boolean handover() {
-        Fields nextStepXField = createNextStepXField();
-        stepService.pushTask(this, data, nextStepXField);
+        Fields nextStepFields = createNextStepFields();
+        stepService.pushTask(this, data, nextStepFields);
         return true;
     }
 
-    private Fields createNextStepXField() {
-        Fields nextStepXField = getFields();
-        if (nextStepXField.getNodes().size() == 0) {
+    private Fields createNextStepFields() {
+        Fields nextStepFields = getFields();
+        if (nextStepFields.getNodes().size() == 0) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
             activityService.addActivity(Type.GIVENUP, message);
             throw new StepRunException(message);
         }
-        return nextStepXField;
+        return nextStepFields;
     }
 
     protected abstract void setValue(DataDef dataDef, Member member)
@@ -243,7 +243,7 @@ public abstract class BaseParser extends Step {
     }
 
     /**
-     * Deep copy member, but for performance xfield are not cloned instead
+     * Deep copy member, but for performance fields are not cloned instead
      * reference is passed to copy.
      * @param member
      * @return

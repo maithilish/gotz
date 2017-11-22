@@ -42,7 +42,7 @@ public class ListAppenderTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private ListAppender appender;

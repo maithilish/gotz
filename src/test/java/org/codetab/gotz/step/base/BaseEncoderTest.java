@@ -14,8 +14,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
@@ -49,7 +49,7 @@ public class BaseEncoderTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private CsvEncoder encoder;
@@ -85,24 +85,24 @@ public class BaseEncoderTest {
     public void testInitialize() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException, FieldsException {
 
-        // xfield/task/steps/step[@name='encoder']/appender
-        Fields fields = xFieldHelper.createXField();
+        // fields/task/steps/step[@name='encoder']/appender
+        Fields fields = fieldsHelper.createFields();
         Node step = createStepNode(fields);
 
-        Node node = xFieldHelper.addElement("appender", "", step);
-        xFieldHelper.addElement("name", "x", node);
-        node = xFieldHelper.addElement("appender", "", step);
-        xFieldHelper.addElement("name", "y", node);
+        Node node = fieldsHelper.addElement("appender", "", step);
+        fieldsHelper.addElement("name", "x", node);
+        node = fieldsHelper.addElement("appender", "", step);
+        fieldsHelper.addElement("name", "y", node);
 
         encoder.setFields(fields);
         encoder.setStepType("encoder");
 
         String splitXpath =
-                Util.buildString("/:xfield/:task/:steps/:step[@name='",
+                Util.buildString("/:fields/:task/:steps/:step[@name='",
                         "encoder", "']/:appender");
-        List<Fields> appenders = xFieldHelper.split(splitXpath, fields);
+        List<Fields> appenders = fieldsHelper.split(splitXpath, fields);
 
-        given(xFieldHelper.split(splitXpath, fields)).willReturn(appenders);
+        given(fieldsHelper.split(splitXpath, fields)).willReturn(appenders);
 
         boolean actual = encoder.initialize();
 
@@ -141,10 +141,10 @@ public class BaseEncoderTest {
     public void testInitializeCreateAppenderErrorShouldLogActivity()
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, FieldsException, FieldsException {
-        Fields fields = xFieldHelper.createXField();
+        Fields fields = fieldsHelper.createFields();
         Node step = createStepNode(fields);
-        Node node = xFieldHelper.addElement("appender", "", step);
-        xFieldHelper.addElement("name", "x", node);
+        Node node = fieldsHelper.addElement("appender", "", step);
+        fieldsHelper.addElement("name", "x", node);
 
         encoder.setFields(fields);
         encoder.setStepType("encoder");
@@ -191,11 +191,11 @@ public class BaseEncoderTest {
     }
 
     private Node createStepNode(final Fields fields) throws FieldsException {
-        // xfield/task/steps/step[@name='encoder']/appender
-        Node task = xFieldHelper.addElement("task", "", fields);
-        Node steps = xFieldHelper.addElement("steps", "", task);
-        Node step = xFieldHelper.addElement("step", "", steps);
-        xFieldHelper.addAttribute("name", "encoder", step);
+        // fields/task/steps/step[@name='encoder']/appender
+        Node task = fieldsHelper.addElement("task", "", fields);
+        Node steps = fieldsHelper.addElement("steps", "", task);
+        Node step = fieldsHelper.addElement("step", "", steps);
+        fieldsHelper.addAttribute("name", "encoder", step);
         return step;
     }
 
@@ -231,10 +231,10 @@ public class BaseEncoderTest {
     @Test
     public void testDoAppendShouldThrowException()
             throws InterruptedException, FieldsException {
-        Fields fields = xFieldHelper.createXField();
+        Fields fields = fieldsHelper.createFields();
         Node step = createStepNode(fields);
-        Node node = xFieldHelper.addElement("appender", "", step);
-        xFieldHelper.addElement("name", "x", node);
+        Node node = fieldsHelper.addElement("appender", "", step);
+        fieldsHelper.addElement("name", "x", node);
 
         encoder.setFields(fields);
         encoder.setStepType("encoder");

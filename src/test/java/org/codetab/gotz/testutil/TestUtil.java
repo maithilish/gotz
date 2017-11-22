@@ -37,45 +37,45 @@ public final class TestUtil {
     private TestUtil() {
     }
 
-    public static Fields buildXField(final String xml, final String nsPrefix) {
-        return new XFieldBuilder().add(xml).build(nsPrefix);
+    public static Fields buildFields(final String xml, final String nsPrefix) {
+        return new FieldsBuilder().add(xml).build(nsPrefix);
     }
 
-    public static Fields createXField() throws FieldsException {
+    public static Fields createFields() throws FieldsException {
         // no prefix
-        return createXField(null);
+        return createFields(null);
     }
 
-    public static Fields createXField(final String namespacePrefix)
+    public static Fields createFields(final String namespacePrefix)
             throws FieldsException {
         Document doc;
         try {
-            doc = XmlUtils.createDocument("xfield", namespacePrefix,
-                    "http://codetab.org/xfield");
+            doc = XmlUtils.createDocument("fields", namespacePrefix,
+                    "http://codetab.org/fields");
             Fields fields = new Fields();
             fields.getNodes().add(doc);
             return fields;
         } catch (ParserConfigurationException e) {
-            throw new FieldsException("unable to create xfield", e);
+            throw new FieldsException("unable to create fields", e);
         }
     }
 
-    public static Fields createXField(final String name, final String value)
+    public static Fields createFields(final String name, final String value)
             throws FieldsException {
-        return createXField(name, value, null);
+        return createFields(name, value, null);
     }
 
-    public static Fields createXField(final String name, final String value,
+    public static Fields createFields(final String name, final String value,
             final String namespacePrefix) throws FieldsException {
-        Fields fields = createXField(namespacePrefix);
+        Fields fields = createFields(namespacePrefix);
         addElement(name, value, namespacePrefix, fields);
         return fields;
     }
 
-    public static Fields createXField(final String name, final String attrName,
+    public static Fields createFields(final String name, final String attrName,
             final String value, final String namespacePrefix)
             throws FieldsException {
-        Fields fields = createXField(namespacePrefix);
+        Fields fields = createFields(namespacePrefix);
         Node node = addElement(name, "", namespacePrefix, fields);
         addAttribute(attrName, value, node);
         return fields;
@@ -123,7 +123,7 @@ public final class TestUtil {
             }
         } else {
             String message = Util.buildString("unable to add new element [",
-                    name, "][", text, "]. xfield has no nodes");
+                    name, "][", text, "]. fields has no nodes");
             throw new FieldsException(message);
         }
     }

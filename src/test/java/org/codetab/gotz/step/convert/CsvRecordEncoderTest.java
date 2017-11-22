@@ -9,19 +9,19 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.testutil.XFieldBuilder;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class CsvRecordEncoderTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private CsvRecordEncoder encoder;
@@ -71,7 +71,7 @@ public class CsvRecordEncoderTest {
     public void testProcessSortCol() throws InterruptedException {
 
         //@formatter:off
-        Fields a1 = new XFieldBuilder()
+        Fields a1 = new FieldsBuilder()
                 .add("<task>")
                 .add(" <steps>")
                 .add("  <step name='encoder'>")
@@ -140,7 +140,7 @@ public class CsvRecordEncoderTest {
             encoder.process();
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
-            assertThat(e.getMessage()).isEqualTo("xfield must not be null");
+            assertThat(e.getMessage()).isEqualTo("fields must not be null");
         }
 
         encoder.setFields(new Fields());

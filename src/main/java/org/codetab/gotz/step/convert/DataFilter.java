@@ -8,13 +8,13 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
-import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Member;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseFilter;

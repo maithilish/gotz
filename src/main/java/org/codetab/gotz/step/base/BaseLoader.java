@@ -8,12 +8,12 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.persistence.DocumentPersistence;
 import org.codetab.gotz.persistence.LocatorPersistence;
@@ -230,7 +230,7 @@ public abstract class BaseLoader extends Step {
 
         boolean persist = true;
         try {
-            persist = fieldsHelper.isTrue("/:xfield/:tasks/:persist/:document",
+            persist = fieldsHelper.isTrue("/:fields/:tasks/:persist/:document",
                     locator.getFields());
         } catch (FieldsException e) {
         }
@@ -286,7 +286,7 @@ public abstract class BaseLoader extends Step {
 
         List<Fields> tasks = null;
         try {
-            tasks = fieldsHelper.split("/:xfield/:tasks/:task",
+            tasks = fieldsHelper.split("/:fields/:tasks/:task",
                     locator.getFields());
         } catch (FieldsException e) {
             LOGGER.error("{} {}", errorMessage, e);
@@ -297,8 +297,8 @@ public abstract class BaseLoader extends Step {
         for (Fields task : tasks) {
             if (isDocumentLoaded()) {
                 try {
-                    Fields nextStepXField = createNextStepFields(task);
-                    stepService.pushTask(this, document, nextStepXField);
+                    Fields nextStepFields = createNextStepFields(task);
+                    stepService.pushTask(this, document, nextStepFields);
                 } catch (RuntimeException e) {
                     String message = "unable to get next step fields";
                     LOGGER.error("{} {}", message, locator);
@@ -329,26 +329,26 @@ public abstract class BaseLoader extends Step {
          * need to deep copy the fields as each locator may have multiple tasks
          * with different datadef and steps
          */
-        Fields nextStepXField = null;
+        Fields nextStepFields = null;
         try {
-            nextStepXField = fieldsHelper.deepCopy(fields);
+            nextStepFields = fieldsHelper.deepCopy(fields);
         } catch (FieldsException e) {
-            String message = "unable to clone next step xfield";
+            String message = "unable to clone next step fields";
             LOGGER.error("{} {}", message, e.getLocalizedMessage());
             throw new StepRunException(message, e);
         }
 
         try {
             fieldsHelper.addElement("locatorName", locator.getName(),
-                    nextStepXField);
+                    nextStepFields);
             fieldsHelper.addElement("locatorGroup", locator.getGroup(),
-                    nextStepXField);
+                    nextStepFields);
             fieldsHelper.addElement("locatorUrl", locator.getUrl(),
-                    nextStepXField);
+                    nextStepFields);
         } catch (FieldsException e) {
             throw new StepRunException("unable to create next step fields", e);
         }
-        return nextStepXField;
+        return nextStepFields;
     }
 
     /**

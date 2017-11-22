@@ -60,7 +60,7 @@ public class DateRoller implements IConverter<String, String> {
     public String convert(final String input)
             throws FieldsException, ParseException, IllegalAccessException {
         Validate.notNull(input, "input date string must not be null");
-        Validate.validState(fields != null, "xfield is null");
+        Validate.validState(fields != null, "fields is null");
 
         String patternIn = fieldsHelper.getLastValue("//:inPattern", fields);
         String patternOut = fieldsHelper.getLastValue("//:outPattern", fields);

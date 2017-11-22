@@ -54,7 +54,7 @@ public abstract class Step implements IStep {
     @Override
     public void setFields(final Fields fields) {
         try {
-            label = fieldsHelper.getLastValue("/:xfield/:label", fields);
+            label = fieldsHelper.getLastValue("/:fields/:label", fields);
         } catch (FieldsException e) {
         }
         this.fields = fields;

@@ -52,8 +52,8 @@ public class DataDefValidator {
      */
     private boolean validateIndexRange(final DataDef dataDef) {
         boolean valid = true;
-        List<Fields> xFields = getAllXFields(dataDef);
-        for (Fields fields : xFields) {
+        List<Fields> fieldsList = getAllFieldss(dataDef);
+        for (Fields fields : fieldsList) {
             try {
                 if (fields != null) {
                     fieldsHelper.getRange("//xf:indexRange/@value", fields);
@@ -74,7 +74,7 @@ public class DataDefValidator {
      *            which contains indexRange fields
      * @return list of indexRange fields
      */
-    private List<Fields> getAllXFields(final DataDef dataDef) {
+    private List<Fields> getAllFieldss(final DataDef dataDef) {
         List<Fields> lists = new ArrayList<>();
 
         lists.add(dataDef.getFields());

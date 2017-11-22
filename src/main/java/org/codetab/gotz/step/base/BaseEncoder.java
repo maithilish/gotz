@@ -8,8 +8,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
@@ -62,7 +62,7 @@ public abstract class BaseEncoder extends Step {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
             List<Fields> appenders = fieldsHelper.split(
-                    Util.buildString("/:xfield/:task/:steps/:step[@name='",
+                    Util.buildString("/:fields/:task/:steps/:step[@name='",
                             getStepType(), "']/:appender"),
                     getFields());
 

@@ -52,7 +52,7 @@ public class AxisTest {
     }
 
     @Test
-    public void testGetXField() {
+    public void testGetFields() {
 
         assertThat(axis.getFields()).isNull();
 
@@ -148,7 +148,7 @@ public class AxisTest {
                         .append("match", testAxis.getMatch())
                         .append("index", testAxis.getIndex())
                         .append("order", testAxis.getOrder())
-                        .append("xfield", testAxis.getFields()).toString();
+                        .append("fields", testAxis.getFields()).toString();
         return System.lineSeparator() + "  " + str;
 
     }

@@ -10,8 +10,8 @@ import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.codetab.gotz.testutil.TestUtil;
-import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ import org.mockito.Spy;
 public class DataDefValidatorTest {
 
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
     @InjectMocks
     private DataDefValidator validator;
 
@@ -45,7 +45,7 @@ public class DataDefValidatorTest {
 
     @Test
     public void testValidateDataDefField() throws FieldsException {
-        Fields fields = TestUtil.createXField("indexRange", "1-1");
+        Fields fields = TestUtil.createFields("indexRange", "1-1");
         DataDef dataDef = new DataDef();
         dataDef.setFields(fields);
 
@@ -56,7 +56,7 @@ public class DataDefValidatorTest {
 
     @Test
     public void testValidateAxisField() throws FieldsException {
-        Fields fields = TestUtil.createXField("indexRange", "1-1");
+        Fields fields = TestUtil.createFields("indexRange", "1-1");
         DAxis axis = new DAxis();
         axis.setFields(fields);
 
@@ -70,7 +70,7 @@ public class DataDefValidatorTest {
 
     @Test
     public void testValidateMemberField() throws FieldsException {
-        Fields fields = TestUtil.createXField("indexRange", "1-1");
+        Fields fields = TestUtil.createFields("indexRange", "1-1");
 
         DMember member = new DMember();
         member.setFields(fields);
@@ -91,13 +91,13 @@ public class DataDefValidatorTest {
     @Test
     public void testValidateInvalidRange() throws FieldsException {
         Fields dataDefField =
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         Fields axisField =
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         Fields memberField =
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         Fields filterField =
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf");
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
 
         DMember member = new DMember();
         member.setFields(memberField);
@@ -117,33 +117,33 @@ public class DataDefValidatorTest {
         assertThat(validator.validate(dataDef)).isTrue();
 
         // invalid range
-        filter.setFields(new XFieldBuilder()
+        filter.setFields(new FieldsBuilder()
                 .add("<xf:indexRange value='1-x' />").build("xf"));
         assertThat(validator.validate(dataDef)).isFalse();
 
         // invalid range
         filter.setFields(
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf"));
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
         member.setFields(
-                TestUtil.buildXField("<xf:indexRange value='1-x' />", "xf"));
+                TestUtil.buildFields("<xf:indexRange value='1-x' />", "xf"));
         assertThat(validator.validate(dataDef)).isFalse();
 
         // invalid range
         axis.setFields(
-                TestUtil.buildXField("<xf:indexRange value='1-x' />", "xf"));
+                TestUtil.buildFields("<xf:indexRange value='1-x' />", "xf"));
         member.setFields(
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf"));
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
         assertThat(validator.validate(dataDef)).isFalse();
 
         // invalid range
         axis.setFields(
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf"));
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
         dataDef.setFields(
-                TestUtil.buildXField("<xf:indexRange value='1-x' />", "xf"));
+                TestUtil.buildFields("<xf:indexRange value='1-x' />", "xf"));
         assertThat(validator.validate(dataDef)).isFalse();
 
         dataDef.setFields(
-                TestUtil.buildXField("<xf:indexRange value='1-1' />", "xf"));
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
         assertThat(validator.validate(dataDef)).isTrue();
 
     }

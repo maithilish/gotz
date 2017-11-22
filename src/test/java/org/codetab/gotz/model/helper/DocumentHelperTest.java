@@ -45,7 +45,7 @@ public class DocumentHelperTest {
     @Mock
     private DInjector dInjector;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private DocumentHelper documentHelper;
@@ -133,7 +133,7 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        Fields fields = TestUtil.buildXField("", "xf");
+        Fields fields = TestUtil.buildFields("", "xf");
 
         // when
         Date actual = documentHelper.getToDate(fromDate, fields);
@@ -148,7 +148,7 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        Fields fields = TestUtil.createXField(); // default ns
+        Fields fields = TestUtil.createFields(); // default ns
         Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", "P2D", tasks);
         TestUtil.addElement("label", "x:y", fields);
@@ -167,7 +167,7 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        Fields fields = TestUtil.createXField(); // default ns
+        Fields fields = TestUtil.createFields(); // default ns
         Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", "", tasks);
         TestUtil.addElement("label", "x:y", fields);
@@ -176,7 +176,7 @@ public class DocumentHelperTest {
         Date actual = documentHelper.getToDate(fromDate, fields);
         assertThat(actual).isEqualTo(fromDate);
 
-        fields = TestUtil.createXField(); // default ns
+        fields = TestUtil.createFields(); // default ns
         tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", "0", tasks);
         TestUtil.addElement("label", "x:y", fields);
@@ -192,7 +192,7 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-08-2017 11:00:00.000";
 
-        Fields fields = TestUtil.createXField(); // default ns
+        Fields fields = TestUtil.createFields(); // default ns
         Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", toDateStr, tasks);
         TestUtil.addElement("label", "x:y", fields);
@@ -213,7 +213,7 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
 
-        Fields fields = TestUtil.createXField(); // default ns
+        Fields fields = TestUtil.createFields(); // default ns
         Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", toDateStr, tasks);
         TestUtil.addElement("label", "x:y", fields);
@@ -232,7 +232,7 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
 
-        Fields fields = TestUtil.createXField(); // default ns
+        Fields fields = TestUtil.createFields(); // default ns
         Node tasks = TestUtil.addElement("tasks", "", fields);
         TestUtil.addElement("live", toDateStr, tasks);
         TestUtil.addElement("label", "x:y", fields);
@@ -259,7 +259,7 @@ public class DocumentHelperTest {
             documentHelper.getToDate(new Date(), fields);
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).isEqualTo("xfield must not be null");
+            assertThat(e.getMessage()).isEqualTo("fields must not be null");
         }
     }
 

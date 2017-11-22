@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="fields" type="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
+ *         &lt;element ref="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="index" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
@@ -46,7 +46,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 public class DMember extends Base implements Serializable {
 
     private final static long serialVersionUID = 1L;
-    @XmlElement
+    @XmlElement(namespace = "http://codetab.org/xfields")
     private Fields fields;
     @XmlAttribute(name = "axis")
     private String axis;

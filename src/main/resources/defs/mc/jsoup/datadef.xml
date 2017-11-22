@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfield"
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
     <datadef name="finlocators">
-        <xf:xfield>
+        <xf:fields>
             <xf:member name="bs">
                 <xf:group>bs</xf:group>
             </xf:member>
             <xf:member name="pl">
                 <xf:group>pl</xf:group>
             </xf:member>
-        </xf:xfield>
+        </xf:fields>
 
         <axis name="col">
-            <xf:xfield>
+            <xf:fields>
                 <xf:script script="configs.getRunDateTime()" />
-            </xf:xfield>
+            </xf:fields>
             <member name="date" />
         </axis>
         <axis name="row">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query
                     region="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul"
                     field="li:nth-child(%{row.index}) > a[href]" />
-            </xf:xfield>
+            </xf:fields>
             <member name="bs" index="2" />
             <member name="pl" index="3" />
         </axis>
         <axis name="fact">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query
                     region="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul"
                     field="li:nth-child(%{row.index}) > a[href]"
@@ -38,22 +38,22 @@
                 </xf:query>
                 
                 <xf:prefix>http://www.moneycontrol.com</xf:prefix>
-            </xf:xfield>
+            </xf:fields>
         </axis>
     </datadef>
 
     <datadef name="quotePage">
         <axis name="col">
-            <xf:xfield>
+            <xf:fields>
                 <xf:script script="document.getFromDate()" />
-            </xf:xfield>
+            </xf:fields>
             <member name="date" />
         </axis>
         <axis name="row">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="div#mktdet_2"
                     field="div:containsOwn(%{row.match})" />
-            </xf:xfield>
+            </xf:fields>
             <member name="MC" match="MARKET CAP" />
             <member name="EPS" match="EPS (TTM)" />
             <member name="PE" match="P/E" />
@@ -66,110 +66,110 @@
             <member name="IND PE" match="INDUSTRY P/E" />
         </axis>
         <axis name="fact">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="div#mktdet_2"
                     field="div:containsOwn(%{row.match}) + div" />
-            </xf:xfield>
+            </xf:fields>
         </axis>
     </datadef>
     <datadef name="price">
         <axis name="col">
-            <xf:xfield>
+            <xf:fields>
                 <xf:script script="document.getFromDate()" />
-            </xf:xfield>
+            </xf:fields>
             <member name="date" />
         </axis>
         <axis name="row">
             <member name="Price" value="Price" />
         </axis>
         <axis name="fact">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="div#Nse_Prc_tick_div" field="*" />
-            </xf:xfield>
+            </xf:fields>
         </axis>
     </datadef>
 
     <datadef name="bs">
         <axis name="col">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="table:contains(Sources Of Funds)"
                     field="tr:nth-child(1) > td:nth-child(%{col.index})" />
-            </xf:xfield>
+            </xf:fields>
             <member name="year">
-                <xf:xfield>
+                <xf:fields>
                     <xf:indexRange value="2-6" />
-                </xf:xfield>
+                </xf:fields>
             </member>
         </axis>
         <axis name="row">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="table:contains(Sources Of Funds)"
                     field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
-            </xf:xfield>
+            </xf:fields>
             <member name="item" index="5">
-                <xf:xfield>
+                <xf:fields>
                     <xf:breakAfter value="Book Value (Rs)" />
-                </xf:xfield>
+                </xf:fields>
             </member>
             <filter axis="row">
-                <xf:xfield>
+                <xf:fields>
                     <xf:filters type="value">
                         <xf:filter name="blank" pattern="" />
                         <xf:filter name="f1" pattern="Sources Of Funds" />
                         <xf:filter name="f2" pattern="Application Of Funds" />
                     </xf:filters>
-                </xf:xfield>
+                </xf:fields>
             </filter>
         </axis>
         <axis name="fact">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="table:contains(Sources Of Funds)"
                     field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
-            </xf:xfield>
+            </xf:fields>
         </axis>
     </datadef>
 
     <datadef name="pl">
         <axis name="col">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="table:contains(Employee Cost)"
                     field="tr:nth-child(1) > td:nth-child(%{col.index})">
                 </xf:query>
-            </xf:xfield>
+            </xf:fields>
             <member name="year">
-                <xf:xfield>
+                <xf:fields>
                     <xf:indexRange value="2-6" />
-                </xf:xfield>
+                </xf:fields>
             </member>
         </axis>
         <axis name="row">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="table:contains(Employee Cost)"
                     field="tr:nth-child(%{row.index}) > td:nth-child(1)">
                 </xf:query>
-            </xf:xfield>
+            </xf:fields>
             <member name="item" index="6">
-                <xf:xfield>
+                <xf:fields>
                     <xf:breakAfter value="Book Value (Rs)" />
-                </xf:xfield>
+                </xf:fields>
             </member>
             <filter axis="row">
-                <xf:xfield>
+                <xf:fields>
                     <xf:filters type="value">
                         <xf:filter name="blank" pattern="" />
                         <xf:filter name="f1" pattern="Expenditure" />
                         <xf:filter name="f2"
                             pattern="Per share data (annualised)" />
                     </xf:filters>
-                </xf:xfield>
+                </xf:fields>
             </filter>
         </axis>
         <axis name="fact">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query region="table:contains(Employee Cost)"
                     field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})">
                 </xf:query>
-            </xf:xfield>
+            </xf:fields>
         </axis>
     </datadef>
 

@@ -32,14 +32,14 @@ public class ObjectFactoryTest {
     }
 
     @Test
-    public void testCreateXField() {
+    public void testCreateFields() {
         Fields actual = of.createFields();
         assertThat(actual).isInstanceOf(Fields.class);
         assertThat(actual).isNotSameAs(of.createFields());
     }
 
     @Test
-    public void testCreateXFields() {
+    public void testCreateFieldss() {
         Fields value = of.createFields();
         JAXBElement<Fields> actual = of.createFields(value);
         assertThat(actual).isInstanceOf(JAXBElement.class);

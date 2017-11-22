@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -81,7 +81,7 @@ public final class CsvRecordEncoder extends BaseEncoder {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getFields() != null, "xfield must not be null");
+        Validate.validState(getFields() != null, "fields must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         StringBuilder builder = null;
@@ -132,9 +132,9 @@ public final class CsvRecordEncoder extends BaseEncoder {
     private void appendLocatorInfo() {
         try {
             String locatorName = fieldsHelper
-                    .getLastValue("/:xfield/:locatorName", getFields());
+                    .getLastValue("/:fields/:locatorName", getFields());
             String locatorGroup = fieldsHelper
-                    .getLastValue("/:xfield/:locatorGroup", getFields());
+                    .getLastValue("/:fields/:locatorGroup", getFields());
             doAppend(locatorName + "|" + locatorGroup);
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";

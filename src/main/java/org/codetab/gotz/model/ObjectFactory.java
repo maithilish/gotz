@@ -1,6 +1,8 @@
 
 package org.codetab.gotz.model;
 
+import java.beans.Beans;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
@@ -103,14 +105,6 @@ public class ObjectFactory {
      */
     public Beans createBeans() {
         return new Beans();
-    }
-
-    /**
-     * Create an instance of {@link DataDefs }
-     *
-     */
-    public DataDefs createDataDefs() {
-        return new DataDefs();
     }
 
     /**

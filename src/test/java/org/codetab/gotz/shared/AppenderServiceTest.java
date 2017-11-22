@@ -39,7 +39,7 @@ public class AppenderServiceTest {
     @Mock
     private Appender appender1, appender2;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private AppenderService appenderService;
@@ -57,9 +57,9 @@ public class AppenderServiceTest {
             InstantiationException, IllegalAccessException, FieldsException {
 
         String className = "org.codetab.gotz.appender.FileAppender";
-        Fields fields = xFieldHelper.createXField();
-        Node node = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addAttribute("class", className, node);
+        Fields fields = fieldsHelper.createFields();
+        Node node = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addAttribute("class", className, node);
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
@@ -82,10 +82,10 @@ public class AppenderServiceTest {
 
         String className = "org.codetab.gotz.appender.FileAppender";
         String appenderName = "x";
-        Fields fields = xFieldHelper.createXField();
-        Node node = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addAttribute("name", appenderName, node);
-        xFieldHelper.addAttribute("class", className, node);
+        Fields fields = fieldsHelper.createFields();
+        Node node = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addAttribute("name", appenderName, node);
+        fieldsHelper.addAttribute("class", className, node);
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
@@ -101,10 +101,10 @@ public class AppenderServiceTest {
         // change class name to trigger error, but as appender with same name
         // exists it should not throw ClassCastException
         className = "org.codetab.gotz.appender.FileAppenderX";
-        fields = xFieldHelper.createXField();
-        node = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addAttribute("name", appenderName, node);
-        xFieldHelper.addAttribute("class", className, node);
+        fields = fieldsHelper.createFields();
+        node = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addAttribute("name", appenderName, node);
+        fieldsHelper.addAttribute("class", className, node);
 
         appenderService.createAppender("x", fields);
     }
@@ -116,10 +116,10 @@ public class AppenderServiceTest {
 
         String className = "org.codetab.gotz.model.Axis";
         String appenderName = "x";
-        Fields fields = xFieldHelper.createXField();
-        Node node = xFieldHelper.addElement("appender", "", fields);
-        xFieldHelper.addAttribute("name", appenderName, node);
-        xFieldHelper.addAttribute("class", className, node);
+        Fields fields = fieldsHelper.createFields();
+        Node node = fieldsHelper.addElement("appender", "", fields);
+        fieldsHelper.addAttribute("name", appenderName, node);
+        fieldsHelper.addAttribute("class", className, node);
 
         exceptionRule.expect(ClassCastException.class);
         appenderService.createAppender("x", fields);

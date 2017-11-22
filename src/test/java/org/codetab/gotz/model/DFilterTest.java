@@ -75,7 +75,7 @@ public class DFilterTest {
     }
 
     @Test
-    public void testGetXField() {
+    public void testGetFields() {
 
         assertThat(dFilter.getFields()).isNull();
 

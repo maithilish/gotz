@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfield"
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
     <datadef name="bs">
         <axis name="col">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query
                     region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
                     field="*//tr[1]/td[%{col.index}+1]" />
-            </xf:xfield>
+            </xf:fields>
             <member name="year">
-                <xf:xfield>
+                <xf:fields>
                     <xf:indexRange value="1-5" />
-                </xf:xfield>
+                </xf:fields>
             </member>
         </axis>
         <axis name="row">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query
                     region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
                     field="*//tr[%{row.index}+1]/td[1]" />
-            </xf:xfield>
+            </xf:fields>
             <member name="item" index="5">
-                <xf:xfield>
+                <xf:fields>
                     <xf:breakAfter value="Book Value (Rs)" />
-                </xf:xfield>
+                </xf:fields>
             </member>
             <filter axis="row">
-                <xf:xfield>
+                <xf:fields>
                     <xf:filters type="value">
                         <xf:filter name="blank" pattern="" />
                         <xf:filter name="f1" pattern="Sources Of Funds" />
                         <xf:filter name="f2" pattern="Application Of Funds" />
                     </xf:filters>
-                </xf:xfield>
+                </xf:fields>
             </filter>
         </axis>
         <axis name="fact">
-            <xf:xfield>
+            <xf:fields>
                 <xf:query
                     region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
                     field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
-            </xf:xfield>
+            </xf:fields>
         </axis>
     </datadef>
 

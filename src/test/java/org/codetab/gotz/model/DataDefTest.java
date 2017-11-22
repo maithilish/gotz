@@ -34,7 +34,7 @@ public class DataDefTest {
     }
 
     @Test
-    public void testGetXField() {
+    public void testGetFields() {
 
         assertThat(dataDef.getFields()).isNull();
 

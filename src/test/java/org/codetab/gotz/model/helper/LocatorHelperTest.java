@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
-import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;

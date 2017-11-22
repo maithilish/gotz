@@ -19,12 +19,12 @@ import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
-import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DocumentPersistence;
@@ -34,8 +34,8 @@ import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.extract.URLLoader;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.codetab.gotz.testutil.TestUtil;
-import org.codetab.gotz.testutil.XFieldBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,7 +72,7 @@ public class BaseLoaderTest {
     @Mock
     private ConfigService configService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     private String fileUrl;
 
@@ -409,10 +409,10 @@ public class BaseLoaderTest {
     @Test
     public void testStorePersistIsFalse()
             throws IllegalAccessException, FieldsException {
-        Fields fields = xFieldHelper.createXField();
-        Node tasks = xFieldHelper.addElement("tasks", "", fields);
-        Node persist = xFieldHelper.addElement("persist", "", tasks);
-        xFieldHelper.addElement("document", "false", persist);
+        Fields fields = fieldsHelper.createFields();
+        Node tasks = fieldsHelper.addElement("tasks", "", fields);
+        Node persist = fieldsHelper.addElement("persist", "", tasks);
+        fieldsHelper.addElement("document", "false", persist);
 
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
@@ -446,10 +446,10 @@ public class BaseLoaderTest {
         FieldUtils.writeField(loader, "locator", locator1, true);
         FieldUtils.writeField(loader, "document", document1, true);
 
-        Fields fields = xFieldHelper.createXField();
-        Node tasks = xFieldHelper.addElement("tasks", "", fields);
-        Node persist = xFieldHelper.addElement("persist", "", tasks);
-        xFieldHelper.addElement("document", "true", persist);
+        Fields fields = fieldsHelper.createFields();
+        Node tasks = fieldsHelper.addElement("tasks", "", fields);
+        Node persist = fieldsHelper.addElement("persist", "", tasks);
+        fieldsHelper.addElement("document", "true", persist);
         locator1.setFields(fields);
 
         given(locatorPersistence.loadLocator(locator1.getId()))
@@ -571,7 +571,7 @@ public class BaseLoaderTest {
     public void testHandoverNoDataDefFields() throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
-        locator.setFields(TestUtil.buildXField("", "xf"));
+        locator.setFields(TestUtil.buildFields("", "xf"));
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
@@ -588,10 +588,10 @@ public class BaseLoaderTest {
     public void testHandoverDocumentNotLoaded()
             throws IllegalAccessException, FieldsException {
 
-        Fields fields = xFieldHelper.createXField();
-        Node tasks = xFieldHelper.addElement("tasks", "", fields);
-        xFieldHelper.addElement("task", "x", tasks);
-        xFieldHelper.addElement("task", "y", tasks);
+        Fields fields = fieldsHelper.createFields();
+        Node tasks = fieldsHelper.addElement("tasks", "", fields);
+        fieldsHelper.addElement("task", "x", tasks);
+        fieldsHelper.addElement("task", "y", tasks);
 
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
@@ -616,25 +616,25 @@ public class BaseLoaderTest {
         locator.getFields().getNodes().clear();
         Document document = locator.getDocuments().get(0);
 
-        Fields fields = xFieldHelper.createXField();
-        Node tasksNode = xFieldHelper.addElement("tasks", "", fields);
-        xFieldHelper.addElement("task", "a", tasksNode);
-        xFieldHelper.addElement("task", "b", tasksNode);
+        Fields fields = fieldsHelper.createFields();
+        Node tasksNode = fieldsHelper.addElement("tasks", "", fields);
+        fieldsHelper.addElement("task", "a", tasksNode);
+        fieldsHelper.addElement("task", "b", tasksNode);
 
         locator.setFields(fields);
 
         List<Fields> tasks =
-                xFieldHelper.split("/:xfield/:tasks/:task", fields);
+                fieldsHelper.split("/:fields/:tasks/:task", fields);
         Fields task1 = tasks.get(0);
         Fields task2 = tasks.get(1);
 
         FieldUtils.writeField(loader, "locator", locator, true);
         FieldUtils.writeField(loader, "document", document, true);
 
-        given(xFieldHelper.split("/:xfield/:tasks/:task", fields))
+        given(fieldsHelper.split("/:fields/:tasks/:task", fields))
                 .willReturn(tasks);
-        given(xFieldHelper.deepCopy(task1)).willReturn(task1);
-        given(xFieldHelper.deepCopy(task2)).willReturn(task2);
+        given(fieldsHelper.deepCopy(task1)).willReturn(task1);
+        given(fieldsHelper.deepCopy(task2)).willReturn(task2);
 
         // when
         boolean actual = loader.handover();
@@ -710,7 +710,7 @@ public class BaseLoaderTest {
     private List<Locator> createTestObjects() {
 
         //@formatter:off
-        Fields l1f = new XFieldBuilder()
+        Fields l1f = new FieldsBuilder()
                 .add("<l1f>")
                 .add(" <l1f1>l1v1</l1f1>")
                 .add(" <l1f2>l1v2</l1f2>")
@@ -725,7 +725,7 @@ public class BaseLoaderTest {
         locator1.setUrl("url1");
 
       //@formatter:off
-        Fields l2f = new XFieldBuilder()
+        Fields l2f = new FieldsBuilder()
                 .add("<l2f>")
                 .add(" <l2f1>l2v1</l2f1>")
                 .add(" <l2f2>l2v2</l2f2>")

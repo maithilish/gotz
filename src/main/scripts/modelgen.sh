@@ -51,7 +51,7 @@ main(){
     do
         replace_protected_with_private $file
         remove_trailing_spaces $file
-        # rectify_xfield $file ## not required as type is used instead of ref
+        rectify_xfield $file ## ref creates extra XmlElement (type creates one)
     done
     
 }

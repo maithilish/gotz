@@ -12,11 +12,11 @@ import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.helper.LocatorHelper;
-import org.codetab.gotz.model.helper.LocatorFieldsHelper;
+import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.FieldsHelper;
+import org.codetab.gotz.model.helper.LocatorFieldsHelper;
+import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
@@ -42,9 +42,9 @@ public class LocatorSeederTest {
     @Mock
     private LocatorHelper locatorHelper;
     @Mock
-    private LocatorFieldsHelper locatorXFieldHelper;
+    private LocatorFieldsHelper locatorFieldsHelper;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
     @Spy
     private DInjector dInjector;
 
@@ -68,7 +68,7 @@ public class LocatorSeederTest {
         Locator locator = new Locator();
         locator.setName("x");
         locator.setGroup("gx");
-        Fields fields = TestUtil.createXField("f1", "v1");
+        Fields fields = TestUtil.createFields("f1", "v1");
         locator.setFields(fields);
 
         // when
@@ -182,46 +182,46 @@ public class LocatorSeederTest {
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
         locatorSeeder.initialize();
 
-        Fields groupOneXField = xFieldHelper.createXField();
-        xFieldHelper.addElement("x", "xv", groupOneXField);
-        Fields groupTwoXField = xFieldHelper.createXField();
-        xFieldHelper.addElement("y", "yv", groupOneXField);
+        Fields groupOneFields = fieldsHelper.createFields();
+        fieldsHelper.addElement("x", "xv", groupOneFields);
+        Fields groupTwoFields = fieldsHelper.createFields();
+        fieldsHelper.addElement("y", "yv", groupOneFields);
 
-        given(locatorXFieldHelper.getFields(Locator.class.getName(), "g1"))
-                .willReturn(groupOneXField);
-        given(locatorXFieldHelper.getFields(Locator.class.getName(), "g2"))
-                .willReturn(groupTwoXField);
+        given(locatorFieldsHelper.getFields(Locator.class.getName(), "g1"))
+                .willReturn(groupOneFields);
+        given(locatorFieldsHelper.getFields(Locator.class.getName(), "g2"))
+                .willReturn(groupTwoFields);
 
         // when
         locatorSeeder.process();
 
-        assertThat(locators.get(0).getFields()).isEqualTo(groupOneXField);
-        assertThat(locators.get(1).getFields()).isEqualTo(groupOneXField);
-        assertThat(locators.get(2).getFields()).isEqualTo(groupTwoXField);
+        assertThat(locators.get(0).getFields()).isEqualTo(groupOneFields);
+        assertThat(locators.get(1).getFields()).isEqualTo(groupOneFields);
+        assertThat(locators.get(2).getFields()).isEqualTo(groupTwoFields);
 
-        InOrder inOrder = inOrder(locatorXFieldHelper);
-        inOrder.verify(locatorXFieldHelper).addLabel(locators.get(0));
-        inOrder.verify(locatorXFieldHelper).addLabel(locators.get(1));
-        inOrder.verify(locatorXFieldHelper).addLabel(locators.get(2));
+        InOrder inOrder = inOrder(locatorFieldsHelper);
+        inOrder.verify(locatorFieldsHelper).addLabel(locators.get(0));
+        inOrder.verify(locatorFieldsHelper).addLabel(locators.get(1));
+        inOrder.verify(locatorFieldsHelper).addLabel(locators.get(2));
     }
 
     @Test
     public void testHandover() throws FieldsException, ClassNotFoundException,
             InstantiationException, IllegalAccessException {
-        Fields xField1 = xFieldHelper.createXField();
-        xFieldHelper.addElement("x", "xv", xField1);
-        Fields xField2 = xFieldHelper.createXField();
-        xFieldHelper.addElement("y", "yv", xField2);
-        Fields xField3 = xFieldHelper.createXField();
-        xFieldHelper.addElement("z", "zv", xField3);
+        Fields fields1 = fieldsHelper.createFields();
+        fieldsHelper.addElement("x", "xv", fields1);
+        Fields fields2 = fieldsHelper.createFields();
+        fieldsHelper.addElement("y", "yv", fields2);
+        Fields fields3 = fieldsHelper.createFields();
+        fieldsHelper.addElement("z", "zv", fields3);
 
         List<Locator> locators = createTestObjects();
         Locator locator1 = locators.get(0);
-        locator1.setFields(xField1);
+        locator1.setFields(fields1);
         Locator locator2 = locators.get(1);
-        locator2.setFields(xField2);
+        locator2.setFields(fields2);
         Locator locator3 = locators.get(2);
-        locator3.setFields(xField3);
+        locator3.setFields(fields3);
 
         LocatorSeeder locatorSeeder1 = dInjector.instance(LocatorSeeder.class);
         LocatorSeeder locatorSeeder2 = dInjector.instance(LocatorSeeder.class);

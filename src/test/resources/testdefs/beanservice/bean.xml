@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 
-<beans xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfield">
+<beans xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
     <bean name="locator" className="org.codetab.gotz.model.Locator"
         xmlFile="locator.xml" />
     <bean name="fields" className="org.codetab.gotz.model.Fields" xmlFile="fields.xml"

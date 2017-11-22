@@ -3,8 +3,8 @@ package org.codetab.gotz.step.base;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
@@ -36,7 +36,7 @@ public class BaseFilterTest {
     @Mock
     private DataDefService dataDefService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private DataFilter filter;
@@ -77,8 +77,8 @@ public class BaseFilterTest {
     @Test
     public void testHandover() throws FieldsException {
 
-        Fields fields = xFieldHelper.createXField();
-        xFieldHelper.addElement("x", "xv", fields);
+        Fields fields = fieldsHelper.createFields();
+        fieldsHelper.addElement("x", "xv", fields);
         filter.setFields(fields);
 
         Data data = new Data();

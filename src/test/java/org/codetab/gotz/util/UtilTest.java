@@ -340,7 +340,7 @@ public class UtilTest {
 
     @Test
     public void testGetMessage() {
-        String expected = "XFieldException: test";
+        String expected = "FieldsException: test";
         String actual = Util.getMessage(new FieldsException("test"));
         assertThat(actual).isEqualTo(expected);
     }

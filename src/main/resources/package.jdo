@@ -22,7 +22,7 @@
                 <field name="group" />
             </unique>
             <field name="url" persistence-modifier="none" />            
-            <field name="xField" persistence-modifier="none" />
+            <field name="fields" persistence-modifier="none" />
             <field name="documents">
                 <collection element-type="org.codetab.gotz.model.Document" />
                 <element column="LOCATOR_ID" />
@@ -48,12 +48,12 @@
             </unique>
             <field name="axis" serialized="true" />
             <!-- <field name="memberSets" persistence-modifier="none" /> -->            
-            <field name="xfield" persistence-modifier="persistent" serialized="true" />
+            <field name="fields" persistence-modifier="persistent" serialized="true" />
             <fetch-group name="detachAxis">
                 <field name="axis" />
             </fetch-group>
             <fetch-group name="detachFields">                
-                <field name="xfield" />
+                <field name="fields" />
             </fetch-group>
         </class>
         <class name="Data">

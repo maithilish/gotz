@@ -6,15 +6,15 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.converter.IConverter;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
 import org.codetab.gotz.model.DataSet;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.RowComparator;
-import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseDataConverter;
@@ -62,15 +62,15 @@ public final class DataSetConverter extends BaseDataConverter {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getFields() != null, "xfield must not be null");
+        Validate.validState(getFields() != null, "fields must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName = fieldsHelper.getLastValue("/:xfield/:locatorName",
+            locatorName = fieldsHelper.getLastValue("/:fields/:locatorName",
                     getFields());
-            locatorGroup = fieldsHelper.getLastValue("/:xfield/:locatorGroup",
+            locatorGroup = fieldsHelper.getLastValue("/:fields/:locatorGroup",
                     getFields());
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";
@@ -91,7 +91,7 @@ public final class DataSetConverter extends BaseDataConverter {
         List<Fields> converters = new ArrayList<>();
         try {
             converters = fieldsHelper.split(
-                    Util.buildString("/:xfield/:task/:steps/:step[@name='",
+                    Util.buildString("/:fields/:task/:steps/:step[@name='",
                             getStepType(), "']/:converter"),
                     getFields());
         } catch (FieldsException e) {

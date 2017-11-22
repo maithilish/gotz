@@ -73,7 +73,7 @@ public class DMemberTest {
     }
 
     @Test
-    public void testGetXField() {
+    public void testGetFields() {
 
         assertThat(dMember.getFields()).isNull();
 

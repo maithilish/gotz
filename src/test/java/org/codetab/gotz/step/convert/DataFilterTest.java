@@ -15,12 +15,12 @@ import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
-import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
-import org.codetab.gotz.testutil.XFieldBuilder;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public class DataFilterTest {
     @Mock
     private ActivityService activityService;
     @Spy
-    private FieldsHelper xFieldHelper;
+    private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private DataFilter filter;
@@ -249,7 +249,7 @@ public class DataFilterTest {
             filters.append("' />");
         }
 
-        Fields fields = new XFieldBuilder()
+        Fields fields = new FieldsBuilder()
                 .add("<xf:filters type='" + group + "'>")
                 .add(filters.toString()).add("</xf:filters>").build("xf");
 
