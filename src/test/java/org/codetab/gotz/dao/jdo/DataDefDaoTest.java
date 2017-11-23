@@ -21,6 +21,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.testutil.FieldsBuilder;
 import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
