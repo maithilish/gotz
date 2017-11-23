@@ -39,7 +39,7 @@ public class ObjectFactoryTest {
     }
 
     @Test
-    public void testCreateFieldss() {
+    public void testCreateFieldsFields() {
         Fields value = of.createFields();
         JAXBElement<Fields> actual = of.createFields(value);
         assertThat(actual).isInstanceOf(JAXBElement.class);

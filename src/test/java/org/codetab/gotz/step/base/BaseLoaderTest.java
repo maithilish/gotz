@@ -36,7 +36,6 @@ import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.extract.URLLoader;
 import org.codetab.gotz.testutil.FieldsBuilder;
 import org.codetab.gotz.testutil.TestUtil;
-import org.codetab.gotz.testutil.FieldsBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

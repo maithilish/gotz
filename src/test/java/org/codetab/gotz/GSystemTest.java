@@ -36,7 +36,7 @@ public class GSystemTest {
     @Mock
     private IStep locatorSeeder;
     @Mock
-    private LocatorFieldsHelper locatorFieldssHelper;
+    private LocatorFieldsHelper locatorFieldsHelper;
     @Mock
     private Task task;
     @Mock

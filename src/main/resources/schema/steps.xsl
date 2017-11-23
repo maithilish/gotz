@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <xsl:stylesheet version="1.0"
-    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xf="http://codetab.org/fields"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xf="http://codetab.org/xfields"
     exclude-result-prefixes="xf">
 
     <xsl:output method="xml" indent="yes" />
@@ -24,7 +24,7 @@
         <xsl:variable name="stepsRef" select="@ref" />
         <xsl:variable name="taskName" select="parent::xf:task/@name"/>
 
-        <steps name="{$stepsRef}" xmlns="http://codetab.org/fields">         
+        <steps name="{$stepsRef}" xmlns="http://codetab.org/xfields">         
             
             <!--  copy all local steps as they have precedence over global steps -->
 

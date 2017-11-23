@@ -69,7 +69,7 @@ public class LocatorFieldsHelper {
         Validate.validState(beanService != null, "beanService is null");
 
         try {
-            fieldsList = getFieldss();
+            fieldsList = getFields();
         } catch (Exception e) {
             throw new CriticalException(e);
         }
@@ -106,7 +106,7 @@ public class LocatorFieldsHelper {
         fieldsHelper.addElement("label", label, locator.getFields());
     }
 
-    private List<Fields> getFieldss() throws ParserConfigurationException,
+    private List<Fields> getFields() throws ParserConfigurationException,
             FileNotFoundException, TransformerFactoryConfigurationError,
             TransformerException, ConfigNotFoundException, FieldsException {
 
@@ -120,20 +120,20 @@ public class LocatorFieldsHelper {
                     null, defaultNs);
             Document effectiveDoc = mergeSteps(doc);
 
-            // split on tasks to new Fieldss
+            // split on tasks to new Fields
             Fields holder = new Fields();
             holder.getNodes().add(effectiveDoc);
-            List<Fields> newFieldss =
+            List<Fields> newFields =
                     fieldsHelper.split("/:fields/:tasks", holder);
 
             // set new fields fields
-            for (Fields fields : newFieldss) {
+            for (Fields fields : newFields) {
                 fields.setName(xBean.getName());
                 fields.setClazz(xBean.getClazz());
                 fields.setGroup(getGroupFromNodes(fields));
             }
 
-            fieldsList.addAll(newFieldss);
+            fieldsList.addAll(newFields);
         }
         return fieldsList;
     }

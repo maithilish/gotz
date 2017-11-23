@@ -189,7 +189,7 @@ public class FieldsHelper {
     // others
 
     /**
-     * Splits fields using xpath. Creates a list of new fieldss from the nodes
+     * Splits fields using xpath. Creates a list of new fields from the nodes
      * returned by xpath. For each node, it creates deep copy of fields and sets
      * the node returned by xpath.
      *
