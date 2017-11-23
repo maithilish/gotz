@@ -36,7 +36,7 @@
                     field="li:nth-child(%{row.index}) > a[href]"
                     attribute="href">
                 </xf:query>
-                
+
                 <xf:prefix>http://www.moneycontrol.com</xf:prefix>
             </xf:fields>
         </axis>
