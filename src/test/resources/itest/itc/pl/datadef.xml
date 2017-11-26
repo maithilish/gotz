@@ -1,41 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
-    <datadef name="pl">
+
+     <datadef name="pl">
         <axis name="col">
-            <fields name="group" value="query">
-                <field name="region" value="table:contains(Employee Cost)" />
-                <field name="field" value="tr:nth-child(1) > td:nth-child(%{col.index})" />
-            </fields>
+            <xf:fields>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(1) > td:nth-child(%{col.index})" />
+            </xf:fields>
             <member name="year">
-                <field name="indexRange" value="2-6" />
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
             </member>
         </axis>
         <axis name="row">
-            <fields name="group" value="query">
-                <field name="region" value="table:contains(Employee Cost)" />
-                <field name="field" value="tr:nth-child(%{row.index}) > td:nth-child(1)" />
-            </fields>
+            <xf:fields>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+            </xf:fields>
             <member name="item" index="6">
-                <!-- <field name="indexRange" value="1-37" /> -->
-                <field name="breakAfter" value="Book Value (Rs)" />
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
             </member>
             <filter axis="row">
-                <fields name="group" value="value">
-                    <field name="blank" value="" />
-                    <field name="f1" value="Expenditure" />
-                    <field name="f2" value="Per share data (annualised)" />
-                </fields>
+                <xf:fields>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Expenditure" />
+                        <xf:filter name="f2"
+                            pattern="Per share data (annualised)" />
+                    </xf:filters>
+                </xf:fields>
             </filter>
         </axis>
         <axis name="fact">
-            <fields name="group" value="query">
-                <field name="region" value="table:contains(Employee Cost)" />
-                <field name="field"
-                    value="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
-            </fields>
+            <xf:fields>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
+            </xf:fields>
         </axis>
     </datadef>
+
 </datadefs>
-
-
