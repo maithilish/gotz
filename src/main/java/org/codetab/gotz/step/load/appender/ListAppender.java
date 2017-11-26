@@ -1,4 +1,4 @@
-package org.codetab.gotz.appender;
+package org.codetab.gotz.step.load.appender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Append objects to a list.
+ * Takes objects from queue and append them to a list, useful for integration
+ * tests.
  * @author Maithilish
  *
  */

@@ -58,6 +58,7 @@ public class ActivityService {
         activities.add(new Activity(type, message));
     }
 
+    // TODO add entity name parameter
     public void addActivity(final Type type, final String message,
             final Throwable throwable) {
         activities.add(new Activity(type, message, throwable));

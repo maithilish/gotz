@@ -15,7 +15,6 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.helper.IOHelper;
@@ -24,6 +23,8 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.step.load.appender.Appender.Marker;
+import org.codetab.gotz.step.load.appender.FileAppender;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -11,14 +11,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
+import org.codetab.gotz.step.load.appender.Appender;
+import org.codetab.gotz.step.load.appender.Appender.Marker;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,7 +56,7 @@ public class AppenderServiceTest {
     public void testCreateAppender() throws ClassNotFoundException,
             InstantiationException, IllegalAccessException, FieldsException {
 
-        String className = "org.codetab.gotz.appender.FileAppender";
+        String className = "org.codetab.gotz.step.load.appender.FileAppender";
         Fields fields = fieldsHelper.createFields();
         Node node = fieldsHelper.addElement("appender", "", fields);
         fieldsHelper.addAttribute("class", className, node);
@@ -80,7 +80,7 @@ public class AppenderServiceTest {
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, ConfigNotFoundException, FieldsException {
 
-        String className = "org.codetab.gotz.appender.FileAppender";
+        String className = "org.codetab.gotz.step.load.appender.FileAppender";
         String appenderName = "x";
         Fields fields = fieldsHelper.createFields();
         Node node = fieldsHelper.addElement("appender", "", fields);

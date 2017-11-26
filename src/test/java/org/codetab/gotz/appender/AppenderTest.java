@@ -18,6 +18,7 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.step.load.appender.ListAppender;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

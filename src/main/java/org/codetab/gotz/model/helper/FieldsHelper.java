@@ -38,21 +38,28 @@ public class FieldsHelper {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(FieldsHelper.class);
 
-    public String getValue(final String xpathExpression, final Node node)
+    /**
+     * Returns last value including blank, otherwise, throws FieldsException.
+     *
+     * @param xpathExpression
+     * @param nodes
+     * @return
+     * @throws FieldsException
+     *             on XPath error or if no matching node
+     */
+    public String getValue(final String xpathExpression, final Fields fields)
             throws FieldsException {
+        String value = null;
         XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(getNamespaceContext(node));
-        try {
-            String value = xpath.evaluate(xpathExpression, node);
-            if (StringUtils.isBlank(value)) {
-                throw new FieldsException(
-                        Util.buildString("blank or no node returned for [",
-                                xpathExpression, "]"));
+        for (Node node : fields.getNodes()) {
+            xpath.setNamespaceContext(getNamespaceContext(node));
+            try {
+                value = xpath.evaluate(xpathExpression, node);
+            } catch (XPathExpressionException e) {
+                throw new FieldsException(xpathExpression, e);
             }
-            return value;
-        } catch (XPathExpressionException e) {
-            throw new FieldsException(xpathExpression, e);
         }
+        return value;
     }
 
     /**
@@ -149,26 +156,41 @@ public class FieldsHelper {
     }
 
     public boolean isDefined(final String xpathExpression,
-            final Fields fields) {
-        /*
-         * getFirstValue returns non blank value or throws FieldsException when
-         * value is blank/null or when parse error. If it returns value then
-         * methods returns true, if throws exception and cause is Parse error
-         * methods throws exception, else return false.
-         *
-         */
-        try {
-            getFirstValue(xpathExpression, fields);
-            return true;
-        } catch (FieldsException e) {
-            return false;
+            final boolean countEmptyElements, final Fields fields) {
+        if (countEmptyElements) {
+            String xpath = "boolean(" + xpathExpression + ")";
+            try {
+                String val = getFirstValue(xpath, fields);
+                return Boolean.valueOf(val);
+            } catch (FieldsException e) {
+                return false;
+            }
+        } else {
+            /*
+             * getFirstValue returns non blank value or throws FieldsException
+             * when value is blank/null or when parse error. If it returns value
+             * then methods returns true, if throws exception and cause is Parse
+             * error methods throws exception, else return false.
+             *
+             */
+            try {
+                getFirstValue(xpathExpression, fields);
+                return true;
+            } catch (FieldsException e) {
+                return false;
+            }
         }
+    }
+
+    public boolean isDefined(final String xpathExpression,
+            final Fields fields) {
+        return isDefined(xpathExpression, false, fields);
     }
 
     public boolean isAnyDefined(final Fields fields,
             final String... xpathExpressions) {
         for (String xpathExpression : xpathExpressions) {
-            if (isDefined(xpathExpression, fields)) {
+            if (isDefined(xpathExpression, false, fields)) {
                 return true;
             }
         }

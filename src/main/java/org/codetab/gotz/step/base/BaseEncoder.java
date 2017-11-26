@@ -7,7 +7,6 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
@@ -16,6 +15,7 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
+import org.codetab.gotz.step.load.appender.Appender;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

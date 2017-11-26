@@ -1,4 +1,4 @@
-package org.codetab.gotz.converter;
+package org.codetab.gotz.step.convert.converter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -23,11 +23,12 @@
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
-                <appender name="db" stream="true"
-                    class="org.codetab.gotz.step.load.appender.DbAppender">
-                    <encoder name="dataSet"
-                        class="org.codetab.gotz.step.load.encoder.DataSetEncoder">
+                <appender name="file"
+                    class="org.codetab.gotz.step.load.appender.FileAppender">
+                    <encoder name="csv"
+                        class="org.codetab.gotz.step.load.encoder.CsvRecordEncoder">
                     </encoder>
+                    <file>output/x.txt</file>
                 </appender>
             </step>
         </steps>

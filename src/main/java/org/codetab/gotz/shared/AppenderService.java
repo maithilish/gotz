@@ -6,13 +6,13 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.appender.Appender.Marker;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
+import org.codetab.gotz.step.load.appender.Appender;
+import org.codetab.gotz.step.load.appender.Appender.Marker;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

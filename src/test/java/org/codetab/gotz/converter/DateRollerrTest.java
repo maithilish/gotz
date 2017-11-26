@@ -10,6 +10,8 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
+import org.codetab.gotz.step.convert.converter.DateRoller;
+import org.codetab.gotz.step.convert.converter.IConverter;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;

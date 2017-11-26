@@ -1,4 +1,4 @@
-package org.codetab.gotz.appender;
+package org.codetab.gotz.step.load.appender;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.persistence.DataSetPersistence;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,6 @@ public final class DbAppender extends Appender {
      * Creates a file (PrintWriter) from appenders file field. Write the objects
      * taken from blocking queue until object is Marker.EOF.
      */
-
     @Override
     public void run() {
         for (;;) {
@@ -54,15 +54,25 @@ public final class DbAppender extends Appender {
                 if (item == Marker.EOF) {
                     break;
                 }
-                @SuppressWarnings("unchecked")
-                List<DataSet> dataSets = (List<DataSet>) item;
 
-                try {
-                    dataSetPersistence.storeDataSet(dataSets);
-                } catch (StepPersistenceException e) {
-                    String message = "unable to persist dataset";
-                    LOGGER.debug("{}", e);
-                    activityService.addActivity(Type.GIVENUP, message, e);
+                if (item instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<DataSet> dataSets = (List<DataSet>) item;
+                    try {
+                        dataSetPersistence.storeDataSet(dataSets);
+                    } catch (StepPersistenceException e) {
+                        String message = "unable to persist dataset";
+                        LOGGER.debug("{}", e);
+                        activityService.addActivity(Type.GIVENUP, message, e);
+                        break;
+                    }
+
+                } else {
+                    String message = Util.buildString(
+                            "unable to persist, appended object is not list of DataSet [",
+                            item.toString(), "]");
+                    activityService.addActivity(Type.GIVENUP, message);
+                    break;
                 }
             } catch (InterruptedException e) {
                 String message = "unable to take object from queue";

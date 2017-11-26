@@ -14,8 +14,8 @@ public class DataSet {
     private String row;
     private String fact;
 
-    public DataSet(String name, String group, String col, String row,
-            String fact) {
+    public DataSet(final String name, final String group, final String col,
+            final String row, final String fact) {
         this.name = name;
         this.group = group;
         this.col = col;

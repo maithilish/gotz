@@ -1,40 +1,34 @@
 package org.codetab.gotz.step.convert;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.converter.IConverter;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
-import org.codetab.gotz.model.ColComparator;
-import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseDataConverter;
+import org.codetab.gotz.step.convert.converter.IConverter;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * <p>
- * Converts Data to list of DataSet and apply other defined conversion rules.
+ * Apply converters to Data.
  * @author Maithilish
  *
  */
-public final class DataSetConverter extends BaseDataConverter {
+public final class DataConverter extends BaseDataConverter {
 
     /**
      * logger.
      */
-    static final Logger LOGGER =
-            LoggerFactory.getLogger(DataSetConverter.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(DataConverter.class);
 
     /**
      * Returns this step.
@@ -46,10 +40,7 @@ public final class DataSetConverter extends BaseDataConverter {
     }
 
     /**
-     * Process data and append it to appenders. Sorts data using
-     * {@see ColComparator} and {@see RowComparator}. For each member in data,
-     * locator name, locator group, COL,ROW and FACT axis values are appended
-     * delimiting with "|"
+     * Get list of converters defined and apply it to applicable axis of Data.
      * @return true when no error
      * @throws StepRunException
      *             when unable to get locator name and group.
@@ -65,29 +56,6 @@ public final class DataSetConverter extends BaseDataConverter {
         Validate.validState(getFields() != null, "fields must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
-        String locatorName = null;
-        String locatorGroup = null;
-        try {
-            locatorName = fieldsHelper.getLastValue("/:fields/:locatorName",
-                    getFields());
-            locatorGroup = fieldsHelper.getLastValue("/:fields/:locatorGroup",
-                    getFields());
-        } catch (FieldsException e) {
-            String message = "unable to get locator name and group";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
-        }
-
-        // sort
-        ColComparator cc = new ColComparator();
-        Collections.sort(getData().getMembers(), cc);
-        RowComparator rc = new RowComparator();
-        Collections.sort(getData().getMembers(), rc);
-
-        List<DataSet> dataSets = new ArrayList<>();
-
         List<Fields> converters = new ArrayList<>();
         try {
             converters = fieldsHelper.split(
@@ -97,7 +65,7 @@ public final class DataSetConverter extends BaseDataConverter {
         } catch (FieldsException e) {
         }
 
-        // encode and append data
+        // convert data
         for (Member member : getData().getMembers()) {
 
             String col = member.getValue(AxisName.COL);
@@ -108,11 +76,11 @@ public final class DataSetConverter extends BaseDataConverter {
             row = convert(AxisName.ROW, row, converters);
             fact = convert(AxisName.FACT, fact, converters);
 
-            DataSet dataSet =
-                    new DataSet(locatorName, locatorGroup, col, row, fact);
-            dataSets.add(dataSet);
+            member.setValue(AxisName.COL, col);
+            member.setValue(AxisName.ROW, row);
+            member.setValue(AxisName.FACT, fact);
         }
-        setConvertedData(dataSets);
+        setConvertedData(getData());
         setConsistent(true);
         setStepState(StepState.PROCESS);
         return true;

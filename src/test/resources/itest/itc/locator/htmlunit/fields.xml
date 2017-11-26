@@ -29,7 +29,7 @@
                             value="org.codetab.gotz.steps.PassThroughEncoder" />
                         <fields name="appender" value="list">
                             <field name="class"
-                                value="org.codetab.gotz.appender.ListAppender" />
+                                value="org.codetab.gotz.step.load.appender.ListAppender" />
                         </fields>
                     </fields>
                     <fields name="group" value="persist">

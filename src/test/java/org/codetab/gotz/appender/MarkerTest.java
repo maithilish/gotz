@@ -2,7 +2,7 @@ package org.codetab.gotz.appender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.codetab.gotz.appender.Appender.Marker;
+import org.codetab.gotz.step.load.appender.Appender.Marker;
 import org.junit.Test;
 
 /**

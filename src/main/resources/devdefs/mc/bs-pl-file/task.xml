@@ -24,7 +24,7 @@
             <step name="appender" class="org.codetab.gotz.step.load.DataSetAppender">
                 <nextStep>end</nextStep>
                 <appender name="file"
-                    class="org.codetab.gotz.appender.FileAppender">
+                    class="org.codetab.gotz.step.load.appender.FileAppender">
                     <file>output/x.txt</file>
                 </appender>
             </step>
@@ -38,7 +38,7 @@
                         <nextStep>appender</nextStep>
 
                         <converter name="date"
-                            class="org.codetab.gotz.converter.DateRoller">
+                            class="org.codetab.gotz.step.load.converter.DateRoller">
                             <axis>col</axis>
                             <inPattern>MMM ''YY</inPattern>
                             <outPattern>YYYY-MM-dd</outPattern>
@@ -58,7 +58,7 @@
                         <nextStep>appender</nextStep>
 
                         <converter name="date"
-                            class="org.codetab.gotz.converter.DateRoller">
+                            class="org.codetab.gotz.step.load.converter.DateRoller">
                             <axis>col</axis>
                             <inPattern>MMM ''YY</inPattern>
                             <outPattern>YYYY-MM-dd</outPattern>

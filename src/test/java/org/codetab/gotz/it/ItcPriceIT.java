@@ -7,14 +7,14 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.codetab.gotz.GotzEngine;
-import org.codetab.gotz.appender.Appender;
-import org.codetab.gotz.appender.ListAppender;
 import org.codetab.gotz.dao.DaoUtilFactory;
 import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.step.load.appender.Appender;
+import org.codetab.gotz.step.load.appender.ListAppender;
 import org.junit.AfterClass;
 import org.junit.Test;
 

@@ -22,7 +22,7 @@
                     <field name="nextstep" value="end" />
                     <fields name="appender" value="file">
                         <field name="class"
-                            value="org.codetab.gotz.appender.FileAppender" />
+                            value="org.codetab.gotz.step.load.appender.FileAppender" />
                         <field name="file" value="output/quote.txt" />
                     </fields>
                 </fields>
@@ -53,7 +53,7 @@
                     <field name="nextstep" value="end" />
                     <fields name="appender" value="file">
                         <field name="class"
-                            value="org.codetab.gotz.appender.FileAppender" />
+                            value="org.codetab.gotz.step.load.appender.FileAppender" />
                         <field name="file" value="output/quote.txt" />
                     </fields>
                 </fields>

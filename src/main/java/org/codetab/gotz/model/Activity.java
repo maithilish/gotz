@@ -3,7 +3,7 @@ package org.codetab.gotz.model;
 public final class Activity {
 
     public enum Type {
-        GIVENUP, CONFIG, SUMMARY, FATAL
+        GIVENUP, CONFIG, SUMMARY, FATAL, WARN
     };
 
     private Type type;

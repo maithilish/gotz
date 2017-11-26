@@ -1,20 +1,24 @@
 package org.codetab.gotz.step.base;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.appender.Appender;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
+import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.AppenderService;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
+import org.codetab.gotz.step.load.appender.Appender;
+import org.codetab.gotz.step.load.encoder.IEncoder;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,15 +38,19 @@ public abstract class BaseAppender extends Step {
     static final Logger LOGGER = LoggerFactory.getLogger(BaseAppender.class);
 
     /**
-     * step input. It is converted data can be of any type (not gotz.model.Data
-     * type)
+     * step input - converted Data.
      */
-    private Object data;
+    private Data data;
 
     /**
      * list of appender names.
      */
     private final List<String> appenderNames = new ArrayList<>();
+
+    /**
+     * appenders fields map.
+     */
+    private final Map<String, Fields> appenderFieldsMap = new HashMap<>();
 
     /**
      * appender Service.
@@ -71,6 +79,7 @@ public abstract class BaseAppender extends Step {
                             .getLastValue("//:appender/@name", fields);
                     appenderService.createAppender(appenderName, fields);
                     appenderNames.add(appenderName);
+                    appenderFieldsMap.put(appenderName, fields);
                 } catch (ClassNotFoundException | InstantiationException
                         | IllegalAccessException | FieldsException e) {
                     String message = "unable to append";
@@ -97,8 +106,11 @@ public abstract class BaseAppender extends Step {
     @Override
     public void setInput(final Object input) {
         Objects.requireNonNull(input, "input must not be null");
-        data = input;
-
+        if (input instanceof Data) {
+            data = (Data) input;
+        } else {
+            throw new StepRunException("step input is not Data");
+        }
     }
 
     /**
@@ -113,10 +125,19 @@ public abstract class BaseAppender extends Step {
 
     /**
      * <p>
-     * Get dataSets for use by subclasses.
+     * Get data for use by subclasses.
      * @return data
      */
-    protected Object getData() {
+    protected Data getData() {
+        return data;
+    }
+
+    /**
+     * <p>
+     * Get encoded data for use by subclasses.
+     * @return data
+     */
+    protected Object getEncodedData() {
         return data;
     }
 
@@ -142,6 +163,59 @@ public abstract class BaseAppender extends Step {
                 throw new StepRunException(message, e);
             }
         }
+    }
+
+    protected Object encode(final String appenderName,
+            final Fields appenderFields) throws Exception {
+        Fields encoderFields = getEncoder(appenderFields);
+        addLocatorLabels(encoderFields, getFields());
+        String className =
+                fieldsHelper.getLastValue("//:encoder/@class", encoderFields);
+        @SuppressWarnings("rawtypes")
+        IEncoder encoderInstance =
+                (IEncoder) stepService.createInstance(className);
+        encoderInstance.setFields(encoderFields);
+        return encoderInstance.encode(data);
+    }
+
+    private Fields getEncoder(final Fields appenderFields)
+            throws FieldsException {
+        List<Fields> encoders = new ArrayList<>();
+        try {
+            encoders = fieldsHelper.split(
+                    Util.buildString("/:fields/:appender/:encoder"),
+                    appenderFields);
+        } catch (FieldsException e) {
+        }
+        int size = encoders.size();
+        switch (size) {
+        case 0:
+            throw new FieldsException("no encoder defined");
+        case 1:
+            return encoders.get(0);
+        default:
+            throw new FieldsException("more than one encoder defined");
+        }
+    }
+
+    private void addLocatorLabels(final Fields encoderFields,
+            final Fields stepFields) throws FieldsException {
+        // TODO move locator labels to group and add method fieldsHelper to
+        // import them from one fields to another
+        String locatorName =
+                fieldsHelper.getLastValue("/:fields/:locatorName", stepFields);
+        String locatorGroup =
+                fieldsHelper.getLastValue("/:fields/:locatorGroup", stepFields);
+        fieldsHelper.addElement("locatorName", locatorName, encoderFields);
+        fieldsHelper.addElement("locatorGroup", locatorGroup, encoderFields);
+    }
+
+    /**
+     * Returns map of appender names and its fields.
+     * @return map
+     */
+    protected Map<String, Fields> getAppenderFieldsMap() {
+        return appenderFieldsMap;
     }
 
     /**

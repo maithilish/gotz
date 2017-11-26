@@ -61,6 +61,10 @@ public final class Member extends Base {
         return getAxis(axisName).getValue();
     }
 
+    public void setValue(final AxisName axisName, final String value) {
+        getAxis(axisName).setValue(value);
+    }
+
     public StringBuilder traceMember() {
         String nl = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
