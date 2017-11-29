@@ -111,8 +111,8 @@ public class DataDefHelper {
                     if (index != null) {
                         defaultIndexRange = index + "-" + index;
                     }
-                    Element node = fieldsHelper.addElement("xf", "indexRange",
-                            "", null, fields);
+                    Element node =
+                            fieldsHelper.addElement("indexRange", "", fields);
                     fieldsHelper.addAttribute("value", defaultIndexRange, node);
                 }
 

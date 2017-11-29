@@ -110,7 +110,7 @@ public class LocatorFieldsHelper {
             FileNotFoundException, TransformerFactoryConfigurationError,
             TransformerException, ConfigNotFoundException, FieldsException {
 
-        List<Fields> fieldsList = new ArrayList<>();
+        List<Fields> flist = new ArrayList<>();
 
         List<Fields> xBeans = beanService.getBeans(Fields.class);
         for (Fields xBean : xBeans) {
@@ -118,13 +118,14 @@ public class LocatorFieldsHelper {
             String defaultNs = XmlUtils.getDefaultNs(xBean.getNodes().get(0));
             Document doc = XmlUtils.createDocument(xBean.getNodes(), "fields",
                     null, defaultNs);
-            Document effectiveDoc = mergeSteps(doc);
+            Document tdoc = mergeSteps(doc);
+            Document effectiveDoc = prefixNamespace(tdoc);
 
             // split on tasks to new Fields
             Fields holder = new Fields();
             holder.getNodes().add(effectiveDoc);
             List<Fields> newFields =
-                    fieldsHelper.split("/:fields/:tasks", holder);
+                    fieldsHelper.split("/xf:fields/xf:tasks", holder);
 
             // set new fields fields
             for (Fields fields : newFields) {
@@ -133,36 +134,58 @@ public class LocatorFieldsHelper {
                 fields.setGroup(getGroupFromNodes(fields));
             }
 
-            fieldsList.addAll(newFields);
+            flist.addAll(newFields);
         }
-        return fieldsList;
+        return flist;
     }
 
     private String getGroupFromNodes(final Fields fields)
             throws FieldsException {
-        String xpath = "/:fields/:tasks/@group";
+        String xpath = "/xf:fields/xf:tasks/@group";
         return fieldsHelper.getLastValue(xpath, fields);
     }
 
     private Document mergeSteps(final Document doc) throws FieldsException {
-        String stepsXslFile = "";
+        String xslFile = "";
         try {
-            stepsXslFile = configService.getConfig("gotz.stepsXslFile");
-            StreamSource xslSource = ioHelper.getStreamSource(stepsXslFile);
-            DOMResult domResult = new DOMResult();
+            xslFile = configService.getConfig("gotz.stepsXslFile");
+            return transform(xslFile, doc);
+        } catch (ConfigNotFoundException | FileNotFoundException
+                | TransformerFactoryConfigurationError
+                | TransformerException e) {
+            throw new FieldsException(
+                    Util.buildString("unable to merge steps [", xslFile, "]"),
+                    e);
+        }
+    }
 
-            Transformer tr =
-                    TransformerFactory.newInstance().newTransformer(xslSource);
-            tr.transform(new DOMSource(doc), domResult);
-
-            Document tDoc = (Document) domResult.getNode();
-            return tDoc;
+    private Document prefixNamespace(final Document doc)
+            throws FieldsException {
+        String xslFile = "";
+        try {
+            xslFile = configService.getConfig("gotz.fieldsNsXslFile");
+            return transform(xslFile, doc);
         } catch (ConfigNotFoundException | FileNotFoundException
                 | TransformerFactoryConfigurationError
                 | TransformerException e) {
             throw new FieldsException(Util.buildString(
-                    "unable to merge steps [", stepsXslFile, "]"), e);
+                    "unable to prefix namespace [", xslFile, "]"), e);
         }
+    }
+
+    private Document transform(final String xslFile, final Document doc)
+            throws FieldsException, FileNotFoundException,
+            TransformerFactoryConfigurationError, TransformerException {
+
+        StreamSource xslSource = ioHelper.getStreamSource(xslFile);
+        DOMResult domResult = new DOMResult();
+
+        Transformer tr =
+                TransformerFactory.newInstance().newTransformer(xslSource);
+        tr.transform(new DOMSource(doc), domResult);
+
+        Document tDoc = (Document) domResult.getNode();
+        return tDoc;
     }
 
 }

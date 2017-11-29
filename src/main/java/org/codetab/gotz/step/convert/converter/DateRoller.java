@@ -62,14 +62,15 @@ public class DateRoller implements IConverter<String, String> {
         Validate.notNull(input, "input date string must not be null");
         Validate.validState(fields != null, "fields is null");
 
-        String patternIn = fieldsHelper.getLastValue("//:inPattern", fields);
-        String patternOut = fieldsHelper.getLastValue("//:outPattern", fields);
+        String patternIn = fieldsHelper.getLastValue("//xf:inPattern", fields);
+        String patternOut =
+                fieldsHelper.getLastValue("//xf:outPattern", fields);
 
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(DateUtils.parseDate(input, patternIn));
 
         // get map of calendar fields to roll
-        String rollStr = fieldsHelper.getLastValue("//:roll", fields);
+        String rollStr = fieldsHelper.getLastValue("//xf:roll", fields);
         Map<String, String> rollMap = Util.split(rollStr, "=", " ");
 
         // roll calendar fields

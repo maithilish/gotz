@@ -61,10 +61,9 @@ public abstract class BaseEncoder extends Step {
     public boolean initialize() {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<Fields> appenders = fieldsHelper.split(
-                    Util.buildString("/:fields/:task/:steps/:step[@name='",
-                            getStepType(), "']/:appender"),
-                    getFields());
+            List<Fields> appenders = fieldsHelper.split(Util.buildString(
+                    "/xf:fields/xf:task/xf:steps/xf:step[@name='",
+                    getStepType(), "']/xf:appender"), getFields());
 
             if (appenders.isEmpty()) {
                 throw new FieldsException("no appenders");
@@ -73,7 +72,7 @@ public abstract class BaseEncoder extends Step {
             for (Fields appender : appenders) {
                 try {
                     String appenderName =
-                            fieldsHelper.getLastValue("//:name", appender);
+                            fieldsHelper.getLastValue("//xf:name", appender);
                     appenderService.createAppender(appenderName, appender);
                     appenderNames.add(appenderName);
                 } catch (ClassNotFoundException | InstantiationException

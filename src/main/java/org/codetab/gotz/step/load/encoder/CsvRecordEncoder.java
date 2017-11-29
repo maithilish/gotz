@@ -99,10 +99,10 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
      */
     private String getLocatorInfo(final String delimiter) {
         try {
-            String locatorName =
-                    fieldsHelper.getLastValue("/:fields/:locatorName", fields);
-            String locatorGroup =
-                    fieldsHelper.getLastValue("/:fields/:locatorGroup", fields);
+            String locatorName = fieldsHelper
+                    .getLastValue("/xf:fields/xf:locatorName", fields);
+            String locatorGroup = fieldsHelper
+                    .getLastValue("/xf:fields/xf:locatorGroup", fields);
             return Util.buildString(locatorName, delimiter, locatorGroup);
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";

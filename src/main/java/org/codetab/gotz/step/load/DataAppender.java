@@ -36,8 +36,8 @@ public class DataAppender extends BaseAppender {
             for (String appenderName : appenderFieldsMap.keySet()) {
                 Fields appenderFields = appenderFieldsMap.get(appenderName);
                 Object encodedData = encode(appenderName, appenderFields);
-                String stream = fieldsHelper
-                        .getValue("/:fields/:appender/@stream", appenderFields);
+                String stream = fieldsHelper.getValue(
+                        "/xf:fields/xf:appender/@stream", appenderFields);
                 if (encodedData instanceof Collection) {
                     Collection<?> list = (Collection<?>) encodedData;
                     if (stream.equalsIgnoreCase("false")) {

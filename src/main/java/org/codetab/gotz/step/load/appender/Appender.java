@@ -109,8 +109,8 @@ public abstract class Appender implements Runnable {
         } catch (ConfigNotFoundException e) {
         }
         try {
-            queueSize =
-                    fieldsHelper.getLastValue("//:appender/:queueSize", fields);
+            queueSize = fieldsHelper.getLastValue("//xf:appender/xf:queueSize",
+                    fields);
         } catch (FieldsException e) {
         }
         /*

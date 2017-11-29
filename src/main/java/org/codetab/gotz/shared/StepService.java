@@ -139,7 +139,7 @@ public class StepService {
     private List<String> getNextStepClasses(final Fields fields,
             final String stepType) throws FieldsException {
 
-        String xpath = Util.buildString("//:task/:steps/:step[@name='",
+        String xpath = Util.buildString("//xf:task/xf:steps/xf:step[@name='",
                 stepType, "']/@class");
         List<String> stepClasses = fieldsHelper.getValues(xpath, fields);
 
@@ -153,8 +153,8 @@ public class StepService {
     public String getNextStepType(final Fields fields, final String stepType)
             throws FieldsException {
         // TODO need to check behavior when multiple matching nodes exists
-        String xpath = Util.buildString("//:task/:steps/:step[@name='",
-                stepType, "']/:nextStep");
+        String xpath = Util.buildString("//xf:task/xf:steps/xf:step[@name='",
+                stepType, "']/xf:nextStep");
         String nextStepType = fieldsHelper.getFirstValue(xpath, fields);
         return nextStepType;
     }

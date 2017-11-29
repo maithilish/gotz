@@ -52,12 +52,12 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean initialize() {
         try {
-            dataDefName = fieldsHelper.getLastValue("/:fields/:task/@dataDef",
-                    getFields());
+            dataDefName = fieldsHelper
+                    .getLastValue("/xf:fields/xf:task/@dataDef", getFields());
             String locatorName = fieldsHelper
-                    .getLastValue("/:fields/:locatorName", getFields());
+                    .getLastValue("/xf:fields/xf:locatorName", getFields());
             String locatorGroup = fieldsHelper
-                    .getLastValue("/:fields/:locatorGroup", getFields());
+                    .getLastValue("/xf:fields/xf:locatorGroup", getFields());
             marker = MarkerUtil.getMarker(locatorName, locatorGroup,
                     dataDefName);
         } catch (FieldsException e) {
@@ -122,8 +122,8 @@ public abstract class BaseParser extends Step {
     public boolean store() {
         boolean persist = true;
         try {
-            persist = fieldsHelper.isTrue("/:fields/:task/:persist/:data",
-                    getFields());
+            persist = fieldsHelper.isTrue(
+                    "/xf:fields/xf:task/xf:persist/xf:data", getFields());
         } catch (FieldsException e) {
         }
         if (persist) {

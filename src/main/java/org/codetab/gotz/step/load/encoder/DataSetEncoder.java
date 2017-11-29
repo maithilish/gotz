@@ -45,10 +45,10 @@ public class DataSetEncoder implements IEncoder<List<DataSet>> {
         String locatorName = null;
         String locatorGroup = null;
         try {
-            locatorName =
-                    fieldsHelper.getLastValue("/:fields/:locatorName", fields);
-            locatorGroup =
-                    fieldsHelper.getLastValue("/:fields/:locatorGroup", fields);
+            locatorName = fieldsHelper.getLastValue("/xf:fields/xf:locatorName",
+                    fields);
+            locatorGroup = fieldsHelper
+                    .getLastValue("/xf:fields/xf:locatorGroup", fields);
         } catch (FieldsException e) {
             String message = "unable to get locator name and group";
             LOGGER.error("{} {}", message, Util.getMessage(e));

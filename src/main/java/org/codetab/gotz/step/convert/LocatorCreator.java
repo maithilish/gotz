@@ -70,7 +70,7 @@ public final class LocatorCreator extends BaseConverter {
     private Locator createLocator(final Member member) throws FieldsException {
         Locator locator = new Locator();
         locator.setName(
-                fieldsHelper.getLastValue("//:locatorName", getFields()));
+                fieldsHelper.getLastValue("//xf:locatorName", getFields()));
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
             String message = Util.buildString(

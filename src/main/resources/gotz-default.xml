@@ -6,6 +6,7 @@
         <beanFile>/bean.xml</beanFile>
         <schemaFile>/schema/gotz.xsd</schemaFile>
         <stepsXslFile>/schema/steps.xsl</stepsXslFile>
+        <fieldsNsXslFile>/schema/fieldsns.xsl</fieldsNsXslFile>
         <seederClass>org.codetab.gotz.step.extract.LocatorSeeder</seederClass>
         <datastore>
             <name>datastore</name>

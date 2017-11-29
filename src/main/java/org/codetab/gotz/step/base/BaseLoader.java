@@ -230,7 +230,8 @@ public abstract class BaseLoader extends Step {
 
         boolean persist = true;
         try {
-            persist = fieldsHelper.isTrue("/:fields/:tasks/:persist/:document",
+            persist = fieldsHelper.isTrue(
+                    "/xf:fields/xf:tasks/xf:persist/xf:document",
                     locator.getFields());
         } catch (FieldsException e) {
         }
@@ -286,7 +287,7 @@ public abstract class BaseLoader extends Step {
 
         List<Fields> tasks = null;
         try {
-            tasks = fieldsHelper.split("/:fields/:tasks/:task",
+            tasks = fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
                     locator.getFields());
         } catch (FieldsException e) {
             LOGGER.error("{} {}", errorMessage, e);

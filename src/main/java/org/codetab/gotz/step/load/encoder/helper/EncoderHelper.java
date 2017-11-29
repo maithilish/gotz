@@ -27,7 +27,7 @@ public class EncoderHelper {
     public void sort(final Data data, final Fields fields) {
         String sortOrder = null;
 
-        String xpath = "/:fields/:encoder/:sortOrder";
+        String xpath = "/xf:fields/xf:encoder/xf:sortOrder";
         if (fieldsHelper.isDefined(xpath, true, fields)) {
             try {
                 sortOrder = fieldsHelper.getValue(xpath, fields);
@@ -68,7 +68,7 @@ public class EncoderHelper {
         String delimiter = "|";
         try {
             delimiter = fieldsHelper
-                    .getLastValue("/:fields/:encoder/:delimiter", fields);
+                    .getLastValue("/xf:fields/xf:encoder/xf:delimiter", fields);
         } catch (FieldsException e) {
         }
         return delimiter;

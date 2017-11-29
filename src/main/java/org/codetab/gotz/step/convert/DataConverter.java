@@ -55,10 +55,9 @@ public final class DataConverter extends BaseConverter {
 
         List<Fields> converters = new ArrayList<>();
         try {
-            converters = fieldsHelper.split(
-                    Util.buildString("/:fields/:task/:steps/:step[@name='",
-                            getStepType(), "']/:converter"),
-                    getFields());
+            converters = fieldsHelper.split(Util.buildString(
+                    "/xf:fields/xf:task/xf:steps/xf:step[@name='",
+                    getStepType(), "']/xf:converter"), getFields());
         } catch (FieldsException e) {
         }
 
@@ -89,11 +88,11 @@ public final class DataConverter extends BaseConverter {
         String rvalue = value;
         for (Fields fields : converters) {
             try {
-                String axisName =
-                        fieldsHelper.getLastValue("//:converter/:axis", fields);
+                String axisName = fieldsHelper
+                        .getLastValue("//xf:converter/xf:axis", fields);
                 if (axis.name().equalsIgnoreCase(axisName)) {
                     String className = fieldsHelper
-                            .getLastValue("//:converter/@class", fields);
+                            .getLastValue("//xf:converter/@class", fields);
                     try {
                         @SuppressWarnings("rawtypes")
                         IConverter converter = (IConverter) stepService

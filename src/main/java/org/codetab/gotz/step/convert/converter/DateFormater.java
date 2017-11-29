@@ -44,8 +44,9 @@ public class DateFormater implements IConverter<String, String> {
         Validate.notNull(input, "input date string must not be null");
         Validate.validState(fields != null, "fields is null");
 
-        String patternIn = fieldsHelper.getLastValue("//:inPattern", fields);
-        String patternOut = fieldsHelper.getLastValue("//:outPattern", fields);
+        String patternIn = fieldsHelper.getLastValue("//xf:inPattern", fields);
+        String patternOut =
+                fieldsHelper.getLastValue("//xf:outPattern", fields);
 
         Date date = DateUtils.parseDate(input, patternIn);
         return DateFormatUtils.format(date, patternOut);

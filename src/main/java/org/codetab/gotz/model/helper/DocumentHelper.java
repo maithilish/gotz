@@ -128,7 +128,8 @@ public class DocumentHelper {
         // extract live value
         String live = null;
         try {
-            live = fieldsHelper.getLastValue("/:fields/:tasks/:live", fields);
+            live = fieldsHelper.getLastValue("/xf:fields/xf:tasks/xf:live",
+                    fields);
         } catch (FieldsException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
                     label);

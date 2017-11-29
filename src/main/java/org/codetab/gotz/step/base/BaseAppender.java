@@ -68,15 +68,14 @@ public abstract class BaseAppender extends Step {
     public boolean initialize() {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<Fields> appenders = fieldsHelper.split(
-                    Util.buildString("/:fields/:task/:steps/:step[@name='",
-                            getStepType(), "']/:appender"),
-                    getFields());
+            List<Fields> appenders = fieldsHelper.split(Util.buildString(
+                    "/xf:fields/xf:task/xf:steps/xf:step[@name='",
+                    getStepType(), "']/xf:appender"), getFields());
 
             for (Fields fields : appenders) {
                 try {
                     String appenderName = fieldsHelper
-                            .getLastValue("//:appender/@name", fields);
+                            .getLastValue("//xf:appender/@name", fields);
                     appenderService.createAppender(appenderName, fields);
                     appenderNames.add(appenderName);
                     appenderFieldsMap.put(appenderName, fields);
@@ -170,7 +169,7 @@ public abstract class BaseAppender extends Step {
         Fields encoderFields = getEncoder(appenderFields);
         addLocatorLabels(encoderFields, getFields());
         String className =
-                fieldsHelper.getLastValue("//:encoder/@class", encoderFields);
+                fieldsHelper.getLastValue("//xf:encoder/@class", encoderFields);
         @SuppressWarnings("rawtypes")
         IEncoder encoderInstance =
                 (IEncoder) stepService.createInstance(className);
@@ -183,7 +182,7 @@ public abstract class BaseAppender extends Step {
         List<Fields> encoders = new ArrayList<>();
         try {
             encoders = fieldsHelper.split(
-                    Util.buildString("/:fields/:appender/:encoder"),
+                    Util.buildString("/xf:fields/xf:appender/xf:encoder"),
                     appenderFields);
         } catch (FieldsException e) {
         }
@@ -202,10 +201,10 @@ public abstract class BaseAppender extends Step {
             final Fields stepFields) throws FieldsException {
         // TODO move locator labels to group and add method fieldsHelper to
         // import them from one fields to another
-        String locatorName =
-                fieldsHelper.getLastValue("/:fields/:locatorName", stepFields);
-        String locatorGroup =
-                fieldsHelper.getLastValue("/:fields/:locatorGroup", stepFields);
+        String locatorName = fieldsHelper
+                .getLastValue("/xf:fields/xf:locatorName", stepFields);
+        String locatorGroup = fieldsHelper
+                .getLastValue("/xf:fields/xf:locatorGroup", stepFields);
         fieldsHelper.addElement("locatorName", locatorName, encoderFields);
         fieldsHelper.addElement("locatorGroup", locatorGroup, encoderFields);
     }

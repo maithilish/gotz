@@ -204,7 +204,7 @@ public class FieldsHelper {
     }
 
     public String getLabel(final Fields fields) throws FieldsException {
-        String xpath = "/:fields/:label";
+        String xpath = "/xf:fields/xf:label";
         return getLastValue(xpath, fields);
     }
 
@@ -359,7 +359,7 @@ public class FieldsHelper {
     public Element addElement(final String name, final String text,
             final Fields fields) throws FieldsException {
         // default namespace
-        return addElement(null, name, text, null, fields);
+        return addElement("xf", name, text, null, fields);
     }
 
     public Element addElement(final String name, final String text,
