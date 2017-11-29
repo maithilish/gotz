@@ -3,6 +3,6 @@
 <locators xmlns="http://codetab.org/gotz">
     <locators group="quote">
         <locator name="ITC"
-            url="src/test/resources/itest/itc/all-loader/itc-quote-local-file.html" />
+            url="src/test/resources/itest/itc/all-loader/itc-quote.html" />
     </locators>
 </locators>

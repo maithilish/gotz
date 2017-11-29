@@ -28,6 +28,7 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.DocumentHelper;
+import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseParser;
 import org.codetab.gotz.util.Util;
@@ -43,7 +44,7 @@ import com.gargoylesoftware.htmlunit.html.DomNode;
 import com.gargoylesoftware.htmlunit.html.HTMLParser;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public abstract class HtmlParser extends BaseParser {
+public class HtmlParser extends BaseParser {
 
     static final Logger LOGGER = LoggerFactory.getLogger(HtmlParser.class);
 
@@ -60,6 +61,11 @@ public abstract class HtmlParser extends BaseParser {
 
     public HtmlParser() {
         nodeMap = new HashMap<Integer, List<?>>();
+    }
+
+    @Override
+    public IStep instance() {
+        return this;
     }
 
     @Override
@@ -177,7 +183,7 @@ public abstract class HtmlParser extends BaseParser {
         try {
             Map<String, String> scripts = new HashMap<>();
             scripts.put("script",
-                    fieldsHelper.getLastValue("//xf:script/@value", fields));
+                    fieldsHelper.getLastValue("//xf:script/@script", fields));
             setTraceString(sb, scripts, "<<<");
             fieldsHelper.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, ">>>>");

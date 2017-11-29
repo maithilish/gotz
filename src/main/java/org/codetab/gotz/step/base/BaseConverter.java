@@ -18,13 +18,12 @@ import org.slf4j.LoggerFactory;
  * @author Maithilish
  *
  */
-public abstract class BaseDataConverter extends Step {
+public abstract class BaseConverter extends Step {
 
     /**
      * logger.
      */
-    static final Logger LOGGER =
-            LoggerFactory.getLogger(BaseDataConverter.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(BaseConverter.class);
 
     /**
      * step input.

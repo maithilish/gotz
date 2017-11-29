@@ -5,13 +5,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.step.base.BaseDataConverter;
+import org.codetab.gotz.step.base.BaseConverter;
 import org.codetab.gotz.step.convert.converter.IConverter;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -23,7 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author Maithilish
  *
  */
-public final class DataConverter extends BaseDataConverter {
+public final class DataConverter extends BaseConverter {
 
     /**
      * logger.
@@ -42,8 +41,6 @@ public final class DataConverter extends BaseDataConverter {
     /**
      * Get list of converters defined and apply it to applicable axis of Data.
      * @return true when no error
-     * @throws StepRunException
-     *             when unable to get locator name and group.
      */
     @Override
     public boolean process() {

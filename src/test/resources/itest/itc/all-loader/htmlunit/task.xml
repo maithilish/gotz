@@ -16,10 +16,14 @@
             </step>
             <step name="parser"
                 class="org.codetab.gotz.step.extract.HtmlParser">
-                <nextStep>filter</nextStep>
+                <nextStep>process</nextStep>
             </step>
-            <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
+            <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
                 <nextStep>converter</nextStep>
+            </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataConverter">
+                <nextStep>appender</nextStep>
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
@@ -31,6 +35,44 @@
                 </appender>
             </step>
         </steps>
+
+        <tasks name="quote" group="quote">
+            <task name="finlocators" dataDef="finlocators">
+                <steps ref="stepsSeq">
+                    <step name="process"
+                        class="org.codetab.gotz.step.convert.LocatorCreator">
+                        <nextStep>loader</nextStep>
+                    </step>
+                </steps>
+            </task>
+            <task name="quotePage" dataDef="quotePage">
+                <steps ref="stepsSeq" />
+            </task>
+            <task name="price" dataDef="price">
+                <steps ref="stepsSeq" />
+            </task>
+            <live>P0D</live>
+        </tasks>
+
+        <tasks name="bs" group="bs">
+            <task name="bs" dataDef="bs">
+                <steps ref="stepsSeq">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>YYYY-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
+            <live>P0D</live>
+        </tasks>
 
         <tasks name="pl" group="pl">
             <task name="pl" dataDef="pl">

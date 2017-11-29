@@ -15,7 +15,7 @@
                 <unique>true</unique>
             </step>
             <step name="parser"
-                class="org.codetab.gotz.step.extract.JSoupHtmlDataParser">
+                class="org.codetab.gotz.step.extract.JSoupHtmlParser">
                 <nextStep>filter</nextStep>
             </step>
             <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
@@ -23,7 +23,7 @@
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
-                <appender name="db" stream="true"
+                <appender name="db" stream="false"
                     class="org.codetab.gotz.step.load.appender.DbAppender">
                     <encoder name="dataSet"
                         class="org.codetab.gotz.step.load.encoder.DataSetEncoder">

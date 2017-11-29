@@ -1,39 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+
     <datadef name="finlocators">
-        <field name="type" value="locator" />
-        <fields name="member" value="bs">
-            <field name="group" value="quote" />
-        </fields>
-        <fields name="member" value="pl">
-            <field name="group" value="quote" />
-        </fields>
+        <xf:fields>
+            <xf:member name="bs">
+                <xf:group>bs</xf:group>
+            </xf:member>
+            <xf:member name="pl">
+                <xf:group>pl</xf:group>
+            </xf:member>
+        </xf:fields>
+
         <axis name="col">
-            <fields name="group" value="script">
-                <field name="script" value="configs.getRunDateTime()" />
-            </fields>
+            <xf:fields>
+                <xf:script script="configs.getRunDateTime()" />
+            </xf:fields>
             <member name="date" />
         </axis>
         <axis name="row">
-            <fields name="group" value="query">
-                <field name="region" value="//*[@id='quickLinkPrc']/table" />
-                <field name="field" value="//li/a[contains(.,'%{row.match}')]" />
-            </fields>
+            <xf:fields>
+                <xf:query region="//*[@id='quickLinkPrc']/table"
+                    field="//li/a[contains(.,'%{row.match}')]" />
+            </xf:fields>
             <member name="bs" match="Balance Sheet" />
             <member name="pl" match="Profit &amp; Loss" />
         </axis>
         <axis name="fact">
-            <fields name="group" value="query">
-                <field name="region" value="//*[@id='quickLinkPrc']/table" />
-                <field name="field"
-                    value="*//a[contains(.,'%{row.match}')]/@href" />
-            </fields>
-            <fields name="group" value="prefix">
-                <field name="prefix" value="http://www.moneycontrol.com" />
-            </fields>
+            <xf:fields>
+                <xf:query region="//*[@id='quickLinkPrc']/table"
+                    field="*//a[contains(.,'%{row.match}')]/@href" />
+                <xf:prefix>http://www.moneycontrol.com</xf:prefix>
+            </xf:fields>
         </axis>
     </datadef>
+
 </datadefs>
 
 

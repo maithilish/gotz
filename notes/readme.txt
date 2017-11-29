@@ -170,6 +170,9 @@ skip tests and run integration tests
 find selector
    mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector" 
        -Dexec.args="fileName 'selector' "
+ example
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector" 
+   -Dexec.args="src/main/resources/devdefs/mc/parse-locator-file/itc-quote.html 'div#mktdet_2 div:matchesOwn(^P/E$)' "        
         
 javadoc
    mvn javadoc:javadoc

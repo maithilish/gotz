@@ -15,7 +15,7 @@
                 <unique>true</unique>
             </step>
             <step name="parser"
-                class="org.codetab.gotz.step.extract.JSoupHtmlDataParser">
+                class="org.codetab.gotz.step.extract.JSoupHtmlParser">
                 <nextStep>filter</nextStep>
             </step>
             <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
@@ -26,7 +26,7 @@
                 <appender name="file"
                     class="org.codetab.gotz.step.load.appender.FileAppender">
                     <encoder name="csv"
-                        class="org.codetab.gotz.step.load.encoder.CsvRecordEncoder">
+                        class="org.codetab.gotz.step.load.encoder.CsvEncoder">
                     </encoder>
                     <file>output/x.txt</file>
                 </appender>

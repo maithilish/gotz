@@ -19,7 +19,7 @@
                 <nextStep>filter</nextStep>
             </step>
             <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
-                <nextStep>converter</nextStep>
+                <nextStep>appender</nextStep>
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
@@ -32,22 +32,9 @@
             </step>
         </steps>
 
-        <tasks name="pl" group="pl">
-            <task name="pl" dataDef="pl">
-                <steps ref="stepsSeq">
-                    <step name="converter"
-                        class="org.codetab.gotz.step.convert.DataConverter">
-                        <nextStep>appender</nextStep>
-
-                        <converter name="date"
-                            class="org.codetab.gotz.step.convert.converter.DateRoller">
-                            <axis>col</axis>
-                            <inPattern>MMM ''YY</inPattern>
-                            <outPattern>YYYY-MM-dd</outPattern>
-                            <roll>DAY_OF_MONTH=ceil</roll>
-                        </converter>
-                    </step>
-                </steps>
+        <tasks name="quote" group="quote">
+            <task name="price" dataDef="price">
+                <steps ref="stepsSeq" />
             </task>
             <live>P0D</live>
         </tasks>

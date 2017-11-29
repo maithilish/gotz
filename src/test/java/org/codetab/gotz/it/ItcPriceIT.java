@@ -2,29 +2,38 @@ package org.codetab.gotz.it;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+
+import javax.jdo.PersistenceManagerFactory;
 
 import org.codetab.gotz.GotzEngine;
 import org.codetab.gotz.dao.DaoUtilFactory;
 import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
+import org.codetab.gotz.dao.jdo.LocatorDao;
 import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.shared.AppenderService;
-import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.step.load.appender.Appender;
 import org.codetab.gotz.step.load.appender.ListAppender;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class ItcPriceIT {
 
     private static IDaoUtil daoUtil;
+    private static PersistenceManagerFactory pmf;
     private static HashSet<String> schemaClasses;
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    @BeforeClass
+    public static void setUpBeforeClass() throws IOException {
         schemaClasses = new HashSet<>();
         schemaClasses.add("org.codetab.gotz.model.DataDef");
         schemaClasses.add("org.codetab.gotz.model.Locator");
@@ -32,7 +41,29 @@ public class ItcPriceIT {
         schemaClasses.add("org.codetab.gotz.model.Data");
 
         daoUtil = DaoUtilFactory.getDaoFactory(ORM.JDO).getUtilDao();
+        pmf = daoUtil.getPersistenceManagerFactory();
+
         daoUtil.deleteSchemaForClasses(schemaClasses);
+        daoUtil.clearCache();
+    }
+
+    @AfterClass
+    public static void tearDownAfterClass() throws Exception {
+        daoUtil.deleteSchemaForClasses(schemaClasses);
+        daoUtil.clearCache();
+    }
+
+    @Before
+    public void setUp() {
+        // create schema
+        daoUtil.createSchemaForClasses(schemaClasses);
+    }
+
+    @After
+    public void tearDown() {
+        // drop schema
+        daoUtil.deleteSchemaForClasses(schemaClasses);
+        // clear cache
         daoUtil.clearCache();
     }
 
@@ -45,7 +76,6 @@ public class ItcPriceIT {
         GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);
         gotzEngine.start();
 
-        ConfigService configService = dInjector.instance(ConfigService.class);
         AppenderService appenderService =
                 dInjector.instance(AppenderService.class);
         Appender ap = appenderService.getAppender("list");
@@ -55,8 +85,12 @@ public class ItcPriceIT {
         }
 
         List<Object> actual = listAppender.getList();
-        List<String> expected = Arrays.asList("ITC |quote |"
-                + configService.getRunDateTime() + " |Price |315.25");
+        LocatorDao locatorDao = new LocatorDao(pmf);
+        Locator locator = locatorDao.getLocator("ITC", "quote");
+        Date fromDate = locator.getDocuments().get(0).getFromDate();
+
+        List<String> expected =
+                Arrays.asList("ITC|quote|" + fromDate + "|Price|315.25");
 
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).containsAll(expected);
@@ -72,7 +106,6 @@ public class ItcPriceIT {
         GotzEngine gotzEngine = dInjector.instance(GotzEngine.class);
         gotzEngine.start();
 
-        ConfigService configService = dInjector.instance(ConfigService.class);
         AppenderService appenderService =
                 dInjector.instance(AppenderService.class);
         Appender ap = appenderService.getAppender("list");
@@ -82,8 +115,13 @@ public class ItcPriceIT {
         }
 
         List<Object> actual = listAppender.getList();
-        List<String> expected = Arrays.asList("ITC |quote |"
-                + configService.getRunDateTime() + " |Price |315.25");
+
+        LocatorDao locatorDao = new LocatorDao(pmf);
+        Locator locator = locatorDao.getLocator("ITC", "quote");
+        Date fromDate = locator.getDocuments().get(0).getFromDate();
+
+        List<String> expected =
+                Arrays.asList("ITC|quote|" + fromDate + "|Price|315.25");
 
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).containsAll(expected);

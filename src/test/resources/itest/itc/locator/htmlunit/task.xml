@@ -16,37 +16,20 @@
             </step>
             <step name="parser"
                 class="org.codetab.gotz.step.extract.HtmlParser">
-                <nextStep>filter</nextStep>
-            </step>
-            <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
-                <nextStep>converter</nextStep>
+                <nextStep>appender</nextStep>
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
                 <appender name="list"
                     class="org.codetab.gotz.step.load.appender.ListAppender">
-                    <encoder name="csv"
-                        class="org.codetab.gotz.step.load.encoder.CsvEncoder">
-                    </encoder>
+                    <encoder class="org.codetab.gotz.step.load.encoder.CsvEncoder"/>
                 </appender>
             </step>
         </steps>
 
-        <tasks name="pl" group="pl">
-            <task name="pl" dataDef="pl">
-                <steps ref="stepsSeq">
-                    <step name="converter"
-                        class="org.codetab.gotz.step.convert.DataConverter">
-                        <nextStep>appender</nextStep>
-
-                        <converter name="date"
-                            class="org.codetab.gotz.step.convert.converter.DateRoller">
-                            <axis>col</axis>
-                            <inPattern>MMM ''YY</inPattern>
-                            <outPattern>YYYY-MM-dd</outPattern>
-                            <roll>DAY_OF_MONTH=ceil</roll>
-                        </converter>
-                    </step>
+        <tasks name="quote" group="quote">
+            <task name="finlocators" dataDef="finlocators">
+                <steps ref="stepsSeq">               
                 </steps>
             </task>
             <live>P0D</live>

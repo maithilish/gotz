@@ -1,4 +1,4 @@
-package org.codetab.gotz.step.extract;
+package org.codetab.gotz.step.convert;
 
 import javax.inject.Inject;
 
@@ -11,14 +11,24 @@ import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.step.IStep;
+import org.codetab.gotz.step.base.BaseConverter;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
+/**
+ * <p>
+ * Creates new locators from Data.
+ * @author Maithilish
+ *
+ */
+public final class LocatorCreator extends BaseConverter {
 
-    static final Logger LOGGER =
-            LoggerFactory.getLogger(JSoupHtmlLocatorParser.class);
+    /**
+     * logger.
+     */
+    private static final Logger LOGGER =
+            LoggerFactory.getLogger(LocatorCreator.class);
 
     @Inject
     private LocatorFieldsHelper locatorFieldsHelper;
@@ -35,15 +45,19 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
             Locator locator = null;
             try {
                 locator = createLocator(member);
+                setConvertedData(locator);
+                setConsistent(true);
             } catch (FieldsException e) {
                 String givenUpMessage = "unable to create locator";
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
+
             Fields nextStepField = createNextStepFields(locator);
             // List<Locator> locatorList = new ArrayList<>();
             // locatorList.add(locator);
+
             stepService.pushTask(this, locator, nextStepField);
             try {
                 Thread.sleep(sleepMillis);
@@ -99,4 +113,11 @@ public final class JSoupHtmlLocatorParser extends JSoupHtmlParser {
         // not required - don't throw illegal oper
         return false;
     }
+
+    @Override
+    public boolean process() {
+        // not required - don't throw illegal oper
+        return false;
+    }
+
 }

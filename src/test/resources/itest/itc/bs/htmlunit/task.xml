@@ -15,7 +15,7 @@
                 <unique>true</unique>
             </step>
             <step name="parser"
-                class="org.codetab.gotz.step.extract.HtmlDataParser">
+                class="org.codetab.gotz.step.extract.HtmlParser">
                 <nextStep>filter</nextStep>
             </step>
             <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">

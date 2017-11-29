@@ -52,15 +52,15 @@
         <axis name="row">
             <xf:fields>
                 <xf:query region="div#mktdet_2"
-                    field="div:containsOwn(%{row.match})" />
+                    field="div:matchesOwn(^%{row.match})" />
             </xf:fields>
             <member name="MC" match="MARKET CAP" />
-            <member name="EPS" match="EPS (TTM)" />
+            <member name="EPS" match="EPS \(TTM\)" />
             <member name="PE" match="P/E" />
             <member name="PC" match="P/C" />
             <member name="BV" match="BOOK VALUE" />
             <member name="PB" match="PRICE/BOOK" />
-            <member name="DIV" match="DIV (%)" />
+            <member name="DIV" match="DIV \(%\)" />
             <member name="DY" match="DIV YIELD" />
             <member name="FV" match="FACE VALUE" />
             <member name="IND PE" match="INDUSTRY P/E" />
@@ -68,7 +68,7 @@
         <axis name="fact">
             <xf:fields>
                 <xf:query region="div#mktdet_2"
-                    field="div:containsOwn(%{row.match}) + div" />
+                    field="div:matchesOwn(^%{row.match}) + div" />
             </xf:fields>
         </axis>
     </datadef>

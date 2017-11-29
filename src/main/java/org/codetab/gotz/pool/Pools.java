@@ -173,7 +173,7 @@ public abstract class Pools {
             } catch (NumberFormatException | ConfigNotFoundException e) {
                 LOGGER.warn(
                         "unable to get pool size for [{}], defaults to {}. {}",
-                        key, POOL_SIZE, e);
+                        key, POOL_SIZE);
             }
             executor = Executors.newFixedThreadPool(poolSize);
             LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName,

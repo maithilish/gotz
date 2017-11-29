@@ -86,7 +86,7 @@ public class LocatorFieldsHelper {
             }
         }
         // if not found, return empty fields
-        Fields fields = new Fields();
+        Fields fields = fieldsHelper.createFields();
         fields.setName("locator");
         fields.setGroup(group);
         fields.setClazz(clazz);

@@ -17,7 +17,7 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.step.base.BaseFilter;
+import org.codetab.gotz.step.base.BaseConverter;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Maithilish
  *
  */
-public final class DataFilter extends BaseFilter {
+public final class DataFilter extends BaseConverter {
 
     /**
      * logger.
@@ -70,6 +70,7 @@ public final class DataFilter extends BaseFilter {
         for (Member member : forRemovalMembers) {
             getData().getMembers().remove(member);
         }
+        setConvertedData(getData());
         dataDefService.traceDataStructure(getData().getDataDef(), getData());
         setConsistent(true);
         setStepState(StepState.PROCESS);

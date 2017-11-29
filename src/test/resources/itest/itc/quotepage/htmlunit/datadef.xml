@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+
     <datadef name="quotePage">
         <axis name="col">
-            <fields name="group" value="script">
-                <field name="script" value="document.getFromDate()" />
-            </fields>
+            <xf:fields>
+                <xf:script script="document.getFromDate()" />
+            </xf:fields>
             <member name="date" />
         </axis>
         <axis name="row">
-            <fields name="group" value="query">
-                <field name="region" value="//*[@id='mktdet_2']" />
-                <field name="field"
-                    value="div/div/div[starts-with(child::text(),'%{row.match}')]/child::text()" />
-            </fields>
+            <xf:fields>
+                <xf:query region="//*[@id='mktdet_2']"
+                    field="div/div/div[starts-with(child::text(),'%{row.match}')]/child::text()" />
+            </xf:fields>
             <member name="MC" match="MARKET CAP" />
-            <member name="EPS" match="EPS" />
+            <member name="EPS" match="EPS (TTM)" />
             <member name="PE" match="P/E" />
             <member name="PC" match="P/C" />
             <member name="BV" match="BOOK VALUE" />
@@ -26,13 +28,11 @@
             <member name="IND PE" match="INDUSTRY P/E" />
         </axis>
         <axis name="fact">
-            <fields name="group" value="query">
-                <field name="region" value="//*[@id='mktdet_2']" />
-                <field name="field"
-                    value="div/div/div[starts-with(child::text(),'%{row.match}')]/following-sibling::div[1]" />
-            </fields>
+            <xf:fields>
+                <xf:query region="//*[@id='mktdet_2']"
+                    field="div/div/div[starts-with(child::text(),'%{row.match}')]/following-sibling::div[1]" />
+            </xf:fields>
         </axis>
     </datadef>
+
 </datadefs>
-
-
