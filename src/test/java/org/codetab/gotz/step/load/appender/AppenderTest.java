@@ -1,4 +1,4 @@
-package org.codetab.gotz.appender;
+package org.codetab.gotz.step.load.appender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -18,7 +18,6 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
-import org.codetab.gotz.step.load.appender.ListAppender;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

@@ -289,6 +289,9 @@ public abstract class BaseLoader extends Step {
         try {
             tasks = fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
                     locator.getFields());
+            if (tasks.size() == 0) {
+                throw new FieldsException("no task defined");
+            }
         } catch (FieldsException e) {
             LOGGER.error("{} {}", errorMessage, e);
             activityService.addActivity(Type.GIVENUP, errorMessage, e);

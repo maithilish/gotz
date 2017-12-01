@@ -455,15 +455,14 @@ public class FieldsHelper {
     }
 
     public Fields createFields() throws FieldsException {
-        // no prefix
-        return createFields(null);
+        return createFields("xf");
     }
 
     public Fields createFields(final String namespacePrefix)
             throws FieldsException {
         Document doc;
         try {
-            doc = XmlUtils.createDocument("xfields", namespacePrefix,
+            doc = XmlUtils.createDocument("fields", namespacePrefix,
                     "http://codetab.org/xfields");
             Fields fields = new Fields();
             fields.getNodes().add(doc);

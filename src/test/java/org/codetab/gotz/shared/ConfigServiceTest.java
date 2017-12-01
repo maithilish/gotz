@@ -26,9 +26,9 @@ import org.mockito.MockitoAnnotations;
 
 public class ConfigServiceTest {
 
-    private static final int DEFAULT_CONFIGS_COUNT = 19;
+    private static final int DEFAULT_CONFIGS_COUNT = 21;
 
-    private static final int USER_PROVIDED_CONFIGS_COUNT = 20;
+    private static final int USER_PROVIDED_CONFIGS_COUNT = 21;
 
     @Mock
     private CompositeConfiguration configs;
@@ -144,7 +144,12 @@ public class ConfigServiceTest {
                 .isEqualTo(configuration.getString("gotz.beanFile"));
         assertThat("/schema/gotz.xsd")
                 .isEqualTo(configuration.getString("gotz.schemaFile"));
-        assertThat("org.codetab.gotz.steps.LocatorSeeder")
+        assertThat("/schema/steps.xsl")
+                .isEqualTo(configuration.getString("gotz.stepsXslFile"));
+        assertThat("/schema/fieldsns.xsl")
+                .isEqualTo(configuration.getString("gotz.fieldsNsXslFile"));
+
+        assertThat("org.codetab.gotz.step.extract.LocatorSeeder")
                 .isEqualTo(configuration.getString("gotz.seederClass"));
 
         assertThat("datastore")
@@ -163,7 +168,7 @@ public class ConfigServiceTest {
         assertThat("4")
                 .isEqualTo(configuration.getString("gotz.poolsize.filter"));
         assertThat("4")
-                .isEqualTo(configuration.getString("gotz.poolsize.encoder"));
+                .isEqualTo(configuration.getString("gotz.poolsize.converter"));
         assertThat("2")
                 .isEqualTo(configuration.getString("gotz.poolsize.appender"));
 

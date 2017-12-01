@@ -409,10 +409,16 @@ public class BaseLoaderTest {
     @Test
     public void testStorePersistIsFalse()
             throws IllegalAccessException, FieldsException {
-        Fields fields = fieldsHelper.createFields();
-        Node tasks = fieldsHelper.addElement("tasks", "", fields);
-        Node persist = fieldsHelper.addElement("persist", "", tasks);
-        fieldsHelper.addElement("document", "false", persist);
+
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add(" <xf:tasks>")
+                .add("  <xf:persist>")
+                .add("    <xf:document>false</xf:document>")
+                .add("  </xf:persist>")
+                .add(" </xf:tasks>")
+                .build("xf");
+        //@formatter:on
 
         List<Locator> locators = createTestObjects();
         Locator locator = locators.get(0);
@@ -616,22 +622,26 @@ public class BaseLoaderTest {
         locator.getFields().getNodes().clear();
         Document document = locator.getDocuments().get(0);
 
-        Fields fields = fieldsHelper.createFields();
-        Node tasksNode = fieldsHelper.addElement("tasks", "", fields);
-        fieldsHelper.addElement("task", "a", tasksNode);
-        fieldsHelper.addElement("task", "b", tasksNode);
+       //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add(" <xf:tasks>")
+                .add("  <xf:task>a</xf:task>")
+                .add("  <xf:task>b</xf:task>")
+                .add(" </xf:tasks>")
+                .build("xf");
+        //@formatter:on
 
         locator.setFields(fields);
 
         List<Fields> tasks =
-                fieldsHelper.split("/:fields/:tasks/:task", fields);
+                fieldsHelper.split("/xf:fields/xf:tasks/xf:task", fields);
         Fields task1 = tasks.get(0);
         Fields task2 = tasks.get(1);
 
         FieldUtils.writeField(loader, "locator", locator, true);
         FieldUtils.writeField(loader, "document", document, true);
 
-        given(fieldsHelper.split("/:fields/:tasks/:task", fields))
+        given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task", fields))
                 .willReturn(tasks);
         given(fieldsHelper.deepCopy(task1)).willReturn(task1);
         given(fieldsHelper.deepCopy(task2)).willReturn(task2);

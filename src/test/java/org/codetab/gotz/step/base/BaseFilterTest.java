@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
@@ -65,6 +64,9 @@ public class BaseFilterTest {
         assertThat(filter.isConsistent()).isFalse();
 
         filter.setConsistent(true);
+        assertThat(filter.isConsistent()).isFalse();
+
+        filter.setConvertedData("data");
         assertThat(filter.isConsistent()).isTrue();
     }
 
@@ -83,6 +85,7 @@ public class BaseFilterTest {
 
         Data data = new Data();
         filter.setInput(data);
+        filter.setConvertedData(data);
 
         boolean actual = filter.handover();
 
@@ -91,14 +94,13 @@ public class BaseFilterTest {
     }
 
     @Test
-    public void testHandoverEmptyFieldsShouldThrowException()
-            throws FieldsException {
+    public void testHandoverEmptyFieldsShouldThrowException() {
         Data data = new Data();
         filter.setInput(data);
 
         filter.setFields(new Fields());
 
-        testRule.expect(StepRunException.class);
+        testRule.expect(IllegalStateException.class);
         filter.handover();
     }
 

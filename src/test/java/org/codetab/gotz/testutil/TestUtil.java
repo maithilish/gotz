@@ -51,7 +51,7 @@ public final class TestUtil {
         Document doc;
         try {
             doc = XmlUtils.createDocument("fields", namespacePrefix,
-                    "http://codetab.org/fields");
+                    "http://codetab.org/xfields");
             Fields fields = new Fields();
             fields.getNodes().add(doc);
             return fields;

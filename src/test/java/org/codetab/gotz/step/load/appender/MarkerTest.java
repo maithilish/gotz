@@ -1,4 +1,4 @@
-package org.codetab.gotz.appender;
+package org.codetab.gotz.step.load.appender;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

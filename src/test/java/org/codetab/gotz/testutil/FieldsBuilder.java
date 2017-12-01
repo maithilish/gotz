@@ -37,12 +37,12 @@ public class FieldsBuilder {
 
         if (nsPrefix == null) {
             // default
-            sb.insert(0, "<fields xmlns='http://codetab.org/fields'>");
+            sb.insert(0, "<fields xmlns='http://codetab.org/xfields'>");
             sb.append("</fields>");
         } else {
             // prefix
             String str = "<" + nsPrefix + ":fields xmlns:" + nsPrefix
-                    + "='http://codetab.org/fields'>";
+                    + "='http://codetab.org/xfields'>";
             sb.insert(0, str);
             sb.append("</");
             sb.append(nsPrefix);

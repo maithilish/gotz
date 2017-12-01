@@ -43,7 +43,8 @@ public abstract class BaseConverter extends Step {
      */
     @Override
     public boolean handover() {
-        Validate.validState(convertedData != null, "dataSets must not be null");
+        Validate.validState(convertedData != null,
+                "convertedData must not be null");
         Fields nextStepFields = createNextStepFields();
         stepService.pushTask(this, convertedData, nextStepFields);
         return true;

@@ -148,10 +148,10 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        Fields fields = TestUtil.createFields(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", fields);
+        Fields fields = TestUtil.createFields("xf");
+        Node tasks = TestUtil.addElement("tasks", "", "xf", fields);
         TestUtil.addElement("live", "P2D", tasks);
-        TestUtil.addElement("label", "x:y", fields);
+        TestUtil.addElement("label", "x:y", "xf", fields);
 
         Date expected = DateUtils.addDays(fromDate, 2);
 
@@ -167,8 +167,8 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        Fields fields = TestUtil.createFields(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", fields);
+        Fields fields = TestUtil.createFields("xf");
+        Node tasks = TestUtil.addElement("tasks", "", "xf", fields);
         TestUtil.addElement("live", "", tasks);
         TestUtil.addElement("label", "x:y", fields);
 
@@ -192,10 +192,10 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-08-2017 11:00:00.000";
 
-        Fields fields = TestUtil.createFields(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", fields);
+        Fields fields = TestUtil.createFields("xf");
+        Node tasks = TestUtil.addElement("tasks", "", "xf", fields);
         TestUtil.addElement("live", toDateStr, tasks);
-        TestUtil.addElement("label", "x:y", fields);
+        TestUtil.addElement("label", "x:y", "xf", fields);
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);
