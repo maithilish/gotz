@@ -1,2 +1,2 @@
-taxes |html |2016 |GF |16000
-taxes |html |2017 |GF |17000
+taxes|house|2016|GF|16000
+taxes|house|2017|GF|17000

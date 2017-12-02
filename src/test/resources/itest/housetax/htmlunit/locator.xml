@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 
 <locators xmlns="http://codetab.org/gotz">
-    <locators group="html">
+    <locators group="house">
         <locator name="taxes" url="src/test/resources/itest/housetax/htmlunit/taxes.html">
         </locator>
     </locators>

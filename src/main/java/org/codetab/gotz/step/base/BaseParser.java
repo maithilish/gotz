@@ -175,17 +175,6 @@ public abstract class BaseParser extends Step {
                 marker.getName(), Util.LINE, data);
     }
 
-    // public void parse()
-    // throws DataDefNotFoundException, ScriptException, FieldNotFoundException,
-    // ClassNotFoundException, IOException, NumberFormatException,
-    // IllegalAccessException, InvocationTargetException, NoSuchMethodException
-    // {
-    // parseData();
-    // }
-
-    /*
-     *
-     */
     public void parse() throws DataDefNotFoundException, ScriptException,
             ClassNotFoundException, IOException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
@@ -273,15 +262,18 @@ public abstract class BaseParser extends Step {
             String breakAfter = fieldsHelper
                     .getLastValue("//xf:breakAfter/@value", axis.getFields());
             noField = false;
-            String value = axis.getValue().trim();
-            if (value.equals(breakAfter)) {
-                return true;
+            String value = axis.getValue();
+            if (value == null) {
+                String message = Util.buildString(
+                        "value is null. check breakAfter or query in datadef ",
+                        getLabel());
+                throw new NullPointerException(message);
+            } else {
+                if (value.equals(breakAfter)) {
+                    return true;
+                }
             }
         } catch (FieldsException e) {
-        } catch (NullPointerException e) {
-            String message = Util.buildString(
-                    "check breakAfter value in datadef ", getLabel());
-            throw new NullPointerException(message);
         }
         try {
             Integer endIndex = getEndIndex(axis.getFields());
