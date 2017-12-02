@@ -2,6 +2,7 @@ package org.codetab.gotz.step.load.encoder;
 
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 
 /**
  * <p>
@@ -33,4 +34,6 @@ public interface IEncoder<U> {
      *            list of fields
      */
     void setFields(Fields fields);
+
+    void setLabels(Labels labels);
 }

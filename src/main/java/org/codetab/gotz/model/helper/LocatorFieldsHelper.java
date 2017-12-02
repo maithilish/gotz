@@ -20,7 +20,6 @@ import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
@@ -91,19 +90,6 @@ public class LocatorFieldsHelper {
         fields.setGroup(group);
         fields.setClazz(clazz);
         return fields;
-    }
-
-    /**
-     * adds label field to locator. Label is name:group pair. *
-     * @param locator
-     *            {@link Locator}
-     * @throws FieldsException
-     */
-    public void addLabel(final Locator locator) throws FieldsException {
-        Validate.notNull(locator, "locator must not be null");
-        String label =
-                Util.buildString(locator.getName(), ":", locator.getGroup());
-        fieldsHelper.addElement("label", label, locator.getFields());
     }
 
     private List<Fields> getFields() throws ParserConfigurationException,

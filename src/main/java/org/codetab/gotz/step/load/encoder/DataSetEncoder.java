@@ -6,18 +6,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.helper.FieldsHelper;
-import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.step.load.encoder.helper.EncoderHelper;
-import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,33 +24,15 @@ public class DataSetEncoder implements IEncoder<List<DataSet>> {
     static final Logger LOGGER = LoggerFactory.getLogger(DataSetEncoder.class);
 
     private Fields fields;
+    private Labels labels;
 
     @Inject
     private EncoderHelper encoderHelper;
-    @Inject
-    private FieldsHelper fieldsHelper;
-    @Inject
-    private ActivityService activityService;
 
     @Override
     public List<DataSet> encode(final Data data) throws Exception {
         Validate.validState(fields != null, "fields must not be null");
         Validate.validState(data != null, "data must not be null");
-
-        String locatorName = null;
-        String locatorGroup = null;
-        try {
-            locatorName = fieldsHelper.getLastValue("/xf:fields/xf:locatorName",
-                    fields);
-            locatorGroup = fieldsHelper
-                    .getLastValue("/xf:fields/xf:locatorGroup", fields);
-        } catch (FieldsException e) {
-            String message = "unable to get locator name and group";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
-        }
 
         encoderHelper.sort(data, fields);
 
@@ -68,8 +45,8 @@ public class DataSetEncoder implements IEncoder<List<DataSet>> {
             String row = member.getValue(AxisName.ROW);
             String fact = member.getValue(AxisName.FACT);
 
-            DataSet dataSet =
-                    new DataSet(locatorName, locatorGroup, col, row, fact);
+            DataSet dataSet = new DataSet(labels.getName(), labels.getGroup(),
+                    col, row, fact);
             encodedData.add(dataSet);
         }
         return encodedData;
@@ -80,4 +57,8 @@ public class DataSetEncoder implements IEncoder<List<DataSet>> {
         this.fields = fields;
     }
 
+    @Override
+    public void setLabels(final Labels labels) {
+        this.labels = labels;
+    }
 }

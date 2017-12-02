@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.step.IStep;
@@ -77,16 +79,18 @@ public class StepService {
     }
 
     public void pushTask(final Step step, final Object input,
-            final Fields nextStepFields) {
-        String label = step.getLabel();
-        try {
-            addLabelField(step, nextStepFields);
-        } catch (FieldsException e) {
-            LOGGER.warn("unable to add label field to next step {}", e);
-        }
+            final Labels labels, final Fields nextStepFields) {
 
-        String givenUpMessage = Util.buildString("[", label, "] step [",
-                step.getStepType(), "] create next step failed");
+        Validate.notNull(step, "step must not be null");
+        Validate.notNull(input, "input must not be null");
+        Validate.notNull(labels, "labels must not be null");
+        Validate.notNull(nextStepFields, "nextStepFields must not be null");
+
+        Validate.validState(step.getLabels() != null, "step labels not set");
+        Validate.validState(step.getFields() != null, "step fields not set");
+
+        String givenUpMessage = Util.buildString("[", step.getLabel(),
+                "] step [", step.getStepType(), "] create next step failed");
         try {
             String nextStepType =
                     getNextStepType(step.getFields(), step.getStepType());
@@ -106,12 +110,13 @@ public class StepService {
                 if (step.isConsistent()) {
                     Runnable task = null;
                     task = createTask(nextStepType, stepClassName, input,
-                            nextStepFields);
+                            labels, nextStepFields);
                     taskPoolService.submit(nextStepType, task);
                     LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
-                            nextStepType, task.getClass(), label);
+                            nextStepType, task.getClass(), step.getLabel());
                 } else {
-                    LOGGER.warn("step inconsistent, entity [{}]", label);
+                    LOGGER.warn("step inconsistent, entity [{}]",
+                            step.getLabel());
                     activityService.addActivity(Type.GIVENUP, Util.buildString(
                             givenUpMessage, ", step inconsistent"));
                 }
@@ -121,19 +126,6 @@ public class StepService {
             LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
             activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
         }
-    }
-
-    private void addLabelField(final Step step, final Fields nextStepFields)
-            throws FieldsException {
-        if (fieldsHelper.isDefined("label", nextStepFields)) {
-            return;
-        }
-        String label = step.getLabel();
-        if (label == null) {
-            LOGGER.warn("label is null, unable to add to next step fields");
-            return;
-        }
-        fieldsHelper.addElement("label", label, nextStepFields);
     }
 
     private List<String> getNextStepClasses(final Fields fields,
@@ -168,6 +160,8 @@ public class StepService {
      *            task class
      * @param input
      *            task input
+     * @param labels
+     *            step labels
      * @param fields
      *            task fields
      * @return task
@@ -179,13 +173,14 @@ public class StepService {
      *             exception
      */
     private Task createTask(final String stepType, final String taskClassName,
-            final Object input, final Fields fields)
+            final Object input, final Labels labels, final Fields fields)
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException {
         IStep step = getStep(taskClassName).instance();
         step.setStepType(stepType);
         step.setInput(input);
         step.setFields(fields);
+        step.setLabels(labels);
         Task task = createTask(step);
         return task;
     }

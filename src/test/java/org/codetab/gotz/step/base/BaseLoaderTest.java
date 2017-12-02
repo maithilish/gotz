@@ -24,6 +24,7 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.model.helper.FieldsHelper;
@@ -123,6 +124,9 @@ public class BaseLoaderTest {
         given(locatorPersistence.loadLocator("l1", "g1"))
                 .willReturn(savedLocator);
 
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         // when
         boolean actual = loader.load();
 
@@ -152,6 +156,9 @@ public class BaseLoaderTest {
         loader.setInput(newLocator);
         // load from db returns null
         given(locatorPersistence.loadLocator("l1", "g1")).willReturn(null);
+
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
 
         // when
         boolean actual = loader.load();
@@ -226,8 +233,11 @@ public class BaseLoaderTest {
         document.setFromDate(fromDate);
         document.setToDate(toDate);
 
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         given(configService.getRunDateTime()).willReturn(fromDate);
-        given(documentHelper.getToDate(fromDate, locator.getFields()))
+        given(documentHelper.getToDate(fromDate, locator.getFields(), labels))
                 .willReturn(toDate);
         given(documentHelper.createDocument(name, url, fromDate, toDate))
                 .willReturn(document);
@@ -304,10 +314,13 @@ public class BaseLoaderTest {
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(null);
         given(configService.getRunDateTime()).willReturn(fromDate);
-        given(documentHelper.getToDate(fromDate, locator.getFields()))
+        given(documentHelper.getToDate(fromDate, locator.getFields(), labels))
                 .willReturn(toDate);
         given(documentHelper.createDocument(name, url, fromDate, toDate))
                 .willReturn(newDocument);
@@ -344,6 +357,9 @@ public class BaseLoaderTest {
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         // when
         try {
             loader.process();
@@ -376,10 +392,13 @@ public class BaseLoaderTest {
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(null);
         given(configService.getRunDateTime()).willReturn(fromDate);
-        given(documentHelper.getToDate(fromDate, locator.getFields()))
+        given(documentHelper.getToDate(fromDate, locator.getFields(), labels))
                 .willReturn(toDate);
         given(documentHelper.createDocument(name, url, fromDate, toDate))
                 .willReturn(newDocument);
@@ -581,6 +600,9 @@ public class BaseLoaderTest {
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         try {
             loader.handover();
             fail("should throw StepRunExpection");
@@ -604,6 +626,9 @@ public class BaseLoaderTest {
         locator.setFields(fields);
 
         FieldUtils.writeField(loader, "locator", locator, true);
+
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
 
         boolean actual = loader.handover();
 
@@ -641,6 +666,9 @@ public class BaseLoaderTest {
         FieldUtils.writeField(loader, "locator", locator, true);
         FieldUtils.writeField(loader, "document", document, true);
 
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task", fields))
                 .willReturn(tasks);
         given(fieldsHelper.deepCopy(task1)).willReturn(task1);
@@ -653,8 +681,8 @@ public class BaseLoaderTest {
         assertThat(actual).isTrue();
 
         InOrder inOrder = inOrder(stepService);
-        inOrder.verify(stepService).pushTask(loader, document, task1);
-        inOrder.verify(stepService).pushTask(loader, document, task2);
+        inOrder.verify(stepService).pushTask(loader, document, labels, task1);
+        inOrder.verify(stepService).pushTask(loader, document, labels, task2);
     }
 
     @Test
@@ -670,6 +698,9 @@ public class BaseLoaderTest {
 
         FieldUtils.writeField(loader, "locator", locator, true);
         FieldUtils.writeField(loader, "document", document, true);
+
+        Labels labels = new Labels("x", "y");
+        loader.setLabels(labels);
 
         // when
         try {

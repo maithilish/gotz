@@ -2,8 +2,8 @@ package org.codetab.gotz.step;
 
 import javax.inject.Inject;
 
-import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
@@ -20,7 +20,7 @@ public abstract class Step implements IStep {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Step.class);
 
-    private String label = "not set";
+    private Labels labels;
     private String stepType;
     private boolean consistent = false;
     private Fields fields;
@@ -53,10 +53,6 @@ public abstract class Step implements IStep {
 
     @Override
     public void setFields(final Fields fields) {
-        try {
-            label = fieldsHelper.getLastValue("/xf:fields/xf:label", fields);
-        } catch (FieldsException e) {
-        }
         this.fields = fields;
     }
 
@@ -107,7 +103,18 @@ public abstract class Step implements IStep {
     }
 
     @Override
-    public String getLabel() {
-        return label;
+    public Labels getLabels() {
+        return labels;
     }
+
+    @Override
+    public void setLabels(final Labels labels) {
+        this.labels = labels;
+    }
+
+    @Override
+    public String getLabel() {
+        return labels.getLabel();
+    }
+
 }

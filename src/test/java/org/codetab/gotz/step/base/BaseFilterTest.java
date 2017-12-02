@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
@@ -87,10 +88,13 @@ public class BaseFilterTest {
         filter.setInput(data);
         filter.setConvertedData(data);
 
+        Labels labels = new Labels("x", "y");
+        filter.setLabels(labels);
+
         boolean actual = filter.handover();
 
         assertThat(actual).isTrue();
-        verify(stepService).pushTask(filter, data, fields);
+        verify(stepService).pushTask(filter, data, labels, fields);
     }
 
     @Test

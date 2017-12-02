@@ -120,7 +120,6 @@ public final class LocatorSeeder extends BaseSeeder {
                 Fields fields = locatorFieldsHelper.getFields(
                         locator.getClass().getName(), locator.getGroup());
                 locator.setFields(fields);
-                locatorFieldsHelper.addLabel(locator);
             } catch (FieldsException e) {
                 throw new StepRunException(
                         "unable to set fields copy to locator", e);
@@ -143,7 +142,8 @@ public final class LocatorSeeder extends BaseSeeder {
         for (Locator locator : locatorList) {
             // create new instance of seeder step for each locator
             Step seederStep = getSeederStep(locator);
-            stepService.pushTask(seederStep, locator, locator.getFields());
+            stepService.pushTask(seederStep, locator, seederStep.getLabels(),
+                    locator.getFields());
             count++;
             try {
                 TimeUnit.MILLISECONDS.sleep(SLEEP_MILLIS);
@@ -171,6 +171,7 @@ public final class LocatorSeeder extends BaseSeeder {
             seederStep.setFields(locator.getFields());
             seederStep.setStepType(this.getStepType());
             seederStep.setStepState(this.getStepState());
+            seederStep.setLabels(locatorHelper.createLabels(locator));
             return seederStep;
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException e) {

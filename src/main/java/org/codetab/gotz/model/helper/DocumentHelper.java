@@ -21,6 +21,7 @@ import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.CompressionUtil;
 import org.codetab.gotz.util.Util;
@@ -105,20 +106,13 @@ public class DocumentHelper {
      * @return a Date which is document expire date, not null
      * @see java.time.Duration
      */
-    public Date getToDate(final Date fromDate, final Fields fields) {
+    public Date getToDate(final Date fromDate, final Fields fields,
+            final Labels labels) {
 
         Validate.notNull(fromDate, "fromDate must not be null");
         Validate.notNull(fields, "fields must not be null");
 
         Validate.validState(configService != null, "configService is null");
-
-        // set label
-        String label = "not defined";
-        try {
-            label = fieldsHelper.getLabel(fields);
-        } catch (FieldsException e) {
-            LOGGER.warn("{}", e.getLocalizedMessage());
-        }
 
         // convert fromDate to DateTime
         ZonedDateTime fromDateTime = ZonedDateTime
@@ -132,7 +126,7 @@ public class DocumentHelper {
                     fields);
         } catch (FieldsException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
-                    label);
+                    labels.getLabel());
         }
         if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
             live = "PT0S"; // zero second
@@ -152,15 +146,15 @@ public class DocumentHelper {
                 toDate = ZonedDateTime.ofInstant(td.toInstant(),
                         ZoneId.systemDefault());
             } catch (ParseException | ConfigNotFoundException pe) {
-                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days", label,
-                        live, e);
+                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days",
+                        labels.getLabel(), live, e);
                 TemporalAmount ta = Util.parseTemporalAmount("PT0S");
                 toDate = fromDateTime.plus(ta);
             }
         }
 
         LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live,
-                toDate, label);
+                toDate, labels.getLabel());
         return Date.from(Instant.from(toDate));
     }
 

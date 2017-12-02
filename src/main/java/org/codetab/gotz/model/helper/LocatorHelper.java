@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
 import org.codetab.gotz.shared.BeanService;
@@ -140,5 +141,9 @@ public class LocatorHelper {
                 locator.setGroup(locators.getGroup());
             }
         }
+    }
+
+    public Labels createLabels(final Locator locator) {
+        return new Labels(locator.getName(), locator.getGroup());
     }
 }

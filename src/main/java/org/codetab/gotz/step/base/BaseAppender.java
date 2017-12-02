@@ -167,13 +167,13 @@ public abstract class BaseAppender extends Step {
     protected Object encode(final String appenderName,
             final Fields appenderFields) throws Exception {
         Fields encoderFields = getEncoder(appenderFields);
-        addLocatorLabels(encoderFields, getFields());
         String className =
                 fieldsHelper.getLastValue("//xf:encoder/@class", encoderFields);
         @SuppressWarnings("rawtypes")
         IEncoder encoderInstance =
                 (IEncoder) stepService.createInstance(className);
         encoderInstance.setFields(encoderFields);
+        encoderInstance.setLabels(getLabels());
         return encoderInstance.encode(data);
     }
 
@@ -195,18 +195,6 @@ public abstract class BaseAppender extends Step {
         default:
             throw new FieldsException("more than one encoder defined");
         }
-    }
-
-    private void addLocatorLabels(final Fields encoderFields,
-            final Fields stepFields) throws FieldsException {
-        // TODO move locator labels to group and add method fieldsHelper to
-        // import them from one fields to another
-        String locatorName = fieldsHelper
-                .getLastValue("/xf:fields/xf:locatorName", stepFields);
-        String locatorGroup = fieldsHelper
-                .getLastValue("/xf:fields/xf:locatorGroup", stepFields);
-        fieldsHelper.addElement("locatorName", locatorName, encoderFields);
-        fieldsHelper.addElement("locatorGroup", locatorGroup, encoderFields);
     }
 
     /**

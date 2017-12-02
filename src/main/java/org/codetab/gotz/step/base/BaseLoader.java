@@ -169,8 +169,8 @@ public abstract class BaseLoader extends Step {
 
             // document metadata
             Date fromDate = configService.getRunDateTime();
-            Date toDate =
-                    documentHelper.getToDate(fromDate, locator.getFields());
+            Date toDate = documentHelper.getToDate(fromDate,
+                    locator.getFields(), getLabels());
 
             // create new document
             document = documentHelper.createDocument(locator.getName(),
@@ -302,7 +302,8 @@ public abstract class BaseLoader extends Step {
             if (isDocumentLoaded()) {
                 try {
                     Fields nextStepFields = createNextStepFields(task);
-                    stepService.pushTask(this, document, nextStepFields);
+                    stepService.pushTask(this, document, getLabels(),
+                            nextStepFields);
                 } catch (RuntimeException e) {
                     String message = "unable to get next step fields";
                     LOGGER.error("{} {}", message, locator);
@@ -333,26 +334,15 @@ public abstract class BaseLoader extends Step {
          * need to deep copy the fields as each locator may have multiple tasks
          * with different datadef and steps
          */
-        Fields nextStepFields = null;
         try {
-            nextStepFields = fieldsHelper.deepCopy(fields);
+            Fields nextStepFields = fieldsHelper.deepCopy(fields);
+            return nextStepFields;
         } catch (FieldsException e) {
             String message = "unable to clone next step fields";
             LOGGER.error("{} {}", message, e.getLocalizedMessage());
             throw new StepRunException(message, e);
         }
 
-        try {
-            fieldsHelper.addElement("locatorName", locator.getName(),
-                    nextStepFields);
-            fieldsHelper.addElement("locatorGroup", locator.getGroup(),
-                    nextStepFields);
-            fieldsHelper.addElement("locatorUrl", locator.getUrl(),
-                    nextStepFields);
-        } catch (FieldsException e) {
-            throw new StepRunException("unable to create next step fields", e);
-        }
-        return nextStepFields;
     }
 
     /**

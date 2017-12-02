@@ -3,6 +3,7 @@ package org.codetab.gotz.step;
 import javax.inject.Inject;
 
 import org.codetab.gotz.model.Activity.Type;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ActivityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,15 @@ public class Task implements Runnable {
             step.store();
             step.handover();
         } catch (Exception e) {
-            LOGGER.debug("[{}] {}", step.getLabel(), e);
-            LOGGER.error("[{}] {}", step.getLabel(), e.getLocalizedMessage());
-            activityService.addActivity(Type.GIVENUP, step.getLabel(), e);
+            Labels labels = step.getLabels();
+            // internal error
+            String label = "step labels not set";
+            if (labels != null) {
+                label = labels.getLabel();
+            }
+            LOGGER.debug("[{}] {}", label, e);
+            LOGGER.error("[{}] {}", label, e.getLocalizedMessage());
+            activityService.addActivity(Type.GIVENUP, label, e);
         }
     }
 }

@@ -9,17 +9,12 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.helper.FieldsHelper;
-import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.step.load.encoder.helper.EncoderHelper;
-import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +37,10 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
     static final int FACT_COL_SIZE = 10;
 
     private Fields fields;
+    private Labels labels;
 
     @Inject
     private EncoderHelper encoderHelper;
-    @Inject
-    private FieldsHelper fieldsHelper;
-    @Inject
-    private ActivityService activityService;
 
     @Override
     public List<String> encode(final Data data) throws Exception {
@@ -98,19 +90,7 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
      *
      */
     private String getLocatorInfo(final String delimiter) {
-        try {
-            String locatorName = fieldsHelper
-                    .getLastValue("/xf:fields/xf:locatorName", fields);
-            String locatorGroup = fieldsHelper
-                    .getLastValue("/xf:fields/xf:locatorGroup", fields);
-            return Util.buildString(locatorName, delimiter, locatorGroup);
-        } catch (FieldsException e) {
-            String message = "unable to get locator name and group";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
-        }
+        return String.join(delimiter, labels.getName(), labels.getGroup());
     }
 
     /**
@@ -145,6 +125,11 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
     @Override
     public void setFields(final Fields fields) {
         this.fields = fields;
+    }
+
+    @Override
+    public void setLabels(final Labels labels) {
+        this.labels = labels;
     }
 
 }

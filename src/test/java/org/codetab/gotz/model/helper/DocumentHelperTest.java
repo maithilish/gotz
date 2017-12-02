@@ -18,6 +18,7 @@ import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.util.CompressionUtil;
@@ -135,8 +136,10 @@ public class DocumentHelperTest {
 
         Fields fields = TestUtil.buildFields("", "xf");
 
+        Labels labels = new Labels("x", "y");
+
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, fields, labels);
 
         assertThat(actual).isEqualTo(fromDate);
     }
@@ -155,8 +158,10 @@ public class DocumentHelperTest {
 
         Date expected = DateUtils.addDays(fromDate, 2);
 
+        Labels labels = new Labels("x", "y");
+
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -172,8 +177,10 @@ public class DocumentHelperTest {
         TestUtil.addElement("live", "", tasks);
         TestUtil.addElement("label", "x:y", fields);
 
+        Labels labels = new Labels("x", "y");
+
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(fromDate);
 
         fields = TestUtil.createFields(); // default ns
@@ -181,7 +188,7 @@ public class DocumentHelperTest {
         TestUtil.addElement("live", "0", tasks);
         TestUtil.addElement("label", "x:y", fields);
 
-        actual = documentHelper.getToDate(fromDate, fields);
+        actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(fromDate);
     }
 
@@ -197,12 +204,14 @@ public class DocumentHelperTest {
         TestUtil.addElement("live", toDateStr, tasks);
         TestUtil.addElement("label", "x:y", "xf", fields);
 
+        Labels labels = new Labels("x", "y");
+
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);
         Date expected = DateUtils.parseDate(toDateStr, parsePatterns);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -218,11 +227,13 @@ public class DocumentHelperTest {
         TestUtil.addElement("live", toDateStr, tasks);
         TestUtil.addElement("label", "x:y", fields);
 
+        Labels labels = new Labels("x", "y");
+
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(fromDate);
     }
 
@@ -237,18 +248,21 @@ public class DocumentHelperTest {
         TestUtil.addElement("live", toDateStr, tasks);
         TestUtil.addElement("label", "x:y", fields);
 
+        Labels labels = new Labels("x", "y");
+
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willThrow(ConfigNotFoundException.class);
 
         // when
-        Date actual = documentHelper.getToDate(fromDate, fields);
+        Date actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(fromDate);
     }
 
     @Test
     public void testGetToDateNullParams() {
+        Labels labels = new Labels("x", "y");
         try {
-            documentHelper.getToDate(null, new Fields());
+            documentHelper.getToDate(null, new Fields(), labels);
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("fromDate must not be null");
@@ -256,7 +270,7 @@ public class DocumentHelperTest {
 
         try {
             Fields fields = null;
-            documentHelper.getToDate(new Date(), fields);
+            documentHelper.getToDate(new Date(), fields, labels);
             fail("must throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("fields must not be null");
@@ -265,10 +279,14 @@ public class DocumentHelperTest {
 
     @Test
     public void testGetToDateIllegalState() throws IllegalAccessException {
+
+        Labels labels = new Labels("x", "y");
+
         FieldUtils.writeDeclaredField(documentHelper, "configService", null,
                 true);
+
         try {
-            documentHelper.getToDate(new Date(), new Fields());
+            documentHelper.getToDate(new Date(), new Fields(), labels);
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
             assertThat(e.getMessage()).isEqualTo("configService is null");

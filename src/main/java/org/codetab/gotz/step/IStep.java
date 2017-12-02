@@ -1,6 +1,7 @@
 package org.codetab.gotz.step;
 
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 
 public interface IStep {
 
@@ -30,9 +31,13 @@ public interface IStep {
 
     StepState getStepState();
 
-    String getLabel();
-
     Fields getFields();
 
     void setFields(Fields fields);
+
+    Labels getLabels();
+
+    void setLabels(Labels labels);
+
+    String getLabel();
 }

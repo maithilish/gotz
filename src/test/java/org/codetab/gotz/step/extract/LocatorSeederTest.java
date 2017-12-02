@@ -13,6 +13,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
@@ -198,11 +199,6 @@ public class LocatorSeederTest {
         assertThat(locators.get(0).getFields()).isEqualTo(groupOneFields);
         assertThat(locators.get(1).getFields()).isEqualTo(groupOneFields);
         assertThat(locators.get(2).getFields()).isEqualTo(groupTwoFields);
-
-        InOrder inOrder = inOrder(locatorFieldsHelper);
-        inOrder.verify(locatorFieldsHelper).addLabel(locators.get(0));
-        inOrder.verify(locatorFieldsHelper).addLabel(locators.get(1));
-        inOrder.verify(locatorFieldsHelper).addLabel(locators.get(2));
     }
 
     @Test
@@ -223,6 +219,10 @@ public class LocatorSeederTest {
         Locator locator3 = locators.get(2);
         locator3.setFields(fields3);
 
+        Labels labels1 = new Labels(locator1.getName(), locator1.getGroup());
+        Labels labels2 = new Labels(locator2.getName(), locator2.getGroup());
+        Labels labels3 = new Labels(locator3.getName(), locator3.getGroup());
+
         LocatorSeeder locatorSeeder1 = dInjector.instance(LocatorSeeder.class);
         LocatorSeeder locatorSeeder2 = dInjector.instance(LocatorSeeder.class);
         LocatorSeeder locatorSeeder3 = dInjector.instance(LocatorSeeder.class);
@@ -230,17 +230,20 @@ public class LocatorSeederTest {
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
         when(stepService.getStep(LocatorSeeder.class.getName()))
                 .thenReturn(locatorSeeder1, locatorSeeder2, locatorSeeder3);
+        given(locatorHelper.createLabels(locator1)).willReturn(labels1);
+        given(locatorHelper.createLabels(locator2)).willReturn(labels2);
+        given(locatorHelper.createLabels(locator3)).willReturn(labels3);
 
         locatorSeeder.initialize();
 
         locatorSeeder.handover();
 
         InOrder inOrder = inOrder(stepService);
-        inOrder.verify(stepService).pushTask(locatorSeeder1, locator1,
+        inOrder.verify(stepService).pushTask(locatorSeeder1, locator1, labels1,
                 locator1.getFields());
-        inOrder.verify(stepService).pushTask(locatorSeeder2, locator2,
+        inOrder.verify(stepService).pushTask(locatorSeeder2, locator2, labels2,
                 locator2.getFields());
-        inOrder.verify(stepService).pushTask(locatorSeeder3, locator3,
+        inOrder.verify(stepService).pushTask(locatorSeeder3, locator3, labels3,
                 locator3.getFields());
     }
 

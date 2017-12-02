@@ -54,12 +54,8 @@ public abstract class BaseParser extends Step {
         try {
             dataDefName = fieldsHelper
                     .getLastValue("/xf:fields/xf:task/@dataDef", getFields());
-            String locatorName = fieldsHelper
-                    .getLastValue("/xf:fields/xf:locatorName", getFields());
-            String locatorGroup = fieldsHelper
-                    .getLastValue("/xf:fields/xf:locatorGroup", getFields());
-            marker = MarkerUtil.getMarker(locatorName, locatorGroup,
-                    dataDefName);
+            marker = MarkerUtil.getMarker(getLabels().getName(),
+                    getLabels().getGroup(), dataDefName);
         } catch (FieldsException e) {
             throw new StepRunException("unable to initialize parser", e);
         }
@@ -145,7 +141,7 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean handover() {
         Fields nextStepFields = createNextStepFields();
-        stepService.pushTask(this, data, nextStepFields);
+        stepService.pushTask(this, data, getLabels(), nextStepFields);
         return true;
     }
 

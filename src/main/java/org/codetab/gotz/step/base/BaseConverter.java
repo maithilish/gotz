@@ -46,7 +46,7 @@ public abstract class BaseConverter extends Step {
         Validate.validState(convertedData != null,
                 "convertedData must not be null");
         Fields nextStepFields = createNextStepFields();
-        stepService.pushTask(this, convertedData, nextStepFields);
+        stepService.pushTask(this, convertedData, getLabels(), nextStepFields);
         return true;
     }
 

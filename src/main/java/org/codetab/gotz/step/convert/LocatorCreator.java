@@ -7,9 +7,11 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
+import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseConverter;
 import org.codetab.gotz.util.Util;
@@ -32,6 +34,8 @@ public final class LocatorCreator extends BaseConverter {
 
     @Inject
     private LocatorFieldsHelper locatorFieldsHelper;
+    @Inject
+    private LocatorHelper locatorHelper;
 
     @Override
     public IStep instance() {
@@ -57,8 +61,8 @@ public final class LocatorCreator extends BaseConverter {
             Fields nextStepField = createNextStepFields(locator);
             // List<Locator> locatorList = new ArrayList<>();
             // locatorList.add(locator);
-
-            stepService.pushTask(this, locator, nextStepField);
+            Labels labels = locatorHelper.createLabels(locator);
+            stepService.pushTask(this, locator, labels, nextStepField);
             try {
                 Thread.sleep(sleepMillis);
             } catch (InterruptedException e) {
@@ -69,8 +73,7 @@ public final class LocatorCreator extends BaseConverter {
 
     private Locator createLocator(final Member member) throws FieldsException {
         Locator locator = new Locator();
-        locator.setName(
-                fieldsHelper.getLastValue("//xf:locatorName", getFields()));
+        locator.setName(getLabels().getName());
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
             String message = Util.buildString(
@@ -86,7 +89,6 @@ public final class LocatorCreator extends BaseConverter {
                 locator.getFields().getNodes()
                         .addAll(member.getFields().getNodes());
             }
-            locatorFieldsHelper.addLabel(locator);
         }
         LOGGER.trace("created new {} {}", locator, locator.getUrl());
         return locator;

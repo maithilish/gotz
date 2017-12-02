@@ -203,11 +203,6 @@ public class FieldsHelper {
         return StringUtils.equalsIgnoreCase(value, "true");
     }
 
-    public String getLabel(final Fields fields) throws FieldsException {
-        String xpath = "/xf:fields/xf:label";
-        return getLastValue(xpath, fields);
-    }
-
     // others
 
     /**
