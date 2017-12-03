@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
@@ -80,7 +81,7 @@ public abstract class BaseAppender extends Step {
                     appenderNames.add(appenderName);
                     appenderFieldsMap.put(appenderName, fields);
                 } catch (ClassNotFoundException | InstantiationException
-                        | IllegalAccessException | FieldsException e) {
+                        | IllegalAccessException | FieldsNotFoundException e) {
                     String message = "unable to append";
                     LOGGER.error("{} {}", message, Util.getMessage(e));
                     LOGGER.debug("{}", e);

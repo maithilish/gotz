@@ -2,11 +2,11 @@ package org.codetab.gotz.exception;
 
 /**
  * <p>
- * Exception thrown when error accessing Fields.
+ * Exception thrown on field parse error.
  * <p>
- * Checked exception : recoverable
+ * unchecked exception : unrecoverable
  */
-public class FieldsException extends Exception {
+public class FieldsParseException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,7 +26,7 @@ public class FieldsException extends Exception {
      * @param message
      *            exception message
      */
-    public FieldsException(final String message) {
+    public FieldsParseException(final String message) {
         super(message);
         this.message = message;
         this.cause = null;
@@ -40,7 +40,7 @@ public class FieldsException extends Exception {
      * @param cause
      *            exception cause
      */
-    public FieldsException(final String message, final Throwable cause) {
+    public FieldsParseException(final String message, final Throwable cause) {
         super(message, cause);
         this.message = message;
         this.cause = cause;
@@ -52,7 +52,7 @@ public class FieldsException extends Exception {
      * @param cause
      *            exception cause
      */
-    public FieldsException(final Throwable cause) {
+    public FieldsParseException(final Throwable cause) {
         super(cause);
         this.message = null;
         this.cause = cause;

@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
@@ -233,7 +234,7 @@ public abstract class BaseLoader extends Step {
             persist = fieldsHelper.isTrue(
                     "/xf:fields/xf:tasks/xf:persist/xf:document",
                     locator.getFields());
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
 
         if (persist) {

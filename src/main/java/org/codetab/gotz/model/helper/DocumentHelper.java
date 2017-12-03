@@ -18,7 +18,8 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.exception.FieldsParseException;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
@@ -104,6 +105,7 @@ public class DocumentHelper {
      * @param fields
      *            list of fields, not null
      * @return a Date which is document expire date, not null
+     * @throws FieldsParseException
      * @see java.time.Duration
      */
     public Date getToDate(final Date fromDate, final Fields fields,
@@ -124,7 +126,7 @@ public class DocumentHelper {
         try {
             live = fieldsHelper.getLastValue("/xf:fields/xf:tasks/xf:live",
                     fields);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
             LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
                     labels.getLabel());
         }

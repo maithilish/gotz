@@ -15,7 +15,7 @@ import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
@@ -84,7 +84,7 @@ public class JSoupHtmlParser extends BaseParser {
                 Integer startIndex;
                 try {
                     startIndex = getStartIndex(axis.getFields());
-                } catch (FieldsException e) {
+                } catch (FieldsNotFoundException e) {
                     startIndex = 1;
                 }
                 axis.setIndex(startIndex);
@@ -122,7 +122,7 @@ public class JSoupHtmlParser extends BaseParser {
             LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryByScript(scripts);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
 
         try {
@@ -131,10 +131,11 @@ public class JSoupHtmlParser extends BaseParser {
                     fieldsHelper.getLastValue("//xf:query/@region", fields));
             queries.put("field",
                     fieldsHelper.getLastValue("//xf:query/@field", fields));
+            // optional attribute
             try {
                 queries.put("attribute", fieldsHelper
                         .getLastValue("//xf:query/@attribute", fields));
-            } catch (FieldsException e) {
+            } catch (FieldsNotFoundException e) {
                 queries.put("attribute", "");
             }
             setTraceString(sb, queries, "<<<");
@@ -143,21 +144,21 @@ public class JSoupHtmlParser extends BaseParser {
             LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryBySelector(page, queries);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
 
         try {
             List<String> prefixes =
-                    fieldsHelper.getValues("//xf:prefix", fields);
+                    fieldsHelper.getValues("//xf:prefix", false, fields);
             value = fieldsHelper.prefixValue(value, prefixes);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
 
         return value;
     }
 
     private String queryByScript(final Map<String, String> scripts)
-            throws ScriptException, FieldsException {
+            throws ScriptException {
         // TODO - check whether thread safety is involved
         if (jsEngine == null) {
             initializeScriptEngine();

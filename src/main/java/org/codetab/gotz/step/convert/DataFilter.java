@@ -8,7 +8,7 @@ import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
@@ -133,7 +133,8 @@ public final class DataFilter extends BaseConverter {
         try {
             String xpath = Util.buildString("//xf:filters[@type='", filterType,
                     "']/xf:filter/@pattern");
-            List<String> patterns = fieldsHelper.getValues(xpath, fields);
+            // include blanks also in patterns
+            List<String> patterns = fieldsHelper.getValues(xpath, true, fields);
             for (String pattern : patterns) {
                 if (value.equals(pattern)) {
                     return true;
@@ -146,7 +147,7 @@ public final class DataFilter extends BaseConverter {
                     LOGGER.warn("unable to filter {} {}", pattern, e);
                 }
             }
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
         return false;
     }

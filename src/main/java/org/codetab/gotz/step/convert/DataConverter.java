@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
@@ -103,7 +104,7 @@ public final class DataConverter extends BaseConverter {
                         e.printStackTrace();
                     }
                 }
-            } catch (FieldsException e) {
+            } catch (FieldsNotFoundException e) {
             }
         }
         return rvalue;

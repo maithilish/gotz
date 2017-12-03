@@ -18,7 +18,7 @@ import javax.script.ScriptException;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
@@ -118,7 +118,7 @@ public class HtmlParser extends BaseParser {
                 Integer startIndex;
                 try {
                     startIndex = getStartIndex(axis.getFields());
-                } catch (FieldsException e) {
+                } catch (FieldsNotFoundException e) {
                     startIndex = 1;
                 }
                 axis.setIndex(startIndex);
@@ -190,7 +190,7 @@ public class HtmlParser extends BaseParser {
             LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
                     sb.toString(), Util.LINE);
             value = queryByScript(scripts);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
 
         try {
@@ -199,10 +199,11 @@ public class HtmlParser extends BaseParser {
                     fieldsHelper.getLastValue("//xf:query/@region", fields));
             queries.put("field",
                     fieldsHelper.getLastValue("//xf:query/@field", fields));
+            // optional attribute
             try {
                 queries.put("attribute", fieldsHelper
                         .getLastValue("//xf:query/@attribute", fields));
-            } catch (FieldsException e) {
+            } catch (FieldsNotFoundException e) {
                 queries.put("attribute", "");
             }
             setTraceString(sb, queries, "<<<");
@@ -212,21 +213,21 @@ public class HtmlParser extends BaseParser {
                     sb.toString(), Util.LINE);
 
             value = queryByXPath(page, queries);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
 
         try {
             List<String> prefixes =
-                    fieldsHelper.getValues("//xf:prefix", fields);
+                    fieldsHelper.getValues("//xf:prefix", false, fields);
             value = fieldsHelper.prefixValue(value, prefixes);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
 
         return value;
     }
 
     private String queryByScript(final Map<String, String> scripts)
-            throws ScriptException, FieldsException {
+            throws ScriptException {
         // TODO - check whether thread safety is involved
         if (jsEngine == null) {
             initializeScriptEngine();
@@ -255,7 +256,7 @@ public class HtmlParser extends BaseParser {
     }
 
     private String queryByXPath(final HtmlPage page,
-            final Map<String, String> queries) throws FieldsException {
+            final Map<String, String> queries) {
         if (queries.size() < 2) {
             LOGGER.warn("Insufficient queries in DataDef [{}]",
                     getDataDefName());

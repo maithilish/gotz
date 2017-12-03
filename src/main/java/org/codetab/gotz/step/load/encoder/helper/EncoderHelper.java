@@ -6,7 +6,7 @@ import java.util.Comparator;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -25,22 +25,17 @@ public class EncoderHelper {
     private ActivityService activityService;
 
     public void sort(final Data data, final Fields fields) {
-        String sortOrder = null;
-
+        String sortOrder = "";
         String xpath = "/xf:fields/xf:encoder/xf:sortOrder";
         if (fieldsHelper.isDefined(xpath, true, fields)) {
-            try {
-                sortOrder = fieldsHelper.getValue(xpath, fields);
-            } catch (FieldsException e) {
-                sortOrder = "";
-                activityService.addActivity(Type.WARN,
-                        "sortOrder not properly defined, data not sorted", e);
-            }
+            sortOrder = fieldsHelper.getValue(xpath, fields);
         } else {
             sortOrder = "col,row"; // default
         }
 
         if (StringUtils.isBlank(sortOrder)) {
+            activityService.addActivity(Type.WARN,
+                    "sortOrder is blank, data not sorted");
             return;
         }
 
@@ -69,7 +64,7 @@ public class EncoderHelper {
         try {
             delimiter = fieldsHelper
                     .getLastValue("/xf:fields/xf:encoder/xf:delimiter", fields);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
         return delimiter;
     }

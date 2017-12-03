@@ -18,6 +18,7 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
@@ -242,8 +243,9 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testGetDataTemplateMemberFields() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException, FieldsException {
+    public void testGetDataTemplateMemberFields()
+            throws ClassNotFoundException, DataDefNotFoundException,
+            IOException, FieldsException, FieldsNotFoundException {
         List<DataDef> dataDefs = createTestDataDefs();
         DataDef dataDef = dataDefs.get(0);
 

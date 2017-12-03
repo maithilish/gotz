@@ -240,6 +240,9 @@ need not validate method param for primitives.
 validate param for null or illegal argument (not required for private methods).
 validate IllegalState for state vars, injected state vars or init (not required
     for private methods).
+    
+In method signature add only the checked exceptions. Mention unchecked exceptions in 
+javadoc.     
 
 javadoc guidelines
 ------------------

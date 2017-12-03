@@ -18,6 +18,7 @@ import javax.script.ScriptException;
 import org.apache.commons.lang3.Range;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
@@ -26,6 +27,7 @@ import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
@@ -54,9 +56,15 @@ public abstract class BaseParser extends Step {
         try {
             dataDefName = fieldsHelper
                     .getLastValue("/xf:fields/xf:task/@dataDef", getFields());
+            String taskName = fieldsHelper
+                    .getLastValue("/xf:fields/xf:task/@name", getFields());
             marker = MarkerUtil.getMarker(getLabels().getName(),
                     getLabels().getGroup(), dataDefName);
-        } catch (FieldsException e) {
+            // new labels with dataDef and task name
+            Labels labels = new Labels(getLabels().getName(),
+                    getLabels().getGroup(), taskName, dataDefName);
+            setLabels(labels);
+        } catch (FieldsNotFoundException e) {
             throw new StepRunException("unable to initialize parser", e);
         }
         return postInitialize();
@@ -120,7 +128,7 @@ public abstract class BaseParser extends Step {
         try {
             persist = fieldsHelper.isTrue(
                     "/xf:fields/xf:task/xf:persist/xf:data", getFields());
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
         if (persist) {
             dataPersistence.storeData(data);
@@ -269,7 +277,7 @@ public abstract class BaseParser extends Step {
                     return true;
                 }
             }
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
         try {
             Integer endIndex = getEndIndex(axis.getFields());
@@ -277,7 +285,7 @@ public abstract class BaseParser extends Step {
             if (axis.getIndex() + 1 > endIndex) {
                 return true;
             }
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
         if (noField) {
             String message = Util.buildString(
@@ -379,10 +387,7 @@ public abstract class BaseParser extends Step {
      *
      */
     protected Integer getStartIndex(final Fields fields)
-            throws NumberFormatException, FieldsException {
-        if (fields == null) {
-            throw new FieldsException("fields is null");
-        }
+            throws NumberFormatException, FieldsNotFoundException {
         Range<Integer> indexRange =
                 fieldsHelper.getRange("//xf:indexRange/@value", fields);
         return indexRange.getMinimum();
@@ -392,10 +397,7 @@ public abstract class BaseParser extends Step {
      *
      */
     protected Integer getEndIndex(final Fields fields)
-            throws NumberFormatException, FieldsException {
-        if (fields == null) {
-            throw new FieldsException("fields is null");
-        }
+            throws NumberFormatException, FieldsNotFoundException {
         Range<Integer> indexRange =
                 fieldsHelper.getRange("//xf:indexRange/@value", fields);
         return indexRange.getMaximum();

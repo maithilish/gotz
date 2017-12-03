@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
@@ -107,7 +108,7 @@ public class FileAppenderTest {
         t.join();
 
         verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
-                any(FieldsException.class));
+                any(FieldsNotFoundException.class));
     }
 
     @Test

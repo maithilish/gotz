@@ -9,6 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 
@@ -33,6 +34,7 @@ public class DateFormater implements IConverter<String, String> {
      * @param input
      *            date string
      * @return date parsed date rounded off to month end.
+     * @throws FieldsNotFoundException
      * @throws FieldsException
      *             if pattern field is not found
      * @throws ParseException
@@ -40,7 +42,7 @@ public class DateFormater implements IConverter<String, String> {
      */
     @Override
     public String convert(final String input)
-            throws FieldsException, ParseException {
+            throws FieldsNotFoundException, ParseException {
         Validate.notNull(input, "input date string must not be null");
         Validate.validState(fields != null, "fields is null");
 

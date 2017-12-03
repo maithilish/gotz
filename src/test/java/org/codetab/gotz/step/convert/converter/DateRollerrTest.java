@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.junit.Before;
@@ -149,7 +149,7 @@ public class DateRollerrTest {
         fieldsHelper.addElement("outPattern", "YYYY-MM-dd", fields);
         dt.setFields(fields);
 
-        testRule.expect(FieldsException.class);
+        testRule.expect(FieldsNotFoundException.class);
         dt.convert("Mar '17");
     }
 
@@ -161,7 +161,7 @@ public class DateRollerrTest {
         fieldsHelper.addElement("x", "YYYY-MM-dd", fields);
         dt.setFields(fields);
 
-        testRule.expect(FieldsException.class);
+        testRule.expect(FieldsNotFoundException.class);
         dt.convert("Mar '17");
     }
 }

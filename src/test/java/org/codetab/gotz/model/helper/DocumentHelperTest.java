@@ -20,6 +20,7 @@ import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.util.CompressionUtil;
 import org.junit.Before;
@@ -172,10 +173,14 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        Fields fields = TestUtil.createFields("xf");
-        Node tasks = TestUtil.addElement("tasks", "", "xf", fields);
-        TestUtil.addElement("live", "", tasks);
-        TestUtil.addElement("label", "x:y", fields);
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add("<xf:tasks>")
+                .add("  <xf:live></xf:live>")
+                .add("</xf:tasks>")
+                .add("<xf:label>x:y</xf:label>")
+                .build("xf");
+        //@formatter:on
 
         Labels labels = new Labels("x", "y");
 
@@ -183,10 +188,14 @@ public class DocumentHelperTest {
         Date actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(fromDate);
 
-        fields = TestUtil.createFields(); // default ns
-        tasks = TestUtil.addElement("tasks", "", fields);
-        TestUtil.addElement("live", "0", tasks);
-        TestUtil.addElement("label", "x:y", fields);
+        //@formatter:off
+        fields = new FieldsBuilder()
+                .add("<xf:tasks>")
+                .add("  <xf:live>0</xf:live>")
+                .add("</xf:tasks>")
+                .add("<xf:label>x:y</xf:label>")
+                .build("xf");
+        //@formatter:on
 
         actual = documentHelper.getToDate(fromDate, fields, labels);
         assertThat(actual).isEqualTo(fromDate);
@@ -222,10 +231,16 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
 
-        Fields fields = TestUtil.createFields(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", fields);
-        TestUtil.addElement("live", toDateStr, tasks);
-        TestUtil.addElement("label", "x:y", fields);
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add("<xf:tasks>")
+                .add("  <xf:live>")
+                .add(toDateStr)
+                .add("  </xf:live>")
+                .add("</xf:tasks>")
+                .add("<xf:label>x:y</xf:label>")
+                .build("xf");
+        //@formatter:on
 
         Labels labels = new Labels("x", "y");
 
@@ -243,10 +258,16 @@ public class DocumentHelperTest {
         Date fromDate = new Date();
         String toDateStr = "01-xx-2017 11:00:00.000";
 
-        Fields fields = TestUtil.createFields(); // default ns
-        Node tasks = TestUtil.addElement("tasks", "", fields);
-        TestUtil.addElement("live", toDateStr, tasks);
-        TestUtil.addElement("label", "x:y", fields);
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add("<xf:tasks>")
+                .add("  <xf:live>")
+                .add(toDateStr)
+                .add("  </xf:live>")
+                .add("</xf:tasks>")
+                .add("<xf:label>x:y</xf:label>")
+                .build("xf");
+        //@formatter:on
 
         Labels labels = new Labels("x", "y");
 

@@ -21,6 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.text.StrSubstitutor;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.exception.FieldsParseException;
 import org.codetab.gotz.misc.SimpleNamespaceContext;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.Fields;
@@ -33,6 +35,33 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Methods to query or manipulate fields.
+ * <p>
+ * Xpath query returns blank value when node text is blank or when no matching
+ * node is found.
+ * </p>
+ * <p>
+ * When matched node is empty or when no matching nodes are found :
+ * <ul>
+ * <li>methods documented as lenient, returns blank value.</li>
+ * <li>other methods throws {@see FieldsNotFoundException}</li>
+ * </ul>
+ * </p>
+ * <p>
+ * In both cases, when xpath expression has errors, then
+ * {@see FieldsParseException} is thrown.
+ * </p>
+ * <p>
+ * {@see FieldsException} is thrown by non query methods such as deep copy,
+ * fields creation etc.,
+ * </p>
+ * <p>
+ * FieldsParseException is unchecked exception and others are checked exception.
+ * </p>
+ * @author Maithilish
+ *
+ */
 public class FieldsHelper {
 
     private static final Logger LOGGER =
@@ -40,15 +69,20 @@ public class FieldsHelper {
 
     /**
      * Returns last value including blank, otherwise, throws FieldsException.
-     *
+     * <p>
+     * <b>Lenient</b>
+     * </p>
      * @param xpathExpression
      * @param nodes
-     * @return
-     * @throws FieldsException
-     *             on XPath error or if no matching node
+     * @return last value or blank
+     * @throws FieldsParseException
+     *             on XPath expression error
      */
-    public String getValue(final String xpathExpression, final Fields fields)
-            throws FieldsException {
+    public String getValue(final String xpathExpression, final Fields fields) {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         String value = null;
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
@@ -56,7 +90,7 @@ public class FieldsHelper {
             try {
                 value = xpath.evaluate(xpathExpression, node);
             } catch (XPathExpressionException e) {
-                throw new FieldsException(xpathExpression, e);
+                throw new FieldsParseException(xpathExpression, e);
             }
         }
         return value;
@@ -67,12 +101,20 @@ public class FieldsHelper {
      *
      * @param xpathExpression
      * @param nodes
-     * @return
+     * @return first non blank value
      * @throws FieldsException
-     *             on XPath error or if no matching node
+     *             on XPath expression error
+     * @throws FieldsNotFoundException
+     *             no matching node with non blank content
+     * @throws FieldsParseException
+     *             on XPath expression error
      */
     public String getFirstValue(final String xpathExpression,
-            final Fields fields) throws FieldsException {
+            final Fields fields) throws FieldsNotFoundException {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
@@ -82,12 +124,11 @@ public class FieldsHelper {
                     return value;
                 }
             } catch (XPathExpressionException e) {
-                throw new FieldsException(xpathExpression, e);
+                throw new FieldsParseException(xpathExpression, e);
             }
 
         }
-        throw new FieldsException(Util.buildString(
-                "blank or no node returned for [", xpathExpression, "]"));
+        throw new FieldsNotFoundException(xpathExpression);
     }
 
     /**
@@ -95,12 +136,20 @@ public class FieldsHelper {
      *
      * @param xpathExpression
      * @param nodes
-     * @return
+     * @return last non blank value
      * @throws FieldsException
-     *             on XPath error or if no matching node
+     *             on XPath expression error
+     * @throws FieldsNotFoundException
+     *             no matching node with non blank content
+     * @throws FieldsParseException
+     *             on XPath expression error
      */
     public String getLastValue(final String xpathExpression,
-            final Fields fields) throws FieldsException {
+            final Fields fields) throws FieldsNotFoundException {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         String value = "";
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
@@ -109,21 +158,37 @@ public class FieldsHelper {
             try {
                 val = xpath.evaluate(xpathExpression, node);
             } catch (XPathExpressionException e) {
-                throw new FieldsException(xpathExpression, e);
+                throw new FieldsParseException(xpathExpression, e);
             }
             if (StringUtils.isNotBlank(val)) {
                 value = val;
             }
         }
         if (StringUtils.isBlank(value)) {
-            throw new FieldsException(Util.buildString(
-                    "blank or no node returned for [", xpathExpression, "]"));
+            throw new FieldsNotFoundException(xpathExpression);
         }
         return value;
     }
 
+    /**
+     * Returns list of contents (non blank) of matching nodes.
+     * @param xpathExpression
+     * @param fields
+     * @return list of contents of matching nodes
+     * @throws FieldsException
+     *             on XPath expression error
+     * @throws FieldsNotFoundException
+     *             when values list is empty
+     * @throws FieldsParseException
+     *             on XPath expression error
+     */
     public List<String> getValues(final String xpathExpression,
-            final Fields fields) throws FieldsException {
+            final boolean includeBlanks, final Fields fields)
+            throws FieldsNotFoundException {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         List<String> values = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
@@ -133,50 +198,61 @@ public class FieldsHelper {
                 for (int i = 0; i < items.getLength(); i++) {
                     Node item = items.item(i);
                     String value = item.getTextContent();
-                    values.add(value);
+                    if (includeBlanks) {
+                        values.add(value);
+                    } else {
+                        if (StringUtils.isNotBlank(value)) {
+                            values.add(value);
+                        }
+                    }
                 }
             } catch (XPathExpressionException e) {
-                throw new FieldsException(e);
+                throw new FieldsParseException(xpathExpression, e);
             }
         }
-        return values;
-    }
-
-    private NamespaceContext getNamespaceContext(final Node node) {
-        String prefix = node.getPrefix();
-        String ns = node.lookupNamespaceURI(prefix);
-        // node is document then get prefix and ns from root element
-        if (node.getNodeType() == Node.DOCUMENT_NODE) {
-            Element root = ((Document) node).getDocumentElement();
-            prefix = root.getPrefix();
-            ns = root.lookupNamespaceURI(prefix);
+        if (values.size() == 0) {
+            throw new FieldsNotFoundException(xpathExpression);
+        } else {
+            return values;
         }
-        SimpleNamespaceContext nsc = new SimpleNamespaceContext(prefix, ns);
-        return nsc;
     }
 
+    /**
+     * When countEmptyElements is true, then method returns true if matching
+     * node is found even if it is empty, otherwise return true only if matching
+     * node is found which is non empty.
+     * @param xpathExpression
+     * @param countEmptyElements
+     * @param fields
+     * @return boolean
+     * @throws FieldsParseException
+     *             on XPath expression error
+     */
     public boolean isDefined(final String xpathExpression,
             final boolean countEmptyElements, final Fields fields) {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         if (countEmptyElements) {
             String xpath = "boolean(" + xpathExpression + ")";
             try {
                 String val = getFirstValue(xpath, fields);
                 return Boolean.valueOf(val);
-            } catch (FieldsException e) {
+            } catch (FieldsNotFoundException e) {
                 return false;
             }
         } else {
             /*
-             * getFirstValue returns non blank value or throws FieldsException
-             * when value is blank/null or when parse error. If it returns value
-             * then methods returns true, if throws exception and cause is Parse
-             * error methods throws exception, else return false.
+             * getFirstValue returns non blank value or throws
+             * FieldsNotFoundException when value is blank/null. If it returns
+             * value then methods returns true, otherwise return false.
              *
              */
             try {
                 getFirstValue(xpathExpression, fields);
                 return true;
-            } catch (FieldsException e) {
+            } catch (FieldsNotFoundException e) {
                 return false;
             }
         }
@@ -184,11 +260,27 @@ public class FieldsHelper {
 
     public boolean isDefined(final String xpathExpression,
             final Fields fields) {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         return isDefined(xpathExpression, false, fields);
     }
 
+    /**
+     * Returns true if any one of xpath expression is defined.
+     * @param fields
+     * @param xpathExpressions
+     * @return boolean
+     * @throws FieldsParseException
+     *             on XPath expression error
+     */
     public boolean isAnyDefined(final Fields fields,
             final String... xpathExpressions) {
+
+        Validate.notNull(xpathExpressions, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         for (String xpathExpression : xpathExpressions) {
             if (isDefined(xpathExpression, false, fields)) {
                 return true;
@@ -197,8 +289,24 @@ public class FieldsHelper {
         return false;
     }
 
+    /**
+     * Returns true if node is defined and content is true else returns false.
+     * @param xpathExpression
+     * @param fields
+     * @return boolean
+     * @throws FieldsException
+     *             on XPath expression error
+     * @throws FieldsNotFoundException
+     *             when no matching node is found
+     * @throws FieldsParseException
+     *             on XPath expression error
+     */
     public boolean isTrue(final String xpathExpression, final Fields fields)
-            throws FieldsException {
+            throws FieldsNotFoundException {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         String value = getLastValue(xpathExpression, fields);
         return StringUtils.equalsIgnoreCase(value, "true");
     }
@@ -224,16 +332,25 @@ public class FieldsHelper {
      * @param fields
      * @return
      * @throws FieldsException
+     *             if fields nodes are empty or unable to split
+     * @throws FieldsParseException
+     *             on XPath expression error
      */
     public List<Fields> split(final String xpathExpression, final Fields fields)
             throws FieldsException {
         // TODO try for optimization (in same or separate method) deep copy or
         // reference to nodes
 
-        List<Fields> fieldsList = new ArrayList<>();
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         if (fields.getNodes().isEmpty()) {
-            return fieldsList;
+            throw new FieldsException(
+                    Util.buildString("no nodes in fields, unable to split [",
+                            xpathExpression, "]"));
         }
+
+        List<Fields> fieldsList = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
@@ -257,13 +374,18 @@ public class FieldsHelper {
 
             } catch (XPathExpressionException
                     | ParserConfigurationException e) {
-                throw new FieldsException("unable to split fields", e);
+                throw new FieldsParseException("unable to split fields", e);
             }
+        }
+        if (fieldsList.isEmpty()) {
+            throw new FieldsException(Util.buildString(
+                    "unable to split fields [", xpathExpression, "]"));
         }
         return fieldsList;
     }
 
     public Fields deepCopy(final Fields fields) throws FieldsException {
+
         Validate.notNull(fields, "fields must not be null");
 
         try {
@@ -281,6 +403,7 @@ public class FieldsHelper {
     }
 
     public Optional<Node> getLastNode(final Fields fields) {
+
         Validate.notNull(fields, "fields must not be null");
 
         Node node = null;
@@ -293,6 +416,7 @@ public class FieldsHelper {
     }
 
     public Optional<Node> getFirstNode(final Fields fields) {
+
         Validate.notNull(fields, "fields must not be null");
 
         Node node = null;
@@ -304,7 +428,20 @@ public class FieldsHelper {
         return firstNode;
     }
 
-    public Element addElement(final String namespacePrefix, final String name,
+    /**
+     *
+     * @param namespacePrefix
+     * @param name
+     * @param text
+     * @param parentNodeXPath
+     * @param fields
+     * @return
+     * @throws FieldsException
+     *             when unable to get document from fields nodes
+     * @throws FieldsParseException
+     *             on XPath expression error
+     */
+    private Element addElement(final String namespacePrefix, final String name,
             final String text, final String parentNodeXPath,
             final Fields fields) throws FieldsException {
         Optional<Node> node = getLastNode(fields);
@@ -337,7 +474,7 @@ public class FieldsHelper {
                             location.appendChild(element);
                         }
                     } catch (XPathExpressionException e) {
-                        throw new FieldsException(Util.buildString(
+                        throw new FieldsParseException(Util.buildString(
                                 "unable to add element [", name, "][", text,
                                 "] at xpath [", parentNodeXPath, "]"), e);
                     }
@@ -351,14 +488,42 @@ public class FieldsHelper {
         }
     }
 
+    /**
+     *
+     * @param name
+     * @param text
+     * @param fields
+     * @return
+     * @throws FieldsParseException
+     *             on XPath expression error
+     * @throws FieldsException
+     *             when unable to get document from fields nodes
+     */
     public Element addElement(final String name, final String text,
             final Fields fields) throws FieldsException {
-        // default namespace
+
+        Validate.notNull(name, "name must not be null");
+        Validate.notNull(text, "text must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
+        // prefixed ns
         return addElement("xf", name, text, null, fields);
     }
 
+    /**
+     *
+     * @param name
+     * @param text
+     * @param parent
+     * @return
+     */
     public Element addElement(final String name, final String text,
             final Node parent) {
+
+        Validate.notNull(name, "name must not be null");
+        Validate.notNull(text, "text must not be null");
+        Validate.notNull(parent, "parent node must not be null");
+
         Document doc = null;
         if (parent instanceof Document) {
             doc = (Document) parent;
@@ -381,6 +546,11 @@ public class FieldsHelper {
 
     public void addAttribute(final String name, final String text,
             final Node node) {
+
+        Validate.notNull(name, "name must not be null");
+        Validate.notNull(text, "text must not be null");
+        Validate.notNull(node, "node must not be null");
+
         Document doc = null;
         doc = node.getOwnerDocument();
         if (doc == null) {
@@ -397,6 +567,10 @@ public class FieldsHelper {
 
     private NodeList getNodes(final Node node, final String xpathExpression)
             throws XPathExpressionException {
+
+        Validate.notNull(node, "node must not be null");
+        Validate.notNull(xpathExpression, "xpath must not be null");
+
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(getNamespaceContext(node));
         return (NodeList) xpath.evaluate(xpathExpression, node,
@@ -415,9 +589,18 @@ public class FieldsHelper {
      *             if no such field
      * @throws NumberFormatException
      *             value is not range or minimum is greater than maximum
+     * @throws FieldsParseException
+     *             on XPath expression error
+     * @throws FieldsNotFoundException
+     *             when no matching node is found
      */
     public Range<Integer> getRange(final String xpathExpression,
-            final Fields fields) throws FieldsException, NumberFormatException {
+            final Fields fields)
+            throws FieldsNotFoundException, NumberFormatException {
+
+        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(fields, "fields must not be null");
+
         String value = getLastValue(xpathExpression, fields);
 
         if (value.startsWith("-")) {
@@ -455,6 +638,9 @@ public class FieldsHelper {
 
     public Fields createFields(final String namespacePrefix)
             throws FieldsException {
+
+        Validate.notNull(namespacePrefix, "namespacePrefix must not be null");
+
         Document doc;
         try {
             doc = XmlUtils.createDocument("fields", namespacePrefix,
@@ -472,6 +658,9 @@ public class FieldsHelper {
             InvocationTargetException, NoSuchMethodException {
 
         // TODO provide some examples and full explanation in javadoc
+
+        Validate.notNull(queries, "queries must not be null");
+        Validate.notNull(axisMap, "axisMap must not be null");
 
         for (String key : queries.keySet()) {
             String str = queries.get(key);
@@ -534,11 +723,28 @@ public class FieldsHelper {
      * @return string prefixed concated values
      */
     public String prefixValue(final String value, final List<String> prefixes) {
+
+        Validate.notNull(value, "value must not be null");
+        Validate.notNull(prefixes, "prefixes must not be null");
+
         String pValue = value;
         for (String prefix : prefixes) {
             pValue = prefix + pValue;
         }
         return pValue;
+    }
+
+    private NamespaceContext getNamespaceContext(final Node node) {
+        String prefix = node.getPrefix();
+        String ns = node.lookupNamespaceURI(prefix);
+        // node is document then get prefix and ns from root element
+        if (node.getNodeType() == Node.DOCUMENT_NODE) {
+            Element root = ((Document) node).getDocumentElement();
+            prefix = root.getPrefix();
+            ns = root.lookupNamespaceURI(prefix);
+        }
+        SimpleNamespaceContext nsc = new SimpleNamespaceContext(prefix, ns);
+        return nsc;
     }
 
 }

@@ -14,6 +14,7 @@ import org.apache.commons.lang3.reflect.MethodUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
@@ -53,8 +54,9 @@ public class AppenderServiceTest {
     }
 
     @Test
-    public void testCreateAppender() throws ClassNotFoundException,
-            InstantiationException, IllegalAccessException, FieldsException {
+    public void testCreateAppender()
+            throws ClassNotFoundException, InstantiationException,
+            IllegalAccessException, FieldsNotFoundException, FieldsException {
 
         String className = "org.codetab.gotz.step.load.appender.FileAppender";
         Fields fields = fieldsHelper.createFields();
@@ -76,9 +78,9 @@ public class AppenderServiceTest {
     }
 
     @Test
-    public void testCreateAppenderAlreadyExists()
-            throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, ConfigNotFoundException, FieldsException {
+    public void testCreateAppenderAlreadyExists() throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException,
+            ConfigNotFoundException, FieldsException, FieldsNotFoundException {
 
         String className = "org.codetab.gotz.step.load.appender.FileAppender";
         String appenderName = "x";
@@ -112,7 +114,7 @@ public class AppenderServiceTest {
     @Test
     public void testCreateAppenderExpectException()
             throws ClassNotFoundException, InstantiationException,
-            IllegalAccessException, FieldsException {
+            IllegalAccessException, FieldsException, FieldsNotFoundException {
 
         String className = "org.codetab.gotz.model.Axis";
         String appenderName = "x";

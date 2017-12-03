@@ -6,7 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
@@ -60,7 +60,7 @@ public class DataDefValidator {
                 }
             } catch (NumberFormatException e) {
                 valid = false;
-            } catch (FieldsException e) {
+            } catch (FieldsNotFoundException e) {
             }
         }
         return valid;

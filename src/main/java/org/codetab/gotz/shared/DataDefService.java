@@ -17,6 +17,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -170,7 +171,8 @@ public class DataDefService {
                     String group = dataDefHelper
                             .getDataMemberGroup(dataMember.getFields());
                     dataMember.setGroup(group);
-                } catch (FieldsException e) {
+                } catch (FieldsNotFoundException e) {
+                    // TODO throw critical error
                 }
                 data.addMember(dataMember);
             }

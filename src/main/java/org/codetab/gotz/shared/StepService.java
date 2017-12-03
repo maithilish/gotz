@@ -8,7 +8,7 @@ import javax.inject.Singleton;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.di.DInjector;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
@@ -129,11 +129,11 @@ public class StepService {
     }
 
     private List<String> getNextStepClasses(final Fields fields,
-            final String stepType) throws FieldsException {
+            final String stepType) throws FieldsNotFoundException {
 
         String xpath = Util.buildString("//xf:task/xf:steps/xf:step[@name='",
                 stepType, "']/@class");
-        List<String> stepClasses = fieldsHelper.getValues(xpath, fields);
+        List<String> stepClasses = fieldsHelper.getValues(xpath, false, fields);
 
         // TODO handle unique step
         stepClasses =
@@ -143,7 +143,7 @@ public class StepService {
     }
 
     public String getNextStepType(final Fields fields, final String stepType)
-            throws FieldsException {
+            throws FieldsNotFoundException {
         // TODO need to check behavior when multiple matching nodes exists
         String xpath = Util.buildString("//xf:task/xf:steps/xf:step[@name='",
                 stepType, "']/xf:nextStep");

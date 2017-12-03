@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.exception.FieldsParseException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
@@ -92,6 +94,7 @@ public class DataDefHelper {
      * as 7-7)
      * @param dataDef
      *            datadef, not null
+     * @throws FieldsParseException
      * @throws FieldsException
      */
     public void addIndexRange(final DataDef dataDef) throws FieldsException {
@@ -164,7 +167,7 @@ public class DataDefHelper {
     }
 
     public String getDataMemberGroup(final Fields fields)
-            throws FieldsException {
+            throws FieldsNotFoundException {
         String xpath = "//xf:member/xf:group";
         String group = fieldsHelper.getLastValue(xpath, fields);
         return group;

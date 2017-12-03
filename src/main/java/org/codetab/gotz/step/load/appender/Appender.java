@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
-import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
@@ -111,7 +111,7 @@ public abstract class Appender implements Runnable {
         try {
             queueSize = fieldsHelper.getLastValue("//xf:appender/xf:queueSize",
                     fields);
-        } catch (FieldsException e) {
+        } catch (FieldsNotFoundException e) {
         }
         /*
          * default queue size. configService mock returns null so default is set

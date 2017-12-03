@@ -14,19 +14,25 @@
                 <nextStep>parser</nextStep>
                 <unique>true</unique>
             </step>
-            <step name="parser"
-                class="org.codetab.gotz.step.extract.HtmlDataParser">
+            <step name="parser" class="org.codetab.gotz.step.extract.HtmlParser">
                 <nextStep>filter</nextStep>
             </step>
             <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
                 <nextStep>converter</nextStep>
             </step>
-            <step name="appender" class="org.codetab.gotz.step.load.DataSetAppender">
+            <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
                 <appender name="db"
-                    class="org.codetab.gotz.step.load.appender.DbAppender" />
+                    class="org.codetab.gotz.step.load.appender.DbAppender">
+                    <encoder name="dataSet"
+                        class="org.codetab.gotz.step.load.encoder.DataSetEncoder">
+                    </encoder>
+                </appender>
                 <appender name="file"
                     class="org.codetab.gotz.step.load.appender.FileAppender">
+                    <encoder name="csv"
+                        class="org.codetab.gotz.step.load.encoder.CsvEncoder">
+                    </encoder>
                     <file>output/x.txt</file>
                 </appender>
             </step>
@@ -36,11 +42,11 @@
             <task name="bs" dataDef="bs">
                 <steps ref="stepsSeq">
                     <step name="converter"
-                        class="org.codetab.gotz.step.convert.DataSetConverter">
+                        class="org.codetab.gotz.step.convert.DataConverter">
                         <nextStep>appender</nextStep>
 
                         <converter name="date"
-                            class="org.codetab.gotz.step.load.converter.DateRoller">
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
                             <axis>col</axis>
                             <inPattern>MMM ''YY</inPattern>
                             <outPattern>YYYY-MM-dd</outPattern>

@@ -45,7 +45,8 @@ public class DataDefValidatorTest {
 
     @Test
     public void testValidateDataDefField() throws FieldsException {
-        Fields fields = TestUtil.createFields("indexRange", "1-1");
+        Fields fields =
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         DataDef dataDef = new DataDef();
         dataDef.setFields(fields);
 
@@ -56,7 +57,8 @@ public class DataDefValidatorTest {
 
     @Test
     public void testValidateAxisField() throws FieldsException {
-        Fields fields = TestUtil.createFields("indexRange", "1-1");
+        Fields fields =
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         DAxis axis = new DAxis();
         axis.setFields(fields);
 
@@ -70,7 +72,9 @@ public class DataDefValidatorTest {
 
     @Test
     public void testValidateMemberField() throws FieldsException {
-        Fields fields = TestUtil.createFields("indexRange", "1-1");
+
+        Fields fields =
+                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
 
         DMember member = new DMember();
         member.setFields(fields);

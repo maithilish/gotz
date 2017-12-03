@@ -18,6 +18,7 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.BeanService;
@@ -92,9 +93,8 @@ public class LocatorFieldsHelper {
         return fields;
     }
 
-    private List<Fields> getFields() throws ParserConfigurationException,
-            FileNotFoundException, TransformerFactoryConfigurationError,
-            TransformerException, ConfigNotFoundException, FieldsException {
+    private List<Fields> getFields()
+            throws FieldsException, FieldsNotFoundException {
 
         List<Fields> flist = new ArrayList<>();
 
@@ -102,8 +102,15 @@ public class LocatorFieldsHelper {
         for (Fields xBean : xBeans) {
             // merge global steps to tasks steps
             String defaultNs = XmlUtils.getDefaultNs(xBean.getNodes().get(0));
-            Document doc = XmlUtils.createDocument(xBean.getNodes(), "fields",
-                    null, defaultNs);
+            Document doc;
+            try {
+                doc = XmlUtils.createDocument(xBean.getNodes(), "fields", null,
+                        defaultNs);
+            } catch (ParserConfigurationException e) {
+                throw new FieldsException(
+                        "unable to create document to transform the bean fields",
+                        e);
+            }
             Document tdoc = mergeSteps(doc);
             Document effectiveDoc = prefixNamespace(tdoc);
 
@@ -126,7 +133,7 @@ public class LocatorFieldsHelper {
     }
 
     private String getGroupFromNodes(final Fields fields)
-            throws FieldsException {
+            throws FieldsNotFoundException {
         String xpath = "/xf:fields/xf:tasks/@group";
         return fieldsHelper.getLastValue(xpath, fields);
     }
