@@ -378,8 +378,8 @@ public class FieldsHelper {
             }
         }
         if (fieldsList.isEmpty()) {
-            throw new FieldsException(Util.join(
-                    "unable to split fields [", xpathExpression, "]"));
+            throw new FieldsException(Util.join("unable to split fields [",
+                    xpathExpression, "]"));
         }
         return fieldsList;
     }
@@ -453,8 +453,8 @@ public class FieldsHelper {
                 doc = node.get().getOwnerDocument();
             }
             if (doc == null) {
-                String message = Util.join("unable to add new element [",
-                        name, "][", text, "]. owner document is null");
+                String message = Util.join("unable to add new element [", name,
+                        "][", text, "]. owner document is null");
                 throw new FieldsException(message);
             } else {
                 String qName = name;
@@ -482,8 +482,8 @@ public class FieldsHelper {
                 return element;
             }
         } else {
-            String message = Util.join("unable to add new element [",
-                    name, "][", text, "]. fields has no nodes");
+            String message = Util.join("unable to add new element [", name,
+                    "][", text, "]. fields has no nodes");
             throw new FieldsException(message);
         }
     }

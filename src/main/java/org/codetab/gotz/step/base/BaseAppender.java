@@ -69,9 +69,10 @@ public abstract class BaseAppender extends Step {
     public boolean initialize() {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<Fields> appenders = fieldsHelper.split(Util.join(
-                    "/xf:fields/xf:task/xf:steps/xf:step[@name='",
-                    getStepType(), "']/xf:appender"), getFields());
+            List<Fields> appenders = fieldsHelper.split(
+                    Util.join("/xf:fields/xf:task/xf:steps/xf:step[@name='",
+                            getStepType(), "']/xf:appender"),
+                    getFields());
 
             for (Fields fields : appenders) {
                 try {
@@ -168,8 +169,8 @@ public abstract class BaseAppender extends Step {
     protected Object encode(final String appenderName,
             final Fields appenderFields) throws Exception {
         Fields encoderFields = getEncoder(appenderFields);
-        String className =
-                fieldsHelper.getLastValue("//xf:encoder/@class", encoderFields);
+        String className = fieldsHelper
+                .getLastValue("/xf:fields/xf:encoder/@class", encoderFields);
         @SuppressWarnings("rawtypes")
         IEncoder encoderInstance =
                 (IEncoder) stepService.createInstance(className);

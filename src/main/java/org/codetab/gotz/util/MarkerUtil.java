@@ -33,8 +33,8 @@ public final class MarkerUtil {
         Validate.notNull(name, "name must not be null");
         Validate.notNull(group, "group must not be null");
 
-        String markerName = Util.join("LOG", "_", name.toUpperCase(),
-                "_", group.toUpperCase());
+        String markerName = Util.join("LOG", "_", name.toUpperCase(), "_",
+                group.toUpperCase());
         return MarkerFactory.getMarker(markerName);
     }
 
@@ -55,11 +55,10 @@ public final class MarkerUtil {
         Validate.notNull(name, "name must not be null");
         Validate.notNull(group, "group must not be null");
 
-        String markerName = Util.join("LOG", "_", name.toUpperCase(),
-                "_", group.toUpperCase());
+        String markerName = Util.join("LOG", "_", name.toUpperCase(), "_",
+                group.toUpperCase());
         if (dataDefName != null) {
-            markerName = Util.join(markerName, "_",
-                    dataDefName.toUpperCase());
+            markerName = Util.join(markerName, "_", dataDefName.toUpperCase());
         }
         return MarkerFactory.getMarker(markerName);
     }
@@ -75,8 +74,7 @@ public final class MarkerUtil {
 
         Validate.notNull(dataDefName, "dataDefName must not be null");
 
-        String markerName =
-                Util.join("LOG", "_", dataDefName.toUpperCase());
+        String markerName = Util.join("LOG", "_", dataDefName.toUpperCase());
         return MarkerFactory.getMarker(markerName);
     }
 }

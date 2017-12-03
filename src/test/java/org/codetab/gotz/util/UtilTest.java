@@ -171,8 +171,8 @@ public class UtilTest {
     public void testGetgetJsonPrettyPrint() {
 
         String line = System.lineSeparator();
-        String expected = Util.join("{", line, "  \"name\": \"x\",",
-                line, "  \"value\": \"y\"", line, "}");
+        String expected = Util.join("{", line, "  \"name\": \"x\",", line,
+                "  \"value\": \"y\"", line, "}");
         TestBean bean = new TestBean("x", "y");
         String actual = Util.getJson(bean, true);
 
@@ -203,9 +203,9 @@ public class UtilTest {
 
         String line = System.lineSeparator();
         String indent = "\t\t\t";
-        String expected = Util.join(indent, "{", line, indent,
-                "  \"name\": \"x\",", line, indent, "  \"value\": \"y\"", line,
-                indent, "}");
+        String expected =
+                Util.join(indent, "{", line, indent, "  \"name\": \"x\",", line,
+                        indent, "  \"value\": \"y\"", line, indent, "}");
         TestBean bean = new TestBean("x", "y");
         String actual = Util.getIndentedJson(bean, true);
 

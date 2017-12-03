@@ -58,8 +58,8 @@ public class DataPersistence {
             Data data = dao.getData(documentId, dataDefId);
             return data;
         } catch (RuntimeException e) {
-            String message = Util.join("unable to load data,",
-                    "dataDefId=", String.valueOf(dataDefId), ",documentId=",
+            String message = Util.join("unable to load data,", "dataDefId=",
+                    String.valueOf(dataDefId), ",documentId=",
                     String.valueOf(documentId));
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
@@ -109,8 +109,7 @@ public class DataPersistence {
             IDataDao dao = daoFactory.getDataDao();
             dao.storeData(data);
         } catch (RuntimeException e) {
-            String message =
-                    Util.join("unable to store data", data.getName());
+            String message = Util.join("unable to store data", data.getName());
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
             throw new StepPersistenceException(message, e);

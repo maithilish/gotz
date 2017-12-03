@@ -161,8 +161,8 @@ public abstract class BaseLoader extends Step {
                 // fetch documentObject as byte[]
                 documentObject = fetchDocumentObject(locator.getUrl());
             } catch (IOException e) {
-                String givenUpMessage = Util
-                        .join("unable to fetch document ", getLabel());
+                String givenUpMessage =
+                        Util.join("unable to fetch document ", getLabel());
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
@@ -283,8 +283,7 @@ public abstract class BaseLoader extends Step {
         Validate.validState(locator != null,
                 "step input [locator] must not be null");
 
-        String errorMessage =
-                Util.join("create parser failed ", getLabel());
+        String errorMessage = Util.join("create parser failed ", getLabel());
 
         List<Fields> tasks = null;
         try {

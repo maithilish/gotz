@@ -93,8 +93,8 @@ public final class TestUtil {
                 doc = node.get().getOwnerDocument();
             }
             if (doc == null) {
-                String message = Util.join("unable to add new element [",
-                        name, "][", text, "]. owner document is null");
+                String message = Util.join("unable to add new element [", name,
+                        "][", text, "]. owner document is null");
                 throw new FieldsException(message);
             } else {
                 String qName = name;
@@ -122,8 +122,8 @@ public final class TestUtil {
                 return element;
             }
         } else {
-            String message = Util.join("unable to add new element [",
-                    name, "][", text, "]. fields has no nodes");
+            String message = Util.join("unable to add new element [", name,
+                    "][", text, "]. fields has no nodes");
             throw new FieldsException(message);
         }
     }

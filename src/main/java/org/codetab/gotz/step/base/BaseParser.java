@@ -106,8 +106,7 @@ public abstract class BaseParser extends Step {
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
                     | DataFormatException | FieldsException e) {
-                String message =
-                        Util.join("unable to parse ", getLabel());
+                String message = Util.join("unable to parse ", getLabel());
                 throw new StepRunException(message, e);
             }
         } else {
@@ -288,8 +287,8 @@ public abstract class BaseParser extends Step {
         } catch (FieldsNotFoundException e) {
         }
         if (noField) {
-            String message = Util.join(
-                    "breakAfter or indexRange undefined ", getLabel());
+            String message = Util.join("breakAfter or indexRange undefined ",
+                    getLabel());
             throw new FieldsException(message);
         }
         return false;

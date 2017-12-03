@@ -147,8 +147,7 @@ public class LocatorFieldsHelper {
                 | TransformerFactoryConfigurationError
                 | TransformerException e) {
             throw new FieldsException(
-                    Util.join("unable to merge steps [", xslFile, "]"),
-                    e);
+                    Util.join("unable to merge steps [", xslFile, "]"), e);
         }
     }
 
@@ -161,8 +160,8 @@ public class LocatorFieldsHelper {
         } catch (ConfigNotFoundException | FileNotFoundException
                 | TransformerFactoryConfigurationError
                 | TransformerException e) {
-            throw new FieldsException(Util.join(
-                    "unable to prefix namespace [", xslFile, "]"), e);
+            throw new FieldsException(
+                    Util.join("unable to prefix namespace [", xslFile, "]"), e);
         }
     }
 

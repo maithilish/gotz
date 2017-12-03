@@ -11,8 +11,6 @@ import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.helper.FieldsHelper;
-import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.step.load.encoder.helper.EncoderHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +26,6 @@ public class CsvEncoder implements IEncoder<List<String>> {
 
     @Inject
     private EncoderHelper encoderHelper;
-    @Inject
-    private FieldsHelper fieldsHelper;
-    @Inject
-    private ActivityService activityService;
 
     private Labels labels;
 

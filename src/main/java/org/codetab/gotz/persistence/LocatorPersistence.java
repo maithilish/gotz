@@ -112,8 +112,8 @@ public class LocatorPersistence {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            String message = Util.join("unable to store [",
-                    locator.getName(), ":", locator.getGroup(), "]");
+            String message = Util.join("unable to store [", locator.getName(),
+                    ":", locator.getGroup(), "]");
             throw new StepPersistenceException(message, e);
         }
     }
