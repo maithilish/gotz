@@ -107,7 +107,7 @@ public abstract class BaseParser extends Step {
                     | NoSuchMethodException | ScriptException
                     | DataFormatException | FieldsException e) {
                 String message =
-                        Util.buildString("unable to parse ", getLabel());
+                        Util.join("unable to parse ", getLabel());
                 throw new StepRunException(message, e);
             }
         } else {
@@ -268,7 +268,7 @@ public abstract class BaseParser extends Step {
             noField = false;
             String value = axis.getValue();
             if (value == null) {
-                String message = Util.buildString(
+                String message = Util.join(
                         "value is null. check breakAfter or query in datadef ",
                         getLabel());
                 throw new NullPointerException(message);
@@ -288,7 +288,7 @@ public abstract class BaseParser extends Step {
         } catch (FieldsNotFoundException e) {
         }
         if (noField) {
-            String message = Util.buildString(
+            String message = Util.join(
                     "breakAfter or indexRange undefined ", getLabel());
             throw new FieldsException(message);
         }

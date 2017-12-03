@@ -162,7 +162,7 @@ public class DataDefHelper {
 
     public List<Fields> getDataDefMemberFields(final String name,
             final Fields fields) throws FieldsException {
-        String xpath = Util.buildString("/xf:member[@name='", name, "']");
+        String xpath = Util.join("/xf:member[@name='", name, "']");
         return fieldsHelper.split(xpath, fields);
     }
 

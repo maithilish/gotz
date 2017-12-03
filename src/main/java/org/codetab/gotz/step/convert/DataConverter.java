@@ -56,7 +56,7 @@ public final class DataConverter extends BaseConverter {
 
         List<Fields> converters = new ArrayList<>();
         try {
-            converters = fieldsHelper.split(Util.buildString(
+            converters = fieldsHelper.split(Util.join(
                     "/xf:fields/xf:task/xf:steps/xf:step[@name='",
                     getStepType(), "']/xf:converter"), getFields());
         } catch (FieldsException e) {

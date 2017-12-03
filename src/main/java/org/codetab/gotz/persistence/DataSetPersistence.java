@@ -58,7 +58,7 @@ public class DataSetPersistence {
             IDataSetDao dao = daoFactory.getDataSetDao();
             dao.storeDataSets(dataSets);
         } catch (RuntimeException e) {
-            String message = Util.buildString("unable to store data",
+            String message = Util.join("unable to store data",
                     dataSets.get(0).getName(), ":", dataSets.get(0).getGroup());
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);

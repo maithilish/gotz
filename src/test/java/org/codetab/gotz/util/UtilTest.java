@@ -171,7 +171,7 @@ public class UtilTest {
     public void testGetgetJsonPrettyPrint() {
 
         String line = System.lineSeparator();
-        String expected = Util.buildString("{", line, "  \"name\": \"x\",",
+        String expected = Util.join("{", line, "  \"name\": \"x\",",
                 line, "  \"value\": \"y\"", line, "}");
         TestBean bean = new TestBean("x", "y");
         String actual = Util.getJson(bean, true);
@@ -203,7 +203,7 @@ public class UtilTest {
 
         String line = System.lineSeparator();
         String indent = "\t\t\t";
-        String expected = Util.buildString(indent, "{", line, indent,
+        String expected = Util.join(indent, "{", line, indent,
                 "  \"name\": \"x\",", line, indent, "  \"value\": \"y\"", line,
                 indent, "}");
         TestBean bean = new TestBean("x", "y");
@@ -224,15 +224,15 @@ public class UtilTest {
 
     @Test
     public void testBuildString() {
-        assertThat("a").isEqualTo(Util.buildString("a"));
-        assertThat("ab").isEqualTo(Util.buildString("a", "b"));
+        assertThat("a").isEqualTo(Util.join("a"));
+        assertThat("ab").isEqualTo(Util.join("a", "b"));
     }
 
     @Test
     public void testBuildStringNullParams() {
         String str = null;
 
-        String actual = Util.buildString(str);
+        String actual = Util.join(str);
 
         assertThat(actual).isNull();
     }

@@ -346,7 +346,7 @@ public class FieldsHelper {
 
         if (fields.getNodes().isEmpty()) {
             throw new FieldsException(
-                    Util.buildString("no nodes in fields, unable to split [",
+                    Util.join("no nodes in fields, unable to split [",
                             xpathExpression, "]"));
         }
 
@@ -378,7 +378,7 @@ public class FieldsHelper {
             }
         }
         if (fieldsList.isEmpty()) {
-            throw new FieldsException(Util.buildString(
+            throw new FieldsException(Util.join(
                     "unable to split fields [", xpathExpression, "]"));
         }
         return fieldsList;
@@ -453,13 +453,13 @@ public class FieldsHelper {
                 doc = node.get().getOwnerDocument();
             }
             if (doc == null) {
-                String message = Util.buildString("unable to add new element [",
+                String message = Util.join("unable to add new element [",
                         name, "][", text, "]. owner document is null");
                 throw new FieldsException(message);
             } else {
                 String qName = name;
                 if (namespacePrefix != null) {
-                    qName = Util.buildString(namespacePrefix, ":", name);
+                    qName = Util.join(namespacePrefix, ":", name);
                 }
                 Element element = doc.createElementNS(
                         doc.lookupNamespaceURI(namespacePrefix), qName);
@@ -474,7 +474,7 @@ public class FieldsHelper {
                             location.appendChild(element);
                         }
                     } catch (XPathExpressionException e) {
-                        throw new FieldsParseException(Util.buildString(
+                        throw new FieldsParseException(Util.join(
                                 "unable to add element [", name, "][", text,
                                 "] at xpath [", parentNodeXPath, "]"), e);
                     }
@@ -482,7 +482,7 @@ public class FieldsHelper {
                 return element;
             }
         } else {
-            String message = Util.buildString("unable to add new element [",
+            String message = Util.join("unable to add new element [",
                     name, "][", text, "]. fields has no nodes");
             throw new FieldsException(message);
         }

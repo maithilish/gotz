@@ -162,7 +162,7 @@ public abstract class BaseLoader extends Step {
                 documentObject = fetchDocumentObject(locator.getUrl());
             } catch (IOException e) {
                 String givenUpMessage = Util
-                        .buildString("unable to fetch document ", getLabel());
+                        .join("unable to fetch document ", getLabel());
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
@@ -181,7 +181,7 @@ public abstract class BaseLoader extends Step {
             try {
                 documentHelper.setDocumentObject(document, documentObject);
             } catch (IOException e) {
-                String errorMessage = Util.buildString(
+                String errorMessage = Util.join(
                         "unable to compress document object ", getLabel());
                 LOGGER.error("{} {}", errorMessage, e.getLocalizedMessage());
                 activityService.addActivity(Type.GIVENUP, errorMessage, e);
@@ -284,7 +284,7 @@ public abstract class BaseLoader extends Step {
                 "step input [locator] must not be null");
 
         String errorMessage =
-                Util.buildString("create parser failed ", getLabel());
+                Util.join("create parser failed ", getLabel());
 
         List<Fields> tasks = null;
         try {
@@ -309,13 +309,13 @@ public abstract class BaseLoader extends Step {
                     String message = "unable to get next step fields";
                     LOGGER.error("{} {}", message, locator);
                     activityService.addActivity(Type.GIVENUP,
-                            Util.buildString(errorMessage, " : ", message));
+                            Util.join(errorMessage, " : ", message));
                 }
             } else {
                 String message = "document not loaded";
                 LOGGER.error("{} {}", message, locator);
                 activityService.addActivity(Type.GIVENUP,
-                        Util.buildString(errorMessage, " : ", message));
+                        Util.join(errorMessage, " : ", message));
             }
         }
         setStepState(StepState.HANDOVER);

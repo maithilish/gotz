@@ -76,7 +76,7 @@ public final class LocatorCreator extends BaseConverter {
         locator.setName(getLabels().getName());
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
-            String message = Util.buildString(
+            String message = Util.join(
                     "unable to create new locator. define group for member ",
                     "in datadef of locator type ", member.getName());
             throw new FieldsException(message);

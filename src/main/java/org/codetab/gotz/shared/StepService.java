@@ -89,7 +89,7 @@ public class StepService {
         Validate.validState(step.getLabels() != null, "step labels not set");
         Validate.validState(step.getFields() != null, "step fields not set");
 
-        String givenUpMessage = Util.buildString("[", step.getLabel(),
+        String givenUpMessage = Util.join("[", step.getLabel(),
                 "] step [", step.getStepType(), "] create next step failed");
         try {
             String nextStepType =
@@ -117,7 +117,7 @@ public class StepService {
                 } else {
                     LOGGER.warn("step inconsistent, entity [{}]",
                             step.getLabel());
-                    activityService.addActivity(Type.GIVENUP, Util.buildString(
+                    activityService.addActivity(Type.GIVENUP, Util.join(
                             givenUpMessage, ", step inconsistent"));
                 }
             }
@@ -131,7 +131,7 @@ public class StepService {
     private List<String> getNextStepClasses(final Fields fields,
             final String stepType) throws FieldsNotFoundException {
 
-        String xpath = Util.buildString("//xf:task/xf:steps/xf:step[@name='",
+        String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='",
                 stepType, "']/@class");
         List<String> stepClasses = fieldsHelper.getValues(xpath, false, fields);
 
@@ -145,7 +145,7 @@ public class StepService {
     public String getNextStepType(final Fields fields, final String stepType)
             throws FieldsNotFoundException {
         // TODO need to check behavior when multiple matching nodes exists
-        String xpath = Util.buildString("//xf:task/xf:steps/xf:step[@name='",
+        String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='",
                 stepType, "']/xf:nextStep");
         String nextStepType = fieldsHelper.getFirstValue(xpath, fields);
         return nextStepType;

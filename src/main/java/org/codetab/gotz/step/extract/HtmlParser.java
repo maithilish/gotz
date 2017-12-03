@@ -313,7 +313,7 @@ public class HtmlParser extends BaseParser {
         String value = null;
         List<?> nodes = node.getByXPath(xpathExpr);
         LOGGER.trace(getMarker(), "------Nodes------");
-        LOGGER.trace(getMarker(), Util.buildString("Nodes ",
+        LOGGER.trace(getMarker(), Util.join("Nodes ",
                 String.valueOf(nodes.size()), " for XPATH: ", xpathExpr));
         for (Object o : nodes) {
             DomNode childNode = (DomNode) o;

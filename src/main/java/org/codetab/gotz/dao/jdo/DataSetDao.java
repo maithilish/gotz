@@ -70,7 +70,7 @@ public final class DataSetDao implements IDataSetDao {
                 .distinct().collect(Collectors.toList());
 
         if (names.size() != 1 || groups.size() != 1) {
-            String message = Util.buildString(
+            String message = Util.join(
                     "unable persist dataset as name or group are not unique",
                     names.toString(), groups.toString());
             throw new StepPersistenceException(message);

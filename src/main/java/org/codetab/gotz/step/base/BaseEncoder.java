@@ -62,7 +62,7 @@ public abstract class BaseEncoder extends Step {
     public boolean initialize() {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<Fields> appenders = fieldsHelper.split(Util.buildString(
+            List<Fields> appenders = fieldsHelper.split(Util.join(
                     "/xf:fields/xf:task/xf:steps/xf:step[@name='",
                     getStepType(), "']/xf:appender"), getFields());
 

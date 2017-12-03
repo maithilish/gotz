@@ -125,7 +125,7 @@ public abstract class Appender implements Runnable {
             LOGGER.debug("created appender [{}] queue size [{}]", name,
                     queueSize);
         } catch (NumberFormatException e) {
-            String message = Util.buildString(
+            String message = Util.join(
                     "unable to create appender queue [", name, "]");
             LOGGER.error("{}, {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);

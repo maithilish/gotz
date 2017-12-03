@@ -68,7 +68,7 @@ public final class DbAppender extends Appender {
                     }
 
                 } else {
-                    String message = Util.buildString(
+                    String message = Util.join(
                             "unable to persist, appended object is not list of DataSet [",
                             item.toString(), "]");
                     activityService.addActivity(Type.GIVENUP, message);

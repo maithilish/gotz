@@ -57,7 +57,7 @@ public class DocumentPersistence {
         } catch (RuntimeException e) {
             LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
-            String message = Util.buildString("unable to load Document[id=",
+            String message = Util.join("unable to load Document[id=",
                     String.valueOf(id), "]");
             throw new StepPersistenceException(message, e);
         }

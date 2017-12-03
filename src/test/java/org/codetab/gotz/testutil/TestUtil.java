@@ -93,13 +93,13 @@ public final class TestUtil {
                 doc = node.get().getOwnerDocument();
             }
             if (doc == null) {
-                String message = Util.buildString("unable to add new element [",
+                String message = Util.join("unable to add new element [",
                         name, "][", text, "]. owner document is null");
                 throw new FieldsException(message);
             } else {
                 String qName = name;
                 if (namespacePrefix != null) {
-                    qName = Util.buildString(namespacePrefix, ":", name);
+                    qName = Util.join(namespacePrefix, ":", name);
                 }
                 Element element = doc.createElementNS(
                         doc.lookupNamespaceURI(namespacePrefix), qName);
@@ -114,7 +114,7 @@ public final class TestUtil {
                             location.appendChild(element);
                         }
                     } catch (XPathExpressionException e) {
-                        throw new FieldsException(Util.buildString(
+                        throw new FieldsException(Util.join(
                                 "unable to add element [", name, "][", text,
                                 "] at xpath [", parentNodeXPath, "]"), e);
                     }
@@ -122,7 +122,7 @@ public final class TestUtil {
                 return element;
             }
         } else {
-            String message = Util.buildString("unable to add new element [",
+            String message = Util.join("unable to add new element [",
                     name, "][", text, "]. fields has no nodes");
             throw new FieldsException(message);
         }

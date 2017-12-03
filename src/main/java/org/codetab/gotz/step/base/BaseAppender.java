@@ -69,7 +69,7 @@ public abstract class BaseAppender extends Step {
     public boolean initialize() {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<Fields> appenders = fieldsHelper.split(Util.buildString(
+            List<Fields> appenders = fieldsHelper.split(Util.join(
                     "/xf:fields/xf:task/xf:steps/xf:step[@name='",
                     getStepType(), "']/xf:appender"), getFields());
 
@@ -183,7 +183,7 @@ public abstract class BaseAppender extends Step {
         List<Fields> encoders = new ArrayList<>();
         try {
             encoders = fieldsHelper.split(
-                    Util.buildString("/xf:fields/xf:appender/xf:encoder"),
+                    Util.join("/xf:fields/xf:appender/xf:encoder"),
                     appenderFields);
         } catch (FieldsException e) {
         }

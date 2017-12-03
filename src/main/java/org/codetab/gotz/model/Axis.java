@@ -94,6 +94,6 @@ public final class Axis implements Comparable<Axis>, Serializable {
                 .append("name", name).append("value", value)
                 .append("match", match).append("index", index)
                 .append("order", order).append("fields", fields).toString();
-        return Util.buildString(Util.LINE, "  ", str);
+        return Util.join(Util.LINE, "  ", str);
     }
 }

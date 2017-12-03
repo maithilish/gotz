@@ -102,9 +102,9 @@ public final class Util {
     public static Set<Set<Object>> cartesianProduct(final Set<?>... sets) {
 
         if (sets.length < 2) {
-            throw new IllegalArgumentException(buildString(
-                    "Can't have a product of fewer than two sets (has ",
-                    String.valueOf(sets.length), " sets)"));
+            throw new IllegalArgumentException(
+                    join("Can't have a product of fewer than two sets (has ",
+                            String.valueOf(sets.length), " sets)"));
         }
         for (Set<?> set : sets) {
             if (set.size() == 0) {
@@ -275,17 +275,12 @@ public final class Util {
 
     /**
      * <p>
-     * Build string from strings.
+     * Concat strings to string.
      * @param strings
      *            strings to merge
      * @return merged string
      */
-    public static String buildString(final String... strings) {
-
-        if (strings[0] == null) {
-            return null;
-        }
-
+    public static String join(final String... strings) {
         StringBuilder sb = new StringBuilder();
         for (String str : strings) {
             sb.append(str);
