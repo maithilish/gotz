@@ -115,7 +115,7 @@ public class JSoupHtmlParser extends BaseParser {
         try {
             Map<String, String> scripts = new HashMap<>();
             scripts.put("script",
-                    fieldsHelper.getLastValue("//xf:script/@script", fields));
+                    fieldsHelper.getLastValue("/xf:script/@script", fields));
             setTraceString(sb, scripts, "<<<");
             fieldsHelper.replaceVariables(scripts, member.getAxisMap());
             setTraceString(sb, scripts, ">>>>");
@@ -128,13 +128,13 @@ public class JSoupHtmlParser extends BaseParser {
         try {
             Map<String, String> queries = new HashMap<>();
             queries.put("region",
-                    fieldsHelper.getLastValue("//xf:query/@region", fields));
+                    fieldsHelper.getLastValue("/xf:query/@region", fields));
             queries.put("field",
-                    fieldsHelper.getLastValue("//xf:query/@field", fields));
+                    fieldsHelper.getLastValue("/xf:query/@field", fields));
             // optional attribute
             try {
                 queries.put("attribute", fieldsHelper
-                        .getLastValue("//xf:query/@attribute", fields));
+                        .getLastValue("/xf:query/@attribute", fields));
             } catch (FieldsNotFoundException e) {
                 queries.put("attribute", "");
             }
@@ -149,7 +149,7 @@ public class JSoupHtmlParser extends BaseParser {
 
         try {
             List<String> prefixes =
-                    fieldsHelper.getValues("//xf:prefix", false, fields);
+                    fieldsHelper.getValues("/xf:prefix", false, fields);
             value = fieldsHelper.prefixValue(value, prefixes);
         } catch (FieldsNotFoundException e) {
         }

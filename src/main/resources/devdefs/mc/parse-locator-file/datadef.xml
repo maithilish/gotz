@@ -36,8 +36,8 @@
                     field="li:nth-child(%{row.index}) > a[href]"
                     attribute="href">
                 </xf:query>
-                <!-- uses local file (quote page) so no prefix  -->
-                <xf:prefix></xf:prefix>
+                <!-- uses local file (quote page) -->
+                <xf:prefix>src/main/resources/devdefs/mc/parse-locator-file/</xf:prefix>
             </xf:fields>
         </axis>
     </datadef>

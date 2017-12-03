@@ -32,8 +32,8 @@
             <xf:fields>
                 <xf:query region="//*[@id='quickLinkPrc']/table"
                     field="*//a[contains(.,'%{row.match}')]/@href" />
-                <!-- uses local file (quote page) so no prefix  -->
-                <xf:prefix></xf:prefix>
+                <!-- uses local file (quote page) -->
+                <xf:prefix>src/main/resources/devdefs/mc/htmlunit/parse-locator-file/</xf:prefix>
             </xf:fields>
         </axis>
     </datadef>

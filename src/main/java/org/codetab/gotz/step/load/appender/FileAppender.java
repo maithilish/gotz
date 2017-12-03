@@ -51,8 +51,8 @@ public final class FileAppender extends Appender {
 
         String fileName = null;
         try {
-            fileName = fieldsHelper.getLastValue("//xf:appender/xf:file",
-                    getFields());
+            fileName = fieldsHelper.getLastValue(
+                    "/xf:fields/xf:appender/xf:file", getFields());
         } catch (FieldsNotFoundException e) {
             String message = "file appender ";
             LOGGER.error("{} {}", message, Util.getMessage(e));
