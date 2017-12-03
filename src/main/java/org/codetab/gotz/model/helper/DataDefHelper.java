@@ -168,7 +168,7 @@ public class DataDefHelper {
 
     public String getDataMemberGroup(final Fields fields)
             throws FieldsNotFoundException {
-        String xpath = "//xf:member/xf:group";
+        String xpath = "/xf:fields/xf:member/xf:group";
         String group = fieldsHelper.getLastValue(xpath, fields);
         return group;
     }

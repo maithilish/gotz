@@ -46,7 +46,7 @@ public class AppenderService {
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, FieldsNotFoundException {
         String appenderClzName =
-                fieldsHelper.getLastValue("//xf:appender/@class", fields);
+                fieldsHelper.getLastValue("/xf:fields/xf:appender/@class", fields);
         if (appenders.containsKey(appenderName)) {
             return;
         }
