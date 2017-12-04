@@ -36,8 +36,8 @@
                     field="li:nth-child(%{row.index}) > a[href]"
                     attribute="href">
                 </xf:query>
-                <!-- uses local file (quote page) so no prefix  -->
-                <xf:prefix></xf:prefix>
+                <!-- to test prefix only in all-seeder prefix is set -->
+                <xf:prefix>src/test/resources/itest/itc/all-seeder/</xf:prefix>
             </xf:fields>
         </axis>
     </datadef>

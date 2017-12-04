@@ -32,8 +32,8 @@
             <xf:fields>
                 <xf:query region="//*[@id='quickLinkPrc']/table"
                     field="*//a[contains(.,'%{row.match}')]/@href" />
-                <!-- uses local file (quote page) so no prefix  -->
-                <xf:prefix></xf:prefix>
+                <!-- to test prefix only in all-seeder prefix is set -->
+                <xf:prefix>src/test/resources/itest/itc/all-seeder/htmlunit/</xf:prefix>
             </xf:fields>
         </axis>
     </datadef>
