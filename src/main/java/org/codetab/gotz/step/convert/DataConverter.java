@@ -90,11 +90,11 @@ public final class DataConverter extends BaseConverter {
         String rvalue = value;
         for (Fields fields : converters) {
             try {
-                String axisName = fieldsHelper
-                        .getLastValue("//xf:converter/xf:axis", fields);
+                String axisName = fieldsHelper.getLastValue(
+                        "/xf:fields/xf:converter/xf:axis", fields);
                 if (axis.name().equalsIgnoreCase(axisName)) {
-                    String className = fieldsHelper
-                            .getLastValue("//xf:converter/@class", fields);
+                    String className = fieldsHelper.getLastValue(
+                            "/xf:fields/xf:converter/@class", fields);
                     try {
                         @SuppressWarnings("rawtypes")
                         IConverter converter = (IConverter) stepService

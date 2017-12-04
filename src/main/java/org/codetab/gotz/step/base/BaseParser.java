@@ -262,6 +262,7 @@ public abstract class BaseParser extends Step {
             throws NumberFormatException, FieldsException {
         boolean noField = true;
         try {
+            // xpath - not abs path
             String breakAfter = fieldsHelper
                     .getLastValue("//xf:breakAfter/@value", axis.getFields());
             noField = false;
@@ -387,6 +388,7 @@ public abstract class BaseParser extends Step {
      */
     protected Integer getStartIndex(final Fields fields)
             throws NumberFormatException, FieldsNotFoundException {
+        // xpath - not abs path
         Range<Integer> indexRange =
                 fieldsHelper.getRange("//xf:indexRange/@value", fields);
         return indexRange.getMinimum();
@@ -397,6 +399,7 @@ public abstract class BaseParser extends Step {
      */
     protected Integer getEndIndex(final Fields fields)
             throws NumberFormatException, FieldsNotFoundException {
+        // xpath - not abs path
         Range<Integer> indexRange =
                 fieldsHelper.getRange("//xf:indexRange/@value", fields);
         return indexRange.getMaximum();

@@ -234,7 +234,7 @@ public class UtilTest {
 
         String actual = Util.join(str);
 
-        assertThat(actual).isNull();
+        assertThat(actual).isEqualTo("null");
     }
 
     @Test

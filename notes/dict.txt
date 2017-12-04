@@ -38,3 +38,4 @@ qname
 xml
 jsoup
 concat
+abs

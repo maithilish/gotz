@@ -56,6 +56,7 @@ public class DataDefValidator {
         for (Fields fields : fieldsList) {
             try {
                 if (fields != null) {
+                    // xpath - not abs path
                     fieldsHelper.getRange("//xf:indexRange/@value", fields);
                 }
             } catch (NumberFormatException e) {

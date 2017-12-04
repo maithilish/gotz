@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.codetab.gotz.exception.DataDefNotFoundException;
+import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
@@ -20,7 +21,7 @@ import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
-import org.codetab.gotz.testutil.FieldsBuilder;
+import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.w3c.dom.Element;
 
 /**
  * <p>
@@ -65,8 +67,8 @@ public class DataFilterTest {
     }
 
     @Test
-    public void testProcessFilterOnValue()
-            throws IllegalArgumentException, DataDefNotFoundException {
+    public void testProcessFilterOnValue() throws IllegalArgumentException,
+            DataDefNotFoundException, FieldsException {
         Data data = getTestData();
         filter.setInput(data);
 
@@ -83,8 +85,8 @@ public class DataFilterTest {
     }
 
     @Test
-    public void testProcessFilterOnMatch()
-            throws IllegalArgumentException, DataDefNotFoundException {
+    public void testProcessFilterOnMatch() throws IllegalArgumentException,
+            DataDefNotFoundException, FieldsException {
         Data data = getTestData();
         filter.setInput(data);
 
@@ -102,7 +104,8 @@ public class DataFilterTest {
 
     @Test
     public void testProcessFilterNoMatchingItem()
-            throws IllegalArgumentException, DataDefNotFoundException {
+            throws IllegalArgumentException, DataDefNotFoundException,
+            FieldsException {
         Data data = getTestData();
         filter.setInput(data);
 
@@ -119,7 +122,8 @@ public class DataFilterTest {
 
     @Test
     public void testProcessFilterAxisValueMismatch()
-            throws IllegalArgumentException, DataDefNotFoundException {
+            throws IllegalArgumentException, DataDefNotFoundException,
+            FieldsException {
         Data data = getTestData();
         filter.setInput(data);
 
@@ -136,8 +140,8 @@ public class DataFilterTest {
     }
 
     @Test
-    public void testProcessFilterUnknowAxis()
-            throws IllegalArgumentException, DataDefNotFoundException {
+    public void testProcessFilterUnknowAxis() throws IllegalArgumentException,
+            DataDefNotFoundException, FieldsException {
         Data data = getTestData();
         filter.setInput(data);
 
@@ -154,8 +158,8 @@ public class DataFilterTest {
     }
 
     @Test
-    public void testProcessFilterTwoMembers()
-            throws IllegalArgumentException, DataDefNotFoundException {
+    public void testProcessFilterTwoMembers() throws IllegalArgumentException,
+            DataDefNotFoundException, FieldsException {
         Data data = getTestData();
         filter.setInput(data);
 
@@ -240,18 +244,17 @@ public class DataFilterTest {
     }
 
     private Map<AxisName, Fields> getTestFilterMap(final AxisName axis,
-            final String group, final String... filterStrings) {
+            final String group, final String... filterStrings)
+            throws FieldsException {
 
-        StringBuilder filters = new StringBuilder();
+        // !!! can't use FieldsBuilder as we need fields with filters as root
+        Fields fields = TestUtil.createFieldsWithNamedRoot("filters", "xf");
+        TestUtil.addAttribute("type", group, TestUtil.getRootElement(fields));
         for (String filterString : filterStrings) {
-            filters.append("<xf:filter name='f' pattern='");
-            filters.append(filterString);
-            filters.append("' />");
+            Element f = TestUtil.addElement("filter", "", "xf", fields);
+            TestUtil.addAttribute("name", "f", f);
+            TestUtil.addAttribute("pattern", filterString, f);
         }
-
-        Fields fields = new FieldsBuilder()
-                .add("<xf:filters type='" + group + "'>")
-                .add(filters.toString()).add("</xf:filters>").build("xf");
 
         Map<AxisName, Fields> filterMap = new HashMap<>();
 

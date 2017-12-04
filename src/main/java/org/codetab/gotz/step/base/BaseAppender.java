@@ -76,8 +76,8 @@ public abstract class BaseAppender extends Step {
 
             for (Fields fields : appenders) {
                 try {
-                    String appenderName = fieldsHelper
-                            .getLastValue("//xf:appender/@name", fields);
+                    String appenderName = fieldsHelper.getLastValue(
+                            "/xf:fields/xf:appender/@name", fields);
                     appenderService.createAppender(appenderName, fields);
                     appenderNames.add(appenderName);
                     appenderFieldsMap.put(appenderName, fields);

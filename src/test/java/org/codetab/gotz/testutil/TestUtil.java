@@ -60,6 +60,21 @@ public final class TestUtil {
         }
     }
 
+    // no fields root
+    public static Fields createFieldsWithNamedRoot(final String rootTag,
+            final String namespacePrefix) throws FieldsException {
+        Document doc;
+        try {
+            doc = XmlUtils.createDocument(rootTag, namespacePrefix,
+                    "http://codetab.org/xfields");
+            Fields fields = new Fields();
+            fields.getNodes().add(doc);
+            return fields;
+        } catch (ParserConfigurationException e) {
+            throw new FieldsException("unable to create fields", e);
+        }
+    }
+
     public static Fields createFields(final String name, final String value)
             throws FieldsException {
         return createFields(name, value, null);
@@ -164,13 +179,20 @@ public final class TestUtil {
             final Node node) {
         Document doc = null;
         doc = node.getOwnerDocument();
-        if (doc == null) {
-        } else {
-            // ((Element) node).setAttributeNS(doc.lookupNamespaceURI(null),
-            // name,
-            // text);
+        if (doc != null) {
             ((Element) node).setAttribute(name, text);
         }
+    }
+
+    public static Node getRootElement(final Fields fields) {
+        Optional<Node> last = getLastNode(fields);
+        if (last.isPresent()) {
+            Node node = last.get();
+            if (node.getNodeType() == Node.DOCUMENT_NODE) {
+                return ((Document) node).getDocumentElement();
+            }
+        }
+        return null;
     }
 
     public static Optional<Node> getLastNode(final Fields fields) {

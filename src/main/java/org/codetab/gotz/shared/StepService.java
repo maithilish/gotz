@@ -130,7 +130,7 @@ public class StepService {
 
     private List<String> getNextStepClasses(final Fields fields,
             final String stepType) throws FieldsNotFoundException {
-
+        // xpath - not abs path
         String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='", stepType,
                 "']/@class");
         List<String> stepClasses = fieldsHelper.getValues(xpath, false, fields);
@@ -145,6 +145,7 @@ public class StepService {
     public String getNextStepType(final Fields fields, final String stepType)
             throws FieldsNotFoundException {
         // TODO need to check behavior when multiple matching nodes exists
+        // xpath - not abs path
         String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='", stepType,
                 "']/xf:nextStep");
         String nextStepType = fieldsHelper.getFirstValue(xpath, fields);

@@ -131,7 +131,7 @@ public final class DataFilter extends BaseConverter {
             return false;
         }
         try {
-            String xpath = Util.join("//xf:filters[@type='", filterType,
+            String xpath = Util.join("/xf:filters[@type='", filterType,
                     "']/xf:filter/@pattern");
             // include blanks also in patterns
             List<String> patterns = fieldsHelper.getValues(xpath, true, fields);

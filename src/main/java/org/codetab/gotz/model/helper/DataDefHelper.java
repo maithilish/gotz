@@ -107,6 +107,7 @@ public class DataDefHelper {
                     fields = fieldsHelper.createFields("xf");
                     dMember.setFields(fields);
                 }
+                // xpath - not abs path
                 if (!fieldsHelper.isAnyDefined(fields, "//xf:indexRange/@value",
                         "//xf:breakAfter/@value")) {
                     String defaultIndexRange = "1-1";
@@ -162,6 +163,7 @@ public class DataDefHelper {
 
     public List<Fields> getDataDefMemberFields(final String name,
             final Fields fields) throws FieldsException {
+        // xpath - not abs path
         String xpath = Util.join("/xf:member[@name='", name, "']");
         return fieldsHelper.split(xpath, fields);
     }
