@@ -22,7 +22,7 @@
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
-                <appender name="db"
+                <appender name="db" stream="false"
                     class="org.codetab.gotz.step.load.appender.DbAppender">
                     <encoder name="dataSet"
                         class="org.codetab.gotz.step.load.encoder.DataSetEncoder">

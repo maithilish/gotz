@@ -151,18 +151,25 @@ public abstract class BaseAppender extends Step {
      * @throws StepRunException
      *             if append is interrupted
      */
-    protected void doAppend(final Object obj) {
-        for (String appenderName : appenderNames) {
-            Appender appender = appenderService.getAppender(appenderName);
-            try {
-                appender.append(obj);
-            } catch (InterruptedException e) {
-                String message = "unable to append";
-                LOGGER.error("{} {}", message, Util.getMessage(e));
-                LOGGER.debug("{}", e);
-                activityService.addActivity(Type.GIVENUP, message, e);
-                throw new StepRunException(message, e);
-            }
+    protected void doAppend(final Appender appender, final Object obj) {
+        try {
+            appender.append(obj);
+        } catch (InterruptedException e) {
+            String message = "unable to append";
+            LOGGER.error("{} {}", message, Util.getMessage(e));
+            LOGGER.debug("{}", e);
+            activityService.addActivity(Type.GIVENUP, message, e);
+            throw new StepRunException(message, e);
+        }
+    }
+
+    protected Appender getAppender(final String appenderName) {
+        Appender appender = appenderService.getAppender(appenderName);
+        if (appender == null) {
+            throw new NullPointerException(
+                    Util.join("unable to get appender [", appenderName, "]"));
+        } else {
+            return appender;
         }
     }
 

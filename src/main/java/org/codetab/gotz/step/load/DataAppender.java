@@ -8,6 +8,7 @@ import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseAppender;
+import org.codetab.gotz.step.load.appender.Appender;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ public class DataAppender extends BaseAppender {
         try {
             Map<String, Fields> appenderFieldsMap = getAppenderFieldsMap();
             for (String appenderName : appenderFieldsMap.keySet()) {
+                Appender appender = getAppender(appenderName);
                 Fields appenderFields = appenderFieldsMap.get(appenderName);
                 Object encodedData = encode(appenderName, appenderFields);
                 String stream = fieldsHelper.getValue(
@@ -42,15 +44,15 @@ public class DataAppender extends BaseAppender {
                     Collection<?> list = (Collection<?>) encodedData;
                     if (stream.equalsIgnoreCase("false")) {
                         // bulk load
-                        doAppend(list);
+                        doAppend(appender, list);
                     } else {
                         // stream
                         for (Object obj : list) {
-                            doAppend(obj);
+                            doAppend(appender, obj);
                         }
                     }
                 } else {
-                    doAppend(encodedData);
+                    doAppend(appender, encodedData);
                 }
             }
         } catch (Exception e) {
