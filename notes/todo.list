@@ -1,0 +1,16 @@
+IT 
+devdefs cleanup
+Step generic
+locator name, label
+fields helper cleanup
+FieldsException to NoFieldsException,
+IT - prefix add local path
+
+Clean up       
+   activity cleanup, internal error cat, meaningful activity message
+   externalize strings
+   debug
+   state log  
+
+tests
+   format xml fields

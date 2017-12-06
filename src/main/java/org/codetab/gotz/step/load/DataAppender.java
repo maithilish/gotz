@@ -3,7 +3,6 @@ package org.codetab.gotz.step.load;
 import java.util.Collection;
 import java.util.Map;
 
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.IStep;
@@ -32,11 +31,12 @@ public class DataAppender extends BaseAppender {
 
     @Override
     public boolean process() {
-        try {
-            Map<String, Fields> appenderFieldsMap = getAppenderFieldsMap();
-            for (String appenderName : appenderFieldsMap.keySet()) {
+        Map<String, Fields> appenderFieldsMap = getAppenderFieldsMap();
+        for (String appenderName : appenderFieldsMap.keySet()) {
+            try {
                 Appender appender = getAppender(appenderName);
                 Fields appenderFields = appenderFieldsMap.get(appenderName);
+
                 Object encodedData = encode(appenderName, appenderFields);
                 String stream = fieldsHelper.getValue(
                         "/xf:fields/xf:appender/@stream", appenderFields);
@@ -54,13 +54,14 @@ public class DataAppender extends BaseAppender {
                 } else {
                     doAppend(appender, encodedData);
                 }
+            } catch (Exception e) {
+                String message =
+                        Util.join("unable to append to [", appenderName, "]");
+                String label = getLabel();
+                LOGGER.error("[{}] {} {}", label, message, e.getMessage());
+                LOGGER.debug("[{}]", label, e);
+                activityService.addActivity(Type.FAIL, label, message, e);
             }
-        } catch (Exception e) {
-            String message = "unable to find appender fields";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
         }
         return true;
     }

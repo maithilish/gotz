@@ -364,7 +364,7 @@ public class BaseLoaderTest {
         try {
             loader.process();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP),
+            verify(activityService).addActivity(eq(Type.FAIL),
                     any(String.class), any(IOException.class));
         }
 
@@ -410,7 +410,7 @@ public class BaseLoaderTest {
         try {
             loader.process();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP),
+            verify(activityService).addActivity(eq(Type.FAIL),
                     any(String.class), any(IOException.class));
         }
 
@@ -563,7 +563,7 @@ public class BaseLoaderTest {
         try {
             loader.store();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP),
+            verify(activityService).addActivity(eq(Type.FAIL),
                     any(String.class), any(RuntimeException.class));
         }
 
@@ -607,7 +607,7 @@ public class BaseLoaderTest {
             loader.handover();
             fail("should throw StepRunExpection");
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP),
+            verify(activityService).addActivity(eq(Type.FAIL),
                     any(String.class), any(FieldsException.class));
         }
     }
@@ -635,7 +635,7 @@ public class BaseLoaderTest {
         assertThat(loader.getStepState()).isEqualTo(StepState.HANDOVER);
         assertThat(actual).isTrue();
 
-        verify(activityService, times(2)).addActivity(eq(Type.GIVENUP),
+        verify(activityService, times(2)).addActivity(eq(Type.FAIL),
                 any(String.class));
         verifyZeroInteractions(stepService);
     }
@@ -706,7 +706,7 @@ public class BaseLoaderTest {
         try {
             loader.handover();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP),
+            verify(activityService).addActivity(eq(Type.FAIL),
                     any(String.class), any(FieldsException.class));
         }
     }

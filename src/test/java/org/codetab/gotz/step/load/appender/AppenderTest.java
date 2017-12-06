@@ -129,7 +129,7 @@ public class AppenderTest {
         appender.setFields(fields);
         appender.initializeQueue();
 
-        verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
+        verify(activityService).addActivity(eq(Type.FAIL), any(String.class),
                 any(NumberFormatException.class));
     }
 

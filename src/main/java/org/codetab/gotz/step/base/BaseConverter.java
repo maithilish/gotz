@@ -63,7 +63,7 @@ public abstract class BaseConverter extends Step {
         if (nextStepFields.getNodes().size() == 0) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
-            activityService.addActivity(Type.GIVENUP, message);
+            activityService.addActivity(Type.FAIL, message);
             throw new StepRunException(message);
         }
         return nextStepFields;

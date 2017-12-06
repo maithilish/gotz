@@ -54,14 +54,25 @@ public class ActivityService {
         stopWatch.stop();
     }
 
+    // TODO remove next two methods and also similar constructor in activity
+    // class
     public void addActivity(final Type type, final String message) {
         activities.add(new Activity(type, message));
     }
 
-    // TODO add entity name parameter
     public void addActivity(final Type type, final String message,
             final Throwable throwable) {
         activities.add(new Activity(type, message, throwable));
+    }
+
+    public void addActivity(final Type type, final String label,
+            final String message) {
+        activities.add(new Activity(type, label, message));
+    }
+
+    public void addActivity(final Type type, final String label,
+            final String message, final Throwable throwable) {
+        activities.add(new Activity(type, label, message, throwable));
     }
 
     public void logActivities() {
@@ -85,7 +96,8 @@ public class ActivityService {
                     causeMessage = cause.getLocalizedMessage();
                 }
             }
-            LOGGER.info("Activity type={}, message={}", activity.getType(),
+            LOGGER.info("Activity type={}, label={}, message={}",
+                    activity.getType(), activity.getLabel(),
                     activity.getMessage());
             LOGGER.info(" exception : {} {}", throwableClass, throwableMessage);
             if (cause != null) {

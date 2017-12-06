@@ -2,6 +2,7 @@ package org.codetab.gotz.step;
 
 import javax.inject.Inject;
 
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ActivityService;
@@ -29,16 +30,27 @@ public class Task implements Runnable {
             step.process();
             step.store();
             step.handover();
+        } catch (StepRunException e) {
+            String label = getLabel();
+            LOGGER.error("[{}] {}", label, e.getMessage());
+            LOGGER.debug("[{}]", label, e);
+            activityService.addActivity(Type.FAIL, label, e.getMessage(), e);
         } catch (Exception e) {
-            Labels labels = step.getLabels();
-            // internal error
-            String label = "step labels not set";
-            if (labels != null) {
-                label = labels.getLabel();
-            }
-            LOGGER.debug("[{}] {}", label, e);
-            LOGGER.error("[{}] {}", label, e.getLocalizedMessage());
-            activityService.addActivity(Type.GIVENUP, label, e);
+            String label = getLabel();
+            LOGGER.error("[{}] {}", label, e.getMessage());
+            LOGGER.debug("[{}]", label, e);
+            activityService.addActivity(Type.INTERNAL, label, e.getMessage(),
+                    e);
         }
+    }
+
+    private String getLabel() {
+        Labels labels = step.getLabels();
+        // internal error
+        String label = "step labels not set";
+        if (labels != null) {
+            label = labels.getLabel();
+        }
+        return label;
     }
 }

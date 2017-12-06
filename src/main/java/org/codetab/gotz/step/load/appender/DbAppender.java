@@ -41,6 +41,13 @@ public final class DbAppender extends Appender {
     private DbAppender() {
     }
 
+    @Override
+    public void init() {
+        setInitialized(true);
+        LOGGER.info("initialized {} [{}]", this.getClass().getSimpleName(),
+                getName());
+    }
+
     /**
      * Creates a file (PrintWriter) from appenders file field. Write the objects
      * taken from blocking queue until object is Marker.EOF.
@@ -61,23 +68,30 @@ public final class DbAppender extends Appender {
                     try {
                         dataSetPersistence.storeDataSet(dataSets);
                     } catch (StepPersistenceException e) {
-                        String message = "unable to persist dataset";
+                        String message =
+                                Util.join("unable to persist dataset to [",
+                                        getName(), "]");
+                        activityService.addActivity(Type.FAIL, message, e);
+                        LOGGER.error("{} {}", message, Util.getMessage(e));
                         LOGGER.debug("{}", e);
-                        activityService.addActivity(Type.GIVENUP, message, e);
                         break;
                     }
 
                 } else {
                     String message = Util.join(
-                            "unable to persist, appended object is not list of DataSet [",
-                            item.toString(), "]");
-                    activityService.addActivity(Type.GIVENUP, message);
+                            "object is not list of DataSet, unable to persist [",
+                            getName(),
+                            "]. For DbAppender, set stream as false");
+                    activityService.addActivity(Type.FAIL, message);
+                    LOGGER.error("{} {}", message);
                     break;
                 }
             } catch (InterruptedException e) {
-                String message = "unable to take object from queue";
+                String message = Util.join("unable to take object from queue [",
+                        getName(), "]");
+                activityService.addActivity(Type.FAIL, message, e);
+                LOGGER.error("{} {}", message, Util.getMessage(e));
                 LOGGER.debug("{}", e);
-                activityService.addActivity(Type.GIVENUP, message, e);
             }
         }
     }

@@ -198,7 +198,7 @@ public class DataFilterTest {
         try {
             filter.process();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.GIVENUP),
+            verify(activityService).addActivity(eq(Type.FAIL),
                     any(String.class), any(DataDefNotFoundException.class));
         }
 

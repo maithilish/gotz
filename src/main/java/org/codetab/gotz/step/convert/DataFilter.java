@@ -56,7 +56,7 @@ public final class DataFilter extends BaseConverter {
         } catch (DataDefNotFoundException e) {
             String givenUpMessage = "unable to filter";
             LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            activityService.addActivity(Type.FAIL, givenUpMessage, e);
             throw new StepRunException(givenUpMessage, e);
         }
         for (Member member : getData().getMembers()) {

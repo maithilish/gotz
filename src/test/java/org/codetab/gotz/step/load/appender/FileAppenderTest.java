@@ -5,7 +5,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
@@ -25,6 +24,7 @@ import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.step.load.appender.Appender.Marker;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public class FileAppenderTest {
         String str = "test object";
 
         appender.setFields(new Fields());
-
+        appender.setInitialized(true);
         appender.initializeQueue();
 
         appender.append(str);
@@ -82,6 +82,7 @@ public class FileAppenderTest {
     @Test
     public void testAppendNullParams() throws InterruptedException {
         try {
+            appender.setInitialized(true);
             appender.append(null);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
@@ -93,21 +94,10 @@ public class FileAppenderTest {
     public void testRunFileFieldNotSet() throws InterruptedException,
             FieldsException, ConfigNotFoundException {
 
-        String str1 = "test1";
-
         appender.setFields(new Fields());
+        appender.init();
 
-        appender.initializeQueue();
-
-        Thread t = new Thread(appender);
-        t.start();
-
-        appender.append(str1);
-        appender.append(Marker.EOF);
-
-        t.join();
-
-        verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
+        verify(activityService).addActivity(eq(Type.FAIL), any(String.class),
                 any(FieldsNotFoundException.class));
     }
 
@@ -124,7 +114,7 @@ public class FileAppenderTest {
         Node parent = fieldsHelper.addElement("appender", "", fields);
         fieldsHelper.addElement("file", fileName, parent);
         appender.setFields(fields);
-
+        appender.init();
         appender.initializeQueue();
 
         Thread t = new Thread(appender);
@@ -148,27 +138,19 @@ public class FileAppenderTest {
 
     @Test
     public void testRunWriterClose() throws InterruptedException, IOException,
-            FieldsException, ConfigNotFoundException {
-
-        String fileName = "target/test.txt";
-
-        String str1 = "test1";
-
-        Fields fields = fieldsHelper.createFields();
-        Node parent = fieldsHelper.addElement("appender", "", fields);
-        fieldsHelper.addElement("file", fileName, parent);
-        appender.setFields(fields);
-
-        appender.initializeQueue();
+            FieldsException, ConfigNotFoundException, IllegalAccessException {
 
         PrintWriter writer = Mockito.mock(PrintWriter.class);
-        given(ioHelper.getPrintWriter(fileName)).willReturn(writer);
-        doThrow(IOException.class).when(writer).println(str1);
+        FieldUtils.writeField(appender, "writer", writer, true);
+
+        appender.setFields(new Fields());
+        appender.setInitialized(true);
+        appender.initializeQueue();
 
         Thread t = new Thread(appender);
         t.start();
 
-        appender.append(str1);
+        appender.append("test");
         appender.append(Marker.EOF);
 
         t.join();
@@ -183,10 +165,18 @@ public class FileAppenderTest {
             FieldsException {
         String fileName = "target/test.txt";
 
-        Fields fields = fieldsHelper.createFields();
-        Node parent = fieldsHelper.addElement("appender", "", fields);
-        fieldsHelper.addElement("file", fileName, parent);
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add("<xf:appender>")
+                .add("  <xf:file>")
+                .add(fileName)
+                .add("  </xf:file>")
+                .add("</xf:appender>")
+                .build("xf");
+        //@formatter:on
+
         appender.setFields(fields);
+        appender.init();
 
         @SuppressWarnings("unchecked")
         BlockingQueue<Object> queue = Mockito.mock(BlockingQueue.class);
@@ -197,38 +187,39 @@ public class FileAppenderTest {
 
         appender.run();
 
-        verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
+        verify(activityService).addActivity(eq(Type.FAIL), any(String.class),
                 any(InterruptedException.class));
     }
 
     @Test
-    public void testRunShouldLogAcivityOnIOException()
+    public void testInitShouldLogAcivityOnIOException()
             throws InterruptedException, IllegalAccessException, IOException,
             FieldsException {
         String fileName = "/home/xyzz/test.txt";
 
-        Fields fields = fieldsHelper.createFields();
-        Node parent = fieldsHelper.addElement("appender", "", fields);
-        fieldsHelper.addElement("file", fileName, parent);
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add("<xf:appender>")
+                .add("  <xf:file>")
+                .add(fileName)
+                .add("  </xf:file>")
+                .add("</xf:appender>")
+                .build("xf");
+        //@formatter:on
         appender.setFields(fields);
+        appender.init();
 
-        @SuppressWarnings("unchecked")
-        BlockingQueue<Object> queue = Mockito.mock(BlockingQueue.class);
-        FieldUtils.writeField(appender, "queue", queue, true);
-
-        appender.run();
-
-        verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
+        verify(activityService).addActivity(eq(Type.FAIL), any(String.class),
                 any(IOException.class));
     }
 
     @Test
-    public void testRunIllegalState() throws IllegalAccessException {
+    public void testInitIllegalState() throws IllegalAccessException {
 
         FieldUtils.writeField(appender, "ioHelper", null, true);
 
         try {
-            appender.run();
+            appender.init();
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
             assertThat(e.getMessage()).isEqualTo("ioHelper is null");

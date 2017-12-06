@@ -85,7 +85,7 @@ public class HtmlParser extends BaseParser {
             String givenUpMessage =
                     "unable to create HtmlUnit.HtmlPage from document byte[]";
             LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            activityService.addActivity(Type.FAIL, givenUpMessage, e);
             throw new StepRunException(givenUpMessage, e);
         } finally {
             webClient.setRefreshHandler(new ImmediateRefreshHandler());

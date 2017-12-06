@@ -164,7 +164,7 @@ public abstract class BaseLoader extends Step {
                 String givenUpMessage =
                         Util.join("unable to fetch document ", getLabel());
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+                activityService.addActivity(Type.FAIL, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
 
@@ -184,7 +184,7 @@ public abstract class BaseLoader extends Step {
                 String errorMessage = Util.join(
                         "unable to compress document object ", getLabel());
                 LOGGER.error("{} {}", errorMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.GIVENUP, errorMessage, e);
+                activityService.addActivity(Type.FAIL, errorMessage, e);
                 throw new StepRunException(errorMessage, e);
             }
 
@@ -258,7 +258,7 @@ public abstract class BaseLoader extends Step {
             } catch (RuntimeException e) {
                 String givenUpMessage = "unable to store";
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+                activityService.addActivity(Type.FAIL, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
         } else {
@@ -294,7 +294,7 @@ public abstract class BaseLoader extends Step {
             }
         } catch (FieldsException e) {
             LOGGER.error("{} {}", errorMessage, e);
-            activityService.addActivity(Type.GIVENUP, errorMessage, e);
+            activityService.addActivity(Type.FAIL, errorMessage, e);
             throw new StepRunException(errorMessage, e);
         }
 
@@ -307,13 +307,13 @@ public abstract class BaseLoader extends Step {
                 } catch (RuntimeException e) {
                     String message = "unable to get next step fields";
                     LOGGER.error("{} {}", message, locator);
-                    activityService.addActivity(Type.GIVENUP,
+                    activityService.addActivity(Type.FAIL,
                             Util.join(errorMessage, " : ", message));
                 }
             } else {
                 String message = "document not loaded";
                 LOGGER.error("{} {}", message, locator);
-                activityService.addActivity(Type.GIVENUP,
+                activityService.addActivity(Type.FAIL,
                         Util.join(errorMessage, " : ", message));
             }
         }

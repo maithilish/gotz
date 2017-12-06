@@ -80,13 +80,13 @@ public class ActivityServiceTest {
     @Test
     public void testAddActivity() throws IllegalAccessException {
         // when
-        activityService.addActivity(Type.GIVENUP, "tmessage");
+        activityService.addActivity(Type.FAIL, "tmessage");
 
         // then
         ArgumentCaptor<Activity> argument =
                 ArgumentCaptor.forClass(Activity.class);
         verify(activities).add(argument.capture());
-        assertThat(argument.getValue().getType()).isEqualTo(Type.GIVENUP);
+        assertThat(argument.getValue().getType()).isEqualTo(Type.FAIL);
         assertThat(argument.getValue().getMessage()).isEqualTo("tmessage");
         assertThat(argument.getValue().getThrowable()).isNull();
     }
@@ -97,13 +97,13 @@ public class ActivityServiceTest {
         Throwable throwable = new Throwable("foo");
 
         // when
-        activityService.addActivity(Type.GIVENUP, "tmessage", throwable); // when
+        activityService.addActivity(Type.FAIL, "tmessage", throwable); // when
 
         // then
         ArgumentCaptor<Activity> argument =
                 ArgumentCaptor.forClass(Activity.class);
         verify(activities).add(argument.capture());
-        assertThat(argument.getValue().getType()).isEqualTo(Type.GIVENUP);
+        assertThat(argument.getValue().getType()).isEqualTo(Type.FAIL);
         assertThat(argument.getValue().getMessage()).isEqualTo("tmessage");
         assertThat(argument.getValue().getThrowable()).isSameAs(throwable);
     }

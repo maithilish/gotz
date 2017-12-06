@@ -69,32 +69,31 @@ public abstract class BaseAppender extends Step {
     public boolean initialize() {
         Validate.validState(getFields() != null, "fields must not be null");
         try {
-            List<Fields> appenders = fieldsHelper.split(
+            String xpath =
                     Util.join("/xf:fields/xf:task/xf:steps/xf:step[@name='",
-                            getStepType(), "']/xf:appender"),
-                    getFields());
-
+                            getStepType(), "']/xf:appender");
+            List<Fields> appenders = fieldsHelper.split(xpath, getFields());
+            String appenderName = null;
             for (Fields fields : appenders) {
                 try {
-                    String appenderName = fieldsHelper.getLastValue(
-                            "/xf:fields/xf:appender/@name", fields);
+                    appenderName = ""; // reset prev name
+                    xpath = "/xf:fields/xf:appender/@name";
+                    appenderName = fieldsHelper.getLastValue(xpath, fields);
                     appenderService.createAppender(appenderName, fields);
                     appenderNames.add(appenderName);
                     appenderFieldsMap.put(appenderName, fields);
                 } catch (ClassNotFoundException | InstantiationException
                         | IllegalAccessException | FieldsNotFoundException e) {
-                    String message = "unable to append";
-                    LOGGER.error("{} {}", message, Util.getMessage(e));
-                    LOGGER.debug("{}", e);
-                    activityService.addActivity(Type.GIVENUP, message, e);
+                    String label = getLabel();
+                    String message = Util.join("unable to create appender [",
+                            appenderName, "]");
+                    LOGGER.error("[{}] {} {}", label, message, e.getMessage());
+                    LOGGER.debug("[{}] {}", label, e);
+                    activityService.addActivity(Type.FAIL, label, message, e);
                 }
             }
         } catch (FieldsException e) {
-            String message = "unable to find appender fields";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
+            throw new StepRunException("unable to find appender fields", e);
         }
         setStepState(StepState.INIT);
         return true;
@@ -148,19 +147,13 @@ public abstract class BaseAppender extends Step {
      *
      * @param obj
      *            the object to append
+     * @throws InterruptedException
      * @throws StepRunException
      *             if append is interrupted
      */
-    protected void doAppend(final Appender appender, final Object obj) {
-        try {
-            appender.append(obj);
-        } catch (InterruptedException e) {
-            String message = "unable to append";
-            LOGGER.error("{} {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
-            throw new StepRunException(message, e);
-        }
+    protected void doAppend(final Appender appender, final Object obj)
+            throws InterruptedException {
+        appender.append(obj);
     }
 
     protected Appender getAppender(final String appenderName) {

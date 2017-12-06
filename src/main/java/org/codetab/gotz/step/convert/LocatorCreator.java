@@ -54,7 +54,7 @@ public final class LocatorCreator extends BaseConverter {
             } catch (FieldsException e) {
                 String givenUpMessage = "unable to create locator";
                 LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+                activityService.addActivity(Type.FAIL, givenUpMessage, e);
                 throw new StepRunException(givenUpMessage, e);
             }
 
@@ -105,7 +105,7 @@ public final class LocatorCreator extends BaseConverter {
         } catch (FieldsException e) {
             String message = "unable to get next step fields";
             LOGGER.error("{} {}", message, getLabel());
-            activityService.addActivity(Type.GIVENUP, message);
+            activityService.addActivity(Type.FAIL, message);
             throw new StepRunException(message);
         }
     }

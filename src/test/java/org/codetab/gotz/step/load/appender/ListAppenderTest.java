@@ -114,7 +114,7 @@ public class ListAppenderTest {
 
         appender.run();
 
-        verify(activityService).addActivity(eq(Type.GIVENUP), any(String.class),
+        verify(activityService).addActivity(eq(Type.FAIL), any(String.class),
                 any(InterruptedException.class));
     }
 

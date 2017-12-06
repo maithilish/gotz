@@ -38,6 +38,13 @@ public final class ListAppender extends Appender {
     private ListAppender() {
     }
 
+    @Override
+    public void init() {
+        setInitialized(true);
+        LOGGER.info("initialized {} [{}]", this.getClass().getSimpleName(),
+                getName());
+    }
+
     /**
      * Takes objects from blocking queue and adds to list until object is
      * Marker.EOF.
@@ -57,7 +64,7 @@ public final class ListAppender extends Appender {
             } catch (InterruptedException e) {
                 String message = "unable to take object from queue";
                 LOGGER.debug("{}", e);
-                activityService.addActivity(Type.GIVENUP, message, e);
+                activityService.addActivity(Type.FAIL, message, e);
             }
         }
     }

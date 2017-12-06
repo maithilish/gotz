@@ -58,6 +58,8 @@ public abstract class Appender implements Runnable {
      */
     private BlockingQueue<Object> queue;
 
+    private boolean initialized = false;
+
     /**
      * Config service.
      */
@@ -85,6 +87,8 @@ public abstract class Appender implements Runnable {
      *             on interruption.
      */
     public abstract void append(Object object) throws InterruptedException;
+
+    public abstract void init();
 
     /**
      * <p>
@@ -129,7 +133,7 @@ public abstract class Appender implements Runnable {
                     Util.join("unable to create appender queue [", name, "]");
             LOGGER.error("{}, {}", message, Util.getMessage(e));
             LOGGER.debug("{}", e);
-            activityService.addActivity(Type.GIVENUP, message, e);
+            activityService.addActivity(Type.FAIL, message, e);
         }
     }
 
@@ -163,6 +167,14 @@ public abstract class Appender implements Runnable {
     }
 
     /**
+     * Get appender name.
+     * @return name of appender
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
      * <p>
      * Set appender name.
      * @param appenderName
@@ -172,4 +184,13 @@ public abstract class Appender implements Runnable {
         Validate.notNull(appenderName, "appenderName must not be null");
         this.name = appenderName;
     }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(final boolean initialized) {
+        this.initialized = initialized;
+    }
+
 }

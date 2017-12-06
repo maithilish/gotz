@@ -60,11 +60,15 @@ public class AppenderService {
             throw new ClassCastException(
                     "Class " + appenderClzName + " is not of type Appender");
         }
+
         appender.setName(appenderName);
         appender.setFields(fields);
-        appender.initializeQueue();
-        appenderPoolService.submit("appender", appender);
-        appenders.put(appenderName, appender);
+        appender.init();
+        if (appender.isInitialized()) {
+            appender.initializeQueue();
+            appenderPoolService.submit("appender", appender);
+            appenders.put(appenderName, appender);
+        }
     }
 
     public void closeAll() {

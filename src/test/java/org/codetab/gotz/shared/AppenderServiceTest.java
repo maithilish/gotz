@@ -20,6 +20,7 @@ import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.step.load.appender.Appender;
 import org.codetab.gotz.step.load.appender.Appender.Marker;
+import org.codetab.gotz.testutil.FieldsBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -59,9 +60,19 @@ public class AppenderServiceTest {
             IllegalAccessException, FieldsNotFoundException, FieldsException {
 
         String className = "org.codetab.gotz.step.load.appender.FileAppender";
-        Fields fields = fieldsHelper.createFields();
-        Node node = fieldsHelper.addElement("appender", "", fields);
-        fieldsHelper.addAttribute("class", className, node);
+        String fileName = "target/test.txt";
+
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add("<xf:appender class='")
+                .add(className)
+                .add("' >")
+                .add("  <xf:file>")
+                .add(fileName)
+                .add("  </xf:file>")
+                .add("</xf:appender>")
+                .build("xf");
+        //@formatter:on
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
@@ -71,7 +82,7 @@ public class AppenderServiceTest {
         appenderService.createAppender("x", fields);
 
         Appender appender = appenderService.getAppender("x");
-        appender.setFields(fields);
+        // appender.setFields(fields);
 
         assertThat(appender.getFields()).isEqualTo(fields);
         verify(appenderPoolService).submit("appender", appender);
@@ -82,12 +93,23 @@ public class AppenderServiceTest {
             InstantiationException, IllegalAccessException,
             ConfigNotFoundException, FieldsException, FieldsNotFoundException {
 
-        String className = "org.codetab.gotz.step.load.appender.FileAppender";
         String appenderName = "x";
-        Fields fields = fieldsHelper.createFields();
-        Node node = fieldsHelper.addElement("appender", "", fields);
-        fieldsHelper.addAttribute("name", appenderName, node);
-        fieldsHelper.addAttribute("class", className, node);
+        String className = "org.codetab.gotz.step.load.appender.FileAppender";
+        String fileName = "target/test.txt";
+
+        //@formatter:off
+        Fields fields = new FieldsBuilder()
+                .add("<xf:appender class='")
+                .add(className)
+                .add("' name='")
+                .add(appenderName)
+                .add("' >")
+                .add("  <xf:file>")
+                .add(fileName)
+                .add("  </xf:file>")
+                .add("</xf:appender>")
+                .build("xf");
+        //@formatter:on
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
@@ -102,11 +124,19 @@ public class AppenderServiceTest {
 
         // change class name to trigger error, but as appender with same name
         // exists it should not throw ClassCastException
+
         className = "org.codetab.gotz.appender.FileAppenderX";
-        fields = fieldsHelper.createFields();
-        node = fieldsHelper.addElement("appender", "", fields);
-        fieldsHelper.addAttribute("name", appenderName, node);
-        fieldsHelper.addAttribute("class", className, node);
+
+        //@formatter:off
+        fields = new FieldsBuilder()
+                .add("<xf:appender class='")
+                .add(className)
+                .add("' name='")
+                .add(appenderName)
+                .add("' >")
+                .add("</xf:appender>")
+                .build("xf");
+        //@formatter:on
 
         appenderService.createAppender("x", fields);
     }

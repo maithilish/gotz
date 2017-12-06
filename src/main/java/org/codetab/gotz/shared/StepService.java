@@ -117,14 +117,14 @@ public class StepService {
                 } else {
                     LOGGER.warn("step inconsistent, entity [{}]",
                             step.getLabel());
-                    activityService.addActivity(Type.GIVENUP,
+                    activityService.addActivity(Type.FAIL,
                             Util.join(givenUpMessage, ", step inconsistent"));
                 }
             }
         } catch (Exception e) {
             LOGGER.debug("{}", e);
             LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
-            activityService.addActivity(Type.GIVENUP, givenUpMessage, e);
+            activityService.addActivity(Type.FAIL, givenUpMessage, e);
         }
     }
 
