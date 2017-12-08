@@ -11,27 +11,22 @@ import java.util.NoSuchElementException;
 import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
-import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.DocumentHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.base.BaseParser;
 import org.codetab.gotz.util.Util;
+import org.jsoup.helper.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,13 +46,10 @@ public class HtmlParser extends BaseParser {
     private static final int TIMEOUT_MILLIS = 120000;
 
     private Map<Integer, List<?>> nodeMap;
-    private ScriptEngine jsEngine;
     private HtmlPage htmlPage;
 
     @Inject
     private DocumentHelper documentHelper;
-    @Inject
-    private DataDefHelper dataDefHelper;
 
     public HtmlParser() {
         nodeMap = new HashMap<Integer, List<?>>();
@@ -82,11 +74,9 @@ public class HtmlParser extends BaseParser {
             htmlPage = HTMLParser.parseHtml(response,
                     webClient.getCurrentWindow());
         } catch (IllegalStateException | IOException | DataFormatException e) {
-            String givenUpMessage =
-                    "unable to create HtmlUnit.HtmlPage from document byte[]";
-            LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-            activityService.addActivity(Type.FAIL, givenUpMessage, e);
-            throw new StepRunException(givenUpMessage, e);
+            String message = Util.join("unable to create ",
+                    HtmlPage.class.getName(), " from document byte[]");
+            throw new StepRunException(message, e);
         } finally {
             webClient.setRefreshHandler(new ImmediateRefreshHandler());
             webClient.close();
@@ -136,10 +126,9 @@ public class HtmlParser extends BaseParser {
         try {
             timeout = Integer.parseInt(configService.getConfig(key));
         } catch (NumberFormatException | ConfigNotFoundException e) {
-            // TODO add activity or update config with default
-            String msg =
-                    "for config [" + key + "] using default value " + timeout;
-            LOGGER.warn("{}. {}", e, msg);
+            String message = Util.join("for config [", key,
+                    "] using default value ", String.valueOf(timeout));
+            throw new IllegalStateException(message, e);
         }
 
         WebClient webClient = new WebClient(BrowserVersion.FIREFOX_45);
@@ -169,101 +158,30 @@ public class HtmlParser extends BaseParser {
         return url;
     }
 
-    /*
-     *
-     */
-    private String getValue(final HtmlPage page, final DataDef dataDef,
-            final Member member, final Axis axis)
-            throws ScriptException, IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException {
-        StringBuilder sb = new StringBuilder(); // to trace query strings
-        String value = null;
-        Fields fields =
-                dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
-        try {
-            Map<String, String> scripts = new HashMap<>();
-            scripts.put("script",
-                    fieldsHelper.getLastValue("/xf:script/@script", fields));
-            setTraceString(sb, scripts, "<<<");
-            fieldsHelper.replaceVariables(scripts, member.getAxisMap());
-            setTraceString(sb, scripts, ">>>>");
-            LOGGER.trace(getMarker(), "Patch Scripts {}{}{}", Util.LINE,
-                    sb.toString(), Util.LINE);
-            value = queryByScript(scripts);
-        } catch (FieldsNotFoundException e) {
-        }
+    @Override
+    protected String queryByQuery(final Object page,
+            final Map<String, String> queries) {
 
-        try {
-            Map<String, String> queries = new HashMap<>();
-            queries.put("region",
-                    fieldsHelper.getLastValue("/xf:query/@region", fields));
-            queries.put("field",
-                    fieldsHelper.getLastValue("/xf:query/@field", fields));
-            // optional attribute
-            try {
-                queries.put("attribute", fieldsHelper
-                        .getLastValue("/xf:query/@attribute", fields));
-            } catch (FieldsNotFoundException e) {
-                queries.put("attribute", "");
-            }
-            setTraceString(sb, queries, "<<<");
-            fieldsHelper.replaceVariables(queries, member.getAxisMap());
-            setTraceString(sb, queries, ">>>>");
-            LOGGER.trace(getMarker(), "Patch Queries {}{}{}", Util.LINE,
-                    sb.toString(), Util.LINE);
+        Validate.notNull(page, "page must not be null");
+        Validate.notNull(queries, "queries must not be null");
 
-            value = queryByXPath(page, queries);
-        } catch (FieldsNotFoundException e) {
-        }
+        if (page instanceof HtmlPage) {
+            return queryByXPath((HtmlPage) page, queries);
+        } else {
+            throw new IllegalStateException(Util.join(
+                    "page must be instance of ", HtmlPage.class.getName()));
 
-        try {
-            List<String> prefixes =
-                    fieldsHelper.getValues("/xf:prefix", false, fields);
-            value = fieldsHelper.prefixValue(value, prefixes);
-        } catch (FieldsNotFoundException e) {
-        }
-
-        return value;
-    }
-
-    private String queryByScript(final Map<String, String> scripts)
-            throws ScriptException {
-        // TODO - check whether thread safety is involved
-        if (jsEngine == null) {
-            initializeScriptEngine();
-        }
-        LOGGER.trace(getMarker(), "------ query data ------");
-        LOGGER.trace(getMarker(), "Scripts {} ", scripts);
-        jsEngine.put("configs", configService);
-        jsEngine.put("document", getDocument());
-        String scriptStr = scripts.get("script");
-        Object val = jsEngine.eval(scriptStr);
-        String value = ConvertUtils.convert(val);
-        LOGGER.trace(getMarker(), "result {}", value);
-        LOGGER.trace(getMarker(), "------ query data end ------");
-        LOGGER.trace(getMarker(), "");
-        return value;
-    }
-
-    private void initializeScriptEngine() {
-        LOGGER.debug("{}", "Initializing script engine");
-        ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
-        jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
-        if (jsEngine == null) {
-            throw new NullPointerException(
-                    "No script engine found for JavaScript");
         }
     }
 
     private String queryByXPath(final HtmlPage page,
             final Map<String, String> queries) {
         if (queries.size() < 2) {
-            LOGGER.warn("Insufficient queries in DataDef [{}]",
-                    getDataDefName());
-            return null;
+            String message = Util.join("insufficient queries in dataDef [",
+                    getDataDefName(), "], unable to get value");
+            throw new StepRunException(message);
         }
-        LOGGER.trace(getMarker(), "------ query data ------");
-        LOGGER.trace(getMarker(), "Queries {} ", queries);
+
         String regionXpathExpr = queries.get("region");
         String xpathExpr = queries.get("field");
         String value = getByXPath(page, regionXpathExpr, xpathExpr);
@@ -296,15 +214,18 @@ public class HtmlParser extends BaseParser {
             nodes = page.getByXPath(xpathExpr);
             nodeMap.put(hash, nodes);
         }
-        LOGGER.trace(getMarker(), "------Region------");
+
+        LOGGER.trace(getMarker(), "<< Query [Region] >>{}", Util.LINE);
         LOGGER.trace(getMarker(),
                 "Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
+
         for (Object o : nodes) {
             DomNode node = (DomNode) o;
             String nodeTraceStr = Util.stripe(node.asXml(), numOfLines,
-                    "Data Region \n-------------\n", "-------------");
+                    getBlockBegin(), getBlockEnd());
             LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
+
         return nodes;
     }
 
@@ -312,35 +233,23 @@ public class HtmlParser extends BaseParser {
         final int numOfLines = 5;
         String value = null;
         List<?> nodes = node.getByXPath(xpathExpr);
-        LOGGER.trace(getMarker(), "------Nodes------");
+
+        LOGGER.trace(getMarker(), "<< Query [Field] >>{}", Util.LINE);
         LOGGER.trace(getMarker(), Util.join("Nodes ",
                 String.valueOf(nodes.size()), " for XPATH: ", xpathExpr));
+
         for (Object o : nodes) {
             DomNode childNode = (DomNode) o;
             value = childNode.getTextContent();
             String nodeTraceStr = Util.stripe(childNode.asXml(), numOfLines,
-                    "Data Node \n--------\n", "--------");
+                    getBlockBegin(), getBlockEnd());
             LOGGER.trace(getMarker(), "{}", nodeTraceStr);
         }
-        LOGGER.trace(getMarker(), "node contents : {}", value);
-        LOGGER.trace(getMarker(), "------ query data end ------");
-        LOGGER.trace(getMarker(), "");
+
+        LOGGER.trace(getMarker(), "Node contents : {}{}", value, Util.LINE);
+        LOGGER.trace(getMarker(), "<<< Query End >>>{}", Util.LINE);
+
         return value;
     }
 
-    private void setTraceString(final StringBuilder sb,
-            final Map<String, String> strings, final String header) {
-        if (!LOGGER.isTraceEnabled()) {
-            return;
-        }
-        sb.append(Util.LINE);
-        sb.append("  ");
-        sb.append(header);
-        for (String key : strings.keySet()) {
-            sb.append(key);
-            sb.append(" : ");
-            sb.append(strings.get(key));
-            sb.append(Util.LINE);
-        }
-    }
 }

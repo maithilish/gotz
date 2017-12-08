@@ -40,4 +40,6 @@ public interface IStep {
     void setLabels(Labels labels);
 
     String getLabel();
+
+    String getLabeled(String message);
 }

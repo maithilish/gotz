@@ -83,7 +83,7 @@ public class XmlUtils {
         // qname of root element
         String qName = rootTagName;
         if (prefix != null) {
-            qName = Util.join(prefix, ":", rootTagName);
+            qName = String.join(":", prefix, rootTagName);
         }
 
         Element root = document.createElementNS(namespace, qName);

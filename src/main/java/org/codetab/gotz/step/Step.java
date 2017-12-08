@@ -9,6 +9,7 @@ import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,9 +113,17 @@ public abstract class Step implements IStep {
         this.labels = labels;
     }
 
+    /**
+     * get label with []
+     */
     @Override
     public String getLabel() {
         return labels.getLabel();
+    }
+
+    @Override
+    public String getLabeled(final String message) {
+        return Util.join("[", labels.getLabel(), "] ", message);
     }
 
 }

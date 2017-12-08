@@ -459,7 +459,7 @@ public class FieldsHelper {
             } else {
                 String qName = name;
                 if (namespacePrefix != null) {
-                    qName = Util.join(namespacePrefix, ":", name);
+                    qName = String.join(":", namespacePrefix, name);
                 }
                 Element element = doc.createElementNS(
                         doc.lookupNamespaceURI(namespacePrefix), qName);

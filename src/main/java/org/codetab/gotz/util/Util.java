@@ -275,7 +275,7 @@ public final class Util {
 
     /**
      * <p>
-     * Concat strings to string.
+     * Concat strings delimited with space.
      * @param strings
      *            strings to merge
      * @return merged string

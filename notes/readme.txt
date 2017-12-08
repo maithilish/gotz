@@ -280,4 +280,17 @@ XML namespace
 -------------
 
 getNamespaceURI() on document returns null but for jaxb elementNSImpl it returns uri.
-better option is to use lookupNamespaceURI() with null for default ns.  
+better option is to use lookupNamespaceURI() with null for default ns. 
+
+Coding Guidelines
+-----------------
+
+for string join use Util.join(), for delimited join use String.join()
+in steps, use getLabeled() to create message which prefixes message with label
+
+in steps, if exception is recoverable then catch and handle it otherwise 
+   if unrecoverable throw StepRunException (unchecked exception)
+in steps, while throwing StepRunException don't log or add activity as 
+   tasks' exception handling takes care of it. 
+   
+     

@@ -6,21 +6,25 @@ import java.net.MalformedURLException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.Range;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
@@ -29,6 +33,7 @@ import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.MarkerUtil;
@@ -45,14 +50,25 @@ public abstract class BaseParser extends Step {
     private Document document;
     private Data data;
     private Marker marker;
+    private ScriptEngine jsEngine;
 
     private Set<Integer[]> memberIndexSet = new HashSet<>();
 
+    private String blockBegin;
+    private String blockEnd;
+
     @Inject
     private DataPersistence dataPersistence;
+    @Inject
+    private DataDefHelper dataDefHelper;
 
     @Override
     public boolean initialize() {
+
+        String dashes = "---------";
+        blockBegin = Util.join(Util.LINE, dashes, Util.LINE);
+        blockEnd = Util.join(Util.LINE, dashes, dashes);
+
         try {
             dataDefName = fieldsHelper
                     .getLastValue("/xf:fields/xf:task/@dataDef", getFields());
@@ -65,7 +81,8 @@ public abstract class BaseParser extends Step {
                     getLabels().getGroup(), taskName, dataDefName);
             setLabels(labels);
         } catch (FieldsNotFoundException e) {
-            throw new StepRunException("unable to initialize parser", e);
+            String message = getLabeled("unable to initialize parser");
+            throw new StepRunException(message, e);
         }
         return postInitialize();
     }
@@ -83,8 +100,8 @@ public abstract class BaseParser extends Step {
         try {
             dataDefId = dataDefService.getDataDef(dataDefName).getId();
         } catch (DataDefNotFoundException e) {
-            String givenUpMessage = "unable to get datadef id";
-            throw new StepRunException(givenUpMessage, e);
+            String message = getLabeled("unable to get datadef id");
+            throw new StepRunException(message, e);
         }
         Long documentId = getDocument().getId();
         if (documentId != null) {
@@ -96,7 +113,7 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean process() {
         if (data == null) {
-            LOGGER.info("parse data {}", getLabel());
+            LOGGER.info("[{}] parse data", getLabel());
             try {
                 prepareData();
                 parse();
@@ -106,12 +123,12 @@ public abstract class BaseParser extends Step {
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
                     | DataFormatException | FieldsException e) {
-                String message = Util.join("unable to parse ", getLabel());
+                String message = getLabeled("unable to parse");
                 throw new StepRunException(message, e);
             }
         } else {
             setConsistent(true);
-            LOGGER.info("found parsed data {}", getLabel());
+            LOGGER.info("[{}] parsed data exists", getLabel());
         }
         return true;
     }
@@ -132,10 +149,9 @@ public abstract class BaseParser extends Step {
         if (persist) {
             dataPersistence.storeData(data);
             data = dataPersistence.loadData(data.getId());
-            LOGGER.debug("stored data : {}", getLabel());
+            LOGGER.debug("[{}] data stored", getLabel());
         } else {
-            LOGGER.debug("Data for [{}] is not stored as [persist=false]",
-                    getLabel());
+            LOGGER.debug("[{}] [persist=false] data not stored", getLabel());
         }
         return true;
     }
@@ -155,9 +171,7 @@ public abstract class BaseParser extends Step {
     private Fields createNextStepFields() {
         Fields nextStepFields = getFields();
         if (nextStepFields.getNodes().size() == 0) {
-            String message = "unable to get next step fields";
-            LOGGER.error("{} {}", message, getLabel());
-            activityService.addActivity(Type.FAIL, message);
+            String message = getLabeled("unable to get next step fields");
             throw new StepRunException(message);
         }
         return nextStepFields;
@@ -168,6 +182,111 @@ public abstract class BaseParser extends Step {
             IllegalAccessException, InvocationTargetException,
             NoSuchMethodException, MalformedURLException, IOException,
             DataFormatException;
+
+    protected abstract String queryByQuery(Object page,
+            Map<String, String> queries);
+
+    protected String queryByScript(final Map<String, String> scripts)
+            throws ScriptException {
+        // TODO - check whether thread safety is involved
+        if (jsEngine == null) {
+            initializeScriptEngine();
+        }
+
+        LOGGER.trace(getMarker(), "<< Query [Script] >>{}", Util.LINE);
+        LOGGER.trace(getMarker(), "{}{}{}{}", getLabeled("scripts"), blockBegin,
+                scripts, blockEnd);
+
+        jsEngine.put("configs", configService);
+        jsEngine.put("document", getDocument());
+        String scriptStr = scripts.get("script");
+        Object val = jsEngine.eval(scriptStr);
+        String value = ConvertUtils.convert(val);
+
+        LOGGER.trace(getMarker(), "result {}", value);
+        LOGGER.trace(getMarker(), "<<< Query End >>>");
+        LOGGER.trace(getMarker(), "");
+
+        return value;
+    }
+
+    private void initializeScriptEngine() {
+        LOGGER.debug("{}", getLabeled("initializing script engine"));
+        ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
+        jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
+        if (jsEngine == null) {
+            throw new NullPointerException(
+                    "no script engine found for JavaScript. Script engine lib not available in classpath.");
+        }
+    }
+
+    protected String getValue(final Object page, final DataDef dataDef,
+            final Member member, final Axis axis)
+            throws ScriptException, IllegalAccessException,
+            InvocationTargetException, NoSuchMethodException {
+        // TODO explore whether query can be made strict so that it has
+        // to return value else raise StepRunException
+        StringBuilder sb = null; // to trace query strings
+        String value = null;
+        Fields fields =
+                dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
+        try {
+            Map<String, String> scripts = new HashMap<>();
+            scripts.put("script",
+                    fieldsHelper.getLastValue("/xf:script/@script", fields));
+
+            sb = new StringBuilder();
+            setTraceString(sb, scripts, "<<<");
+
+            fieldsHelper.replaceVariables(scripts, member.getAxisMap());
+
+            setTraceString(sb, scripts, ">>>");
+            LOGGER.trace(getMarker(), "{}{}{}{}", getLabeled("patch scripts"),
+                    getBlockBegin(), sb.toString(), getBlockEnd());
+
+            value = queryByScript(scripts);
+
+        } catch (FieldsNotFoundException e) {
+        }
+
+        try {
+            Map<String, String> queries = new HashMap<>();
+            queries.put("region",
+                    fieldsHelper.getLastValue("/xf:query/@region", fields));
+            queries.put("field",
+                    fieldsHelper.getLastValue("/xf:query/@field", fields));
+            // optional attribute
+            try {
+                queries.put("attribute", fieldsHelper
+                        .getLastValue("/xf:query/@attribute", fields));
+            } catch (FieldsNotFoundException e) {
+                queries.put("attribute", "");
+            }
+
+            sb = new StringBuilder();
+            setTraceString(sb, queries, "<<<");
+
+            fieldsHelper.replaceVariables(queries, member.getAxisMap());
+
+            setTraceString(sb, queries, ">>>");
+            LOGGER.trace(getMarker(), "{}{}{}{}",
+                    getLabeled("<< Query [Patch] >>"), getBlockBegin(),
+                    sb.toString(), getBlockEnd());
+
+            value = queryByQuery(page, queries);
+
+        } catch (FieldsNotFoundException e) {
+        }
+
+        try {
+            List<String> prefixes =
+                    fieldsHelper.getValues("/xf:prefix", false, fields);
+            value = fieldsHelper.prefixValue(value, prefixes);
+        } catch (FieldsNotFoundException e) {
+        }
+
+        return value;
+    }
 
     private void prepareData() throws DataDefNotFoundException,
             ClassNotFoundException, IOException {
@@ -268,9 +387,8 @@ public abstract class BaseParser extends Step {
             noField = false;
             String value = axis.getValue();
             if (value == null) {
-                String message = Util.join(
-                        "value is null. check breakAfter or query in datadef ",
-                        getLabel());
+                String message = getLabeled(
+                        "value is null, check breakAfter or query in datadef");
                 throw new NullPointerException(message);
             } else {
                 if (value.equals(breakAfter)) {
@@ -288,8 +406,7 @@ public abstract class BaseParser extends Step {
         } catch (FieldsNotFoundException e) {
         }
         if (noField) {
-            String message = Util.join("breakAfter or indexRange undefined ",
-                    getLabel());
+            String message = getLabeled("breakAfter or indexRange undefined");
             throw new FieldsException(message);
         }
         return false;
@@ -354,8 +471,11 @@ public abstract class BaseParser extends Step {
         if (input instanceof Document) {
             this.document = (Document) input;
         } else {
-            LOGGER.warn("Input is not instance of Document type. {}",
-                    input.getClass().toString());
+            String message = getLabeled("unable to set next step input, ");
+            message = Util.join(message,
+                    "Document type expected but is instance of ",
+                    input.getClass().getName());
+            throw new StepRunException(message);
         }
     }
 
@@ -414,5 +534,32 @@ public abstract class BaseParser extends Step {
 
     public Marker getMarker() {
         return marker;
+    }
+
+    public String getBlockBegin() {
+        return blockBegin;
+    }
+
+    public String getBlockEnd() {
+        return blockEnd;
+    }
+
+    protected void setTraceString(final StringBuilder sb,
+            final Map<String, String> strings, final String header) {
+        if (!LOGGER.isTraceEnabled()) {
+            return;
+        }
+        sb.append(Util.LINE);
+        if (header != null) {
+            sb.append(header);
+            sb.append(Util.LINE);
+        }
+
+        for (String key : strings.keySet()) {
+            sb.append(key);
+            sb.append(" : ");
+            sb.append(strings.get(key));
+            sb.append(Util.LINE);
+        }
     }
 }
