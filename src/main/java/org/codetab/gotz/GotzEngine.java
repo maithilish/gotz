@@ -3,6 +3,7 @@ package org.codetab.gotz;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.step.Task;
 import org.slf4j.Logger;
@@ -40,11 +41,15 @@ public class GotzEngine {
             task = null;
             gTaskRunner.waitForFinish();
             gSystem.waitForHeapDump();
+            LOGGER.info("shutting down GotzEngine...");
         } catch (CriticalException e) {
-            LOGGER.error("{}", "terminating Gotz", e);
+            LOGGER.error("{}", e.getMessage());
+            LOGGER.warn("terminating GotzEngine...");
+            LOGGER.debug("{}", e);
+            activityService.addActivity(Type.FATAL, e.getMessage(), e);
         }
         activityService.end();
-        LOGGER.info("shutting down GotzEngine");
+        LOGGER.info("GotzEngine finished");
     }
 
 }

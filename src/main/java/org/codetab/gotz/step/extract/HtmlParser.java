@@ -176,14 +176,9 @@ public class HtmlParser extends BaseParser {
 
     private String queryByXPath(final HtmlPage page,
             final Map<String, String> queries) {
-        if (queries.size() < 2) {
-            String message = Util.join("insufficient queries in dataDef [",
-                    getDataDefName(), "], unable to get value");
-            throw new StepRunException(message);
-        }
-
         String regionXpathExpr = queries.get("region");
         String xpathExpr = queries.get("field");
+
         String value = getByXPath(page, regionXpathExpr, xpathExpr);
         return value;
     }

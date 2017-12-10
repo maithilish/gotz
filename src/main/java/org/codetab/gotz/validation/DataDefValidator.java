@@ -7,12 +7,15 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.exception.InvalidDataDefException;
+import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
+import org.codetab.gotz.util.Util;
 
 /**
  * <p>
@@ -34,12 +37,107 @@ public class DataDefValidator {
      * @param dataDef
      *            datadef to validate, not null
      * @return true, if valid
+     * @throws InvalidDataDefException
      */
-    public boolean validate(final DataDef dataDef) {
+    public boolean validate(final DataDef dataDef)
+            throws InvalidDataDefException {
         Validate.notNull(dataDef, "dataDef must not be null");
-        boolean valid = true;
-        valid = validateIndexRange(dataDef);
-        return valid;
+
+        validateIndexRange(dataDef);
+        validateQueries(dataDef);
+        validateFactQueries(dataDef);
+        return true;
+    }
+
+    /**
+     * Script or query is optional in axis (except fact). In case either script
+     * or query is defined then attribute [script] or [region,field] should not
+     * be empty.
+     * @param dataDef
+     * @return
+     * @throws InvalidDataDefException
+     */
+    private boolean validateQueries(final DataDef dataDef)
+            throws InvalidDataDefException {
+        String message = Util.join(
+                "missing script or query (region and field) in axis of [",
+                dataDef.getName(), "]");
+        for (DAxis axis : dataDef.getAxis()) {
+            boolean valid = true;
+
+            Fields fields = axis.getFields();
+            if (fields == null) {
+                continue;
+            }
+
+            if (fieldsHelper.isDefined("/xf:script", true, fields)) {
+                try {
+                    fieldsHelper.getLastValue("/xf:script/@script", fields);
+                } catch (FieldsNotFoundException e) {
+                    valid = false;
+                }
+            }
+
+            if (fieldsHelper.isDefined("/xf:query", true, fields)) {
+                try {
+                    fieldsHelper.getLastValue("/xf:query/@region", fields);
+                    fieldsHelper.getLastValue("/xf:query/@field", fields);
+                } catch (FieldsNotFoundException e) {
+                    valid = false;
+                }
+            }
+
+            if (!valid) {
+                throw new InvalidDataDefException(message);
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Script or query is mandatory for fact axis and should be properly
+     * defined.
+     * @param dataDef
+     * @return
+     * @throws InvalidDataDefException
+     */
+    private boolean validateFactQueries(final DataDef dataDef)
+            throws InvalidDataDefException {
+        String message = Util.join(
+                "missing script or query (region and field) in fact axis of [",
+                dataDef.getName(), "]");
+        for (DAxis axis : dataDef.getAxis()) {
+            if (!axis.getName().equalsIgnoreCase(AxisName.FACT.toString())) {
+                continue;
+            }
+
+            Fields fields = axis.getFields();
+
+            if (fields == null) {
+                throw new InvalidDataDefException(message);
+            }
+
+            boolean valid = false;
+
+            try {
+                fieldsHelper.getLastValue("/xf:script/@script", fields);
+                valid = true;
+            } catch (FieldsNotFoundException e) {
+
+            }
+
+            try {
+                fieldsHelper.getLastValue("/xf:query/@region", fields);
+                fieldsHelper.getLastValue("/xf:query/@field", fields);
+                valid = true;
+            } catch (FieldsNotFoundException e) {
+            }
+
+            if (!valid) {
+                throw new InvalidDataDefException(message);
+            }
+        }
+        return true;
     }
 
     /**
@@ -49,8 +147,10 @@ public class DataDefValidator {
      * @param dataDef
      *            dataDef which contains indexRange field
      * @return true, if indexRange fields are valid
+     * @throws InvalidDataDefException
      */
-    private boolean validateIndexRange(final DataDef dataDef) {
+    private boolean validateIndexRange(final DataDef dataDef)
+            throws InvalidDataDefException {
         boolean valid = true;
         List<Fields> fieldsList = getAllFields(dataDef);
         for (Fields fields : fieldsList) {
@@ -60,7 +160,9 @@ public class DataDefValidator {
                     fieldsHelper.getRange("//xf:indexRange/@value", fields);
                 }
             } catch (NumberFormatException e) {
-                valid = false;
+                String message = Util.join("invalid indexRange in [",
+                        dataDef.getName(), "]");
+                throw new InvalidDataDefException(message, e);
             } catch (FieldsNotFoundException e) {
             }
         }

@@ -286,7 +286,9 @@ Coding Guidelines
 -----------------
 
 for string join use Util.join(), for delimited join use String.join()
-in steps, use getLabeled() to create message which prefixes message with label
+in steps, for StepRunException don't use getLabeled() as task will handle label,
+   for others use getLabeled() to create message which prefixes label
+   if message is used only with logger, then use {} and getLabel() 
 
 in steps, if exception is recoverable then catch and handle it otherwise 
    if unrecoverable throw StepRunException (unchecked exception)

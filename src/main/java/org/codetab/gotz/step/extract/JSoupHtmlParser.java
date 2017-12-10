@@ -12,7 +12,6 @@ import javax.script.ScriptException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.exception.FieldsNotFoundException;
-import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
@@ -109,16 +108,11 @@ public class JSoupHtmlParser extends BaseParser {
 
     private String queryBySelector(final Document page,
             final Map<String, String> queries) {
-        if (queries.size() < 2) {
-            String message = Util.join("insufficient queries in dataDef [",
-                    getDataDefName(), "], unable to get value");
-            throw new StepRunException(message);
-        }
-
         String regionXpathExpr = queries.get("region");
         String xpathExpr = queries.get("field");
         // optional attribute, only for jsoup
         String attr = queries.get("attribute");
+
         String value = getBySelector(page, regionXpathExpr, xpathExpr, attr);
         return value;
     }

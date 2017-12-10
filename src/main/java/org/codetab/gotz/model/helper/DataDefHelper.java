@@ -1,18 +1,27 @@
 package org.codetab.gotz.model.helper;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
-import org.codetab.gotz.exception.FieldsParseException;
+import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
+import org.codetab.gotz.model.ColComparator;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DMember;
+import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
 import org.w3c.dom.Element;
@@ -94,7 +103,7 @@ public class DataDefHelper {
      * as 7-7)
      * @param dataDef
      *            datadef, not null
-     * @throws FieldsParseException
+     * @throws org.codetab.gotz.exception.FieldsParseException
      * @throws FieldsException
      */
     public void addIndexRange(final DataDef dataDef) throws FieldsException {
@@ -188,4 +197,109 @@ public class DataDefHelper {
             dataDef.setFields(fields);
         }
     }
+
+    public synchronized Set<Set<DMember>> generateMemberSets(
+            final DataDef dataDef) throws ClassNotFoundException, IOException {
+        int axesSize = dataDef.getAxis().size();
+        Set<?>[] memberSets = new HashSet<?>[axesSize];
+        for (int i = 0; i < axesSize; i++) {
+            Set<DMember> members = dataDef.getAxis().get(i).getMember();
+            memberSets[i] = members;
+        }
+        try {
+            Set<Set<Object>> cartesianSet = Util.cartesianProduct(memberSets);
+            Set<Set<DMember>> dataDefMemberSets = new HashSet<Set<DMember>>();
+            for (Set<?> set : cartesianSet) {
+                /*
+                 * memberSet array contains only Set<Member> as it is populated
+                 * by getMemberSet method Hence safe to ignore the warning
+                 */
+                @SuppressWarnings("unchecked")
+                Set<DMember> memberSet = (Set<DMember>) set;
+                dataDefMemberSets.add(memberSet);
+            }
+            return dataDefMemberSets;
+        } catch (IllegalStateException e) {
+            String message = Util.join("invalid datadef [", dataDef.getName(),
+                    "]",
+                    ", unable to generate member sets, check datadef axis or member definition");
+            throw new IllegalStateException(message, e);
+        }
+    }
+
+    public Data createDataTemplate(final DataDef dataDef,
+            final Set<Set<DMember>> memberSets) {
+        Data data = new Data();
+        data.setDataDef(dataDef.getName());
+        for (Set<DMember> members : memberSets) {
+            Member dataMember = new Member();
+            dataMember.setName(""); // there is no name for member
+            dataMember.setFields(new Fields());
+
+            // add axis and its fields
+            for (DMember dMember : members) {
+                Axis axis = createAxis(dMember);
+                dataMember.addAxis(axis);
+                try {
+                    // fields from DMember level are added in createAxis()
+                    // fields from datadef level are added here
+                    List<Fields> fieldsList = getDataDefMemberFields(
+                            dMember.getName(), dataDef.getFields());
+                    for (Fields fields : fieldsList) {
+                        dataMember.getFields().getNodes()
+                                .addAll(fields.getNodes());
+                    }
+                } catch (FieldsException e) {
+                }
+            }
+            try {
+                String group = getDataMemberGroup(dataMember.getFields());
+                dataMember.setGroup(group);
+            } catch (FieldsNotFoundException e) {
+                // TODO throw critical error
+            }
+            data.addMember(dataMember);
+        }
+        return data;
+    }
+
+    private Axis createAxis(final DMember dMember) {
+        Axis axis = new Axis();
+        AxisName axisName = AxisName.valueOf(dMember.getAxis().toUpperCase());
+        axis.setName(axisName);
+        axis.setOrder(dMember.getOrder());
+        axis.setIndex(dMember.getIndex());
+        axis.setMatch(dMember.getMatch());
+        axis.setValue(dMember.getValue());
+        // fields from DMember level
+        axis.setFields(dMember.getFields());
+        return axis;
+    }
+
+    public String getDataStructureTrace(final String dataDefName,
+            final Data data) {
+        String line = System.lineSeparator();
+        StringBuilder sb = new StringBuilder();
+        sb.append("DataDef [name=");
+        sb.append(data.getDataDef());
+        sb.append("] data structure");
+        sb.append(line);
+        sb.append(line);
+        Collections.sort(data.getMembers(), new RowComparator());
+        Collections.sort(data.getMembers(), new ColComparator());
+        for (Member member : data.getMembers()) {
+            sb.append("Member [");
+            sb.append(member.getFields());
+            sb.append(line);
+            List<Axis> axes = new ArrayList<Axis>(member.getAxes());
+            Collections.sort(axes);
+            for (Axis axis : axes) {
+                sb.append(axis.toString());
+                sb.append(line);
+            }
+            sb.append(line);
+        }
+        return sb.toString();
+    }
+
 }

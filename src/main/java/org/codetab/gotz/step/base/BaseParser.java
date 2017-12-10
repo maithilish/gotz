@@ -21,6 +21,7 @@ import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.Range;
+import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
@@ -81,7 +82,7 @@ public abstract class BaseParser extends Step {
                     getLabels().getGroup(), taskName, dataDefName);
             setLabels(labels);
         } catch (FieldsNotFoundException e) {
-            String message = getLabeled("unable to initialize parser");
+            String message = "unable to initialize parser";
             throw new StepRunException(message, e);
         }
         return postInitialize();
@@ -100,7 +101,7 @@ public abstract class BaseParser extends Step {
         try {
             dataDefId = dataDefService.getDataDef(dataDefName).getId();
         } catch (DataDefNotFoundException e) {
-            String message = getLabeled("unable to get datadef id");
+            String message = "unable to get datadef id";
             throw new StepRunException(message, e);
         }
         Long documentId = getDocument().getId();
@@ -123,7 +124,7 @@ public abstract class BaseParser extends Step {
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
                     | DataFormatException | FieldsException e) {
-                String message = getLabeled("unable to parse");
+                String message = "unable to parse";
                 throw new StepRunException(message, e);
             }
         } else {
@@ -171,7 +172,7 @@ public abstract class BaseParser extends Step {
     private Fields createNextStepFields() {
         Fields nextStepFields = getFields();
         if (nextStepFields.getNodes().size() == 0) {
-            String message = getLabeled("unable to get next step fields");
+            String message = "unable to get next step fields";
             throw new StepRunException(message);
         }
         return nextStepFields;
@@ -215,7 +216,7 @@ public abstract class BaseParser extends Step {
         ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
         jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
         if (jsEngine == null) {
-            throw new NullPointerException(
+            throw new CriticalException(
                     "no script engine found for JavaScript. Script engine lib not available in classpath.");
         }
     }
@@ -230,6 +231,12 @@ public abstract class BaseParser extends Step {
         String value = null;
         Fields fields =
                 dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
+
+        if (fields == null) {
+            String message =
+                    getLabeled("field is null, check datadef definition");
+            throw new StepRunException(message);
+        }
         try {
             Map<String, String> scripts = new HashMap<>();
             scripts.put("script",
@@ -281,7 +288,13 @@ public abstract class BaseParser extends Step {
         try {
             List<String> prefixes =
                     fieldsHelper.getValues("/xf:prefix", false, fields);
-            value = fieldsHelper.prefixValue(value, prefixes);
+            if (value == null) {
+                String message = getLabeled(
+                        "unable to prefix as value is null, check datadef definition");
+                throw new StepRunException(message);
+            } else {
+                value = fieldsHelper.prefixValue(value, prefixes);
+            }
         } catch (FieldsNotFoundException e) {
         }
 
@@ -387,9 +400,9 @@ public abstract class BaseParser extends Step {
             noField = false;
             String value = axis.getValue();
             if (value == null) {
-                String message = getLabeled(
-                        "value is null, check breakAfter or query in datadef");
-                throw new NullPointerException(message);
+                String message =
+                        "value is null, check breakAfter or query in datadef";
+                throw new StepRunException(message);
             } else {
                 if (value.equals(breakAfter)) {
                     return true;
@@ -406,7 +419,7 @@ public abstract class BaseParser extends Step {
         } catch (FieldsNotFoundException e) {
         }
         if (noField) {
-            String message = getLabeled("breakAfter or indexRange undefined");
+            String message = "breakAfter or indexRange undefined";
             throw new FieldsException(message);
         }
         return false;
@@ -471,9 +484,8 @@ public abstract class BaseParser extends Step {
         if (input instanceof Document) {
             this.document = (Document) input;
         } else {
-            String message = getLabeled("unable to set next step input, ");
-            message = Util.join(message,
-                    "Document type expected but is instance of ",
+            String message = Util.join(
+                    "unable to set next step input, Document type expected but is instance of ",
                     input.getClass().getName());
             throw new StepRunException(message);
         }

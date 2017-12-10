@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
@@ -37,14 +38,15 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateNoField() {
+    public void testValidateNoField() throws InvalidDataDefException {
         DataDef dataDef = new DataDef();
         boolean actual = validator.validate(dataDef);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void testValidateDataDefField() throws FieldsException {
+    public void testValidateDataDefField()
+            throws FieldsException, InvalidDataDefException {
         Fields fields =
                 TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         DataDef dataDef = new DataDef();
@@ -56,7 +58,8 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateAxisField() throws FieldsException {
+    public void testValidateAxisField()
+            throws FieldsException, InvalidDataDefException {
         Fields fields =
                 TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         DAxis axis = new DAxis();
@@ -71,7 +74,8 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateMemberField() throws FieldsException {
+    public void testValidateMemberField()
+            throws FieldsException, InvalidDataDefException {
 
         Fields fields =
                 TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
@@ -93,7 +97,8 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateInvalidRange() throws FieldsException {
+    public void testValidateInvalidRange()
+            throws FieldsException, InvalidDataDefException {
         Fields dataDefField =
                 TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
         Fields axisField =
@@ -153,7 +158,7 @@ public class DataDefValidatorTest {
     }
 
     @Test
-    public void testValidateNullParams() {
+    public void testValidateNullParams() throws InvalidDataDefException {
         try {
             validator.validate(null);
             fail("should throw NullPointerException");

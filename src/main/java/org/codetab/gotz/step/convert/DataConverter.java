@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
@@ -70,9 +71,13 @@ public final class DataConverter extends BaseConverter {
             String row = member.getValue(AxisName.ROW);
             String fact = member.getValue(AxisName.FACT);
 
-            col = convert(AxisName.COL, col, converters);
-            row = convert(AxisName.ROW, row, converters);
-            fact = convert(AxisName.FACT, fact, converters);
+            try {
+                col = convert(AxisName.COL, col, converters);
+                row = convert(AxisName.ROW, row, converters);
+                fact = convert(AxisName.FACT, fact, converters);
+            } catch (Exception e) {
+                throw new StepRunException("unable to apply converter", e);
+            }
 
             member.setValue(AxisName.COL, col);
             member.setValue(AxisName.ROW, row);
@@ -86,7 +91,7 @@ public final class DataConverter extends BaseConverter {
 
     @SuppressWarnings("unchecked")
     private String convert(final AxisName axis, final String value,
-            final List<Fields> converters) {
+            final List<Fields> converters) throws Exception {
         String rvalue = value;
         for (Fields fields : converters) {
             try {
@@ -95,6 +100,7 @@ public final class DataConverter extends BaseConverter {
                 if (axis.name().equalsIgnoreCase(axisName)) {
                     String className = fieldsHelper.getLastValue(
                             "/xf:fields/xf:converter/@class", fields);
+
                     try {
                         @SuppressWarnings("rawtypes")
                         IConverter converter = (IConverter) stepService
@@ -102,8 +108,12 @@ public final class DataConverter extends BaseConverter {
                         converter.setFields(fields);
                         rvalue = (String) converter.convert(rvalue);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        String message = Util.join(e.getMessage(), " axis [",
+                                axisName, "], value [", value, "], converter [",
+                                className, "]");
+                        throw new Exception(message, e);
                     }
+
                 }
             } catch (FieldsNotFoundException e) {
             }

@@ -70,6 +70,12 @@ public final class DataFilter extends BaseConverter {
         for (Member member : forRemovalMembers) {
             getData().getMembers().remove(member);
         }
+        if (getData().getMembers().size() == 0) {
+            setConsistent(false);
+            String message =
+                    "output is empty, check datadef query/indexRange/breakAfter/filter";
+            throw new StepRunException(message);
+        }
         setConvertedData(getData());
         dataDefService.traceDataStructure(getData().getDataDef(), getData());
         setConsistent(true);

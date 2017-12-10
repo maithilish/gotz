@@ -96,20 +96,20 @@ public final class Util {
      * @param sets
      *            sets, not null or empty
      * @return set of sets
-     * @throws IllegalArgumentException
+     * @throws IllegalStateException
      *             if sets is less than two or any set is empty
      */
     public static Set<Set<Object>> cartesianProduct(final Set<?>... sets) {
 
         if (sets.length < 2) {
-            throw new IllegalArgumentException(
-                    join("Can't have a product of fewer than two sets (has ",
+            throw new IllegalStateException(
+                    join("can't have a product of fewer than two sets (has ",
                             String.valueOf(sets.length), " sets)"));
         }
         for (Set<?> set : sets) {
             if (set.size() == 0) {
-                throw new IllegalArgumentException(
-                        "argument contains a empty set");
+                throw new IllegalStateException(
+                        "argument contains a empty set, can't get cartesian product");
             }
         }
         return cartesianProduct(0, sets);

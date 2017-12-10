@@ -6,6 +6,7 @@ import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ActivityService;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,15 +33,18 @@ public class Task implements Runnable {
             step.handover();
         } catch (StepRunException e) {
             String label = getLabel();
-            LOGGER.error("[{}] {}", label, e.getMessage());
-            LOGGER.debug("[{}]", label, e);
-            activityService.addActivity(Type.FAIL, label, e.getMessage(), e);
+            String message =
+                    Util.join("[", step.getStepType(), "] ", e.getMessage());
+            LOGGER.error("[{}] {}", label, message);
+            LOGGER.debug("[{}] [{}]", label, step.getStepType(), e);
+            activityService.addActivity(Type.FAIL, label, message, e);
         } catch (Exception e) {
             String label = getLabel();
-            LOGGER.error("[{}] {}", label, e.getMessage());
-            LOGGER.debug("[{}]", label, e);
-            activityService.addActivity(Type.INTERNAL, label, e.getMessage(),
-                    e);
+            String message =
+                    Util.join("[", step.getStepType(), "] ", e.getMessage());
+            LOGGER.error("[{}] {}", label, message);
+            LOGGER.debug("[{}] [{}]", label, step.getStepType(), e);
+            activityService.addActivity(Type.INTERNAL, label, message, e);
         }
     }
 

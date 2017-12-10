@@ -3,6 +3,7 @@ package org.codetab.gotz.step.convert;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
@@ -14,7 +15,6 @@ import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseConverter;
-import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,17 +45,16 @@ public final class LocatorCreator extends BaseConverter {
     @Override
     public boolean handover() {
         final long sleepMillis = 1000;
+
         for (Member member : getData().getMembers()) {
             Locator locator = null;
             try {
                 locator = createLocator(member);
                 setConvertedData(locator);
                 setConsistent(true);
-            } catch (FieldsException e) {
-                String givenUpMessage = "unable to create locator";
-                LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.FAIL, givenUpMessage, e);
-                throw new StepRunException(givenUpMessage, e);
+            } catch (FieldsException | InvalidDataDefException e) {
+                String message = "unable to create new locator";
+                throw new StepRunException(message, e);
             }
 
             Fields nextStepField = createNextStepFields(locator);
@@ -71,15 +70,15 @@ public final class LocatorCreator extends BaseConverter {
         return true;
     }
 
-    private Locator createLocator(final Member member) throws FieldsException {
+    private Locator createLocator(final Member member)
+            throws FieldsException, InvalidDataDefException {
         Locator locator = new Locator();
         locator.setName(getLabels().getName());
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
-            String message = Util.join(
-                    "unable to create new locator. define group for member ",
-                    "in datadef of locator type ", member.getName());
-            throw new FieldsException(message);
+            String message =
+                    getLabeled("group not defined for member in datadef");
+            throw new InvalidDataDefException(message);
         } else {
             locator.setGroup(member.getGroup());
             Fields fields = locatorFieldsHelper.getFields(

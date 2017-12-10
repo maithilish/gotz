@@ -19,6 +19,7 @@ import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
@@ -84,7 +85,8 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testInit() throws IllegalAccessException, FieldsException {
+    public void testInit() throws IllegalAccessException, FieldsException,
+            InvalidDataDefException {
         List<DataDef> dataDefs = createSimpleDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -121,7 +123,8 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testInitUpdateDataDefs() throws IllegalAccessException {
+    public void testInitUpdateDataDefs()
+            throws IllegalAccessException, InvalidDataDefException {
         List<DataDef> dataDefs = createSimpleDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -146,7 +149,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testInitValidationThrowCriticalException()
-            throws IllegalAccessException {
+            throws IllegalAccessException, InvalidDataDefException {
         // given
         List<DataDef> dataDefs = createSimpleDataDefs();
 
@@ -189,7 +192,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testGetDataTemplate() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException {
+            DataDefNotFoundException, IOException, InvalidDataDefException {
         List<DataDef> dataDefs = createTestDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -243,9 +246,9 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testGetDataTemplateMemberFields()
-            throws ClassNotFoundException, DataDefNotFoundException,
-            IOException, FieldsException, FieldsNotFoundException {
+    public void testGetDataTemplateMemberFields() throws ClassNotFoundException,
+            DataDefNotFoundException, IOException, FieldsException,
+            FieldsNotFoundException, InvalidDataDefException {
         List<DataDef> dataDefs = createTestDataDefs();
         DataDef dataDef = dataDefs.get(0);
 
@@ -278,7 +281,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testGetDataTemplateNoFields() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException {
+            DataDefNotFoundException, IOException, InvalidDataDefException {
         List<DataDef> dataDefs = createTestDataDefs();
         DataDef dataDef = dataDefs.get(0);
         dataDef.getFields().getNodes().clear();
@@ -298,7 +301,8 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testGetFilterMap() throws DataDefNotFoundException {
+    public void testGetFilterMap()
+            throws DataDefNotFoundException, InvalidDataDefException {
         List<DataDef> dataDefs = createTestDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -317,7 +321,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testGetFilterMapShouldThrowException()
-            throws DataDefNotFoundException {
+            throws DataDefNotFoundException, InvalidDataDefException {
         List<DataDef> dataDefs = createTestDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);

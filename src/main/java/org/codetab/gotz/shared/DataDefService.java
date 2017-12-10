@@ -1,10 +1,7 @@
 package org.codetab.gotz.shared;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -17,18 +14,14 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.FieldsNotFoundException;
-import org.codetab.gotz.model.Axis;
+import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.model.AxisName;
-import org.codetab.gotz.model.ColComparator;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.Member;
-import org.codetab.gotz.model.RowComparator;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
 import org.codetab.gotz.util.MarkerUtil;
@@ -44,8 +37,8 @@ public class DataDefService {
     private final Logger logger = LoggerFactory.getLogger(DataDefService.class);
 
     private List<DataDef> dataDefs;
-    private Map<String, Set<Set<DMember>>> memberSetsMap = new HashMap<>();
-    private Map<String, Data> dataTemplateMap = new HashMap<>();
+    private Map<String, Set<Set<DMember>>> memberSetsMap;
+    private Map<String, Data> dataTemplateMap;
 
     @Inject
     private BeanService beanService;
@@ -67,7 +60,14 @@ public class DataDefService {
 
         setDefaults(newDataDefs);
 
+        memberSetsMap = new HashMap<>();
+        dataTemplateMap = new HashMap<>();
+        dataDefs = newDataDefs;
         validateDataDefs(newDataDefs);
+
+        // clear maps populated for validation
+        memberSetsMap = new HashMap<>();
+        dataTemplateMap = new HashMap<>();
 
         dataDefs = dataDefPersistence.loadDataDefs();
 
@@ -82,23 +82,23 @@ public class DataDefService {
         }
 
         traceDataDefs();
-        try {
-            traceDataStructure();
-        } catch (ClassNotFoundException | IOException e) {
-            logger.warn("{}", Util.getMessage(e));
-        }
+
+        traceDataStructure();
+
         logger.debug("initialized DataDefs singleton");
     }
 
     private void validateDataDefs(final List<DataDef> newDataDefs) {
-        boolean valid = true;
+
         for (DataDef dataDef : newDataDefs) {
-            if (!validator.validate(dataDef)) {
-                valid = false;
+            try {
+                validator.validate(dataDef);
+                // getDataTemplate(dataDef.getName()); // only for validation
+            } catch (InvalidDataDefException e) {
+                String message =
+                        Util.join("invalid datadef [", dataDef.getName(), "]");
+                throw new CriticalException(message, e);
             }
-        }
-        if (!valid) {
-            throw new CriticalException("invalid Datadefs");
         }
     }
 
@@ -139,81 +139,19 @@ public class DataDefService {
         if (dataTemplateMap.containsKey(dataDefName)) {
             data = dataTemplateMap.get(dataDefName);
         } else {
+            // create and cache the memberSets and data
             DataDef dataDef = getDataDef(dataDefName);
-            if (!memberSetsMap.containsKey(dataDefName)) {
-                generateMemberSets(dataDef); // synchronized
+            Set<Set<DMember>> memberSets = null;
+            if (memberSetsMap.containsKey(dataDefName)) {
+                memberSets = memberSetsMap.get(dataDefName);
+            } else {
+                memberSets = dataDefHelper.generateMemberSets(dataDef); // synchronized
+                memberSetsMap.put(dataDefName, memberSets);
             }
-            data = new Data();
-            data.setDataDef(dataDefName);
-            for (Set<DMember> members : memberSetsMap.get(dataDefName)) {
-                Member dataMember = new Member();
-                dataMember.setName(""); // there is no name for member
-                dataMember.setFields(new Fields());
-
-                // add axis and its fields
-                for (DMember dMember : members) {
-                    Axis axis = createAxis(dMember);
-                    dataMember.addAxis(axis);
-                    try {
-                        // fields from DMember level are added in createAxis()
-                        // fields from datadef level are added here
-                        List<Fields> fieldsList =
-                                dataDefHelper.getDataDefMemberFields(
-                                        dMember.getName(), dataDef.getFields());
-                        for (Fields fields : fieldsList) {
-                            dataMember.getFields().getNodes()
-                                    .addAll(fields.getNodes());
-                        }
-                    } catch (FieldsException e) {
-                    }
-                }
-                try {
-                    String group = dataDefHelper
-                            .getDataMemberGroup(dataMember.getFields());
-                    dataMember.setGroup(group);
-                } catch (FieldsNotFoundException e) {
-                    // TODO throw critical error
-                }
-                data.addMember(dataMember);
-            }
+            data = dataDefHelper.createDataTemplate(dataDef, memberSets);
             dataTemplateMap.put(dataDefName, data);
         }
         return SerializationUtils.clone(data);
-    }
-
-    private Axis createAxis(final DMember dMember) {
-        Axis axis = new Axis();
-        AxisName axisName = AxisName.valueOf(dMember.getAxis().toUpperCase());
-        axis.setName(axisName);
-        axis.setOrder(dMember.getOrder());
-        axis.setIndex(dMember.getIndex());
-        axis.setMatch(dMember.getMatch());
-        axis.setValue(dMember.getValue());
-        // fields from DMember level
-        axis.setFields(dMember.getFields());
-        return axis;
-    }
-
-    private synchronized void generateMemberSets(final DataDef dataDef)
-            throws ClassNotFoundException, IOException {
-        int axesSize = dataDef.getAxis().size();
-        Set<?>[] memberSets = new HashSet<?>[axesSize];
-        for (int i = 0; i < axesSize; i++) {
-            Set<DMember> members = dataDef.getAxis().get(i).getMember();
-            memberSets[i] = members;
-        }
-        Set<Set<Object>> cartesianSet = Util.cartesianProduct(memberSets);
-        Set<Set<DMember>> dataDefMemberSets = new HashSet<Set<DMember>>();
-        for (Set<?> set : cartesianSet) {
-            /*
-             * memberSet array contains only Set<Member> as it is populated by
-             * getMemberSet method Hence safe to ignore the warning
-             */
-            @SuppressWarnings("unchecked")
-            Set<DMember> memberSet = (Set<DMember>) set;
-            dataDefMemberSets.add(memberSet);
-        }
-        memberSetsMap.put(dataDef.getName(), dataDefMemberSets);
     }
 
     public Map<AxisName, Fields> getFilterMap(final String dataDef)
@@ -234,52 +172,6 @@ public class DataDefService {
         return dataDefs.size();
     }
 
-    private void traceDataStructure()
-            throws ClassNotFoundException, IOException {
-        if (!logger.isTraceEnabled()) {
-            return;
-        }
-        logger.trace("---- Trace data structure ----");
-        logger.trace("");
-        for (DataDef dataDef : dataDefs) {
-            if (dataDef.getAxis().size() == 0) {
-                continue;
-            }
-            try {
-                String dataDefName = dataDef.getName();
-                Data data = getDataTemplate(dataDefName);
-                traceDataStructure(dataDefName, data);
-            } catch (DataDefNotFoundException e) {
-            }
-        }
-    }
-
-    public void traceDataStructure(final String dataDefName, final Data data) {
-        String line = System.lineSeparator();
-        StringBuilder sb = new StringBuilder();
-        sb.append("DataDef [name=");
-        sb.append(data.getDataDef());
-        sb.append("] data structure");
-        sb.append(line);
-        sb.append(line);
-        Collections.sort(data.getMembers(), new RowComparator());
-        Collections.sort(data.getMembers(), new ColComparator());
-        for (Member member : data.getMembers()) {
-            sb.append("Member [");
-            sb.append(member.getFields());
-            sb.append(line);
-            List<Axis> axes = new ArrayList<Axis>(member.getAxes());
-            Collections.sort(axes);
-            for (Axis axis : axes) {
-                sb.append(axis.toString());
-                sb.append(line);
-            }
-            sb.append(line);
-        }
-        Marker marker = MarkerUtil.getMarker(dataDefName);
-        logger.trace(marker, "{}", sb);
-    }
-
     public void traceDataDefs() {
         if (!logger.isTraceEnabled()) {
             return;
@@ -290,4 +182,40 @@ public class DataDefService {
             logger.trace(marker, "{}", dataDef);
         }
     }
+
+    private void traceDataStructure() {
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
+        logger.trace("---- Trace data structure ----");
+        logger.trace("");
+        for (DataDef dataDef : dataDefs) {
+            if (dataDef.getAxis().size() == 0) {
+                String message = Util.join("datadef [", dataDef.getName(),
+                        "] no axis defined");
+                throw new CriticalException(message);
+            }
+
+            try {
+                String dataDefName = dataDef.getName();
+                Data data = getDataTemplate(dataDefName);
+                String trace =
+                        dataDefHelper.getDataStructureTrace(dataDefName, data);
+                Marker marker = MarkerUtil.getMarker(dataDefName);
+                logger.trace(marker, "{}", trace);
+            } catch (ClassNotFoundException | DataDefNotFoundException
+                    | IOException e) {
+                String message = Util.join("datadef [", dataDef.getName(), "]");
+                throw new CriticalException(message, e);
+            }
+
+        }
+    }
+
+    public void traceDataStructure(final String dataDefName, final Data data) {
+        String trace = dataDefHelper.getDataStructureTrace(dataDefName, data);
+        Marker marker = MarkerUtil.getMarker(dataDefName);
+        logger.trace(marker, "{}", trace);
+    }
+
 }
