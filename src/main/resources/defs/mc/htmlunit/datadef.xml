@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
-    <datadef name="finlocators">
+    <dataDef name="finlocators">
         <xf:fields>
             <xf:member name="bs">
                 <xf:group>bs</xf:group>
@@ -36,9 +36,9 @@
                 <xf:prefix>http://www.moneycontrol.com</xf:prefix>
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-    <datadef name="quotePage">
+    <dataDef name="quotePage">
         <axis name="col">
             <xf:fields>
                 <xf:script script="document.getFromDate()" />
@@ -67,8 +67,8 @@
                     field="div/div/div[starts-with(child::text(),'%{row.match}')]/following-sibling::div[1]" />
             </xf:fields>
         </axis>
-    </datadef>
-    <datadef name="price">
+    </dataDef>
+    <dataDef name="price">
         <axis name="col">
             <xf:fields>
                 <xf:script script="document.getFromDate()" />
@@ -84,9 +84,9 @@
                     field="strong" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-    <datadef name="bs">
+    <dataDef name="bs">
         <axis name="col">
             <xf:fields>
                 <xf:query
@@ -127,9 +127,9 @@
                     field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-    <datadef name="pl">
+    <dataDef name="pl">
         <axis name="col">
             <xf:fields>
                 <xf:query
@@ -171,8 +171,8 @@
                     field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}]" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-</datadefs>
+</dataDefs>
 
 

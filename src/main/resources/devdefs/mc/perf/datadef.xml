@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
-    <datadef name="finlocators">
+    <dataDef name="finlocators">
         <xf:fields>
             <xf:member name="bs">
                 <xf:group>bs</xf:group>
@@ -40,9 +40,9 @@
                 <xf:prefix></xf:prefix>
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-    <datadef name="quotePage">
+    <dataDef name="quotePage">
         <axis name="col">
             <xf:fields>
                 <xf:script script="document.getFromDate()" />
@@ -71,9 +71,9 @@
                     field="div:matchesOwn(^%{row.match}) + div" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-    <datadef name="price">
+    <dataDef name="price">
         <axis name="col">
             <xf:fields>
                 <xf:script script="document.getFromDate()" />
@@ -88,9 +88,9 @@
                 <xf:query region="div#Nse_Prc_tick_div" field="*" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-    <datadef name="bs">
+    <dataDef name="bs">
         <axis name="col">
             <xf:fields>
                 <xf:query region="table:contains(Sources Of Funds)"
@@ -128,9 +128,9 @@
                     field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-    <datadef name="pl">
+    <dataDef name="pl">
         <axis name="col">
             <xf:fields>
                 <xf:query region="table:contains(Employee Cost)"
@@ -172,8 +172,8 @@
                 </xf:query>
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-</datadefs>
+</dataDefs>
 
 

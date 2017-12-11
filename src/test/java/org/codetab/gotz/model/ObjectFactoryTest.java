@@ -116,9 +116,9 @@ public class ObjectFactoryTest {
     @Test
     public void testCreateDataDefDataDef() {
         DataDef value = of.createDataDef();
-        JAXBElement<DataDef> actual = of.createDatadef(value);
+        JAXBElement<DataDef> actual = of.createDataDef(value);
         assertThat(actual).isInstanceOf(JAXBElement.class);
-        assertThat(actual).isNotSameAs(of.createDatadef(value));
+        assertThat(actual).isNotSameAs(of.createDataDef(value));
     }
 
     @Test

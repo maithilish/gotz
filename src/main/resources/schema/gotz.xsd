@@ -23,9 +23,9 @@
 
     <xs:element name="beans" type="tns:beans" />
 
-    <xs:element name="datadefs" type="tns:dataDefs" />
+    <xs:element name="dataDefs" type="tns:dataDefs" />
 
-    <xs:element name="datadef" type="tns:dataDef" />
+    <xs:element name="dataDef" type="tns:dataDef" />
 
     <xs:element name="axis" type="tns:dAxis" />
 
@@ -101,7 +101,7 @@
 
     <xs:complexType name="dataDefs">
         <xs:sequence>
-            <xs:element ref="tns:datadef" minOccurs="0"
+            <xs:element ref="tns:dataDef" minOccurs="0"
                 maxOccurs="unbounded" />
         </xs:sequence>
     </xs:complexType>

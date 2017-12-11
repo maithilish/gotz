@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
-    <datadef name="finlocators">
+    <dataDef name="finlocators">
         <xf:fields>
             <xf:member name="bs">
                 <xf:group>bs</xf:group>
@@ -35,8 +35,8 @@
                 <xf:prefix>http://www.moneycontrol.com</xf:prefix>
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-</datadefs>
+</dataDefs>
 
 

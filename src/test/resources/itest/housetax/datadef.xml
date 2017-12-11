@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
-    <datadef name="taxtable">
+    <dataDef name="taxtable">
         <axis name="col">
             <xf:fields>
                 <xf:query region="table:contains(Taxes)"
@@ -40,6 +40,6 @@
                     field="tbody > tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-</datadefs>
+</dataDefs>

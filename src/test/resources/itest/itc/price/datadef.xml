@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<datadefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
-    <datadef name="price">
+    <dataDef name="price">
         <axis name="col">
             <xf:fields>
                 <xf:script script="document.getFromDate()" />
@@ -19,6 +19,6 @@
                 <xf:query region="div#Nse_Prc_tick_div" field="*" />
             </xf:fields>
         </axis>
-    </datadef>
+    </dataDef>
 
-</datadefs>
+</dataDefs>
