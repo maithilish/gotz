@@ -1,5 +1,6 @@
 package org.codetab.gotz.model;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,13 +11,31 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public final class Member extends Base {
+public final class Member implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long id;
+    private String name;
     private String group;
     private Set<Axis> axes = new HashSet<Axis>();
     private Fields fields;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 
     public String getGroup() {
         return group;

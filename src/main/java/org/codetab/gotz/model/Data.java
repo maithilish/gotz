@@ -1,18 +1,37 @@
 package org.codetab.gotz.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Data extends Base {
+public final class Data implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long id;
+    private String name;
     private String dataDef;
     private Long dataDefId;
     private Long documentId;
     private List<Member> members = new ArrayList<Member>();
 
     public Data() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getDataDef() {
@@ -52,7 +71,7 @@ public final class Data extends Base {
     }
 
     public String toStringIds() {
-        return "Data [id=" + getId() + ", dataDefId=" + dataDefId
-                + ", documentId=" + documentId + "]";
+        return "Data [id=" + id + ", dataDefId=" + dataDefId + ", documentId="
+                + documentId + "]";
     }
 }

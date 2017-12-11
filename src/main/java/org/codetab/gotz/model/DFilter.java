@@ -25,12 +25,14 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * <pre>
  * &lt;complexType name="dFilter"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
+ *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *     &lt;/extension&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -38,14 +40,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dFilter", propOrder = {"fields"})
-public class DFilter extends Base implements Serializable {
+@XmlType(name = "dFilter", propOrder = {"fields", "id"})
+public class DFilter implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElement(namespace = "http://codetab.org/xfields")
     private Fields fields;
+    @XmlElement
+    private Long id;
     @XmlAttribute(name = "axis")
     private String axis;
+    @XmlAttribute(name = "name")
+    private String name;
 
     /**
      * Gets the value of the fields property.
@@ -69,6 +75,27 @@ public class DFilter extends Base implements Serializable {
     }
 
     /**
+     * Gets the value of the id property.
+     *
+     * @return possible object is {@link Long }
+     *
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     *
+     * @param value
+     *            allowed object is {@link Long }
+     *
+     */
+    public void setId(Long value) {
+        this.id = value;
+    }
+
+    /**
      * Gets the value of the axis property.
      *
      * @return possible object is {@link String }
@@ -87,6 +114,27 @@ public class DFilter extends Base implements Serializable {
      */
     public void setAxis(String value) {
         this.axis = value;
+    }
+
+    /**
+     * Gets the value of the name property.
+     *
+     * @return possible object is {@link String }
+     *
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value
+     *            allowed object is {@link String }
+     *
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
     @Override

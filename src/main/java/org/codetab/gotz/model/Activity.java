@@ -1,7 +1,5 @@
 package org.codetab.gotz.model;
 
-import org.codetab.gotz.util.Util;
-
 public final class Activity {
 
     public enum Type {
@@ -69,7 +67,7 @@ public final class Activity {
         sb.append(message);
         sb.append("]");
         if (throwable != null) {
-            sb.append(Util.LINE);
+            sb.append(System.lineSeparator());
             sb.append("          throwable=");
             sb.append(throwable);
         }

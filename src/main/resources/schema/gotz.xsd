@@ -15,6 +15,8 @@
 
     <xs:element name="locators" type="tns:locators" />
 
+    <xs:element name="locatorGroups" type="tns:locatorGroups" />
+
     <xs:element name="document" type="tns:document" />
 
     <xs:element name="bean" type="tns:bean" />
@@ -38,51 +40,46 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="base" abstract="true">
+    <xs:complexType name="locatorGroups">
         <xs:sequence>
-            <xs:element name="id" type="xs:long" minOccurs="0"
-                maxOccurs="1" />
+            <xs:element name="locators" minOccurs="1"
+                maxOccurs="unbounded" type="tns:locators" />
         </xs:sequence>
-        <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
 
     <xs:complexType name="locators">
         <xs:sequence>
-            <xs:element name="locator" minOccurs="0"
+            <xs:element name="locator" minOccurs="1"
                 maxOccurs="unbounded" type="tns:locator" />
-            <xs:element ref="tns:locators" minOccurs="0"
-                maxOccurs="unbounded" />
         </xs:sequence>
-        <xs:attribute name="group" type="xs:string" />
+        <xs:attribute name="group" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:complexType name="locator" final="extension restriction">
-        <xs:complexContent>
-            <xs:extension base="tns:base">
-                <xs:sequence>
-                    <xs:element ref="xf:fields"
-                        minOccurs="0" maxOccurs="1" />
-                    <xs:element name="documents" type="tns:document"
-                        minOccurs="0" maxOccurs="unbounded" />
-                </xs:sequence>
-                <xs:attribute name="url" type="xs:string" />
-                <xs:attribute name="group" type="xs:string" />
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element ref="xf:fields" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="id" type="xs:long" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="documents" type="tns:document"
+                minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="group" type="xs:string" />
+        <xs:attribute name="url" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:complexType name="document">
-        <xs:complexContent>
-            <xs:extension base="tns:base">
-                <xs:sequence>
-                    <xs:element name="documentObject" type="xs:anyType"
-                        minOccurs="0" />
-                </xs:sequence>
-                <xs:attribute name="fromDate" type="xs:dateTime" />
-                <xs:attribute name="toDate" type="xs:dateTime" />
-                <xs:attribute name="url" type="xs:string" />
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element name="id" type="xs:long" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="documentObject" type="xs:anyType"
+                minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="fromDate" type="xs:dateTime" />
+        <xs:attribute name="toDate" type="xs:dateTime" />
+        <xs:attribute name="url" type="xs:string" />
     </xs:complexType>
 
     <xs:complexType name="beans">
@@ -110,60 +107,56 @@
     </xs:complexType>
 
     <xs:complexType name="dataDef">
-        <xs:complexContent>
-            <xs:extension base="tns:base">
-                <xs:sequence>
-                    <xs:element ref="xf:fields"
-                        minOccurs="0" maxOccurs="1" />
-                    <xs:element ref="tns:axis" minOccurs="0"
-                        maxOccurs="unbounded" />
-                </xs:sequence>
-                <xs:attribute name="fromDate" type="xs:dateTime" />
-                <xs:attribute name="toDate" type="xs:dateTime" />
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element ref="xf:fields" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="id" type="xs:long" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element ref="tns:axis" minOccurs="0"
+                maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="fromDate" type="xs:dateTime" />
+        <xs:attribute name="toDate" type="xs:dateTime" />
     </xs:complexType>
 
     <xs:complexType name="dAxis">
-        <xs:complexContent>
-            <xs:extension base="tns:base">
-                <xs:sequence>
-                    <xs:element ref="xf:fields"
-                        minOccurs="0" maxOccurs="1" />
-                    <xs:element ref="tns:member" minOccurs="0"
-                        maxOccurs="unbounded" />
-                    <xs:element ref="tns:filter" minOccurs="0" />
-                </xs:sequence>
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element ref="xf:fields" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="id" type="xs:long" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element ref="tns:member" minOccurs="0"
+                maxOccurs="unbounded" />
+            <xs:element ref="tns:filter" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
     </xs:complexType>
 
     <xs:complexType name="dMember">
-        <xs:complexContent>
-            <xs:extension base="tns:base">
-                <xs:sequence>
-                    <xs:element ref="xf:fields"
-                        minOccurs="0" maxOccurs="1" />
-                </xs:sequence>
-                <xs:attribute name="axis" type="xs:string" />
-                <xs:attribute name="index" type="xs:int" />
-                <xs:attribute name="match" type="xs:string" />
-                <xs:attribute name="order" type="xs:int" />
-                <xs:attribute name="value" type="xs:string" />
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element ref="xf:fields" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="id" type="xs:long" minOccurs="0"
+                maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="axis" type="xs:string" />
+        <xs:attribute name="index" type="xs:int" />
+        <xs:attribute name="match" type="xs:string" />
+        <xs:attribute name="order" type="xs:int" />
+        <xs:attribute name="value" type="xs:string" />
     </xs:complexType>
 
     <xs:complexType name="dFilter">
-        <xs:complexContent>
-            <xs:extension base="tns:base">
-                <xs:sequence>
-                    <xs:element ref="xf:fields"
-                        minOccurs="0" maxOccurs="1" />
-                </xs:sequence>
-                <xs:attribute name="axis" type="xs:string" />
-            </xs:extension>
-        </xs:complexContent>
+        <xs:sequence>
+            <xs:element ref="xf:fields" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="id" type="xs:long" minOccurs="0"
+                maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="axis" type="xs:string" />
+        <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
 
 </xs:schema>

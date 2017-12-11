@@ -29,10 +29,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="locator" type="{http://codetab.org/gotz}locator" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element ref="{http://codetab.org/gotz}locators" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="locator" type="{http://codetab.org/gotz}locator" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="group" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="group" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -41,15 +40,13 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "locators", propOrder = {"locator", "locators"})
+@XmlType(name = "locators", propOrder = {"locator"})
 public class Locators implements Serializable {
 
     private final static long serialVersionUID = 1L;
-    @XmlElement
+    @XmlElement(required = true)
     private List<Locator> locator;
-    @XmlElement
-    private List<Locators> locators;
-    @XmlAttribute(name = "group")
+    @XmlAttribute(name = "group", required = true)
     private String group;
 
     /**
@@ -79,36 +76,6 @@ public class Locators implements Serializable {
             locator = new ArrayList<Locator>();
         }
         return this.locator;
-    }
-
-    /**
-     * Gets the value of the locators property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list, not a
-     * snapshot. Therefore any modification you make to the returned list will
-     * be present inside the JAXB object. This is why there is not a
-     * <CODE>set</CODE> method for the locators property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * 
-     * <pre>
-     * getLocators().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list {@link Locators
-     * }
-     *
-     *
-     */
-    public List<Locators> getLocators() {
-        if (locators == null) {
-            locators = new ArrayList<Locators>();
-        }
-        return this.locators;
     }
 
     /**

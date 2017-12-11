@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<locators xmlns="http://codetab.org/gotz">
+<locatorGroups xmlns="http://codetab.org/gotz">
     <locators group="bs">
         <locator name="ITC"
             url="src/main/resources/devdefs/mc/htmlunit/bs-db/itc-bs.html" />
     </locators>
-</locators>
+</locatorGroups>

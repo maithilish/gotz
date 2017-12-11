@@ -27,14 +27,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * <pre>
  * &lt;complexType name="locator"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
+ *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/&gt;
  *         &lt;element name="documents" type="{http://codetab.org/gotz}document" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="group" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *     &lt;/extension&gt;
+ *       &lt;attribute name="url" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -42,18 +44,22 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "locator", propOrder = {"fields", "documents"})
-public class Locator extends Base implements Serializable {
+@XmlType(name = "locator", propOrder = {"fields", "id", "documents"})
+public class Locator implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElement(namespace = "http://codetab.org/xfields")
     private Fields fields;
     @XmlElement
+    private Long id;
+    @XmlElement
     private List<Document> documents;
-    @XmlAttribute(name = "url")
-    private String url;
+    @XmlAttribute(name = "name", required = true)
+    private String name;
     @XmlAttribute(name = "group")
     private String group;
+    @XmlAttribute(name = "url", required = true)
+    private String url;
 
     /**
      * Gets the value of the fields property.
@@ -74,6 +80,27 @@ public class Locator extends Base implements Serializable {
      */
     public void setFields(Fields value) {
         this.fields = value;
+    }
+
+    /**
+     * Gets the value of the id property.
+     *
+     * @return possible object is {@link Long }
+     *
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     *
+     * @param value
+     *            allowed object is {@link Long }
+     *
+     */
+    public void setId(Long value) {
+        this.id = value;
     }
 
     /**
@@ -107,24 +134,24 @@ public class Locator extends Base implements Serializable {
     }
 
     /**
-     * Gets the value of the url property.
+     * Gets the value of the name property.
      *
      * @return possible object is {@link String }
      *
      */
-    public String getUrl() {
-        return url;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the url property.
+     * Sets the value of the name property.
      *
      * @param value
      *            allowed object is {@link String }
      *
      */
-    public void setUrl(String value) {
-        this.url = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**
@@ -146,6 +173,27 @@ public class Locator extends Base implements Serializable {
      */
     public void setGroup(String value) {
         this.group = value;
+    }
+
+    /**
+     * Gets the value of the url property.
+     *
+     * @return possible object is {@link String }
+     *
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * Sets the value of the url property.
+     *
+     * @param value
+     *            allowed object is {@link String }
+     *
+     */
+    public void setUrl(String value) {
+        this.url = value;
     }
 
     @Override

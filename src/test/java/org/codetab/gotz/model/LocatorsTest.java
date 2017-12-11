@@ -49,16 +49,6 @@ public class LocatorsTest {
     }
 
     @Test
-    public void testGetLocators() {
-        Locators t1 = new Locators();
-        List<Locators> list = t1.getLocators();
-
-        assertThat(list).isNotNull();
-        // for coverage when not null
-        assertThat(t1.getLocators()).isSameAs(list);
-    }
-
-    @Test
     public void testGetGroup() {
         Locators t1 = new Locators();
         t1.setGroup("x");

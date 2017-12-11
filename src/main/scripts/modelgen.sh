@@ -12,10 +12,10 @@ main(){
     rm -rf $GENERATED_DIR
     mvn jaxb2:generate
     
-    # remove unwanted classes. we need these types in xsd for 
-    # schema validation, but no other use
+    # remove unwanted classes. we need these types in xsd for schema validation, but for no other purpose
     rm $GENERATED_DIR/$MODEL_DIR/Beans.java
     rm $GENERATED_DIR/$MODEL_DIR/DataDefs.java
+    rm $GENERATED_DIR/$MODEL_DIR/LocatorGroups.java
     rm $GENERATED_DIR/$MODEL_DIR/XFields.java
     
     file=Fields.java

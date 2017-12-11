@@ -8,30 +8,27 @@
 <!-- Metadata reference : http://www.datanucleus.org:15080/products/accessplatform_5_0/jdo/metadata_xml.html -->
 <!-- Java types persistable by default : http://www.datanucleus.org/products/accessplatform_4_1/jdo/types.html -->
 <jdo>
-    <package name="org.codetab.gotz.model">
-        <class name="Base" detachable="true">
-            <inheritance strategy="subclass-table" />
+    <package name="org.codetab.gotz.model">        
+        <class name="Locator" detachable="true">            
             <field name="id" primary-key="true" value-strategy="INCREMENT" />
-            <field name="name" />
-        </class>
-        <class name="Locator" detachable="true">
-            <!-- <field name="id" primary-key="true" value-strategy="INCREMENT" 
-                /> -->
-            <unique name="UNIQUE_NAMEGROUP">
-                <field name="name" />
-                <field name="group" />
-            </unique>
+            <field name="name" />            
             <field name="url" persistence-modifier="none" />            
             <field name="fields" persistence-modifier="none" />
             <field name="documents">
                 <collection element-type="org.codetab.gotz.model.Document" />
                 <element column="LOCATOR_ID" />
             </field>
+            <unique name="UNIQUE_NAMEGROUP">
+                <field name="name" />
+                <field name="group" />
+            </unique>
             <fetch-group name="detachDocuments">
                 <field name="documents" />
             </fetch-group>
         </class>
         <class name="Document">
+            <field name="id" primary-key="true" value-strategy="INCREMENT" />
+            <field name="name" />
             <field name="fromDate" />
             <field name="toDate" />
             <field name="documentObject" persistence-modifier="persistent"
@@ -41,14 +38,16 @@
             </fetch-group>
         </class>
         <class name="DataDef" detachable="true">
+            <field name="id" primary-key="true" value-strategy="INCREMENT" />
+            <field name="name" />
+            <field name="axis" serialized="true" />
+            <!-- <field name="memberSets" persistence-modifier="none" /> -->            
+            <field name="fields" persistence-modifier="persistent" serialized="true" />
             <unique name="UNIQUE_NAME_DATE">
                 <field name="name" />
                 <field name="fromDate" />
                 <field name="toDate" />
-            </unique>
-            <field name="axis" serialized="true" />
-            <!-- <field name="memberSets" persistence-modifier="none" /> -->            
-            <field name="fields" persistence-modifier="persistent" serialized="true" />
+            </unique>            
             <fetch-group name="detachAxis">
                 <field name="axis" />
             </fetch-group>
@@ -57,25 +56,21 @@
             </fetch-group>
         </class>
         <class name="Data">
-            <unique name="UNIQUE_DATA">
-                <field name="dataDefId" />
-                <field name="documentId" />
-            </unique>
+            <field name="id" primary-key="true" value-strategy="INCREMENT" />
+            <field name="name" />
             <field name="dataDefId" />
             <field name="documentId" />
             <field name="members" persistence-modifier="persistent"
                 serialized="true" />
+            <unique name="UNIQUE_DATA">
+                <field name="dataDefId" />
+                <field name="documentId" />
+            </unique>            
             <fetch-group name="detachMembers">
                 <field name="members" />
             </fetch-group>
         </class>
-        <class name="DataSet">
-            <unique name="UNIQUE_DATASET">
-                <field name="name" />
-                <field name="group" />
-                <field name="col" />
-                <field name="row" />
-            </unique>
+        <class name="DataSet">                        
             <field name="id" primary-key="true" value-strategy="INCREMENT" />
             <field name="name" />            
             <field name="group" />
@@ -84,6 +79,12 @@
             </field>                   
             <field name="row" column="y" />
             <field name="fact" />
+            <unique name="UNIQUE_DATASET">
+                <field name="name" />
+                <field name="group" />
+                <field name="col" />
+                <field name="row" />
+            </unique>
         </class>
     </package>
 </jdo>

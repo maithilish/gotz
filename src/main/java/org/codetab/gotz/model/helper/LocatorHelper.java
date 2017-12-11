@@ -111,9 +111,9 @@ public class LocatorHelper {
         LOGGER.info("extract locators to locator");
 
         List<Locator> locatorList = new ArrayList<>();
-        for (Locators locs : locatorsList.getLocators()) {
-            locatorList.addAll(extractLocator(locs));
-        }
+        // for (Locators locs : locatorsList.getLocators()) {
+        // locatorList.addAll(extractLocator(locs));
+        // }
         for (Locator locator : locatorsList.getLocator()) {
             locatorList.add(locator);
         }
@@ -130,12 +130,12 @@ public class LocatorHelper {
     private void trikleGroup(final Locators locators) {
         LOGGER.info("propagate locators group to all locator");
 
-        for (Locators locs : locators.getLocators()) {
-            if (locs.getGroup() == null) {
-                locs.setGroup(locators.getGroup());
-            }
-            trikleGroup(locs);
-        }
+        // for (Locators locs : locators.getLocators()) {
+        // if (locs.getGroup() == null) {
+        // locs.setGroup(locators.getGroup());
+        // }
+        // trikleGroup(locs);
+        // }
         for (Locator locator : locators.getLocator()) {
             if (locator.getGroup() == null) {
                 locator.setGroup(locators.getGroup());

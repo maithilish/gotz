@@ -30,14 +30,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * <pre>
  * &lt;complexType name="dataDef"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
+ *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/&gt;
  *         &lt;element ref="{http://codetab.org/gotz}axis" maxOccurs="unbounded" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="fromDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" /&gt;
  *       &lt;attribute name="toDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -45,14 +47,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dataDef", propOrder = {"fields", "axis"})
-public class DataDef extends Base implements Serializable {
+@XmlType(name = "dataDef", propOrder = {"fields", "id", "axis"})
+public class DataDef implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElement(namespace = "http://codetab.org/xfields")
     private Fields fields;
     @XmlElement
+    private Long id;
+    @XmlElement
     private List<DAxis> axis;
+    @XmlAttribute(name = "name", required = true)
+    private String name;
     @XmlAttribute(name = "fromDate")
     @XmlJavaTypeAdapter(Adapter1.class)
     @XmlSchemaType(name = "dateTime")
@@ -84,6 +90,27 @@ public class DataDef extends Base implements Serializable {
     }
 
     /**
+     * Gets the value of the id property.
+     *
+     * @return possible object is {@link Long }
+     *
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     *
+     * @param value
+     *            allowed object is {@link Long }
+     *
+     */
+    public void setId(Long value) {
+        this.id = value;
+    }
+
+    /**
      * Gets the value of the axis property.
      *
      * <p>
@@ -110,6 +137,27 @@ public class DataDef extends Base implements Serializable {
             axis = new ArrayList<DAxis>();
         }
         return this.axis;
+    }
+
+    /**
+     * Gets the value of the name property.
+     *
+     * @return possible object is {@link String }
+     *
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value
+     *            allowed object is {@link String }
+     *
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**

@@ -25,16 +25,18 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * <pre>
  * &lt;complexType name="dMember"&gt;
  *   &lt;complexContent&gt;
- *     &lt;extension base="{http://codetab.org/gotz}base"&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
  *         &lt;element ref="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
+ *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="index" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *       &lt;attribute name="match" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="order" type="{http://www.w3.org/2001/XMLSchema}int" /&gt;
  *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *     &lt;/extension&gt;
+ *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
@@ -42,12 +44,16 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *
  */
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(name = "dMember", propOrder = {"fields"})
-public class DMember extends Base implements Serializable {
+@XmlType(name = "dMember", propOrder = {"fields", "id"})
+public class DMember implements Serializable {
 
     private final static long serialVersionUID = 1L;
     @XmlElement(namespace = "http://codetab.org/xfields")
     private Fields fields;
+    @XmlElement
+    private Long id;
+    @XmlAttribute(name = "name", required = true)
+    private String name;
     @XmlAttribute(name = "axis")
     private String axis;
     @XmlAttribute(name = "index")
@@ -78,6 +84,48 @@ public class DMember extends Base implements Serializable {
      */
     public void setFields(Fields value) {
         this.fields = value;
+    }
+
+    /**
+     * Gets the value of the id property.
+     *
+     * @return possible object is {@link Long }
+     *
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * Sets the value of the id property.
+     *
+     * @param value
+     *            allowed object is {@link Long }
+     *
+     */
+    public void setId(Long value) {
+        this.id = value;
+    }
+
+    /**
+     * Gets the value of the name property.
+     *
+     * @return possible object is {@link String }
+     *
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the value of the name property.
+     *
+     * @param value
+     *            allowed object is {@link String }
+     *
+     */
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**

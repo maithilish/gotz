@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.codetab.gotz.util.Util;
 
 public final class Axis implements Comparable<Axis>, Serializable {
 
@@ -94,6 +93,6 @@ public final class Axis implements Comparable<Axis>, Serializable {
                 .append("name", name).append("value", value)
                 .append("match", match).append("index", index)
                 .append("order", order).append("fields", fields).toString();
-        return Util.join(Util.LINE, "  ", str);
+        return String.join("", System.lineSeparator(), "  ", str);
     }
 }

@@ -80,10 +80,6 @@ public final class LocatorSeeder extends BaseSeeder {
     public void setInput(final Object input) {
         if (input instanceof Locator) {
             Locator locator = (Locator) input;
-            // locatorseeder adds new set of fields based on group, so clear the
-            // existing fields
-            // TODO check whether clear is required for fields
-            // locator.getFields().clear();
             locatorList = new ArrayList<>();
             locatorList.add(locator);
         }
