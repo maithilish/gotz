@@ -485,7 +485,7 @@ public abstract class BaseParser extends Step {
             this.document = (Document) input;
         } else {
             String message = Util.join(
-                    "unable to set next step input, Document type expected but is instance of ",
+                    "next step input : required [Document], but is instance of ",
                     input.getClass().getName());
             throw new StepRunException(message);
         }

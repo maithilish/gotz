@@ -10,7 +10,6 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
@@ -49,15 +48,14 @@ public final class DataFilter extends BaseConverter {
     public boolean process() {
         Validate.validState(getData() != null, "data must not be null");
 
+        LOGGER.info(getLabeled("apply filters"));
         List<Member> forRemovalMembers = new ArrayList<Member>();
         Map<AxisName, Fields> filterMap = null;
         try {
             filterMap = dataDefService.getFilterMap(getData().getDataDef());
         } catch (DataDefNotFoundException e) {
-            String givenUpMessage = "unable to filter";
-            LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-            activityService.addActivity(Type.FAIL, givenUpMessage, e);
-            throw new StepRunException(givenUpMessage, e);
+            String message = "unable to filter";
+            throw new StepRunException(message, e);
         }
         for (Member member : getData().getMembers()) {
             for (Axis axis : member.getAxes()) {
@@ -150,7 +148,8 @@ public final class DataFilter extends BaseConverter {
                         return true;
                     }
                 } catch (PatternSyntaxException e) {
-                    LOGGER.warn("unable to filter {} {}", pattern, e);
+                    String message = Util.join("unable to filter", pattern);
+                    throw new StepRunException(message, e);
                 }
             }
         } catch (FieldsNotFoundException e) {

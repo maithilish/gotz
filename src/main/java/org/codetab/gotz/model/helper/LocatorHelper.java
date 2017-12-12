@@ -86,13 +86,15 @@ public class LocatorHelper {
         try {
             int count = Integer
                     .parseInt(configService.getConfig("gotz.fork.locator"));
-
-            for (Locator locator : locators) {
-                forkedLocators.add(locator);
-                for (int i = 0; i < count; i++) {
-                    Locator forkedLocator = SerializationUtils.clone(locator);
-                    forkedLocator.setName(locator.getName() + i);
-                    forkedLocators.add(forkedLocator);
+            if (count > 0) {
+                for (Locator locator : locators) {
+                    forkedLocators.add(locator);
+                    for (int i = 0; i < count; i++) {
+                        Locator forkedLocator =
+                                SerializationUtils.clone(locator);
+                        forkedLocator.setName(locator.getName() + i);
+                        forkedLocators.add(forkedLocator);
+                    }
                 }
             }
         } catch (ConfigNotFoundException e) {

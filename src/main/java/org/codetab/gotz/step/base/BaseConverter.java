@@ -4,10 +4,10 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.Step;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,9 +61,7 @@ public abstract class BaseConverter extends Step {
     private Fields createNextStepFields() {
         Fields nextStepFields = getFields();
         if (nextStepFields.getNodes().size() == 0) {
-            String message = "unable to get next step fields";
-            LOGGER.error("{} {}", message, getLabel());
-            activityService.addActivity(Type.FAIL, message);
+            String message = "unable to get next step fields, empty nodes";
             throw new StepRunException(message);
         }
         return nextStepFields;
@@ -79,8 +77,10 @@ public abstract class BaseConverter extends Step {
         if (input instanceof Data) {
             data = (Data) input;
         } else {
-            LOGGER.error("input is not instance of Data type. {}",
-                    input.getClass().toString());
+            String message = Util.join(
+                    "next step input : required [Data], but is instance of ",
+                    input.getClass().getName());
+            throw new StepRunException(message);
         }
     }
 

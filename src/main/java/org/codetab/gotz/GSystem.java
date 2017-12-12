@@ -108,7 +108,7 @@ public class GSystem {
     public void waitForHeapDump() {
         String wait = "false";
         try {
-            wait = configService.getConfig("waitForHeapDump");
+            wait = configService.getConfig("gotz.waitForHeapDump");
         } catch (ConfigNotFoundException e) {
         }
         if (wait.equalsIgnoreCase("true")) {

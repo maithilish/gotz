@@ -5,7 +5,6 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
@@ -58,8 +57,6 @@ public final class LocatorCreator extends BaseConverter {
             }
 
             Fields nextStepField = createNextStepFields(locator);
-            // List<Locator> locatorList = new ArrayList<>();
-            // locatorList.add(locator);
             Labels labels = locatorHelper.createLabels(locator);
             stepService.pushTask(this, locator, labels, nextStepField);
             try {
@@ -103,8 +100,6 @@ public final class LocatorCreator extends BaseConverter {
             return nextStepFields;
         } catch (FieldsException e) {
             String message = "unable to get next step fields";
-            LOGGER.error("{} {}", message, getLabel());
-            activityService.addActivity(Type.FAIL, message);
             throw new StepRunException(message);
         }
     }

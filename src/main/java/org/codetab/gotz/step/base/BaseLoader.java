@@ -103,8 +103,7 @@ public abstract class BaseLoader extends Step {
 
         if (savedLocator == null) {
             // use the locator passed as input to this step
-            LOGGER.debug("{} : {}", "using locator read from file : ",
-                    getLabel());
+            LOGGER.debug("{} {}", getLabel(), "using locator read from file");
         } else {
             // update existing locator with new fields and URL
             savedLocator.setFields(locator.getFields());
@@ -113,8 +112,8 @@ public abstract class BaseLoader extends Step {
             // switch locator to persisted locator (detached locator)
             locator = savedLocator;
 
-            LOGGER.debug("{} : {}", "using locator loaded from datastore : ",
-                    getLabel());
+            LOGGER.debug("{} {}", getLabel(),
+                    "using locator loaded from datastore");
             LOGGER.trace(marker, "-- Locator loaded --{}{}", Util.LINE,
                     locator);
         }
@@ -161,11 +160,8 @@ public abstract class BaseLoader extends Step {
                 // fetch documentObject as byte[]
                 documentObject = fetchDocumentObject(locator.getUrl());
             } catch (IOException e) {
-                String givenUpMessage =
-                        Util.join("unable to fetch document ", getLabel());
-                LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.FAIL, givenUpMessage, e);
-                throw new StepRunException(givenUpMessage, e);
+                String message = "unable to fetch document ";
+                throw new StepRunException(message, e);
             }
 
             // document metadata
@@ -181,11 +177,8 @@ public abstract class BaseLoader extends Step {
             try {
                 documentHelper.setDocumentObject(document, documentObject);
             } catch (IOException e) {
-                String errorMessage = Util.join(
-                        "unable to compress document object ", getLabel());
-                LOGGER.error("{} {}", errorMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.FAIL, errorMessage, e);
-                throw new StepRunException(errorMessage, e);
+                String message = "unable to compress document object";
+                throw new StepRunException(message, e);
             }
 
             // add document to locator
@@ -193,20 +186,17 @@ public abstract class BaseLoader extends Step {
 
             setConsistent(true);
 
-            LOGGER.info(
-                    "create new document. Locator[name={} group={} toDate={}]",
-                    locator.getName(), locator.getGroup(),
+            LOGGER.info("{} create new document, toDate={}", getLabel(),
                     document.getToDate());
-            LOGGER.trace("create new document {}", document);
+            LOGGER.trace(marker, "create new document {}", document);
         } else {
             // load the existing active document
             document = documentPersistence.loadDocument(activeDocumentId);
             setConsistent(true);
-            LOGGER.info(
-                    "use stored document. Locator[name={} group={} toDate={}]",
-                    locator.getName(), locator.getGroup(),
+            LOGGER.info("{} use stored document, toDate={}", getLabel(),
                     document.getToDate());
-            LOGGER.trace("found document {}", document);
+
+            LOGGER.trace(marker, "found document {}", document);
         }
         setStepState(StepState.PROCESS);
         return true;
@@ -251,19 +241,16 @@ public abstract class BaseLoader extends Step {
                 locator.setFields(fields);
 
                 document = documentPersistence.loadDocument(document.getId());
-                LOGGER.debug("stored Locator[{}:{}]", locator.getName(),
-                        locator.getGroup());
+                LOGGER.debug("{} stored locator", getLabel());
                 LOGGER.trace(marker, "-- Locator stored --{}{}", Util.LINE,
                         locator);
             } catch (RuntimeException e) {
-                String givenUpMessage = "unable to store";
-                LOGGER.error("{} {}", givenUpMessage, e.getLocalizedMessage());
-                activityService.addActivity(Type.FAIL, givenUpMessage, e);
-                throw new StepRunException(givenUpMessage, e);
+                String message = "unable to store";
+                throw new StepRunException(message, e);
             }
         } else {
-            LOGGER.debug("locator[{}:{}] is not stored as [persist=false]",
-                    locator.getName(), locator.getGroup());
+            LOGGER.debug("{} locator is not stored as persist is false",
+                    getLabel());
         }
         setStepState(StepState.STORE);
         return true;
@@ -283,7 +270,7 @@ public abstract class BaseLoader extends Step {
         Validate.validState(locator != null,
                 "step input [locator] must not be null");
 
-        String errorMessage = Util.join("create parser failed ", getLabel());
+        String message = getLabeled("unable to create parser");
 
         List<Fields> tasks = null;
         try {
@@ -293,9 +280,7 @@ public abstract class BaseLoader extends Step {
                 throw new FieldsException("no task defined");
             }
         } catch (FieldsException e) {
-            LOGGER.error("{} {}", errorMessage, e);
-            activityService.addActivity(Type.FAIL, errorMessage, e);
-            throw new StepRunException(errorMessage, e);
+            throw new StepRunException(message, e);
         }
 
         for (Fields task : tasks) {
@@ -305,16 +290,15 @@ public abstract class BaseLoader extends Step {
                     stepService.pushTask(this, document, getLabels(),
                             nextStepFields);
                 } catch (RuntimeException e) {
-                    String message = "unable to get next step fields";
-                    LOGGER.error("{} {}", message, locator);
-                    activityService.addActivity(Type.FAIL,
-                            Util.join(errorMessage, " : ", message));
+                    message = Util.join(message,
+                            " as get next step fields failed");
+                    LOGGER.error("{}", message);
+                    activityService.addActivity(Type.FAIL, message);
                 }
             } else {
-                String message = "document not loaded";
-                LOGGER.error("{} {}", message, locator);
-                activityService.addActivity(Type.FAIL,
-                        Util.join(errorMessage, " : ", message));
+                message = Util.join(message, " as document not loaded");
+                LOGGER.error("{}", message);
+                activityService.addActivity(Type.FAIL, message);
             }
         }
         setStepState(StepState.HANDOVER);
@@ -339,7 +323,6 @@ public abstract class BaseLoader extends Step {
             return nextStepFields;
         } catch (FieldsException e) {
             String message = "unable to clone next step fields";
-            LOGGER.error("{} {}", message, e.getLocalizedMessage());
             throw new StepRunException(message, e);
         }
 
@@ -366,8 +349,10 @@ public abstract class BaseLoader extends Step {
         if (input instanceof Locator) {
             this.locator = (Locator) input;
         } else {
-            LOGGER.warn("Input is not instance of Locator type. {}",
-                    input.getClass().toString());
+            String message = Util.join(
+                    "next step input : required [Locator], but is instance of ",
+                    input.getClass().getName());
+            throw new StepRunException(message);
         }
     }
 

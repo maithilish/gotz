@@ -12,6 +12,7 @@ import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.URLConnectionHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseLoader;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,9 +104,9 @@ public final class URLLoader extends BaseLoader {
             timeout = Integer.parseInt(configService.getConfig(key));
         } catch (NumberFormatException | ConfigNotFoundException e) {
             // TODO add activity or update config with default
-            String msg =
-                    "for config [" + key + "] using default value " + timeout;
-            LOGGER.warn("{}. {}", e, msg);
+            String msg = Util.join("for config [", key,
+                    "] using default value ", String.valueOf(timeout));
+            LOGGER.debug("{}. {}", e, msg);
         }
         return timeout;
     }
@@ -128,9 +129,9 @@ public final class URLLoader extends BaseLoader {
         try {
             userAgent = configService.getConfig(key);
         } catch (ConfigNotFoundException e) {
-            String msg =
-                    "for config [" + key + "] using default value " + userAgent;
-            LOGGER.warn("{}. {}", e, msg);
+            String msg = Util.join("for config [", key,
+                    "] using default value ", userAgent);
+            LOGGER.debug("{}. {}", e, msg);
         }
         return userAgent;
     }

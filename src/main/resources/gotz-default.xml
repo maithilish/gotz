@@ -7,7 +7,8 @@
         <schemaFile>/schema/gotz.xsd</schemaFile>
         <stepsXslFile>/schema/steps.xsl</stepsXslFile>
         <fieldsNsXslFile>/schema/fieldsns.xsl</fieldsNsXslFile>
-        <seederClass>org.codetab.gotz.step.extract.LocatorSeeder</seederClass>
+        <seederClass>org.codetab.gotz.step.extract.LocatorSeeder
+        </seederClass>
         <datastore>
             <name>datastore</name>
             <orm>jdo</orm>
@@ -17,7 +18,7 @@
             <seeder>6</seeder>
             <loader>4</loader>
             <parser>4</parser>
-            <filter>4</filter>
+            <process>4</process>
             <converter>4</converter>
             <appender>2</appender>
         </poolsize>
@@ -39,6 +40,10 @@
                  dd-MM-yyyy HH:mm:ss.SSS ; dd/MM/yyyy HH:mm:ss.SSS
             ]]>
         </dateTimeParsePattern>
+        <waitForHeapDump>false</waitForHeapDump>
+        <fork>
+            <locator>0</locator>
+        </fork>
     </gotz>
 </configuration>
 

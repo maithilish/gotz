@@ -331,6 +331,6 @@
     </build>
 
     <inceptionYear>2016</inceptionYear>
-    <version>1.0</version>
     <name>Gotz</name>
+    <version>0.9.0-beta</version>
 </project>

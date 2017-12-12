@@ -109,7 +109,10 @@ public abstract class BaseAppender extends Step {
         if (input instanceof Data) {
             data = (Data) input;
         } else {
-            throw new StepRunException("step input is not Data");
+            String message = Util.join(
+                    "next step input : required [Data], but is instance of ",
+                    input.getClass().getName());
+            throw new StepRunException(message);
         }
     }
 

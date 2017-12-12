@@ -40,3 +40,6 @@ jsoup
 concat
 abs
 prev
+mozilla
+gecko
+firefox

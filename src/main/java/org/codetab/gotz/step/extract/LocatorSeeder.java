@@ -82,6 +82,11 @@ public final class LocatorSeeder extends BaseSeeder {
             Locator locator = (Locator) input;
             locatorList = new ArrayList<>();
             locatorList.add(locator);
+        } else {
+            String message = Util.join(
+                    "next step input : required [Locator], but is instance of ",
+                    input.getClass().getName());
+            throw new StepRunException(message);
         }
     }
 

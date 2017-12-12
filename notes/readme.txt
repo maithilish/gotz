@@ -295,4 +295,34 @@ in steps, if exception is recoverable then catch and handle it otherwise
 in steps, while throwing StepRunException don't log or add activity as 
    tasks' exception handling takes care of it. 
    
-     
+
+Versions
+--------
+
+Given a version number MAJOR.MINOR.PATCH, increment the:
+
+    MAJOR version when you make incompatible API changes,
+    MINOR version when you add functionality in a backwards-compatible manner, and
+    PATCH version when you make backwards-compatible bug fixes.
+
+And yes, 1.0 should be stable. All releases should be stable, unless they're
+marked alpha, beta, or RC. 
+
+Use Alphas for known-broken-and-incomplete. 
+Betas for known-broken. 
+RCs for "try it; you'll probably spot things we missed". 
+Anything without one of these should (ideally, of course) be tested, 
+  known good, have an up to date manual, etc.
+  
+Precedence Example: 
+1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta 
+  < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0.
+        
+0.9.0-beta
+0.9.0-rc.1
+0.9.0-rc.2
+1.0.0
+
+
+
+    

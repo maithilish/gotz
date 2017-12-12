@@ -55,6 +55,8 @@ public final class DataConverter extends BaseConverter {
         Validate.validState(getFields() != null, "fields must not be null");
         Validate.validState(getData() != null, "data must not be null");
 
+        LOGGER.info(getLabeled("apply converters"));
+
         List<Fields> converters = new ArrayList<>();
         try {
             converters = fieldsHelper.split(
