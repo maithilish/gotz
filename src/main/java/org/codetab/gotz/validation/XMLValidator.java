@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.helper.IOHelper;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.ErrorHandler;
@@ -149,12 +150,15 @@ public class XMLValidator {
             String message = exception.getLocalizedMessage();
             LOGGER.error("{}", message);
             if (StringUtils.startsWith(message, "cvc-elt.1.a")) {
-                LOGGER.warn("{} {}",
-                        "possible cause : validated file does not have namespace",
-                        "(xmlns) defined even though schema has targetNamespace");
+                message = Util.join(
+                        "possible cause : document does not have namespace (xmlns) ",
+                        "while schema has targetNamespace");
             }
-
-            throw exception;
+            if (StringUtils.contains(message, "nonEmptyString")) {
+                message =
+                        "possible cause : some element or attribute contains empty string";
+            }
+            throw new SAXException(message, exception);
         }
 
         @Override

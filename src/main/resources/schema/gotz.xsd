@@ -52,7 +52,7 @@
             <xs:element name="locator" minOccurs="1"
                 maxOccurs="unbounded" type="tns:locator" />
         </xs:sequence>
-        <xs:attribute name="group" type="xs:string" use="required" />
+        <xs:attribute name="group" type="tns:nonEmptyString" use="required" />
     </xs:complexType>
 
     <xs:complexType name="locator" final="extension restriction">
@@ -64,9 +64,9 @@
             <xs:element name="documents" type="tns:document"
                 minOccurs="0" maxOccurs="unbounded" />
         </xs:sequence>
-        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="name" type="tns:nonEmptyString" use="required" />
         <xs:attribute name="group" type="xs:string" />
-        <xs:attribute name="url" type="xs:string" use="required" />
+        <xs:attribute name="url" type="tns:nonEmptyString" use="required" />
     </xs:complexType>
 
     <xs:complexType name="document">
@@ -158,6 +158,13 @@
         <xs:attribute name="axis" type="xs:string" />
         <xs:attribute name="name" type="xs:string" />
     </xs:complexType>
+
+    <xs:simpleType name="nonEmptyString">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+            <xs:pattern value=".*[^\s].*" />
+        </xs:restriction>
+    </xs:simpleType>
 
 </xs:schema>
 
