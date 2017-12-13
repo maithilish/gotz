@@ -89,7 +89,6 @@ public class GSystem {
             return task;
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException | ConfigNotFoundException e) {
-            LOGGER.error("{}", e);
             throw new CriticalException("unable to create initial task", e);
         }
     }

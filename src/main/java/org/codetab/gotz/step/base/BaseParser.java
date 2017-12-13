@@ -304,6 +304,7 @@ public abstract class BaseParser extends Step {
     private void prepareData() throws DataDefNotFoundException,
             ClassNotFoundException, IOException {
         data = dataDefService.getDataTemplate(dataDefName);
+        data.setName(getLabel());
         data.setDataDefId(dataDefService.getDataDef(dataDefName).getId());
         data.setDocumentId(getDocument().getId());
         LOGGER.trace(marker, "-- data template --{}{}{}{}", Util.LINE,

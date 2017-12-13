@@ -17,8 +17,9 @@
 
     <xs:complexType name="fields">
         <xs:sequence>
+            <!-- any but namespace restricted to tns -->
             <xs:any processContents="lax" minOccurs="0"
-                maxOccurs="unbounded" />
+                maxOccurs="unbounded" namespace="##targetNamespace" />
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" />
         <xs:attribute name="class" type="xs:string" />

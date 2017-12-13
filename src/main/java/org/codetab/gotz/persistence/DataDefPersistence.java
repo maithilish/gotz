@@ -58,8 +58,6 @@ public class DataDefPersistence {
             LOGGER.debug("DataDef loaded : [{}]", dataDefs.size());
             return dataDefs;
         } catch (RuntimeException e) {
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             throw new CriticalException("datadef creation error", e);
         }
     }
@@ -86,8 +84,6 @@ public class DataDefPersistence {
                 LOGGER.debug("stored DataDef [{}] [{}]", dataDef.getId(), name);
             }
         } catch (RuntimeException e) {
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             throw new CriticalException("datadef creation error", e);
         }
     }

@@ -63,7 +63,6 @@ public class ConfigService {
             Configuration defaults = getXMLConfigs(defaultsFile);
             configs.addConfiguration(defaults);
         } catch (ConfigurationException e) {
-            LOGGER.error("{}. Exit", e);
             throw new CriticalException("Configure error", e);
         }
 
@@ -123,7 +122,6 @@ public class ConfigService {
             runDate = DateUtils.parseDate(dateStr, new String[] {patterns});
             return runDate;
         } catch (ParseException | ConfigNotFoundException e) {
-            LOGGER.error("RunDate error. {}", e); //$NON-NLS-1$
             throw new CriticalException("config failure", e);
         }
     }
@@ -137,7 +135,6 @@ public class ConfigService {
                     DateUtils.parseDate(dateTimeStr, new String[] {patterns});
             return runDateTime;
         } catch (ParseException | ConfigNotFoundException e) {
-            LOGGER.error("Run Date error. {}", e); //$NON-NLS-1$
             throw new CriticalException("config failure", e);
         }
     }
@@ -150,7 +147,6 @@ public class ConfigService {
             highDate = DateUtils.parseDate(dateStr, patterns);
             return highDate;
         } catch (ParseException | ConfigNotFoundException e) {
-            LOGGER.error("{}", e); //$NON-NLS-1$
             throw new CriticalException("config failure", e);
         }
 

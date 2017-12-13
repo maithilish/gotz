@@ -2,6 +2,7 @@ package org.codetab.gotz.step;
 
 import javax.inject.Inject;
 
+import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Labels;
@@ -31,7 +32,7 @@ public class Task implements Runnable {
             step.process();
             step.store();
             step.handover();
-        } catch (StepRunException e) {
+        } catch (StepRunException | StepPersistenceException e) {
             String label = getLabel();
             String message =
                     Util.join("[", step.getStepType(), "] ", e.getMessage());

@@ -16,9 +16,9 @@
             </step>
             <step name="parser"
                 class="org.codetab.gotz.step.extract.JSoupHtmlParser">
-                <nextStep>filter</nextStep>
+                <nextStep>process</nextStep>
             </step>
-            <step name="filter" class="org.codetab.gotz.step.convert.DataFilter">
+            <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
                 <nextStep>converter</nextStep>
             </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">

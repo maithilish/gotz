@@ -87,7 +87,8 @@ public abstract class BaseAppender extends Step {
                     String label = getLabel();
                     String message = Util.join("unable to create appender [",
                             appenderName, "]");
-                    LOGGER.error("[{}] {} {}", label, message, e.getMessage());
+                    message = getLabeled(message);
+                    LOGGER.error("[{}] {} {}", message, e.getMessage());
                     LOGGER.debug("[{}] {}", label, e);
                     activityService.addActivity(Type.FAIL, label, message, e);
                 }

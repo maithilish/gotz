@@ -106,8 +106,6 @@ public class PMF {
                         Util.getPropertiesAsString(jdoProperties));
                 logger.debug("initialized JDO PMF");
             } catch (IOException e) {
-                logger.error("{}", e.getMessage());
-                logger.trace("{}", e);
                 throw new CriticalException(
                         "JDO Persistence Manager setup error", e);
             }

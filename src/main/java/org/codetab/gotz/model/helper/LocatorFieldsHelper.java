@@ -70,7 +70,7 @@ public class LocatorFieldsHelper {
 
         try {
             fieldsList = getFields();
-        } catch (Exception e) {
+        } catch (FieldsException | FieldsNotFoundException e) {
             throw new CriticalException(e);
         }
         return true;

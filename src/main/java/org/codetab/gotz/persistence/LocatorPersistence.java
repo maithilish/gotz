@@ -11,8 +11,6 @@ import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -21,12 +19,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class LocatorPersistence {
-
-    /**
-     * logger.
-     */
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(LocatorPersistence.class);
 
     /**
      * Config service.
@@ -61,8 +53,6 @@ public class LocatorPersistence {
             Locator existingLocator = dao.getLocator(name, group);
             return existingLocator;
         } catch (RuntimeException e) {
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             String message =
                     Util.join("unable to load [", name, ":", group, "]");
             throw new StepPersistenceException(message, e);
@@ -85,8 +75,6 @@ public class LocatorPersistence {
             ILocatorDao dao = daoFactory.getLocatorDao();
             return dao.getLocator(id);
         } catch (RuntimeException e) {
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             String message = Util.join("unable to load Locator[id=",
                     String.valueOf(id), "]");
             throw new StepPersistenceException(message, e);
@@ -110,8 +98,6 @@ public class LocatorPersistence {
             ILocatorDao dao = daoFactory.getLocatorDao();
             dao.storeLocator(locator);
         } catch (RuntimeException e) {
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             String message = Util.join("unable to store [", locator.getName(),
                     ":", locator.getGroup(), "]");
             throw new StepPersistenceException(message, e);

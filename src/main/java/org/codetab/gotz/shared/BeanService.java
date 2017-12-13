@@ -42,8 +42,6 @@ public class BeanService {
             beans = unmarshallBeanFiles(files);
         } catch (ConfigNotFoundException | JAXBException | SAXException
                 | IOException | ClassNotFoundException e) {
-            LOGGER.trace("{}", e);
-            LOGGER.error("{}", e.getLocalizedMessage());
             throw new CriticalException("initialization failure : BeanService",
                     e);
         }

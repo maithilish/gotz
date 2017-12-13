@@ -13,8 +13,6 @@ import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -23,12 +21,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DataSetPersistence {
-
-    /**
-     * logger.
-     */
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(DataSetPersistence.class);
 
     /**
      * ConfigService.
@@ -60,8 +52,6 @@ public class DataSetPersistence {
         } catch (RuntimeException e) {
             String message = Util.join("unable to store data",
                     dataSets.get(0).getName(), ":", dataSets.get(0).getGroup());
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             throw new StepPersistenceException(message, e);
         }
     }

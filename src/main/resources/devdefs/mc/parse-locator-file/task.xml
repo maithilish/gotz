@@ -8,11 +8,9 @@
             <step name="seeder"
                 class="org.codetab.gotz.step.extract.LocatorSeeder">
                 <nextStep>loader</nextStep>
-                <unique>true</unique>
             </step>
             <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
                 <nextStep>parser</nextStep>
-                <unique>true</unique>
             </step>
             <step name="parser"
                 class="org.codetab.gotz.step.extract.JSoupHtmlParser">
@@ -52,7 +50,7 @@
             <task name="price" dataDef="price">
                 <steps ref="stepsSeq" />
             </task>
-            <live>P0D</live>
+            <live>P1D</live>
         </tasks>
 
         <tasks name="bs" group="bs">
@@ -72,7 +70,7 @@
                     </step>
                 </steps>
             </task>
-            <live>P0D</live>
+            <live>P1D</live>
         </tasks>
 
         <tasks name="pl" group="pl">
@@ -92,7 +90,7 @@
                     </step>
                 </steps>
             </task>
-            <live>P0D</live>
+            <live>P1D</live>
         </tasks>
 
     </fields>

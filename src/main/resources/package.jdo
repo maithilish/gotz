@@ -26,7 +26,7 @@
                 <field name="documents" />
             </fetch-group>
         </class>
-        <class name="Document">
+        <class name="Document" detachable="true">
             <field name="id" primary-key="true" value-strategy="INCREMENT" />
             <field name="name" />
             <field name="fromDate" />
@@ -55,7 +55,7 @@
                 <field name="fields" />
             </fetch-group>
         </class>
-        <class name="Data">
+        <class name="Data" detachable="true" >
             <field name="id" primary-key="true" value-strategy="INCREMENT" />
             <field name="name" />
             <field name="dataDefId" />

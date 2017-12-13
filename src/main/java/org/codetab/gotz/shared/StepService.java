@@ -9,7 +9,7 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsNotFoundException;
-import org.codetab.gotz.model.Activity.Type;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.helper.FieldsHelper;
@@ -28,8 +28,6 @@ public class StepService {
 
     @Inject
     private DInjector dInjector;
-    @Inject
-    private ActivityService activityService;
     @Inject
     private TaskPoolService taskPoolService;
     @Inject
@@ -89,43 +87,56 @@ public class StepService {
         Validate.validState(step.getLabels() != null, "step labels not set");
         Validate.validState(step.getFields() != null, "step fields not set");
 
-        String givenUpMessage = Util.join("[", step.getLabel(), "] step [",
-                step.getStepType(), "] create next step failed");
+        String message = Util.join("step [", step.getStepType(),
+                "] create next step failed");
+
         try {
             String nextStepType =
                     getNextStepType(step.getFields(), step.getStepType());
-
             if (nextStepType.equalsIgnoreCase("end")) {
                 return;
             }
 
-            List<String> stepClasses =
-                    getNextStepClasses(nextStepFields, nextStepType);
-            if (stepClasses.size() == 0) {
-                LOGGER.warn("next step [{}], no stepClasses defined. {}",
-                        nextStepType, givenUpMessage);
-            }
-
-            for (String stepClassName : stepClasses) {
-                if (step.isConsistent()) {
-                    Runnable task = null;
-                    task = createTask(nextStepType, stepClassName, input,
-                            labels, nextStepFields);
-                    taskPoolService.submit(nextStepType, task);
-                    LOGGER.debug("{} instance [{}] pushed to pool, entity [{}]",
-                            nextStepType, task.getClass(), step.getLabel());
-                } else {
-                    LOGGER.warn("step inconsistent, entity [{}]",
-                            step.getLabel());
-                    activityService.addActivity(Type.FAIL,
-                            Util.join(givenUpMessage, ", step inconsistent"));
+            if (isNextStepDefined(nextStepFields, nextStepType)) {
+                List<String> stepClasses =
+                        getNextStepClasses(nextStepFields, nextStepType);
+                if (stepClasses.size() == 0) {
+                    message = Util.join(message, ", no stepClass defined for [",
+                            nextStepType, "]");
+                    throw new StepRunException(message);
                 }
+
+                for (String stepClassName : stepClasses) {
+                    if (step.isConsistent()) {
+                        Runnable task = null;
+                        task = createTask(nextStepType, stepClassName, input,
+                                labels, nextStepFields);
+                        taskPoolService.submit(nextStepType, task);
+                        LOGGER.debug(
+                                "{} instance [{}] pushed to pool, entity [{}]",
+                                nextStepType, task.getClass(), step.getLabel());
+                    } else {
+                        message = Util.join(message, ", step inconsistent");
+                        throw new StepRunException(message);
+                    }
+                }
+            } else {
+                message = Util.join(message, ", no step defined for [",
+                        nextStepType, "]");
+                throw new StepRunException(message);
             }
-        } catch (Exception e) {
-            LOGGER.debug("{}", e);
-            LOGGER.error("{}. {}", givenUpMessage, Util.getMessage(e));
-            activityService.addActivity(Type.FAIL, givenUpMessage, e);
+        } catch (FieldsNotFoundException | ClassNotFoundException
+                | InstantiationException | IllegalAccessException e) {
+            throw new StepRunException(message, e);
         }
+    }
+
+    private boolean isNextStepDefined(final Fields fields,
+            final String stepType) {
+        // xpath - not abs path
+        String xpath =
+                Util.join("//xf:task/xf:steps/xf:step[@name='", stepType, "']");
+        return fieldsHelper.isDefined(xpath, true, fields);
     }
 
     private List<String> getNextStepClasses(final Fields fields,

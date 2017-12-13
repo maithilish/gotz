@@ -11,8 +11,6 @@ import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -21,12 +19,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DataPersistence {
-
-    /**
-     * logger.
-     */
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(DataPersistence.class);
 
     /**
      * ConfigService.
@@ -61,8 +53,6 @@ public class DataPersistence {
             String message = Util.join("unable to load data,", "dataDefId=",
                     String.valueOf(dataDefId), ",documentId=",
                     String.valueOf(documentId));
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             throw new StepPersistenceException(message, e);
         }
     }
@@ -86,8 +76,6 @@ public class DataPersistence {
         } catch (RuntimeException e) {
             String message = Util.join("unable to load data,", "id=",
                     String.valueOf(id));
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
             throw new StepPersistenceException(message, e);
         }
     }
@@ -109,9 +97,8 @@ public class DataPersistence {
             IDataDao dao = daoFactory.getDataDao();
             dao.storeData(data);
         } catch (RuntimeException e) {
-            String message = Util.join("unable to store data", data.getName());
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.trace("", e);
+            String message =
+                    Util.join("unable to store data [", data.getName(), "]");
             throw new StepPersistenceException(message, e);
         }
     }
