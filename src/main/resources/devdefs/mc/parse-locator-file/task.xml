@@ -69,7 +69,13 @@
                         </converter>
                     </step>
                 </steps>
+                <persist>
+                    <data>false</data>
+                </persist>
             </task>
+            <persist>
+                <locator>false</locator>
+            </persist>
             <live>P1D</live>
         </tasks>
 

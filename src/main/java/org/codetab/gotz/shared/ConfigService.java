@@ -263,4 +263,21 @@ public class ConfigService {
         }
         return sb.toString();
     }
+
+    /**
+     * Return effective persist for a type based on user provided config.
+     * <p>
+     * User can define persist config gotz.useDataStore=true|false or for a type
+     * as gotz.persist.locator=true|false in config file gotz.properties.
+     * </p>
+     * <p>
+     * This method returns boolean for a key and if not found then true;
+     * </p>
+     * @param key
+     *            gotz.useDataStore, gotz.persist.locator|data|datadef
+     * @return
+     */
+    public boolean isPersist(final String configKey) {
+        return configs.getBoolean(configKey, true);
+    }
 }

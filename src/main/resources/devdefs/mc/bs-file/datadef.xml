@@ -4,7 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
-    <dataDef name="bs">
+    <dataDef name="bs">        
         <axis name="col">
             <xf:fields>
                 <xf:query region="table:contains(Sources Of Funds)"

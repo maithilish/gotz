@@ -43,3 +43,5 @@ prev
 mozilla
 gecko
 firefox
+datastore
+configs

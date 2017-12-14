@@ -1,5 +1,6 @@
 package org.codetab.gotz.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -11,7 +12,9 @@ import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.DataDef;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,10 @@ public class DataDefPersistence {
      */
     @Inject
     private ConfigService configService;
+
+    @Inject
+    private FieldsHelper fieldsHelper;
+
     /**
      * DaoFactoryProvider.
      */
@@ -49,6 +56,11 @@ public class DataDefPersistence {
      *             if any persistence error
      */
     public List<DataDef> loadDataDefs() {
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return new ArrayList<>();
+        }
+
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
@@ -72,6 +84,21 @@ public class DataDefPersistence {
      */
     public void storeDataDef(final DataDef dataDef) {
         Validate.notNull(dataDef, "dataDef must not be null");
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return;
+        }
+
+        boolean persist = configService.isPersist("gotz.persist.dataDef");
+        try {
+            // xpath - not abs path
+            persist = fieldsHelper.isTrue("//xf:persist", dataDef.getFields());
+        } catch (FieldsNotFoundException e) {
+        }
+
+        if (!persist) {
+            return;
+        }
 
         try {
             ORM orm = configService.getOrmType();

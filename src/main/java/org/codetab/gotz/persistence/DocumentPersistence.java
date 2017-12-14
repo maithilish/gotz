@@ -40,6 +40,10 @@ public class DocumentPersistence {
      *             if persistence error
      */
     public Document loadDocument(final long id) {
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return null;
+        }
+
         // get Document with documentObject
         try {
             ORM orm = configService.getOrmType();

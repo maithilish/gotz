@@ -7,8 +7,10 @@ import org.codetab.gotz.dao.DaoFactoryProvider;
 import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.ILocatorDao;
 import org.codetab.gotz.dao.ORM;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Locator;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
 
@@ -25,6 +27,10 @@ public class LocatorPersistence {
      */
     @Inject
     private ConfigService configService;
+
+    @Inject
+    private FieldsHelper fieldsHelper;
+
     /**
      * DaoFactory provider.
      */
@@ -45,6 +51,10 @@ public class LocatorPersistence {
     public Locator loadLocator(final String name, final String group) {
         Validate.notNull(name, "name must not be null");
         Validate.notNull(group, "group must not be null");
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return null;
+        }
 
         try {
             ORM orm = configService.getOrmType();
@@ -69,6 +79,11 @@ public class LocatorPersistence {
      *             if persistence error
      */
     public Locator loadLocator(final long id) {
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return null;
+        }
+
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
@@ -89,14 +104,31 @@ public class LocatorPersistence {
      * @throws StepPersistenceException
      *             if persistence error
      */
-    public void storeLocator(final Locator locator) {
+    public boolean storeLocator(final Locator locator) {
         Validate.notNull(locator, "locator must not be null");
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return false;
+        }
+
+        boolean persist = configService.isPersist("gotz.persist.locator");
+        try {
+            persist = fieldsHelper.isTrue(
+                    "/xf:fields/xf:tasks/xf:persist/xf:locator",
+                    locator.getFields());
+        } catch (FieldsNotFoundException e) {
+        }
+
+        if (!persist) {
+            return false;
+        }
 
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
             ILocatorDao dao = daoFactory.getLocatorDao();
             dao.storeLocator(locator);
+            return true;
         } catch (RuntimeException e) {
             String message = Util.join("unable to store [", locator.getName(),
                     ":", locator.getGroup(), "]");

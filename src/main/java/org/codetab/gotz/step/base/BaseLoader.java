@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
@@ -97,8 +96,10 @@ public abstract class BaseLoader extends Step {
         Validate.validState(locator != null,
                 "step input [locator] must not be null");
 
+        Locator savedLocator = null;
+
         // load locator from db
-        Locator savedLocator = locatorPersistence.loadLocator(locator.getName(),
+        savedLocator = locatorPersistence.loadLocator(locator.getName(),
                 locator.getGroup());
 
         if (savedLocator == null) {
@@ -219,39 +220,39 @@ public abstract class BaseLoader extends Step {
                 "step input [locator] must not be null");
         Validate.validState(document != null, "document must not be null");
 
-        boolean persist = true;
+        /*
+         * fields are not persistable, so need to set them from the fields.xml
+         * every time
+         */
         try {
-            persist = fieldsHelper.isTrue(
-                    "/xf:fields/xf:tasks/xf:persist/xf:document",
-                    locator.getFields());
-        } catch (FieldsNotFoundException e) {
-        }
+            Fields fields = locator.getFields();
 
-        if (persist) {
-            /*
-             * fields are not persistable, so need to set them from the
-             * fields.xml every time
-             */
-            try {
-                Fields fields = locator.getFields();
+            // store locator
+            if (locatorPersistence.storeLocator(locator)) {
+                // if stored then reload locator and document
+                Locator tLocator =
+                        locatorPersistence.loadLocator(locator.getId());
+                if (tLocator != null) {
+                    locator = tLocator;
+                    locator.setFields(fields);
+                }
 
-                // store and reload locator and document
-                locatorPersistence.storeLocator(locator);
-                locator = locatorPersistence.loadLocator(locator.getId());
-                locator.setFields(fields);
+                Document tDocument =
+                        documentPersistence.loadDocument(document.getId());
+                if (tDocument != null) {
+                    document = tDocument;
+                }
 
-                document = documentPersistence.loadDocument(document.getId());
                 LOGGER.debug("{} stored locator", getLabel());
                 LOGGER.trace(marker, "-- Locator stored --{}{}", Util.LINE,
                         locator);
-            } catch (RuntimeException e) {
-                String message = "unable to store";
-                throw new StepRunException(message, e);
             }
-        } else {
-            LOGGER.debug("{} locator is not stored as persist is false",
-                    getLabel());
+
+        } catch (RuntimeException e) {
+            String message = "unable to store";
+            throw new StepRunException(message, e);
         }
+
         setStepState(StepState.STORE);
         return true;
     }

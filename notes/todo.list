@@ -5,12 +5,26 @@ locator name, label
 fields helper cleanup
 FieldsException to NoFieldsException,
 IT - prefix add local path
+activity cleanup, internal error cat, meaningful activity message
+disable persistence
 
-Clean up       
-   activity cleanup, internal error cat, meaningful activity message
-   externalize strings
-   debug
-   state log  
-
+externalize strings
+debug
+state log, check whether all trace has marker  
+devdef and itest clean html files
+   
 tests
-   format xml fields
+   fields builder - format xml
+memory usage and profiler
+   
+examples   
+
+refactor to minimal logging before packaging 
+
+gotz.properties add comments and add example bean.xml config
+    
+  
+beta
+----
+
+when live duration is reduced adjust existing document todate 

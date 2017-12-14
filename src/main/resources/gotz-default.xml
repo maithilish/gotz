@@ -9,11 +9,6 @@
         <fieldsNsXslFile>/schema/fieldsns.xsl</fieldsNsXslFile>
         <seederClass>org.codetab.gotz.step.extract.LocatorSeeder
         </seederClass>
-        <datastore>
-            <name>datastore</name>
-            <orm>jdo</orm>
-            <configFile>/jdoconfig.properties</configFile>
-        </datastore>
         <poolsize>
             <seeder>6</seeder>
             <loader>4</loader>
@@ -44,6 +39,17 @@
         <fork>
             <locator>0</locator>
         </fork>
+        <useDataStore>true</useDataStore>
+        <datastore>
+            <name>datastore</name>
+            <orm>jdo</orm>
+            <configFile>/jdoconfig.properties</configFile>
+        </datastore>
+        <persist>
+            <dataDef>true</dataDef>
+            <locator>true</locator>
+            <data>true</data>
+        </persist>
     </gotz>
 </configuration>
 

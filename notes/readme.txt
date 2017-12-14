@@ -282,6 +282,16 @@ XML namespace
 getNamespaceURI() on document returns null but for jaxb elementNSImpl it returns uri.
 better option is to use lookupNamespaceURI() with null for default ns. 
 
+JDO
+---
+
+JDODataStoreException - Exception thrown flushing changes to datastore
+
+In case detached object is persisted again and detachable is not true 
+for the class  then instead of update jdo inserts new object. 
+If this results in constraint violation then jdo throws NullPointerExcetpion.
+Set detachable as true in package.jdo for the class. 
+
 Coding Guidelines
 -----------------
 

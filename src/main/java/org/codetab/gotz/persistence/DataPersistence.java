@@ -7,8 +7,11 @@ import org.codetab.gotz.dao.DaoFactoryProvider;
 import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.ORM;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Data;
+import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
 
@@ -25,6 +28,9 @@ public class DataPersistence {
      */
     @Inject
     private ConfigService configService;
+
+    @Inject
+    private FieldsHelper fieldsHelper;
     /**
      * DaoFactoryProvider.
      */
@@ -43,6 +49,11 @@ public class DataPersistence {
      *             on persistence error
      */
     public Data loadData(final long dataDefId, final long documentId) {
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return null;
+        }
+
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
@@ -67,6 +78,11 @@ public class DataPersistence {
      *             on persistence error
      */
     public Data loadData(final long id) {
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return null;
+        }
+
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
@@ -85,17 +101,33 @@ public class DataPersistence {
      * Store data.
      * @param data
      *            data to store, not null
+     * @param fields
      * @throws StepPersistenceException
      *             on persistence error
      */
-    public void storeData(final Data data) {
+    public boolean storeData(final Data data, final Fields fields) {
         Validate.notNull(data, "data must not be null");
+
+        if (!configService.isPersist("gotz.useDataStore")) {
+            return false;
+        }
+        boolean persist = configService.isPersist("gotz.persist.data");
+        try {
+            persist = fieldsHelper
+                    .isTrue("/xf:fields/xf:task/xf:persist/xf:data", fields);
+        } catch (FieldsNotFoundException e) {
+        }
+
+        if (!persist) {
+            return false;
+        }
 
         try {
             ORM orm = configService.getOrmType();
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
             IDataDao dao = daoFactory.getDataDao();
             dao.storeData(data);
+            return true;
         } catch (RuntimeException e) {
             String message =
                     Util.join("unable to store data [", data.getName(), "]");

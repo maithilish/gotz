@@ -1,6 +1,7 @@
 package org.codetab.gotz.shared;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,12 +37,15 @@ public class DataDefService {
 
     private final Logger logger = LoggerFactory.getLogger(DataDefService.class);
 
+    // stored datadefs
     private List<DataDef> dataDefs;
+
     private Map<String, Set<Set<DMember>>> memberSetsMap;
     private Map<String, Data> dataTemplateMap;
 
     @Inject
     private BeanService beanService;
+
     @Inject
     private DataDefPersistence dataDefPersistence;
     @Inject
@@ -70,6 +74,42 @@ public class DataDefService {
         dataTemplateMap = new HashMap<>();
 
         dataDefs = dataDefPersistence.loadDataDefs();
+        /*
+         * store changed datadef and load latest datadef, persistence will alter
+         * object so clone newDataDefs
+         */
+        storeDataDefs(cloneDataDefs(newDataDefs));
+
+        // add new datadefs from file which are not persisted
+        addTransientDataDefs(newDataDefs);
+
+        traceDataDefs();
+
+        traceDataStructure();
+
+        logger.debug("initialized DataDefs singleton");
+    }
+
+    private List<DataDef> cloneDataDefs(final List<DataDef> newDataDefs) {
+        List<DataDef> clone = new ArrayList<>();
+
+        for (DataDef dataDef : newDataDefs) {
+            clone.add(SerializationUtils.clone(dataDef));
+        }
+        return clone;
+    }
+
+    private void addTransientDataDefs(final List<DataDef> newDataDefs) {
+        for (DataDef newDataDef : newDataDefs) {
+            boolean exists = dataDefs.stream()
+                    .anyMatch(df -> df.getName().equals(newDataDef.getName()));
+            if (!exists) {
+                dataDefs.add(newDataDef);
+            }
+        }
+    }
+
+    private void storeDataDefs(final List<DataDef> newDataDefs) {
 
         boolean updates =
                 dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
@@ -80,12 +120,6 @@ public class DataDefService {
             }
             dataDefs = dataDefPersistence.loadDataDefs();
         }
-
-        traceDataDefs();
-
-        traceDataStructure();
-
-        logger.debug("initialized DataDefs singleton");
     }
 
     private void validateDataDefs(final List<DataDef> newDataDefs) {

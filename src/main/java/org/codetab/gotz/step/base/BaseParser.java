@@ -105,7 +105,7 @@ public abstract class BaseParser extends Step {
             throw new StepRunException(message, e);
         }
         Long documentId = getDocument().getId();
-        if (documentId != null) {
+        if (documentId != null && dataDefId != null) {
             data = dataPersistence.loadData(dataDefId, documentId);
         }
         return true;
@@ -141,18 +141,11 @@ public abstract class BaseParser extends Step {
      */
     @Override
     public boolean store() {
-        boolean persist = true;
-        try {
-            persist = fieldsHelper.isTrue(
-                    "/xf:fields/xf:task/xf:persist/xf:data", getFields());
-        } catch (FieldsNotFoundException e) {
-        }
-        if (persist) {
-            dataPersistence.storeData(data);
+        if (dataPersistence.storeData(data, getFields())) {
             data = dataPersistence.loadData(data.getId());
             LOGGER.debug("[{}] data stored", getLabel());
         } else {
-            LOGGER.debug("[{}] [persist=false] data not stored", getLabel());
+            LOGGER.debug("[{}]  data not stored, persist is false", getLabel());
         }
         return true;
     }
