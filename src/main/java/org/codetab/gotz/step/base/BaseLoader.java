@@ -19,11 +19,9 @@ import org.codetab.gotz.persistence.DocumentPersistence;
 import org.codetab.gotz.persistence.LocatorPersistence;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.step.StepState;
-import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 
 /**
  * <p>
@@ -50,11 +48,6 @@ public abstract class BaseLoader extends Step {
      */
     private Document document;
     /**
-     * log marker to log state.
-     */
-    private Marker marker;
-
-    /**
      * persister.
      */
     @Inject
@@ -79,7 +72,6 @@ public abstract class BaseLoader extends Step {
     public boolean initialize() {
         Validate.validState(locator != null,
                 "step input [locator] must not be null");
-        marker = MarkerUtil.getMarker(locator.getName(), locator.getGroup());
         return true;
     }
 
@@ -115,7 +107,7 @@ public abstract class BaseLoader extends Step {
 
             LOGGER.debug("{} {}", getLabel(),
                     "using locator loaded from datastore");
-            LOGGER.trace(marker, "-- Locator loaded --{}{}", Util.LINE,
+            LOGGER.trace(getMarker(), "-- Locator loaded --{}{}", Util.LINE,
                     locator);
         }
         setStepState(StepState.LOAD);
@@ -189,7 +181,7 @@ public abstract class BaseLoader extends Step {
 
             LOGGER.info("{} create new document, toDate={}", getLabel(),
                     document.getToDate());
-            LOGGER.trace(marker, "create new document {}", document);
+            LOGGER.trace(getMarker(), "create new document {}", document);
         } else {
             // load the existing active document
             document = documentPersistence.loadDocument(activeDocumentId);
@@ -197,7 +189,7 @@ public abstract class BaseLoader extends Step {
             LOGGER.info("{} use stored document, toDate={}", getLabel(),
                     document.getToDate());
 
-            LOGGER.trace(marker, "found document {}", document);
+            LOGGER.trace(getMarker(), "found document {}", document);
         }
         setStepState(StepState.PROCESS);
         return true;
@@ -244,7 +236,7 @@ public abstract class BaseLoader extends Step {
                 }
 
                 LOGGER.debug("{} stored locator", getLabel());
-                LOGGER.trace(marker, "-- Locator stored --{}{}", Util.LINE,
+                LOGGER.trace(getMarker(), "-- Locator stored --{}{}", Util.LINE,
                         locator);
             }
 

@@ -14,8 +14,10 @@ import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseConverter;
+import org.codetab.gotz.util.MarkerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 /**
  * <p>
@@ -86,7 +88,12 @@ public final class LocatorCreator extends BaseConverter {
                         .addAll(member.getFields().getNodes());
             }
         }
-        LOGGER.trace("created new {} {}", locator, locator.getUrl());
+        if (LOGGER.isTraceEnabled()) {
+            Marker marker =
+                    MarkerUtil.getMarker(locator.getName(), locator.getGroup());
+            LOGGER.trace(marker, "created new {} {}", locator,
+                    locator.getUrl());
+        }
         return locator;
     }
 

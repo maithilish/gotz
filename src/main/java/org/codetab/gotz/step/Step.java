@@ -9,9 +9,11 @@ import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
+import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 /**
  * @author m
@@ -22,6 +24,7 @@ public abstract class Step implements IStep {
     static final Logger LOGGER = LoggerFactory.getLogger(Step.class);
 
     private Labels labels;
+    private Marker marker;
     private String stepType;
     private boolean consistent = false;
     private Fields fields;
@@ -111,6 +114,13 @@ public abstract class Step implements IStep {
     @Override
     public void setLabels(final Labels labels) {
         this.labels = labels;
+        marker = MarkerUtil.getMarker(labels.getName(), labels.getGroup(),
+                labels.getTask());
+    }
+
+    @Override
+    public Marker getMarker() {
+        return marker;
     }
 
     /**

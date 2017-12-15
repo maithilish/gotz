@@ -119,7 +119,6 @@ public final class DataSetDao implements IDataSetDao {
      */
     private PersistenceManager getPM() {
         PersistenceManager pm = pmf.getPersistenceManager();
-        LOGGER.trace("returning PM : {}", pm);
         return pm;
     }
 }

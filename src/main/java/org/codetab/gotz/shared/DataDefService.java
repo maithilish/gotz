@@ -210,9 +210,10 @@ public class DataDefService {
         if (!logger.isTraceEnabled()) {
             return;
         }
-        logger.trace("--- Trace DataDefs ----");
+
         for (DataDef dataDef : dataDefs) {
             Marker marker = MarkerUtil.getMarker(dataDef.getName());
+            logger.trace(marker, "--- trace dataDef ----");
             logger.trace(marker, "{}", dataDef);
         }
     }
@@ -221,8 +222,7 @@ public class DataDefService {
         if (!logger.isTraceEnabled()) {
             return;
         }
-        logger.trace("---- Trace data structure ----");
-        logger.trace("");
+
         for (DataDef dataDef : dataDefs) {
             if (dataDef.getAxis().size() == 0) {
                 String message = Util.join("datadef [", dataDef.getName(),
@@ -233,10 +233,7 @@ public class DataDefService {
             try {
                 String dataDefName = dataDef.getName();
                 Data data = getDataTemplate(dataDefName);
-                String trace =
-                        dataDefHelper.getDataStructureTrace(dataDefName, data);
-                Marker marker = MarkerUtil.getMarker(dataDefName);
-                logger.trace(marker, "{}", trace);
+                traceDataStructure(dataDefName, data);
             } catch (ClassNotFoundException | DataDefNotFoundException
                     | IOException e) {
                 String message = Util.join("datadef [", dataDef.getName(), "]");
@@ -249,6 +246,8 @@ public class DataDefService {
     public void traceDataStructure(final String dataDefName, final Data data) {
         String trace = dataDefHelper.getDataStructureTrace(dataDefName, data);
         Marker marker = MarkerUtil.getMarker(dataDefName);
+        logger.trace(marker, "---- trace data structure ----");
+        logger.trace(marker, "");
         logger.trace(marker, "{}", trace);
     }
 

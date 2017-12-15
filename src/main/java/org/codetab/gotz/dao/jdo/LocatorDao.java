@@ -149,7 +149,6 @@ public final class LocatorDao implements ILocatorDao {
      */
     private PersistenceManager getPM() {
         PersistenceManager pm = pmf.getPersistenceManager();
-        LOGGER.trace("returning PM : {}", pm);
         return pm;
     }
 

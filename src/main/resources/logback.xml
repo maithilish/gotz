@@ -42,8 +42,9 @@
         </encoder>
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
-                <marker>LOG_ITC_QUOTE</marker>
-                <marker>LOG_ITC_QUOTE_FINLOCATORS</marker>
+                <marker>LOG_BS</marker>
+                <marker>LOG_ITC_BS</marker>
+                <marker>LOG_ITC_BS_BS</marker>
             </evaluator>
             <onMismatch>DENY</onMismatch>
             <onMatch>NEUTRAL</onMatch>
@@ -74,7 +75,7 @@
             <pattern>%-20(%logger{0}:%line) %-8([%level]) %msg%n
             </pattern>
         </encoder>
-         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
             <evaluator class="ch.qos.logback.classic.boolex.OnMarkerEvaluator">
                 <marker>LOG_POOL_STATE</marker>
             </evaluator>
@@ -90,7 +91,7 @@
         <appender-ref ref="errorlog" />
         <appender-ref ref="debuglog" />
         <appender-ref ref="poolstatelog" />
-<!--         <appender-ref ref="statelog" /> -->
-        <appender-ref ref="tracelog" />        
+        <appender-ref ref="statelog" />
+        <appender-ref ref="tracelog" />
     </root>
 </configuration>

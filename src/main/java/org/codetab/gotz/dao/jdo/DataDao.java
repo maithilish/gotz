@@ -136,7 +136,6 @@ public final class DataDao implements IDataDao {
      */
     private PersistenceManager getPM() {
         PersistenceManager pm = pmf.getPersistenceManager();
-        LOGGER.trace("returning PM : {}", pm);
         return pm;
     }
 }

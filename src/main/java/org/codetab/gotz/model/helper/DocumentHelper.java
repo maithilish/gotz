@@ -25,9 +25,11 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.CompressionUtil;
+import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
 
 /**
  * Helper routines to handle documents.
@@ -155,8 +157,12 @@ public class DocumentHelper {
             }
         }
 
-        LOGGER.trace("Document.toDate. [live] {} [toDate] {} : {}", live,
-                toDate, labels.getLabel());
+        if (LOGGER.isTraceEnabled()) {
+            Marker marker =
+                    MarkerUtil.getMarker(labels.getName(), labels.getGroup());
+            LOGGER.trace(marker, "document.toDate. [live] {} [toDate]", live,
+                    toDate);
+        }
         return Date.from(Instant.from(toDate));
     }
 

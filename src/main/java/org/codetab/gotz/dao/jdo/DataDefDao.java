@@ -174,7 +174,6 @@ public final class DataDefDao implements IDataDefDao {
      */
     private PersistenceManager getPM() {
         PersistenceManager pm = pmf.getPersistenceManager();
-        LOGGER.trace("returning PM : {}", pm);
         return pm;
     }
 }

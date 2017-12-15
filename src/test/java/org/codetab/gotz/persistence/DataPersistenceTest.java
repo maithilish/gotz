@@ -11,6 +11,7 @@ import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.dao.jdo.JdoDaoFactory;
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Data;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -118,7 +119,8 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
         given(jdoDao.getDataDao()).willReturn(dataDao);
 
-        dataPersistence.storeData(data);
+        Fields fields = new Fields();
+        dataPersistence.storeData(data, fields);
 
         InOrder inOrder =
                 inOrder(configService, daoFactoryProvider, dataDao, jdoDao);
@@ -135,15 +137,16 @@ public class DataPersistenceTest {
                 .willThrow(RuntimeException.class);
 
         Data data = new Data();
+        Fields fields = new Fields();
 
         testRule.expect(StepPersistenceException.class);
-        dataPersistence.storeData(data);
+        dataPersistence.storeData(data, fields);
     }
 
     @Test
     public void testStoreNullParams() {
         try {
-            dataPersistence.storeData(null);
+            dataPersistence.storeData(null, null);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("data must not be null");

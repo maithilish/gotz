@@ -2,6 +2,7 @@ package org.codetab.gotz.step;
 
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
+import org.slf4j.Marker;
 
 public interface IStep {
 
@@ -42,4 +43,6 @@ public interface IStep {
     String getLabel();
 
     String getLabeled(String message);
+
+    Marker getMarker();
 }

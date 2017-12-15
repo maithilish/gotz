@@ -163,7 +163,7 @@ public class ConfigService {
                 orm = ORM.JPA;
             }
         } catch (ConfigNotFoundException e) {
-            LOGGER.error("{}", e.getLocalizedMessage());
+            LOGGER.error("{}", e.getMessage());
             LOGGER.trace("", e);
         }
         return orm;

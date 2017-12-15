@@ -76,7 +76,7 @@
             <persist>
                 <locator>false</locator>
             </persist>
-            <live>P1D</live>
+            <live>P0D</live>
         </tasks>
 
         <tasks name="pl" group="pl">

@@ -107,6 +107,7 @@ public class DataPersistence {
      */
     public boolean storeData(final Data data, final Fields fields) {
         Validate.notNull(data, "data must not be null");
+        Validate.notNull(fields, "fields must not be null");
 
         if (!configService.isPersist("gotz.useDataStore")) {
             return false;

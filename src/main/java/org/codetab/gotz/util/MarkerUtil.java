@@ -29,13 +29,8 @@ public final class MarkerUtil {
      * @return marker
      */
     public static Marker getMarker(final String name, final String group) {
-
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(group, "group must not be null");
-
-        String markerName = Util.join("LOG", "_", name.toUpperCase(), "_",
-                group.toUpperCase());
-        return MarkerFactory.getMarker(markerName);
+        // without task
+        return getMarker(name, group, null);
     }
 
     /**
@@ -45,20 +40,20 @@ public final class MarkerUtil {
      *            name, not null
      * @param group
      *            group, not null
-     * @param dataDefName
+     * @param task
      *            datadef name
      * @return marker
      */
     public static Marker getMarker(final String name, final String group,
-            final String dataDefName) {
+            final String task) {
 
         Validate.notNull(name, "name must not be null");
         Validate.notNull(group, "group must not be null");
 
-        String markerName = Util.join("LOG", "_", name.toUpperCase(), "_",
+        String markerName = String.join("_", "LOG", name.toUpperCase(),
                 group.toUpperCase());
-        if (dataDefName != null) {
-            markerName = Util.join(markerName, "_", dataDefName.toUpperCase());
+        if (task != null) {
+            markerName = String.join("_", markerName, task.toUpperCase());
         }
         return MarkerFactory.getMarker(markerName);
     }
@@ -74,7 +69,7 @@ public final class MarkerUtil {
 
         Validate.notNull(dataDefName, "dataDefName must not be null");
 
-        String markerName = Util.join("LOG", "_", dataDefName.toUpperCase());
+        String markerName = String.join("_", "LOG", dataDefName.toUpperCase());
         return MarkerFactory.getMarker(markerName);
     }
 }

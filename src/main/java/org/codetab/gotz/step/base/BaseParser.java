@@ -37,11 +37,9 @@ import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
-import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
 
 public abstract class BaseParser extends Step {
 
@@ -50,7 +48,6 @@ public abstract class BaseParser extends Step {
     private String dataDefName;
     private Document document;
     private Data data;
-    private Marker marker;
     private ScriptEngine jsEngine;
 
     private Set<Integer[]> memberIndexSet = new HashSet<>();
@@ -75,8 +72,6 @@ public abstract class BaseParser extends Step {
                     .getLastValue("/xf:fields/xf:task/@dataDef", getFields());
             String taskName = fieldsHelper
                     .getLastValue("/xf:fields/xf:task/@name", getFields());
-            marker = MarkerUtil.getMarker(getLabels().getName(),
-                    getLabels().getGroup(), dataDefName);
             // new labels with dataDef and task name
             Labels labels = new Labels(getLabels().getName(),
                     getLabels().getGroup(), taskName, dataDefName);
@@ -300,8 +295,8 @@ public abstract class BaseParser extends Step {
         data.setName(getLabel());
         data.setDataDefId(dataDefService.getDataDef(dataDefName).getId());
         data.setDocumentId(getDocument().getId());
-        LOGGER.trace(marker, "-- data template --{}{}{}{}", Util.LINE,
-                marker.getName(), Util.LINE, data);
+        LOGGER.trace(getMarker(), "-- data template --{}{}{}{}", Util.LINE,
+                getLabels().getName(), Util.LINE, data);
     }
 
     public void parse() throws DataDefNotFoundException, ScriptException,
@@ -323,8 +318,8 @@ public abstract class BaseParser extends Step {
             pushNewMember(mStack, member);
         }
         data.setMembers(members); // replace with expanded member list
-        LOGGER.trace(marker, "-- data after parse --{}{}{}{}", Util.LINE,
-                marker.getName(), Util.LINE, data);
+        LOGGER.trace(getMarker(), "-- data after parse --{}{}{}{}", Util.LINE,
+                getLabels().getName(), Util.LINE, data);
     }
 
     private void pushNewMember(final Deque<Member> mStack, final Member member)
@@ -536,10 +531,6 @@ public abstract class BaseParser extends Step {
      */
     protected String getDataDefName() {
         return dataDefName;
-    }
-
-    public Marker getMarker() {
-        return marker;
     }
 
     public String getBlockBegin() {

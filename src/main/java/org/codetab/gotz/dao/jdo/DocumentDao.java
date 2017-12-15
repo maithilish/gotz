@@ -68,7 +68,6 @@ public final class DocumentDao implements IDocumentDao {
      */
     private PersistenceManager getPM() {
         PersistenceManager pm = pmf.getPersistenceManager();
-        LOGGER.trace("returning PM : {}", pm);
         return pm;
     }
 
