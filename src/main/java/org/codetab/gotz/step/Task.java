@@ -28,10 +28,18 @@ public class Task implements Runnable {
     public void run() {
         try {
             step.initialize();
+
+            LOGGER.trace(step.getMarker(), "[{}] start step [{}]", getLabel(),
+                    step.getStepType());
+
             step.load();
             step.process();
             step.store();
             step.handover();
+
+            LOGGER.trace(step.getMarker(), "[{}] finish step [{}]", getLabel(),
+                    step.getStepType());
+
         } catch (StepRunException | StepPersistenceException e) {
             String label = getLabel();
             String message =

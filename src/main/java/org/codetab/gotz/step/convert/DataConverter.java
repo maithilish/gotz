@@ -1,7 +1,9 @@
 package org.codetab.gotz.step.convert;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
@@ -30,6 +32,11 @@ public final class DataConverter extends BaseConverter {
      * logger.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(DataConverter.class);
+
+    /**
+     * to trace changes
+     */
+    private Map<String, String> convertedValues = new HashMap<>();
 
     /**
      * Returns this step.
@@ -86,14 +93,27 @@ public final class DataConverter extends BaseConverter {
             member.setValue(AxisName.FACT, fact);
         }
         setConvertedData(getData());
+        traceChanges();
         setConsistent(true);
         setStepState(StepState.PROCESS);
         return true;
     }
 
+    private void traceChanges() {
+        if (!LOGGER.isTraceEnabled()) {
+            return;
+        }
+        LOGGER.trace(getMarker(), "summary of values converted");
+        for (String key : convertedValues.keySet()) {
+            LOGGER.trace(getMarker(), "  {} -> {}", key,
+                    convertedValues.get(key));
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private String convert(final AxisName axis, final String value,
             final List<Fields> converters) throws Exception {
+        String orgValue = value;
         String rvalue = value;
         for (Fields fields : converters) {
             try {
@@ -118,6 +138,11 @@ public final class DataConverter extends BaseConverter {
 
                 }
             } catch (FieldsNotFoundException e) {
+            }
+        }
+        if (LOGGER.isTraceEnabled()) {
+            if (!orgValue.equals(rvalue)) {
+                convertedValues.put(orgValue, rvalue);
             }
         }
         return rvalue;

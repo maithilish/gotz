@@ -1,8 +1,10 @@
 package org.codetab.gotz.step.convert;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -35,6 +37,11 @@ public final class DataFilter extends BaseConverter {
     private static final Logger LOGGER =
             LoggerFactory.getLogger(DataFilter.class);
 
+    /**
+     * to trace changes
+     */
+    private Set<String> filteredSet = new HashSet<>();
+
     @Override
     public IStep instance() {
         return this;
@@ -49,6 +56,9 @@ public final class DataFilter extends BaseConverter {
         Validate.validState(getData() != null, "data must not be null");
 
         LOGGER.info(getLabeled("apply filters"));
+
+        int membersCountBefore = getData().getMembers().size();
+
         List<Member> forRemovalMembers = new ArrayList<Member>();
         Map<AxisName, Fields> filterMap = null;
         try {
@@ -65,8 +75,16 @@ public final class DataFilter extends BaseConverter {
                 }
             }
         }
+
+        LOGGER.trace(getMarker(), "filtered members");
+
         for (Member member : forRemovalMembers) {
             getData().getMembers().remove(member);
+
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace(getMarker(), "{}", member);
+                filteredSet.add(getValuesAsString(member));
+            }
         }
         if (getData().getMembers().size() == 0) {
             setConsistent(false);
@@ -74,11 +92,41 @@ public final class DataFilter extends BaseConverter {
                     "output is empty, check datadef query/indexRange/breakAfter/filter";
             throw new StepRunException(message);
         }
+
+        int memberCountAfter = getData().getMembers().size();
+        traceChanges(membersCountBefore, memberCountAfter);
+
         setConvertedData(getData());
-        dataDefService.traceDataStructure(getData().getDataDef(), getData());
         setConsistent(true);
         setStepState(StepState.PROCESS);
         return true;
+    }
+
+    private void traceChanges(final int membersCountBefore,
+            final int memberCountAfter) {
+        if (!LOGGER.isTraceEnabled()) {
+            return;
+        }
+        LOGGER.trace(getMarker(), "filter summary");
+        LOGGER.trace(getMarker(),
+                "data members count : before [{}] and after [{}]",
+                membersCountBefore, memberCountAfter);
+        LOGGER.trace(getMarker(), "items filtered");
+        for (String item : filteredSet) {
+            LOGGER.trace(getMarker(), "  {}", item);
+        }
+    }
+
+    private String getValuesAsString(final Member member) {
+        StringBuilder sb = new StringBuilder();
+        AxisName[] axisNames = {AxisName.COL, AxisName.ROW, AxisName.FACT};
+        for (AxisName axisName : axisNames) {
+            String value = member.getAxis(axisName).getValue();
+            sb.append("[");
+            sb.append(value);
+            sb.append("]");
+        }
+        return sb.toString();
     }
 
     /**

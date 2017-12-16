@@ -126,7 +126,7 @@ public abstract class Appender implements Runnable {
         }
         try {
             queue = new ArrayBlockingQueue<>(Integer.parseInt(queueSize));
-            LOGGER.debug("created appender [{}] queue size [{}]", name,
+            LOGGER.info("created appender [{}] queue size [{}]", name,
                     queueSize);
         } catch (NumberFormatException e) {
             String message =

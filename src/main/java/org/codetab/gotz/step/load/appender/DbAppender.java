@@ -54,10 +54,12 @@ public final class DbAppender extends Appender {
      */
     @Override
     public void run() {
+        int count = 0;
         for (;;) {
             Object item = null;
             try {
                 item = getQueue().take();
+                count++;
                 if (item == Marker.EOF) {
                     break;
                 }
@@ -94,6 +96,8 @@ public final class DbAppender extends Appender {
                 LOGGER.debug("{}", e);
             }
         }
+        LOGGER.info("closing appender [{}], {} objects inserted to datastore",
+                getName(), count - 1);
     }
 
     /**

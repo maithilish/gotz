@@ -89,6 +89,8 @@ public final class LocatorCreator extends BaseConverter {
             }
         }
         if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace(getMarker(), "created new locator from {} ", member);
+            // marker and trace for new locator
             Marker marker =
                     MarkerUtil.getMarker(locator.getName(), locator.getGroup());
             LOGGER.trace(marker, "created new {} {}", locator,

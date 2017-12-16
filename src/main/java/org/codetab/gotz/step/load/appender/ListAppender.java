@@ -53,10 +53,12 @@ public final class ListAppender extends Appender {
      */
     @Override
     public void run() {
+        int count = 0;
         for (;;) {
             Object item = null;
             try {
                 item = getQueue().take();
+                count++;
                 if (item == Marker.EOF) {
                     break;
                 }
@@ -67,6 +69,8 @@ public final class ListAppender extends Appender {
                 activityService.addActivity(Type.FAIL, message, e);
             }
         }
+        LOGGER.info("closing appender [{}], {} objects added to list",
+                getName(), count - 1);
     }
 
     /**

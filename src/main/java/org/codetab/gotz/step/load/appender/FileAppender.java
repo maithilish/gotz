@@ -50,8 +50,8 @@ public final class FileAppender extends Appender {
                     "/xf:fields/xf:appender/xf:file", getFields());
             writer = ioHelper.getPrintWriter(fileName);
             setInitialized(true);
-            LOGGER.info("initialized {} [{}]", this.getClass().getSimpleName(),
-                    getName());
+            LOGGER.info("initialized {} [{}] file [{}]",
+                    this.getClass().getSimpleName(), getName(), fileName);
         } catch (IOException | FieldsNotFoundException e) {
             String message =
                     Util.join("unable to init file appender [", getName(), "]");
@@ -67,10 +67,12 @@ public final class FileAppender extends Appender {
      */
     @Override
     public void run() {
+        int count = 0;
         for (;;) {
             Object item = null;
             try {
                 item = getQueue().take();
+                count++;
                 if (item == Marker.EOF) {
                     writer.flush();
                     break;
@@ -86,6 +88,8 @@ public final class FileAppender extends Appender {
             }
         }
         writer.close();
+        LOGGER.info("closing appender [{}], {} items written to file",
+                getName(), count - 1);
     }
 
     /**
