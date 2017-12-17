@@ -14,6 +14,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.util.Util;
@@ -61,21 +62,21 @@ public class DateRoller implements IConverter<String, String> {
     @Override
     public String convert(final String input) throws FieldsNotFoundException,
             ParseException, IllegalAccessException {
-        Validate.notNull(input, "input date string must not be null");
-        Validate.validState(fields != null, "fields is null");
+        Validate.notNull(input, Messages.getString("DateRoller.0")); //$NON-NLS-1$
+        Validate.validState(fields != null, Messages.getString("DateRoller.1")); //$NON-NLS-1$
 
         String patternIn = fieldsHelper
-                .getLastValue("/xf:fields/xf:converter/xf:inPattern", fields);
+                .getLastValue("/xf:fields/xf:converter/xf:inPattern", fields); //$NON-NLS-1$
         String patternOut = fieldsHelper
-                .getLastValue("/xf:fields/xf:converter/xf:outPattern", fields);
+                .getLastValue("/xf:fields/xf:converter/xf:outPattern", fields); //$NON-NLS-1$
 
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(DateUtils.parseDate(input, patternIn));
 
         // get map of calendar fields to roll
         String rollStr = fieldsHelper
-                .getLastValue("/xf:fields/xf:converter/xf:roll", fields);
-        Map<String, String> rollMap = Util.split(rollStr, "=", " ");
+                .getLastValue("/xf:fields/xf:converter/xf:roll", fields); //$NON-NLS-1$
+        Map<String, String> rollMap = Util.split(rollStr, "=", " "); //$NON-NLS-1$ //$NON-NLS-2$
 
         // roll calendar fields
         for (String key : rollMap.keySet()) {
@@ -85,13 +86,13 @@ public class DateRoller implements IConverter<String, String> {
             String value = rollMap.get(key).toLowerCase();
 
             switch (value) {
-            case "ceil":
+            case "ceil": //$NON-NLS-1$
                 cal.set(calField, cal.getActualMaximum(calField));
                 break;
-            case "floor":
+            case "floor": //$NON-NLS-1$
                 cal.set(calField, cal.getActualMinimum(calField));
                 break;
-            case "round":
+            case "round": //$NON-NLS-1$
                 int max = cal.getActualMaximum(calField);
                 int mid = max / 2;
                 if (cal.get(calField) <= mid) {

@@ -10,6 +10,7 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.helper.FieldsHelper;
@@ -45,8 +46,8 @@ public class StepService {
         if (obj instanceof IStep) {
             step = (IStep) obj;
         } else {
-            throw new ClassCastException(
-                    "Class " + clzName + " is not of type IStep");
+            throw new ClassCastException(Messages.getString("StepService.0") //$NON-NLS-1$
+                    + clzName + Messages.getString("StepService.1")); //$NON-NLS-1$
         }
         return step;
     }
@@ -79,21 +80,24 @@ public class StepService {
     public void pushTask(final Step step, final Object input,
             final Labels labels, final Fields nextStepFields) {
 
-        Validate.notNull(step, "step must not be null");
-        Validate.notNull(input, "input must not be null");
-        Validate.notNull(labels, "labels must not be null");
-        Validate.notNull(nextStepFields, "nextStepFields must not be null");
+        Validate.notNull(step, Messages.getString("StepService.2")); //$NON-NLS-1$
+        Validate.notNull(input, Messages.getString("StepService.3")); //$NON-NLS-1$
+        Validate.notNull(labels, Messages.getString("StepService.4")); //$NON-NLS-1$
+        Validate.notNull(nextStepFields, Messages.getString("StepService.5")); //$NON-NLS-1$
 
-        Validate.validState(step.getLabels() != null, "step labels not set");
-        Validate.validState(step.getFields() != null, "step fields not set");
+        Validate.validState(step.getLabels() != null,
+                Messages.getString("StepService.6")); //$NON-NLS-1$
+        Validate.validState(step.getFields() != null,
+                Messages.getString("StepService.7")); //$NON-NLS-1$
 
-        String message = Util.join("step [", step.getStepType(),
-                "] create next step failed");
+        String message = Util.join(Messages.getString("StepService.8"), //$NON-NLS-1$
+                step.getStepType(), Messages.getString("StepService.9")); //$NON-NLS-1$
 
         try {
             String nextStepType =
                     getNextStepType(step.getFields(), step.getStepType());
-            if (nextStepType.equalsIgnoreCase("end")) {
+            if (nextStepType
+                    .equalsIgnoreCase(Messages.getString("StepService.10"))) { //$NON-NLS-1$
                 return;
             }
 
@@ -101,8 +105,9 @@ public class StepService {
                 List<String> stepClasses =
                         getNextStepClasses(nextStepFields, nextStepType);
                 if (stepClasses.size() == 0) {
-                    message = Util.join(message, ", no stepClass defined for [",
-                            nextStepType, "]");
+                    message = Util.join(message,
+                            Messages.getString("StepService.11"), //$NON-NLS-1$
+                            nextStepType, "]"); //$NON-NLS-1$
                     throw new StepRunException(message);
                 }
 
@@ -112,17 +117,18 @@ public class StepService {
                         task = createTask(nextStepType, stepClassName, input,
                                 labels, nextStepFields);
                         taskPoolService.submit(nextStepType, task);
-                        LOGGER.debug(
-                                "{} instance [{}] pushed to pool, entity [{}]",
+                        LOGGER.debug(Messages.getString("StepService.13"), //$NON-NLS-1$
                                 nextStepType, task.getClass(), step.getLabel());
                     } else {
-                        message = Util.join(message, ", step inconsistent");
+                        message = Util.join(message,
+                                Messages.getString("StepService.14")); //$NON-NLS-1$
                         throw new StepRunException(message);
                     }
                 }
             } else {
-                message = Util.join(message, ", no step defined for [",
-                        nextStepType, "]");
+                message =
+                        Util.join(message, Messages.getString("StepService.15"), //$NON-NLS-1$
+                                nextStepType, "]"); //$NON-NLS-1$
                 throw new StepRunException(message);
             }
         } catch (FieldsNotFoundException | ClassNotFoundException
@@ -135,15 +141,15 @@ public class StepService {
             final String stepType) {
         // xpath - not abs path
         String xpath =
-                Util.join("//xf:task/xf:steps/xf:step[@name='", stepType, "']");
+                Util.join("//xf:task/xf:steps/xf:step[@name='", stepType, "']"); //$NON-NLS-1$ //$NON-NLS-2$
         return fieldsHelper.isDefined(xpath, true, fields);
     }
 
     private List<String> getNextStepClasses(final Fields fields,
             final String stepType) throws FieldsNotFoundException {
         // xpath - not abs path
-        String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='", stepType,
-                "']/@class");
+        String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='", stepType, //$NON-NLS-1$
+                "']/@class"); //$NON-NLS-1$
         List<String> stepClasses = fieldsHelper.getValues(xpath, false, fields);
 
         // TODO handle unique step
@@ -157,8 +163,8 @@ public class StepService {
             throws FieldsNotFoundException {
         // TODO need to check behavior when multiple matching nodes exists
         // xpath - not abs path
-        String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='", stepType,
-                "']/xf:nextStep");
+        String xpath = Util.join("//xf:task/xf:steps/xf:step[@name='", stepType, //$NON-NLS-1$
+                "']/xf:nextStep"); //$NON-NLS-1$
         String nextStepType = fieldsHelper.getFirstValue(xpath, fields);
         return nextStepType;
     }

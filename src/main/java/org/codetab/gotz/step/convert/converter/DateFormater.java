@@ -10,6 +10,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 
@@ -43,13 +44,14 @@ public class DateFormater implements IConverter<String, String> {
     @Override
     public String convert(final String input)
             throws FieldsNotFoundException, ParseException {
-        Validate.notNull(input, "input date string must not be null");
-        Validate.validState(fields != null, "fields is null");
+        Validate.notNull(input, Messages.getString("DateFormater.0")); //$NON-NLS-1$
+        Validate.validState(fields != null,
+                Messages.getString("DateFormater.1")); //$NON-NLS-1$
 
         String patternIn = fieldsHelper
-                .getLastValue("/xf:fields/xf:converter/xf:inPattern", fields);
+                .getLastValue("/xf:fields/xf:converter/xf:inPattern", fields); //$NON-NLS-1$
         String patternOut = fieldsHelper
-                .getLastValue("/xf:fields/xf:converter/xf:outPattern", fields);
+                .getLastValue("/xf:fields/xf:converter/xf:outPattern", fields); //$NON-NLS-1$
 
         Date date = DateUtils.parseDate(input, patternIn);
         return DateFormatUtils.format(date, patternOut);

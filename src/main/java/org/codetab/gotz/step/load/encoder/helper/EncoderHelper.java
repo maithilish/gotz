@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -25,22 +26,22 @@ public class EncoderHelper {
     private ActivityService activityService;
 
     public void sort(final Data data, final Fields fields) {
-        String sortOrder = "";
-        String xpath = "/xf:fields/xf:encoder/xf:sortOrder";
+        String sortOrder = ""; //$NON-NLS-1$
+        String xpath = "/xf:fields/xf:encoder/xf:sortOrder"; //$NON-NLS-1$
         if (fieldsHelper.isDefined(xpath, true, fields)) {
             sortOrder = fieldsHelper.getValue(xpath, fields);
         } else {
-            sortOrder = "col,row"; // default
+            sortOrder = "col,row"; // default //$NON-NLS-1$
         }
 
         if (StringUtils.isBlank(sortOrder)) {
             activityService.addActivity(Type.WARN,
-                    "sortOrder is blank, data not sorted");
+                    Messages.getString("EncoderHelper.3")); //$NON-NLS-1$
             return;
         }
 
         sortOrder = sortOrder.toUpperCase();
-        for (String axisName : sortOrder.split(",")) {
+        for (String axisName : sortOrder.split(",")) { //$NON-NLS-1$
             AxisName axis = AxisName.valueOf(axisName);
             Comparator<Member> comparator = null;
             switch (axis) {
@@ -60,10 +61,10 @@ public class EncoderHelper {
     }
 
     public String getDelimiter(final Fields fields) {
-        String delimiter = "|";
+        String delimiter = "|"; //$NON-NLS-1$
         try {
             delimiter = fieldsHelper
-                    .getLastValue("/xf:fields/xf:encoder/xf:delimiter", fields);
+                    .getLastValue("/xf:fields/xf:encoder/xf:delimiter", fields); //$NON-NLS-1$
         } catch (FieldsNotFoundException e) {
         }
         return delimiter;

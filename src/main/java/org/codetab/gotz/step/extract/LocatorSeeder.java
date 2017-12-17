@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
@@ -64,7 +65,7 @@ public final class LocatorSeeder extends BaseSeeder {
      */
     @Override
     public IStep instance() {
-        setStepType("seeder");
+        setStepType("seeder"); //$NON-NLS-1$
         return this;
     }
 
@@ -83,8 +84,7 @@ public final class LocatorSeeder extends BaseSeeder {
             locatorList = new ArrayList<>();
             locatorList.add(locator);
         } else {
-            String message = Util.join(
-                    "next step input : required [Locator], but is instance of ",
+            String message = Util.join(Messages.getString("LocatorSeeder.1"), //$NON-NLS-1$
                     input.getClass().getName());
             throw new StepRunException(message);
         }
@@ -105,7 +105,7 @@ public final class LocatorSeeder extends BaseSeeder {
                 locatorList = forkedLocators;
             }
         }
-        logState("locator after init");
+        logState(Messages.getString("LocatorSeeder.2")); //$NON-NLS-1$
         setStepState(StepState.INIT);
         return true;
     }
@@ -123,10 +123,10 @@ public final class LocatorSeeder extends BaseSeeder {
                 locator.setFields(fields);
             } catch (FieldsException e) {
                 throw new StepRunException(
-                        "unable to set fields copy to locator", e);
+                        Messages.getString("LocatorSeeder.3"), e); //$NON-NLS-1$
             }
         }
-        logState("locator after merging fields");
+        logState(Messages.getString("LocatorSeeder.4")); //$NON-NLS-1$
         setConsistent(true);
         setStepState(StepState.PROCESS);
         return true;
@@ -138,7 +138,7 @@ public final class LocatorSeeder extends BaseSeeder {
      */
     @Override
     public boolean handover() {
-        LOGGER.info("push locators to taskpool");
+        LOGGER.info(Messages.getString("LocatorSeeder.5")); //$NON-NLS-1$
         int count = 0;
         for (Locator locator : locatorList) {
             // create new instance of seeder step for each locator
@@ -151,7 +151,7 @@ public final class LocatorSeeder extends BaseSeeder {
             } catch (InterruptedException e) {
             }
         }
-        LOGGER.info("locators count [{}], queued to taskpool [{}].",
+        LOGGER.info(Messages.getString("LocatorSeeder.6"), //$NON-NLS-1$
                 locatorList.size(), count);
         setStepState(StepState.HANDOVER);
         return true;
@@ -176,7 +176,8 @@ public final class LocatorSeeder extends BaseSeeder {
             return seederStep;
         } catch (ClassNotFoundException | InstantiationException
                 | IllegalAccessException e) {
-            throw new StepRunException("unable spawn seeder", e);
+            throw new StepRunException(Messages.getString("LocatorSeeder.7"), //$NON-NLS-1$
+                    e);
         }
     }
 
@@ -190,7 +191,7 @@ public final class LocatorSeeder extends BaseSeeder {
         for (Locator locator : locatorList) {
             Marker marker =
                     MarkerUtil.getMarker(locator.getName(), locator.getGroup());
-            LOGGER.trace(marker, "-- {} --{}{}", message, Util.LINE, locator);
+            LOGGER.trace(marker, "-- {} --{}{}", message, Util.LINE, locator); //$NON-NLS-1$
         }
     }
 }

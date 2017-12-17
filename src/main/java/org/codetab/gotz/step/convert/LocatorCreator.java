@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
@@ -54,7 +55,7 @@ public final class LocatorCreator extends BaseConverter {
                 setConvertedData(locator);
                 setConsistent(true);
             } catch (FieldsException | InvalidDataDefException e) {
-                String message = "unable to create new locator";
+                String message = Messages.getString("LocatorCreator.0"); //$NON-NLS-1$
                 throw new StepRunException(message, e);
             }
 
@@ -75,8 +76,7 @@ public final class LocatorCreator extends BaseConverter {
         locator.setName(getLabels().getName());
         locator.setUrl(member.getValue(AxisName.FACT));
         if (member.getGroup() == null) {
-            String message =
-                    getLabeled("group not defined for member in datadef");
+            String message = getLabeled(Messages.getString("LocatorCreator.1")); //$NON-NLS-1$
             throw new InvalidDataDefException(message);
         } else {
             locator.setGroup(member.getGroup());
@@ -89,12 +89,13 @@ public final class LocatorCreator extends BaseConverter {
             }
         }
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(getMarker(), "created new locator from {} ", member);
+            LOGGER.trace(getMarker(), Messages.getString("LocatorCreator.2"), //$NON-NLS-1$
+                    member);
             // marker and trace for new locator
             Marker marker =
                     MarkerUtil.getMarker(locator.getName(), locator.getGroup());
-            LOGGER.trace(marker, "created new {} {}", locator,
-                    locator.getUrl());
+            LOGGER.trace(marker, Messages.getString("LocatorCreator.3"), //$NON-NLS-1$
+                    locator, locator.getUrl());
         }
         return locator;
     }
@@ -104,11 +105,12 @@ public final class LocatorCreator extends BaseConverter {
             Fields nextStepFields = locatorFieldsHelper.getFields(
                     locator.getClass().getName(), locator.getGroup());
             if (nextStepFields.getNodes().size() == 0) {
-                throw new FieldsException("no nodes in fields");
+                throw new FieldsException(
+                        Messages.getString("LocatorCreator.4")); //$NON-NLS-1$
             }
             return nextStepFields;
         } catch (FieldsException e) {
-            String message = "unable to get next step fields";
+            String message = Messages.getString("LocatorCreator.5"); //$NON-NLS-1$
             throw new StepRunException(message);
         }
     }

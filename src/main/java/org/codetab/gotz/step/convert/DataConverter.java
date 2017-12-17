@@ -9,6 +9,7 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Member;
@@ -59,16 +60,18 @@ public final class DataConverter extends BaseConverter {
          * AppenderService.closeAll which appends Marker.EOF for each appender.
          */
 
-        Validate.validState(getFields() != null, "fields must not be null");
-        Validate.validState(getData() != null, "data must not be null");
+        Validate.validState(getFields() != null,
+                Messages.getString("DataConverter.0")); //$NON-NLS-1$
+        Validate.validState(getData() != null,
+                Messages.getString("DataConverter.1")); //$NON-NLS-1$
 
-        LOGGER.info(getLabeled("apply converters"));
+        LOGGER.info(getLabeled(Messages.getString("DataConverter.2"))); //$NON-NLS-1$
 
         List<Fields> converters = new ArrayList<>();
         try {
             converters = fieldsHelper.split(
-                    Util.join("/xf:fields/xf:task/xf:steps/xf:step[@name='",
-                            getStepType(), "']/xf:converter"),
+                    Util.join("/xf:fields/xf:task/xf:steps/xf:step[@name='", //$NON-NLS-1$
+                            getStepType(), "']/xf:converter"), //$NON-NLS-1$
                     getFields());
         } catch (FieldsException e) {
         }
@@ -85,7 +88,8 @@ public final class DataConverter extends BaseConverter {
                 row = convert(AxisName.ROW, row, converters);
                 fact = convert(AxisName.FACT, fact, converters);
             } catch (Exception e) {
-                throw new StepRunException("unable to apply converter", e);
+                throw new StepRunException(
+                        Messages.getString("DataConverter.5"), e); //$NON-NLS-1$
             }
 
             member.setValue(AxisName.COL, col);
@@ -103,9 +107,9 @@ public final class DataConverter extends BaseConverter {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }
-        LOGGER.trace(getMarker(), "summary of values converted");
+        LOGGER.trace(getMarker(), Messages.getString("DataConverter.6")); //$NON-NLS-1$
         for (String key : convertedValues.keySet()) {
-            LOGGER.trace(getMarker(), "  {} -> {}", key,
+            LOGGER.trace(getMarker(), "  {} -> {}", key, //$NON-NLS-1$
                     convertedValues.get(key));
         }
     }
@@ -118,10 +122,10 @@ public final class DataConverter extends BaseConverter {
         for (Fields fields : converters) {
             try {
                 String axisName = fieldsHelper.getLastValue(
-                        "/xf:fields/xf:converter/xf:axis", fields);
+                        "/xf:fields/xf:converter/xf:axis", fields); //$NON-NLS-1$
                 if (axis.name().equalsIgnoreCase(axisName)) {
                     String className = fieldsHelper.getLastValue(
-                            "/xf:fields/xf:converter/@class", fields);
+                            "/xf:fields/xf:converter/@class", fields); //$NON-NLS-1$
 
                     try {
                         @SuppressWarnings("rawtypes")
@@ -130,9 +134,12 @@ public final class DataConverter extends BaseConverter {
                         converter.setFields(fields);
                         rvalue = (String) converter.convert(rvalue);
                     } catch (Exception e) {
-                        String message = Util.join(e.getMessage(), " axis [",
-                                axisName, "], value [", value, "], converter [",
-                                className, "]");
+                        String message = Util.join(e.getMessage(),
+                                Messages.getString("DataConverter.10"), //$NON-NLS-1$
+                                axisName,
+                                Messages.getString("DataConverter.11"), value, //$NON-NLS-1$
+                                Messages.getString("DataConverter.12"), //$NON-NLS-1$
+                                className, "]"); //$NON-NLS-1$
                         throw new Exception(message, e);
                     }
 

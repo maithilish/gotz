@@ -26,6 +26,7 @@ import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
@@ -63,21 +64,21 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean initialize() {
 
-        String dashes = "---------";
+        String dashes = "---------"; //$NON-NLS-1$
         blockBegin = Util.join(Util.LINE, dashes, Util.LINE);
         blockEnd = Util.join(Util.LINE, dashes, dashes);
 
         try {
             dataDefName = fieldsHelper
-                    .getLastValue("/xf:fields/xf:task/@dataDef", getFields());
+                    .getLastValue("/xf:fields/xf:task/@dataDef", getFields()); //$NON-NLS-1$
             String taskName = fieldsHelper
-                    .getLastValue("/xf:fields/xf:task/@name", getFields());
+                    .getLastValue("/xf:fields/xf:task/@name", getFields()); //$NON-NLS-1$
             // new labels with dataDef and task name
             Labels labels = new Labels(getLabels().getName(),
                     getLabels().getGroup(), taskName, dataDefName);
             setLabels(labels);
         } catch (FieldsNotFoundException e) {
-            String message = "unable to initialize parser";
+            String message = Messages.getString("BaseParser.3"); //$NON-NLS-1$
             throw new StepRunException(message, e);
         }
         return postInitialize();
@@ -96,7 +97,7 @@ public abstract class BaseParser extends Step {
         try {
             dataDefId = dataDefService.getDataDef(dataDefName).getId();
         } catch (DataDefNotFoundException e) {
-            String message = "unable to get datadef id";
+            String message = Messages.getString("BaseParser.4"); //$NON-NLS-1$
             throw new StepRunException(message, e);
         }
         Long documentId = getDocument().getId();
@@ -109,7 +110,7 @@ public abstract class BaseParser extends Step {
     @Override
     public boolean process() {
         if (data == null) {
-            LOGGER.info("[{}] parse data", getLabel());
+            LOGGER.info(Messages.getString("BaseParser.5"), getLabel()); //$NON-NLS-1$
             try {
                 prepareData();
                 parse();
@@ -119,12 +120,12 @@ public abstract class BaseParser extends Step {
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
                     | DataFormatException | FieldsException e) {
-                String message = "unable to parse";
+                String message = Messages.getString("BaseParser.6"); //$NON-NLS-1$
                 throw new StepRunException(message, e);
             }
         } else {
             setConsistent(true);
-            LOGGER.info("[{}] parsed data exists", getLabel());
+            LOGGER.info(Messages.getString("BaseParser.7"), getLabel()); //$NON-NLS-1$
         }
         return true;
     }
@@ -138,9 +139,9 @@ public abstract class BaseParser extends Step {
     public boolean store() {
         if (dataPersistence.storeData(data, getFields())) {
             data = dataPersistence.loadData(data.getId());
-            LOGGER.debug("[{}] data stored", getLabel());
+            LOGGER.debug(Messages.getString("BaseParser.8"), getLabel()); //$NON-NLS-1$
         } else {
-            LOGGER.debug("[{}]  data not stored, persist is false", getLabel());
+            LOGGER.debug(Messages.getString("BaseParser.9"), getLabel()); //$NON-NLS-1$
         }
         return true;
     }
@@ -160,7 +161,7 @@ public abstract class BaseParser extends Step {
     private Fields createNextStepFields() {
         Fields nextStepFields = getFields();
         if (nextStepFields.getNodes().size() == 0) {
-            String message = "unable to get next step fields";
+            String message = Messages.getString("BaseParser.10"); //$NON-NLS-1$
             throw new StepRunException(message);
         }
         return nextStepFields;
@@ -182,30 +183,30 @@ public abstract class BaseParser extends Step {
             initializeScriptEngine();
         }
 
-        LOGGER.trace(getMarker(), "<< Query [Script] >>{}", Util.LINE);
-        LOGGER.trace(getMarker(), "{}{}{}{}", getLabeled("scripts"), blockBegin,
+        LOGGER.trace(getMarker(), Messages.getString("BaseParser.11"), //$NON-NLS-1$
+                Util.LINE);
+        LOGGER.trace(getMarker(), "{}{}{}{}", getLabeled("scripts"), blockBegin, //$NON-NLS-1$ //$NON-NLS-2$
                 scripts, blockEnd);
 
-        jsEngine.put("configs", configService);
-        jsEngine.put("document", getDocument());
-        String scriptStr = scripts.get("script");
+        jsEngine.put("configs", configService); //$NON-NLS-1$
+        jsEngine.put("document", getDocument()); //$NON-NLS-1$
+        String scriptStr = scripts.get("script"); //$NON-NLS-1$
         Object val = jsEngine.eval(scriptStr);
         String value = ConvertUtils.convert(val);
 
-        LOGGER.trace(getMarker(), "result {}", value);
-        LOGGER.trace(getMarker(), "<<< Query End >>>");
-        LOGGER.trace(getMarker(), "");
+        LOGGER.trace(getMarker(), Messages.getString("BaseParser.17"), value); //$NON-NLS-1$
+        LOGGER.trace(getMarker(), Messages.getString("BaseParser.18")); //$NON-NLS-1$
+        LOGGER.trace(getMarker(), ""); //$NON-NLS-1$
 
         return value;
     }
 
     private void initializeScriptEngine() {
-        LOGGER.debug("{}", getLabeled("initializing script engine"));
+        LOGGER.debug("{}", getLabeled(Messages.getString("BaseParser.21"))); //$NON-NLS-1$ //$NON-NLS-2$
         ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
-        jsEngine = scriptEngineMgr.getEngineByName("JavaScript");
+        jsEngine = scriptEngineMgr.getEngineByName("JavaScript"); //$NON-NLS-1$
         if (jsEngine == null) {
-            throw new CriticalException(
-                    "no script engine found for JavaScript. Script engine lib not available in classpath.");
+            throw new CriticalException(Messages.getString("BaseParser.23")); //$NON-NLS-1$
         }
     }
 
@@ -221,22 +222,22 @@ public abstract class BaseParser extends Step {
                 dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
 
         if (fields == null) {
-            String message =
-                    getLabeled("field is null, check datadef definition");
+            String message = getLabeled(Messages.getString("BaseParser.24")); //$NON-NLS-1$
             throw new StepRunException(message);
         }
         try {
             Map<String, String> scripts = new HashMap<>();
-            scripts.put("script",
-                    fieldsHelper.getLastValue("/xf:script/@script", fields));
+            scripts.put("script", //$NON-NLS-1$
+                    fieldsHelper.getLastValue("/xf:script/@script", fields)); //$NON-NLS-1$
 
             sb = new StringBuilder();
-            setTraceString(sb, scripts, "<<<");
+            setTraceString(sb, scripts, "<<<"); //$NON-NLS-1$
 
             fieldsHelper.replaceVariables(scripts, member.getAxisMap());
 
-            setTraceString(sb, scripts, ">>>");
-            LOGGER.trace(getMarker(), "{}{}{}{}", getLabeled("patch scripts"),
+            setTraceString(sb, scripts, ">>>"); //$NON-NLS-1$
+            LOGGER.trace(getMarker(), "{}{}{}{}", //$NON-NLS-1$
+                    getLabeled(Messages.getString("BaseParser.30")), //$NON-NLS-1$
                     getBlockBegin(), sb.toString(), getBlockEnd());
 
             value = queryByScript(scripts);
@@ -246,27 +247,27 @@ public abstract class BaseParser extends Step {
 
         try {
             Map<String, String> queries = new HashMap<>();
-            queries.put("region",
-                    fieldsHelper.getLastValue("/xf:query/@region", fields));
-            queries.put("field",
-                    fieldsHelper.getLastValue("/xf:query/@field", fields));
+            queries.put("region", //$NON-NLS-1$
+                    fieldsHelper.getLastValue("/xf:query/@region", fields)); //$NON-NLS-1$
+            queries.put("field", //$NON-NLS-1$
+                    fieldsHelper.getLastValue("/xf:query/@field", fields)); //$NON-NLS-1$
             // optional attribute
             try {
-                queries.put("attribute", fieldsHelper
-                        .getLastValue("/xf:query/@attribute", fields));
+                queries.put("attribute", fieldsHelper //$NON-NLS-1$
+                        .getLastValue("/xf:query/@attribute", fields)); //$NON-NLS-1$
             } catch (FieldsNotFoundException e) {
-                queries.put("attribute", "");
+                queries.put("attribute", ""); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             sb = new StringBuilder();
-            setTraceString(sb, queries, "<<<");
+            setTraceString(sb, queries, "<<<"); //$NON-NLS-1$
 
             fieldsHelper.replaceVariables(queries, member.getAxisMap());
 
-            setTraceString(sb, queries, ">>>");
-            LOGGER.trace(getMarker(), "{}{}{}{}",
-                    getLabeled("<< Query [Patch] >>"), getBlockBegin(),
-                    sb.toString(), getBlockEnd());
+            setTraceString(sb, queries, ">>>"); //$NON-NLS-1$
+            LOGGER.trace(getMarker(), "{}{}{}{}", //$NON-NLS-1$
+                    getLabeled(Messages.getString("BaseParser.42")), //$NON-NLS-1$
+                    getBlockBegin(), sb.toString(), getBlockEnd());
 
             value = queryByQuery(page, queries);
 
@@ -275,10 +276,10 @@ public abstract class BaseParser extends Step {
 
         try {
             List<String> prefixes =
-                    fieldsHelper.getValues("/xf:prefix", false, fields);
+                    fieldsHelper.getValues("/xf:prefix", false, fields); //$NON-NLS-1$
             if (value == null) {
-                String message = getLabeled(
-                        "unable to prefix as value is null, check datadef definition");
+                String message =
+                        getLabeled(Messages.getString("BaseParser.44")); //$NON-NLS-1$
                 throw new StepRunException(message);
             } else {
                 value = fieldsHelper.prefixValue(value, prefixes);
@@ -295,8 +296,8 @@ public abstract class BaseParser extends Step {
         data.setName(getLabel());
         data.setDataDefId(dataDefService.getDataDef(dataDefName).getId());
         data.setDocumentId(getDocument().getId());
-        LOGGER.trace(getMarker(), "-- data template --{}{}{}{}", Util.LINE,
-                getLabels().getName(), Util.LINE, data);
+        LOGGER.trace(getMarker(), Messages.getString("BaseParser.45"), //$NON-NLS-1$
+                Util.LINE, getLabels().getName(), Util.LINE, data);
     }
 
     public void parse() throws DataDefNotFoundException, ScriptException,
@@ -318,8 +319,8 @@ public abstract class BaseParser extends Step {
             pushNewMember(mStack, member);
         }
         data.setMembers(members); // replace with expanded member list
-        LOGGER.trace(getMarker(), "-- data after parse --{}{}{}{}", Util.LINE,
-                getLabels().getName(), Util.LINE, data);
+        LOGGER.trace(getMarker(), Messages.getString("BaseParser.46"), //$NON-NLS-1$
+                Util.LINE, getLabels().getName(), Util.LINE, data);
     }
 
     private void pushNewMember(final Deque<Member> mStack, final Member member)
@@ -385,12 +386,11 @@ public abstract class BaseParser extends Step {
         try {
             // xpath - not abs path
             String breakAfter = fieldsHelper
-                    .getLastValue("//xf:breakAfter/@value", axis.getFields());
+                    .getLastValue("//xf:breakAfter/@value", axis.getFields()); //$NON-NLS-1$
             noField = false;
             String value = axis.getValue();
             if (value == null) {
-                String message =
-                        "value is null, check breakAfter or query in datadef";
+                String message = Messages.getString("BaseParser.48"); //$NON-NLS-1$
                 throw new StepRunException(message);
             } else {
                 if (value.equals(breakAfter)) {
@@ -408,7 +408,7 @@ public abstract class BaseParser extends Step {
         } catch (FieldsNotFoundException e) {
         }
         if (noField) {
-            String message = "breakAfter or indexRange undefined";
+            String message = Messages.getString("BaseParser.49"); //$NON-NLS-1$
             throw new FieldsException(message);
         }
         return false;
@@ -473,8 +473,7 @@ public abstract class BaseParser extends Step {
         if (input instanceof Document) {
             this.document = (Document) input;
         } else {
-            String message = Util.join(
-                    "next step input : required [Document], but is instance of ",
+            String message = Util.join(Messages.getString("BaseParser.50"), //$NON-NLS-1$
                     input.getClass().getName());
             throw new StepRunException(message);
         }
@@ -511,7 +510,7 @@ public abstract class BaseParser extends Step {
             throws NumberFormatException, FieldsNotFoundException {
         // xpath - not abs path
         Range<Integer> indexRange =
-                fieldsHelper.getRange("//xf:indexRange/@value", fields);
+                fieldsHelper.getRange("//xf:indexRange/@value", fields); //$NON-NLS-1$
         return indexRange.getMinimum();
     }
 
@@ -522,7 +521,7 @@ public abstract class BaseParser extends Step {
             throws NumberFormatException, FieldsNotFoundException {
         // xpath - not abs path
         Range<Integer> indexRange =
-                fieldsHelper.getRange("//xf:indexRange/@value", fields);
+                fieldsHelper.getRange("//xf:indexRange/@value", fields); //$NON-NLS-1$
         return indexRange.getMaximum();
     }
 
@@ -554,7 +553,7 @@ public abstract class BaseParser extends Step {
 
         for (String key : strings.keySet()) {
             sb.append(key);
-            sb.append(" : ");
+            sb.append(" : "); //$NON-NLS-1$
             sb.append(strings.get(key));
             sb.append(Util.LINE);
         }

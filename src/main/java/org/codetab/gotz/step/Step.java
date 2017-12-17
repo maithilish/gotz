@@ -133,7 +133,7 @@ public abstract class Step implements IStep {
 
     @Override
     public String getLabeled(final String message) {
-        return Util.join("[", labels.getLabel(), "] ", message);
+        return Util.join("[", labels.getLabel(), "] ", message); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

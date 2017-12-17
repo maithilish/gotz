@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
@@ -31,8 +32,8 @@ public class CsvEncoder implements IEncoder<List<String>> {
 
     @Override
     public List<String> encode(final Data data) throws Exception {
-        Validate.validState(fields != null, "fields must not be null");
-        Validate.validState(data != null, "data must not be null");
+        Validate.validState(fields != null, Messages.getString("CsvEncoder.0")); //$NON-NLS-1$
+        Validate.validState(data != null, Messages.getString("CsvEncoder.1")); //$NON-NLS-1$
 
         encoderHelper.sort(data, fields);
 

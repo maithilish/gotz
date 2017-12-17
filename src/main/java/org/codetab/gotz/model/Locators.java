@@ -31,7 +31,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *       &lt;sequence&gt;
  *         &lt;element name="locator" type="{http://codetab.org/gotz}locator" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="group" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="group" use="required" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

@@ -34,7 +34,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *         &lt;element ref="{http://codetab.org/gotz}member" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element ref="{http://codetab.org/gotz}filter" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="name" use="required" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;

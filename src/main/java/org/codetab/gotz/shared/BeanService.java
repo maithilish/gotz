@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.model.helper.BeanHelper;
 import org.codetab.gotz.util.Util;
@@ -33,7 +34,7 @@ public class BeanService {
     }
 
     public void init(final String beanFile, final String schemaFile) {
-        LOGGER.info("initialize singleton {}", "BeanService");
+        LOGGER.info(Messages.getString("BeanService.0"), "BeanService"); //$NON-NLS-1$ //$NON-NLS-2$
         try {
             beanHelper.setFiles(beanFile, schemaFile);
             beanHelper.validateBeanFile();
@@ -42,10 +43,10 @@ public class BeanService {
             beans = unmarshallBeanFiles(files);
         } catch (ConfigNotFoundException | JAXBException | SAXException
                 | IOException | ClassNotFoundException e) {
-            throw new CriticalException("initialization failure : BeanService",
+            throw new CriticalException(Messages.getString("BeanService.2"), //$NON-NLS-1$
                     e);
         }
-        LOGGER.debug("initialized singleton {}", "BeanService");
+        LOGGER.debug(Messages.getString("BeanService.3"), "BeanService"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /*
@@ -59,9 +60,9 @@ public class BeanService {
                     T deepClone = Util.deepClone(ofClass, ofClass.cast(bean));
                     list.add(deepClone);
                 } catch (ClassNotFoundException | IOException e) {
-                    LOGGER.error("unable to get deep Clone of bean. {}",
+                    LOGGER.error(Messages.getString("BeanService.5"), //$NON-NLS-1$
                             e.getMessage());
-                    LOGGER.trace("", e);
+                    LOGGER.trace("", e); //$NON-NLS-1$
                 }
             }
         }
@@ -75,7 +76,7 @@ public class BeanService {
     private List<Object> unmarshallBeanFiles(final List<Bean> beanList)
             throws ClassNotFoundException, JAXBException, IOException,
             SAXException {
-        LOGGER.info("unmarshall bean files...");
+        LOGGER.info(Messages.getString("BeanService.7")); //$NON-NLS-1$
         List<Object> list = new ArrayList<>();
         for (Bean bean : beanList) {
             Class<?> ofClass = Class.forName(bean.getClassName());

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.messages.Messages;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -61,8 +62,8 @@ public final class Util {
     public static <T> T deepClone(final Class<T> ofClass, final T obj)
             throws IOException, ClassNotFoundException {
 
-        Validate.notNull(ofClass, "ofClass must not be null");
-        Validate.notNull(obj, "object must not be null");
+        Validate.notNull(ofClass, Messages.getString("Util.0")); //$NON-NLS-1$
+        Validate.notNull(obj, Messages.getString("Util.1")); //$NON-NLS-1$
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -102,14 +103,12 @@ public final class Util {
     public static Set<Set<Object>> cartesianProduct(final Set<?>... sets) {
 
         if (sets.length < 2) {
-            throw new IllegalStateException(
-                    join("can't have a product of fewer than two sets (has ",
-                            String.valueOf(sets.length), " sets)"));
+            throw new IllegalStateException(join(Messages.getString("Util.2"), //$NON-NLS-1$
+                    String.valueOf(sets.length), Messages.getString("Util.3"))); //$NON-NLS-1$
         }
         for (Set<?> set : sets) {
             if (set.size() == 0) {
-                throw new IllegalStateException(
-                        "argument contains a empty set, can't get cartesian product");
+                throw new IllegalStateException(Messages.getString("Util.4")); //$NON-NLS-1$
             }
         }
         return cartesianProduct(0, sets);
@@ -156,7 +155,7 @@ public final class Util {
     public static String stripe(final String string, final int noOfLines,
             final String prefix, final String suffix) {
 
-        Validate.notNull(string, "string must not be null");
+        Validate.notNull(string, Messages.getString("Util.5")); //$NON-NLS-1$
 
         StringBuffer sb = new StringBuffer();
         if (prefix != null) {
@@ -167,7 +166,7 @@ public final class Util {
         } else {
             sb.append(head(string, noOfLines));
             sb.append(LINE);
-            sb.append("      ...");
+            sb.append("      ..."); //$NON-NLS-1$
             sb.append(LINE);
             sb.append(tail(string, noOfLines));
         }
@@ -188,13 +187,13 @@ public final class Util {
      */
     public static String head(final String string, final int noOfLines) {
 
-        Validate.notNull(string, "string must not be null");
+        Validate.notNull(string, Messages.getString("Util.7")); //$NON-NLS-1$
 
         int n = noOfLines;
         if (n < 1) {
             n = 1;
         }
-        return string.substring(0, StringUtils.ordinalIndexOf(string, "\n", n));
+        return string.substring(0, StringUtils.ordinalIndexOf(string, "\n", n)); //$NON-NLS-1$
     }
 
     /**
@@ -208,17 +207,17 @@ public final class Util {
      */
     public static String tail(final String string, final int noOfLines) {
 
-        Validate.notNull(string, "string must not be null");
+        Validate.notNull(string, Messages.getString("Util.9")); //$NON-NLS-1$
 
         int n = noOfLines;
         if (n < 1) {
             n = 1;
         }
-        if (StringUtils.endsWith(string, "\n")) {
+        if (StringUtils.endsWith(string, "\n")) { //$NON-NLS-1$
             n++;
         }
         return string
-                .substring(StringUtils.lastOrdinalIndexOf(string, "\n", n) + 1);
+                .substring(StringUtils.lastOrdinalIndexOf(string, "\n", n) + 1); //$NON-NLS-1$
     }
 
     /**
@@ -232,7 +231,7 @@ public final class Util {
      */
     public static String getJson(final Object obj, final boolean prettyPrint) {
 
-        Validate.notNull(obj, "object must not be null");
+        Validate.notNull(obj, Messages.getString("Util.12")); //$NON-NLS-1$
 
         GsonBuilder gb = new GsonBuilder();
         if (prettyPrint) {
@@ -257,10 +256,10 @@ public final class Util {
     public static String getIndentedJson(final Object obj,
             final boolean prettyPrint) {
 
-        Validate.notNull(obj, "object must not be null");
+        Validate.notNull(obj, Messages.getString("Util.13")); //$NON-NLS-1$
 
         String json = getJson(obj, prettyPrint);
-        String indentedJson = json.replaceAll("(?m)^", Util.logIndent());
+        String indentedJson = json.replaceAll("(?m)^", Util.logIndent()); //$NON-NLS-1$
         return indentedJson;
     }
 
@@ -270,7 +269,7 @@ public final class Util {
      * @return string
      */
     public static String logIndent() {
-        return "\t\t\t";
+        return "\t\t\t"; //$NON-NLS-1$
     }
 
     /**
@@ -301,7 +300,7 @@ public final class Util {
     public static TemporalAmount parseTemporalAmount(final CharSequence text)
             throws DateTimeParseException {
 
-        Validate.notNull(text, "text must not be null");
+        Validate.notNull(text, Messages.getString("Util.16")); //$NON-NLS-1$
 
         TemporalAmount ta;
         try {
@@ -321,9 +320,9 @@ public final class Util {
      */
     public static String getMessage(final Exception exception) {
 
-        Validate.notNull(exception, "exception must not be null");
+        Validate.notNull(exception, Messages.getString("Util.17")); //$NON-NLS-1$
 
-        return exception.getClass().getSimpleName() + ": "
+        return exception.getClass().getSimpleName() + ": " //$NON-NLS-1$
                 + exception.getLocalizedMessage();
     }
 
@@ -336,7 +335,7 @@ public final class Util {
      */
     public static String getPropertiesAsString(final Properties properties) {
 
-        Validate.notNull(properties, "properties must not be null");
+        Validate.notNull(properties, Messages.getString("Util.19")); //$NON-NLS-1$
 
         String line = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
@@ -366,10 +365,9 @@ public final class Util {
     public static Map<String, String> split(final String input,
             final String keyValueSeparator, final String delimiter) {
 
-        Validate.notNull(input, "input string must not be null");
-        Validate.notNull(keyValueSeparator,
-                "keyValueSeparator must not be null");
-        Validate.notNull(delimiter, "delimiter must not be null");
+        Validate.notNull(input, Messages.getString("Util.20")); //$NON-NLS-1$
+        Validate.notNull(keyValueSeparator, Messages.getString("Util.21")); //$NON-NLS-1$
+        Validate.notNull(delimiter, Messages.getString("Util.22")); //$NON-NLS-1$
 
         // toMap last arg is mergeFunction which selects the second item from
         // duplicates

@@ -7,6 +7,8 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import org.codetab.gotz.messages.Messages;
+
 /**
  * <p>
  * Utility methods to compress and decompress byte array.
@@ -35,7 +37,7 @@ public final class CompressionUtil {
      */
     public static byte[] compressByteArray(final byte[] input,
             final int bufferLength) throws IOException {
-        Objects.requireNonNull(input, "input must not be null");
+        Objects.requireNonNull(input, Messages.getString("CompressionUtil.0")); //$NON-NLS-1$
         // bufferLength is int, so it can't be null
 
         Deflater compressor = new Deflater();
@@ -74,7 +76,7 @@ public final class CompressionUtil {
      */
     public static byte[] decompressByteArray(final byte[] input,
             final int bufferLength) throws DataFormatException, IOException {
-        Objects.requireNonNull(input, "input must not be null");
+        Objects.requireNonNull(input, Messages.getString("CompressionUtil.1")); //$NON-NLS-1$
         // bufferLength is int, so it can't be null
 
         final Inflater decompressor = new Inflater();

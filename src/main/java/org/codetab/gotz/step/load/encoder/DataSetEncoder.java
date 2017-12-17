@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataSet;
@@ -31,8 +32,10 @@ public class DataSetEncoder implements IEncoder<List<DataSet>> {
 
     @Override
     public List<DataSet> encode(final Data data) throws Exception {
-        Validate.validState(fields != null, "fields must not be null");
-        Validate.validState(data != null, "data must not be null");
+        Validate.validState(fields != null,
+                Messages.getString("DataSetEncoder.0")); //$NON-NLS-1$
+        Validate.validState(data != null,
+                Messages.getString("DataSetEncoder.1")); //$NON-NLS-1$
 
         encoderHelper.sort(data, fields);
 

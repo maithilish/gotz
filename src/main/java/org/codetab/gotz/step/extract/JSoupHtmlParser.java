@@ -12,6 +12,7 @@ import javax.script.ScriptException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
@@ -95,23 +96,24 @@ public class JSoupHtmlParser extends BaseParser {
     protected String queryByQuery(final Object page,
             final Map<String, String> queries) {
 
-        Validate.notNull(page, "page must not be null");
-        Validate.notNull(queries, "queries must not be null");
+        Validate.notNull(page, Messages.getString("JSoupHtmlParser.0")); //$NON-NLS-1$
+        Validate.notNull(queries, Messages.getString("JSoupHtmlParser.1")); //$NON-NLS-1$
 
         if (page instanceof Document) {
             return queryBySelector((Document) page, queries);
         } else {
-            throw new IllegalStateException(Util.join(
-                    "page must be instance of ", Document.class.getName()));
+            throw new IllegalStateException(
+                    Util.join(Messages.getString("JSoupHtmlParser.2"), //$NON-NLS-1$
+                            Document.class.getName()));
         }
     }
 
     private String queryBySelector(final Document page,
             final Map<String, String> queries) {
-        String regionXpathExpr = queries.get("region");
-        String xpathExpr = queries.get("field");
+        String regionXpathExpr = queries.get("region"); //$NON-NLS-1$
+        String xpathExpr = queries.get("field"); //$NON-NLS-1$
         // optional attribute, only for jsoup
-        String attr = queries.get("attribute");
+        String attr = queries.get("attribute"); //$NON-NLS-1$
 
         String value = getBySelector(page, regionXpathExpr, xpathExpr, attr);
         return value;
@@ -143,14 +145,17 @@ public class JSoupHtmlParser extends BaseParser {
             elementsMap.put(hash, elements);
         }
 
-        LOGGER.trace(getMarker(), "<< Query [Region] >>{}", Util.LINE);
-        LOGGER.trace(getMarker(), Util.join("Region Nodes ",
-                String.valueOf(elements.size()), " for XPATH: ", xpathExpr));
+        LOGGER.trace(getMarker(), Messages.getString("JSoupHtmlParser.6"), //$NON-NLS-1$
+                Util.LINE);
+        LOGGER.trace(getMarker(),
+                Util.join(Messages.getString("JSoupHtmlParser.7"), //$NON-NLS-1$
+                        String.valueOf(elements.size()),
+                        Messages.getString("JSoupHtmlParser.8"), xpathExpr)); //$NON-NLS-1$
 
         for (Element element : elements) {
             String nodeTraceStr = Util.stripe(element.outerHtml(), numOfLines,
                     getBlockBegin(), getBlockEnd());
-            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr); //$NON-NLS-1$
         }
         return elements;
     }
@@ -161,10 +166,13 @@ public class JSoupHtmlParser extends BaseParser {
         String value = null;
 
         Elements subElements = elements.select(xpathExpr);
-        LOGGER.trace(getMarker(), "<< Query [Field] >>{}", Util.LINE);
+        LOGGER.trace(getMarker(), Messages.getString("JSoupHtmlParser.10"), //$NON-NLS-1$
+                Util.LINE);
 
-        LOGGER.trace(getMarker(), Util.join("Nodes ",
-                String.valueOf(subElements.size()), " for XPATH: ", xpathExpr));
+        LOGGER.trace(getMarker(),
+                Util.join(Messages.getString("JSoupHtmlParser.11"), //$NON-NLS-1$
+                        String.valueOf(subElements.size()),
+                        Messages.getString("JSoupHtmlParser.12"), xpathExpr)); //$NON-NLS-1$
 
         for (Element element : subElements) {
             if (StringUtils.isBlank(attr)) {
@@ -174,10 +182,12 @@ public class JSoupHtmlParser extends BaseParser {
             }
             String nodeTraceStr = Util.stripe(element.outerHtml(), numOfLines,
                     getBlockBegin(), getBlockEnd());
-            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr); //$NON-NLS-1$
         }
-        LOGGER.trace(getMarker(), "Node contents : {}{}", value, Util.LINE);
-        LOGGER.trace(getMarker(), "<<< Query End >>>{}", Util.LINE);
+        LOGGER.trace(getMarker(), Messages.getString("JSoupHtmlParser.14"), //$NON-NLS-1$
+                value, Util.LINE);
+        LOGGER.trace(getMarker(), Messages.getString("JSoupHtmlParser.15"), //$NON-NLS-1$
+                Util.LINE);
 
         return value;
     }

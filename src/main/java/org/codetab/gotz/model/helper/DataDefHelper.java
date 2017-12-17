@@ -223,7 +223,7 @@ public class DataDefHelper {
             return dataDefMemberSets;
         } catch (IllegalStateException e) {
             String message = Util.join(Messages.getString("DataDefHelper.21"), //$NON-NLS-1$
-                    dataDef.getName(), "]",
+                    dataDef.getName(), "]", //$NON-NLS-1$
                     Messages.getString("DataDefHelper.23")); //$NON-NLS-1$
             throw new IllegalStateException(message, e);
         }

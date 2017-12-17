@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.helper.IOHelper;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,19 +60,23 @@ public class XMLValidator {
      *             on IO error
      */
     public boolean validate(final String xmlFile, final String schemaFile) {
-        LOGGER.debug("validate : [{}] with [{}]", xmlFile, schemaFile);
+        LOGGER.debug(Messages.getString("XMLValidator.0"), xmlFile, schemaFile); //$NON-NLS-1$
 
-        Validate.notNull(xmlFile, "xmlFile must not be null");
-        Validate.notNull(schemaFile, "schemaFile must not be null");
-        Validate.validState(ioHelper != null, "ioHelper is null");
+        Validate.notNull(xmlFile, Messages.getString("XMLValidator.1")); //$NON-NLS-1$
+        Validate.notNull(schemaFile, Messages.getString("XMLValidator.2")); //$NON-NLS-1$
+        Validate.validState(ioHelper != null,
+                Messages.getString("XMLValidator.3")); //$NON-NLS-1$
 
         try (InputStream xmlStream = ioHelper.getInputStream(xmlFile);) {
             URL schemaURL = ioHelper.getURL(schemaFile);
             validate(xmlStream, schemaURL);
-            LOGGER.info("validation passed {} + {}", xmlFile, schemaFile);
+            LOGGER.info(Messages.getString("XMLValidator.4"), xmlFile, //$NON-NLS-1$
+                    schemaFile);
         } catch (SAXException | IOException e) {
-            throw new CriticalException("XML validation failed [" + xmlFile
-                    + "] [" + schemaFile + "]", e);
+            throw new CriticalException(
+                    Messages.getString("XMLValidator.5") + xmlFile //$NON-NLS-1$
+                            + "] [" + schemaFile + "]", //$NON-NLS-1$ //$NON-NLS-2$
+                    e);
         }
         return true;
     }
@@ -91,8 +96,8 @@ public class XMLValidator {
      */
     public boolean validate(final InputStream xmlStream,
             final InputStream schemaStream) throws IOException, SAXException {
-        Validate.notNull("xmlStream", "xmlStream must not be null");
-        Validate.notNull("schemaStream", "schemaStream must not be null");
+        Validate.notNull(xmlStream, Messages.getString("XMLValidator.9")); //$NON-NLS-1$ //$NON-NLS-2$
+        Validate.notNull(schemaStream, Messages.getString("XMLValidator.11")); //$NON-NLS-1$ //$NON-NLS-2$
 
         SchemaFactory schemaFactory = SchemaFactory
                 .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -119,8 +124,8 @@ public class XMLValidator {
      */
     public boolean validate(final InputStream xmlStream, final URL schemaURL)
             throws IOException, SAXException {
-        Validate.notNull("xmlStream", "xmlStream must not be null");
-        Validate.notNull("schemaStream", "schemaStream must not be null");
+        Validate.notNull(xmlStream, Messages.getString("XMLValidator.13")); //$NON-NLS-1$ //$NON-NLS-2$
+        Validate.notNull(schemaURL, Messages.getString("XMLValidator.15")); //$NON-NLS-1$ //$NON-NLS-2$
 
         SchemaFactory schemaFactory = SchemaFactory
                 .newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -142,21 +147,19 @@ public class XMLValidator {
          * logger.
          */
         private static final Logger LOGGER =
-                LoggerFactory.getLogger("Validator");
+                LoggerFactory.getLogger(XMLValidator.class); // $NON-NLS-1$
 
         @Override
         public void error(final SAXParseException exception)
                 throws SAXException {
             String message = exception.getLocalizedMessage();
-            LOGGER.error("{}", message);
-            if (StringUtils.startsWith(message, "cvc-elt.1.a")) {
-                message = Util.join(
-                        "possible cause : document does not have namespace (xmlns) ",
-                        "while schema has targetNamespace");
+            LOGGER.error("{}", message); //$NON-NLS-1$
+            if (StringUtils.startsWith(message, "cvc-elt.1.a")) { //$NON-NLS-1$
+                message = Util.join(Messages.getString("XMLValidator.19"), //$NON-NLS-1$
+                        Messages.getString("XMLValidator.20")); //$NON-NLS-1$
             }
-            if (StringUtils.contains(message, "nonEmptyString")) {
-                message =
-                        "possible cause : some element or attribute contains empty string";
+            if (StringUtils.contains(message, "nonEmptyString")) { //$NON-NLS-1$
+                message = Messages.getString("XMLValidator.22"); //$NON-NLS-1$
             }
             throw new SAXException(message, exception);
         }
@@ -164,14 +167,14 @@ public class XMLValidator {
         @Override
         public void fatalError(final SAXParseException exception)
                 throws SAXException {
-            LOGGER.error("{}", exception.getLocalizedMessage());
+            LOGGER.error("{}", exception.getLocalizedMessage()); //$NON-NLS-1$
             throw exception;
         }
 
         @Override
         public void warning(final SAXParseException exception)
                 throws SAXException {
-            LOGGER.warn("{}", exception.getLocalizedMessage());
+            LOGGER.warn("{}", exception.getLocalizedMessage()); //$NON-NLS-1$
             throw exception;
         }
 

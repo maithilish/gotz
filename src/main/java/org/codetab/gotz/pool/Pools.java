@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
@@ -90,8 +91,8 @@ public abstract class Pools {
     public synchronized boolean submit(final String poolName,
             final Runnable task) throws RejectedExecutionException {
 
-        Validate.notNull(poolName, "poolName must not be null");
-        Validate.notNull(task, "task must not be null");
+        Validate.notNull(poolName, Messages.getString("Pools.0")); //$NON-NLS-1$
+        Validate.notNull(task, Messages.getString("Pools.1")); //$NON-NLS-1$
 
         ExecutorService pool = getPool(poolName);
         Future<?> f = pool.submit(task);
@@ -125,13 +126,13 @@ public abstract class Pools {
      * <p>
      */
     public void waitForFinish() {
-        Marker marker = MarkerUtil.getMarker("POOL_STATE");
+        Marker marker = MarkerUtil.getMarker("POOL_STATE"); //$NON-NLS-1$
         while (!isDone()) {
-            LOGGER.info(marker, "{}", getPoolState());
+            LOGGER.info(marker, "{}", getPoolState()); //$NON-NLS-1$
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {
-                LOGGER.warn("wait for finish interrupted");
+                LOGGER.warn(Messages.getString("Pools.4")); //$NON-NLS-1$
             }
         }
         shutdownAll();
@@ -139,7 +140,7 @@ public abstract class Pools {
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {
-                LOGGER.warn("wait for finish interrupted");
+                LOGGER.warn(Messages.getString("Pools.5")); //$NON-NLS-1$
             }
         }
     }
@@ -166,17 +167,16 @@ public abstract class Pools {
         ExecutorService executor = executorsMap.get(poolName);
         if (executor == null) {
             int poolSize = POOL_SIZE;
-            String key = "gotz.poolsize." + poolName;
+            String key = "gotz.poolsize." + poolName; //$NON-NLS-1$
             try {
                 String ps = configService.getConfig(key);
                 poolSize = Integer.valueOf(ps);
             } catch (NumberFormatException | ConfigNotFoundException e) {
-                LOGGER.warn(
-                        "unable to get pool size for [{}], defaults to {}. {}",
+                LOGGER.warn(Messages.getString("Pools.2"), //$NON-NLS-1$
                         key, POOL_SIZE);
             }
             executor = Executors.newFixedThreadPool(poolSize);
-            LOGGER.info("create ExecutorPool [{}], pool size [{}]", poolName,
+            LOGGER.info(Messages.getString("Pools.8"), poolName, //$NON-NLS-1$
                     poolSize);
             executorsMap.put(poolName, executor);
         }
@@ -222,9 +222,9 @@ public abstract class Pools {
         StringBuilder sb = new StringBuilder();
         for (String key : executorsMap.keySet()) {
             sb.append(StringUtils.rightPad(key, padLength));
-            sb.append("  [");
+            sb.append("  ["); //$NON-NLS-1$
             sb.append(StringUtils
-                    .substringAfter(executorsMap.get(key).toString(), "["));
+                    .substringAfter(executorsMap.get(key).toString(), "[")); //$NON-NLS-1$
             sb.append(Util.LINE);
 
         }

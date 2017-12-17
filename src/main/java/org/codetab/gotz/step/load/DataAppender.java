@@ -3,6 +3,7 @@ package org.codetab.gotz.step.load;
 import java.util.Collection;
 import java.util.Map;
 
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.IStep;
@@ -39,10 +40,10 @@ public class DataAppender extends BaseAppender {
 
                 Object encodedData = encode(appenderName, appenderFields);
                 String stream = fieldsHelper.getValue(
-                        "/xf:fields/xf:appender/@stream", appenderFields);
+                        "/xf:fields/xf:appender/@stream", appenderFields); //$NON-NLS-1$
                 if (encodedData instanceof Collection) {
                     Collection<?> list = (Collection<?>) encodedData;
-                    if (stream.equalsIgnoreCase("false")) {
+                    if (stream.equalsIgnoreCase("false")) { //$NON-NLS-1$
                         // bulk load
                         doAppend(appender, list);
                     } else {
@@ -55,11 +56,11 @@ public class DataAppender extends BaseAppender {
                     doAppend(appender, encodedData);
                 }
             } catch (Exception e) {
-                String message =
-                        Util.join("unable to append to [", appenderName, "]");
+                String message = Util.join(Messages.getString("DataAppender.2"), //$NON-NLS-1$
+                        appenderName, "]"); //$NON-NLS-1$
                 String label = getLabel();
-                LOGGER.error("[{}] {} {}", label, message, e.getMessage());
-                LOGGER.debug("[{}]", label, e);
+                LOGGER.error("[{}] {} {}", label, message, e.getMessage()); //$NON-NLS-1$
+                LOGGER.debug("[{}]", label, e); //$NON-NLS-1$
                 activityService.addActivity(Type.FAIL, label, message, e);
             }
         }

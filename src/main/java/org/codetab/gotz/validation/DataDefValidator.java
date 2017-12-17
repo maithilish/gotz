@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.InvalidDataDefException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
@@ -41,7 +42,7 @@ public class DataDefValidator {
      */
     public boolean validate(final DataDef dataDef)
             throws InvalidDataDefException {
-        Validate.notNull(dataDef, "dataDef must not be null");
+        Validate.notNull(dataDef, Messages.getString("DataDefValidator.0")); //$NON-NLS-1$
 
         validateIndexRange(dataDef);
         validateQueries(dataDef);
@@ -59,9 +60,8 @@ public class DataDefValidator {
      */
     private boolean validateQueries(final DataDef dataDef)
             throws InvalidDataDefException {
-        String message = Util.join(
-                "missing script or query (region and field) in axis of [",
-                dataDef.getName(), "]");
+        String message = Util.join(Messages.getString("DataDefValidator.1"), //$NON-NLS-1$
+                dataDef.getName(), "]"); //$NON-NLS-1$
         for (DAxis axis : dataDef.getAxis()) {
             boolean valid = true;
 
@@ -70,18 +70,18 @@ public class DataDefValidator {
                 continue;
             }
 
-            if (fieldsHelper.isDefined("/xf:script", true, fields)) {
+            if (fieldsHelper.isDefined("/xf:script", true, fields)) { //$NON-NLS-1$
                 try {
-                    fieldsHelper.getLastValue("/xf:script/@script", fields);
+                    fieldsHelper.getLastValue("/xf:script/@script", fields); //$NON-NLS-1$
                 } catch (FieldsNotFoundException e) {
                     valid = false;
                 }
             }
 
-            if (fieldsHelper.isDefined("/xf:query", true, fields)) {
+            if (fieldsHelper.isDefined("/xf:query", true, fields)) { //$NON-NLS-1$
                 try {
-                    fieldsHelper.getLastValue("/xf:query/@region", fields);
-                    fieldsHelper.getLastValue("/xf:query/@field", fields);
+                    fieldsHelper.getLastValue("/xf:query/@region", fields); //$NON-NLS-1$
+                    fieldsHelper.getLastValue("/xf:query/@field", fields); //$NON-NLS-1$
                 } catch (FieldsNotFoundException e) {
                     valid = false;
                 }
@@ -103,9 +103,8 @@ public class DataDefValidator {
      */
     private boolean validateFactQueries(final DataDef dataDef)
             throws InvalidDataDefException {
-        String message = Util.join(
-                "missing script or query (region and field) in fact axis of [",
-                dataDef.getName(), "]");
+        String message = Util.join(Messages.getString("DataDefValidator.8"), //$NON-NLS-1$
+                dataDef.getName(), "]"); //$NON-NLS-1$
         for (DAxis axis : dataDef.getAxis()) {
             if (!axis.getName().equalsIgnoreCase(AxisName.FACT.toString())) {
                 continue;
@@ -120,15 +119,15 @@ public class DataDefValidator {
             boolean valid = false;
 
             try {
-                fieldsHelper.getLastValue("/xf:script/@script", fields);
+                fieldsHelper.getLastValue("/xf:script/@script", fields); //$NON-NLS-1$
                 valid = true;
             } catch (FieldsNotFoundException e) {
 
             }
 
             try {
-                fieldsHelper.getLastValue("/xf:query/@region", fields);
-                fieldsHelper.getLastValue("/xf:query/@field", fields);
+                fieldsHelper.getLastValue("/xf:query/@region", fields); //$NON-NLS-1$
+                fieldsHelper.getLastValue("/xf:query/@field", fields); //$NON-NLS-1$
                 valid = true;
             } catch (FieldsNotFoundException e) {
             }
@@ -157,11 +156,12 @@ public class DataDefValidator {
             try {
                 if (fields != null) {
                     // xpath - not abs path
-                    fieldsHelper.getRange("//xf:indexRange/@value", fields);
+                    fieldsHelper.getRange("//xf:indexRange/@value", fields); //$NON-NLS-1$
                 }
             } catch (NumberFormatException e) {
-                String message = Util.join("invalid indexRange in [",
-                        dataDef.getName(), "]");
+                String message =
+                        Util.join(Messages.getString("DataDefValidator.14"), //$NON-NLS-1$
+                                dataDef.getName(), "]"); //$NON-NLS-1$
                 throw new InvalidDataDefException(message, e);
             } catch (FieldsNotFoundException e) {
             }

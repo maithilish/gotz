@@ -1,6 +1,7 @@
 package org.codetab.gotz.util;
 
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.messages.Messages;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
@@ -47,13 +48,13 @@ public final class MarkerUtil {
     public static Marker getMarker(final String name, final String group,
             final String task) {
 
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(group, "group must not be null");
+        Validate.notNull(name, Messages.getString("MarkerUtil.0")); //$NON-NLS-1$
+        Validate.notNull(group, Messages.getString("MarkerUtil.1")); //$NON-NLS-1$
 
-        String markerName = String.join("_", "LOG", name.toUpperCase(),
+        String markerName = String.join("_", "LOG", name.toUpperCase(), //$NON-NLS-1$ //$NON-NLS-2$
                 group.toUpperCase());
         if (task != null) {
-            markerName = String.join("_", markerName, task.toUpperCase());
+            markerName = String.join("_", markerName, task.toUpperCase()); //$NON-NLS-1$
         }
         return MarkerFactory.getMarker(markerName);
     }
@@ -67,9 +68,9 @@ public final class MarkerUtil {
      */
     public static Marker getMarker(final String dataDefName) {
 
-        Validate.notNull(dataDefName, "dataDefName must not be null");
+        Validate.notNull(dataDefName, Messages.getString("MarkerUtil.5")); //$NON-NLS-1$
 
-        String markerName = String.join("_", "LOG", dataDefName.toUpperCase());
+        String markerName = String.join("_", "LOG", dataDefName.toUpperCase()); //$NON-NLS-1$ //$NON-NLS-2$
         return MarkerFactory.getMarker(markerName);
     }
 }

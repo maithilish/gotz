@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.URLConnectionHelper;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseLoader;
 import org.codetab.gotz.util.Util;
@@ -68,21 +69,21 @@ public final class URLLoader extends BaseLoader {
         // TODO charset encoding
         byte[] bytes;
         if (UrlValidator.getInstance().isValid(urlSpec)) {
-            LOGGER.info("fetch web resource {}", urlSpec);
+            LOGGER.info(Messages.getString("URLLoader.0"), urlSpec); //$NON-NLS-1$
             URLConnection uc = ucHelper.getURLConnection(urlSpec);
 
             int timeout = getTimeout();
             uc.setConnectTimeout(timeout);
             uc.setReadTimeout(timeout);
-            ucHelper.setRequestProperty(uc, "User-Agent", getUserAgent());
+            ucHelper.setRequestProperty(uc, "User-Agent", getUserAgent()); //$NON-NLS-1$
 
             bytes = IOUtils.toByteArray(uc);
-            LOGGER.debug("fetched web resource {}", urlSpec);
+            LOGGER.debug(Messages.getString("URLLoader.2"), urlSpec); //$NON-NLS-1$
         } else {
-            LOGGER.info("fetch file resource {}", urlSpec);
-            URL fileURL = new URL(new URL("file:"), urlSpec);
+            LOGGER.info(Messages.getString("URLLoader.3"), urlSpec); //$NON-NLS-1$
+            URL fileURL = new URL(new URL("file:"), urlSpec); //$NON-NLS-1$
             bytes = IOUtils.toByteArray(fileURL);
-            LOGGER.debug("fetched file resource {}", urlSpec);
+            LOGGER.debug(Messages.getString("URLLoader.5"), urlSpec); //$NON-NLS-1$
         }
         return bytes;
     }
@@ -99,14 +100,14 @@ public final class URLLoader extends BaseLoader {
      */
     private int getTimeout() {
         int timeout = TIMEOUT_MILLIS;
-        String key = "gotz.webClient.timeout";
+        String key = "gotz.webClient.timeout"; //$NON-NLS-1$
         try {
             timeout = Integer.parseInt(configService.getConfig(key));
         } catch (NumberFormatException | ConfigNotFoundException e) {
             // TODO add activity or update config with default
-            String msg = Util.join("for config [", key,
-                    "] using default value ", String.valueOf(timeout));
-            LOGGER.debug("{}. {}", e, msg);
+            String msg = Util.join(Messages.getString("URLLoader.7"), key, //$NON-NLS-1$
+                    Messages.getString("URLLoader.8"), String.valueOf(timeout)); //$NON-NLS-1$
+            LOGGER.debug("{}. {}", e, msg); //$NON-NLS-1$
         }
         return timeout;
     }
@@ -124,14 +125,14 @@ public final class URLLoader extends BaseLoader {
      */
     private String getUserAgent() {
         String userAgent =
-                "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0";
-        String key = "gotz.webClient.userAgent";
+                "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0"; //$NON-NLS-1$
+        String key = "gotz.webClient.userAgent"; //$NON-NLS-1$
         try {
             userAgent = configService.getConfig(key);
         } catch (ConfigNotFoundException e) {
-            String msg = Util.join("for config [", key,
-                    "] using default value ", userAgent);
-            LOGGER.debug("{}. {}", e, msg);
+            String msg = Util.join(Messages.getString("URLLoader.1"), key, //$NON-NLS-1$
+                    Messages.getString("URLLoader.4"), userAgent); //$NON-NLS-1$
+            LOGGER.debug("{}. {}", e, msg); //$NON-NLS-1$
         }
         return userAgent;
     }

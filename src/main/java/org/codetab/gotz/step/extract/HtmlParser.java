@@ -17,6 +17,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
@@ -65,7 +66,8 @@ public class HtmlParser extends BaseParser {
         WebClient webClient = null;
         try {
             if (!isDocumentLoaded()) {
-                throw new IllegalStateException("document not loaded");
+                throw new IllegalStateException(
+                        Messages.getString("HtmlParser.0")); //$NON-NLS-1$
             }
             String html = getDocumentHTML();
             URL url = getDocumentURL();
@@ -74,8 +76,9 @@ public class HtmlParser extends BaseParser {
             htmlPage = HTMLParser.parseHtml(response,
                     webClient.getCurrentWindow());
         } catch (IllegalStateException | IOException | DataFormatException e) {
-            String message = Util.join("unable to create ",
-                    HtmlPage.class.getName(), " from document byte[]");
+            String message = Util.join(Messages.getString("HtmlParser.1"), //$NON-NLS-1$
+                    HtmlPage.class.getName(),
+                    Messages.getString("HtmlParser.2")); //$NON-NLS-1$
             throw new StepRunException(message, e);
         } finally {
             webClient.setRefreshHandler(new ImmediateRefreshHandler());
@@ -122,12 +125,13 @@ public class HtmlParser extends BaseParser {
 
     private WebClient getWebClient() {
         int timeout = TIMEOUT_MILLIS;
-        String key = "gotz.webClient.timeout";
+        String key = "gotz.webClient.timeout"; //$NON-NLS-1$
         try {
             timeout = Integer.parseInt(configService.getConfig(key));
         } catch (NumberFormatException | ConfigNotFoundException e) {
-            String message = Util.join("for config [", key,
-                    "] using default value ", String.valueOf(timeout));
+            String message = Util.join(Messages.getString("HtmlParser.4"), key, //$NON-NLS-1$
+                    Messages.getString("HtmlParser.5"), //$NON-NLS-1$
+                    String.valueOf(timeout));
             throw new IllegalStateException(message, e);
         }
 
@@ -153,7 +157,7 @@ public class HtmlParser extends BaseParser {
         if (UrlValidator.getInstance().isValid(getDocument().getUrl())) {
             url = new URL(getDocument().getUrl());
         } else {
-            url = new URL(new URL("file:"), getDocument().getUrl());
+            url = new URL(new URL("file:"), getDocument().getUrl()); //$NON-NLS-1$
         }
         return url;
     }
@@ -162,22 +166,23 @@ public class HtmlParser extends BaseParser {
     protected String queryByQuery(final Object page,
             final Map<String, String> queries) {
 
-        Validate.notNull(page, "page must not be null");
-        Validate.notNull(queries, "queries must not be null");
+        Validate.notNull(page, Messages.getString("HtmlParser.7")); //$NON-NLS-1$
+        Validate.notNull(queries, Messages.getString("HtmlParser.8")); //$NON-NLS-1$
 
         if (page instanceof HtmlPage) {
             return queryByXPath((HtmlPage) page, queries);
         } else {
-            throw new IllegalStateException(Util.join(
-                    "page must be instance of ", HtmlPage.class.getName()));
+            throw new IllegalStateException(
+                    Util.join(Messages.getString("HtmlParser.9"), //$NON-NLS-1$
+                            HtmlPage.class.getName()));
 
         }
     }
 
     private String queryByXPath(final HtmlPage page,
             final Map<String, String> queries) {
-        String regionXpathExpr = queries.get("region");
-        String xpathExpr = queries.get("field");
+        String regionXpathExpr = queries.get("region"); //$NON-NLS-1$
+        String xpathExpr = queries.get("field"); //$NON-NLS-1$
 
         String value = getByXPath(page, regionXpathExpr, xpathExpr);
         return value;
@@ -210,15 +215,17 @@ public class HtmlParser extends BaseParser {
             nodeMap.put(hash, nodes);
         }
 
-        LOGGER.trace(getMarker(), "<< Query [Region] >>{}", Util.LINE);
+        LOGGER.trace(getMarker(), Messages.getString("HtmlParser.12"), //$NON-NLS-1$
+                Util.LINE);
         LOGGER.trace(getMarker(),
-                "Region Nodes " + nodes.size() + " for XPATH: " + xpathExpr);
+                Messages.getString("HtmlParser.13") + nodes.size() //$NON-NLS-1$
+                        + Messages.getString("HtmlParser.14") + xpathExpr); //$NON-NLS-1$
 
         for (Object o : nodes) {
             DomNode node = (DomNode) o;
             String nodeTraceStr = Util.stripe(node.asXml(), numOfLines,
                     getBlockBegin(), getBlockEnd());
-            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr); //$NON-NLS-1$
         }
 
         return nodes;
@@ -229,20 +236,24 @@ public class HtmlParser extends BaseParser {
         String value = null;
         List<?> nodes = node.getByXPath(xpathExpr);
 
-        LOGGER.trace(getMarker(), "<< Query [Field] >>{}", Util.LINE);
-        LOGGER.trace(getMarker(), Util.join("Nodes ",
-                String.valueOf(nodes.size()), " for XPATH: ", xpathExpr));
+        LOGGER.trace(getMarker(), Messages.getString("HtmlParser.16"), //$NON-NLS-1$
+                Util.LINE);
+        LOGGER.trace(getMarker(), Util.join(Messages.getString("HtmlParser.3"), //$NON-NLS-1$
+                String.valueOf(nodes.size()),
+                Messages.getString("HtmlParser.18"), xpathExpr)); //$NON-NLS-1$
 
         for (Object o : nodes) {
             DomNode childNode = (DomNode) o;
             value = childNode.getTextContent();
             String nodeTraceStr = Util.stripe(childNode.asXml(), numOfLines,
                     getBlockBegin(), getBlockEnd());
-            LOGGER.trace(getMarker(), "{}", nodeTraceStr);
+            LOGGER.trace(getMarker(), "{}", nodeTraceStr); //$NON-NLS-1$
         }
 
-        LOGGER.trace(getMarker(), "Node contents : {}{}", value, Util.LINE);
-        LOGGER.trace(getMarker(), "<<< Query End >>>{}", Util.LINE);
+        LOGGER.trace(getMarker(), Messages.getString("HtmlParser.20"), value, //$NON-NLS-1$
+                Util.LINE);
+        LOGGER.trace(getMarker(), Messages.getString("HtmlParser.21"), //$NON-NLS-1$
+                Util.LINE);
 
         return value;
     }

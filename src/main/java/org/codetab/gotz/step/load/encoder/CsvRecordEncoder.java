@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
@@ -44,8 +45,10 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
 
     @Override
     public List<String> encode(final Data data) throws Exception {
-        Validate.validState(fields != null, "fields must not be null");
-        Validate.validState(data != null, "data must not be null");
+        Validate.validState(fields != null,
+                Messages.getString("CsvRecordEncoder.0")); //$NON-NLS-1$
+        Validate.validState(data != null,
+                Messages.getString("CsvRecordEncoder.1")); //$NON-NLS-1$
 
         encoderHelper.sort(data, fields);
 
@@ -66,7 +69,7 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
 
             if (prevRow == null) {
                 sb.append(StringUtils.rightPad(row, ITEM_COL_SIZE));
-                sb.append(" |");
+                sb.append(" |"); //$NON-NLS-1$
             } else {
                 // row break
                 if (!prevRow.equals(row)) {
@@ -99,7 +102,8 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
      *
      */
     private String getColumnHeader(final Data data, final String delimiter) {
-        String header = StringUtils.rightPad("item", ITEM_COL_SIZE);
+        String header = StringUtils.rightPad(
+                Messages.getString("CsvRecordEncoder.2"), ITEM_COL_SIZE); //$NON-NLS-1$
         int colCount = getColCount(data);
         for (int c = 0; c < colCount; c++) {
             header += delimiter;

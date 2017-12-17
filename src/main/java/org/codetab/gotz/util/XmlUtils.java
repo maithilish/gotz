@@ -83,7 +83,7 @@ public class XmlUtils {
         // qname of root element
         String qName = rootTagName;
         if (prefix != null) {
-            qName = String.join(":", prefix, rootTagName);
+            qName = String.join(":", prefix, rootTagName); //$NON-NLS-1$
         }
 
         Element root = document.createElementNS(namespace, qName);
@@ -113,12 +113,12 @@ public class XmlUtils {
         DOMImplementation domImplementation = document.getImplementation();
 
         DOMImplementationLS domImplementationLS =
-                (DOMImplementationLS) domImplementation.getFeature("LS", "3.0");
+                (DOMImplementationLS) domImplementation.getFeature("LS", "3.0"); //$NON-NLS-1$ //$NON-NLS-2$
         LSSerializer lsSerializer = domImplementationLS.createLSSerializer();
-        lsSerializer.getDomConfig().setParameter("format-pretty-print",
+        lsSerializer.getDomConfig().setParameter("format-pretty-print", //$NON-NLS-1$
                 Boolean.TRUE);
         LSOutput lsOutput = domImplementationLS.createLSOutput();
-        lsOutput.setEncoding("UTF-8");
+        lsOutput.setEncoding("UTF-8"); //$NON-NLS-1$
         StringWriter stringWriter = new StringWriter();
         lsOutput.setCharacterStream(stringWriter);
         lsSerializer.write(document, lsOutput);
@@ -130,12 +130,12 @@ public class XmlUtils {
         Transformer transformer =
                 TransformerFactory.newInstance().newTransformer();
         if (pretty) {
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); //$NON-NLS-1$
             transformer.setOutputProperty(
-                    "{http://xml.apache.org/xslt}indent-amount",
+                    "{http://xml.apache.org/xslt}indent-amount", //$NON-NLS-1$
                     String.valueOf(indent));
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION,
-                    "yes");
+                    "yes"); //$NON-NLS-1$
         }
         StreamResult result = new StreamResult(new StringWriter());
         for (int i = 0; i < nodes.getLength(); i++) {

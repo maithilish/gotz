@@ -4,6 +4,7 @@ import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 
+import org.codetab.gotz.messages.Messages;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -24,8 +25,7 @@ public final class FindSelector {
      */
     public static void main(final String[] args) {
         if (args.length < 2) {
-            System.out
-                    .println("Usage : FindSelector <file> <selector> [inner]");
+            System.out.println(Messages.getString("FindSelector.0")); //$NON-NLS-1$
             System.exit(1);
         }
         String fileName = args[0];
@@ -45,9 +45,9 @@ public final class FindSelector {
             }
             if (elements.size() > 0) {
                 String output = findSelector.buildOutput(elements, inner);
-                console.printf("%s", output);
+                console.printf("%s", output); //$NON-NLS-1$
             } else {
-                console.printf("%s", "No matching elements");
+                console.printf("%s", Messages.getString("FindSelector.3")); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,7 +85,7 @@ public final class FindSelector {
     public String buildOutput(final Elements elements, final boolean inner) {
         StringBuilder sb = new StringBuilder();
         sb.append(Util.LINE);
-        sb.append("       --- HTML ---");
+        sb.append(Messages.getString("FindSelector.1")); //$NON-NLS-1$
         sb.append(Util.LINE);
         sb.append(Util.LINE);
         if (inner) {
@@ -95,13 +95,13 @@ public final class FindSelector {
         }
         sb.append(Util.LINE);
         sb.append(Util.LINE);
-        sb.append("       --- Text ---");
+        sb.append(Messages.getString("FindSelector.5")); //$NON-NLS-1$
         sb.append(Util.LINE);
         sb.append(Util.LINE);
         sb.append(elements.text());
         sb.append(Util.LINE);
         sb.append(Util.LINE);
-        sb.append("Number of matched elements : " + elements.size());
+        sb.append(Messages.getString("FindSelector.6") + elements.size()); //$NON-NLS-1$
         sb.append(Util.LINE);
         sb.append(Util.LINE);
         return sb.toString();

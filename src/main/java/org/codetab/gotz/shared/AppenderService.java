@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
@@ -46,7 +47,7 @@ public class AppenderService {
             throws ClassNotFoundException, InstantiationException,
             IllegalAccessException, FieldsNotFoundException {
         String appenderClzName = fieldsHelper
-                .getLastValue("/xf:fields/xf:appender/@class", fields);
+                .getLastValue("/xf:fields/xf:appender/@class", fields); //$NON-NLS-1$
         if (appenders.containsKey(appenderName)) {
             return;
         }
@@ -58,7 +59,8 @@ public class AppenderService {
             appender = (Appender) obj;
         } else {
             throw new ClassCastException(
-                    "Class " + appenderClzName + " is not of type Appender");
+                    Messages.getString("AppenderService.1") + appenderClzName //$NON-NLS-1$
+                            + Messages.getString("AppenderService.2")); //$NON-NLS-1$
         }
 
         appender.setName(appenderName);
@@ -66,7 +68,7 @@ public class AppenderService {
         appender.init();
         if (appender.isInitialized()) {
             appender.initializeQueue();
-            appenderPoolService.submit("appender", appender);
+            appenderPoolService.submit("appender", appender); //$NON-NLS-1$
             appenders.put(appenderName, appender);
         }
     }
@@ -83,7 +85,7 @@ public class AppenderService {
             appender.append(Marker.EOF);
         } catch (InterruptedException e) {
             // don't throw else closeAll fails for other appenders
-            LOGGER.warn("{}", Util.getMessage(e));
+            LOGGER.warn("{}", Util.getMessage(e)); //$NON-NLS-1$
         }
     }
 }

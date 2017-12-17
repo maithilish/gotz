@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepPersistenceException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.persistence.DataSetPersistence;
@@ -44,8 +45,8 @@ public final class DbAppender extends Appender {
     @Override
     public void init() {
         setInitialized(true);
-        LOGGER.info("initialized {} [{}]", this.getClass().getSimpleName(),
-                getName());
+        LOGGER.info(Messages.getString("DbAppender.0"), //$NON-NLS-1$
+                this.getClass().getSimpleName(), getName());
     }
 
     /**
@@ -71,32 +72,31 @@ public final class DbAppender extends Appender {
                         dataSetPersistence.storeDataSet(dataSets);
                     } catch (StepPersistenceException e) {
                         String message =
-                                Util.join("unable to persist dataset to [",
-                                        getName(), "]");
+                                Util.join(Messages.getString("DbAppender.1"), //$NON-NLS-1$
+                                        getName(), "]"); //$NON-NLS-1$
                         activityService.addActivity(Type.FAIL, message, e);
-                        LOGGER.error("{} {}", message, Util.getMessage(e));
-                        LOGGER.debug("{}", e);
+                        LOGGER.error("{} {}", message, Util.getMessage(e)); //$NON-NLS-1$
+                        LOGGER.debug("{}", e); //$NON-NLS-1$
                         break;
                     }
 
                 } else {
                     String message = Util.join(
-                            "object is not list of DataSet, unable to persist [",
-                            getName(),
-                            "]. For DbAppender, set stream as false");
+                            Messages.getString("DbAppender.5"), //$NON-NLS-1$
+                            getName(), Messages.getString("DbAppender.6")); //$NON-NLS-1$
                     activityService.addActivity(Type.FAIL, message);
-                    LOGGER.error("{} {}", message);
+                    LOGGER.error("{} {}", message); //$NON-NLS-1$
                     break;
                 }
             } catch (InterruptedException e) {
-                String message = Util.join("unable to take object from queue [",
-                        getName(), "]");
+                String message = Util.join(Messages.getString("DbAppender.8"), //$NON-NLS-1$
+                        getName(), "]"); //$NON-NLS-1$
                 activityService.addActivity(Type.FAIL, message, e);
-                LOGGER.error("{} {}", message, Util.getMessage(e));
-                LOGGER.debug("{}", e);
+                LOGGER.error("{} {}", message, Util.getMessage(e)); //$NON-NLS-1$
+                LOGGER.debug("{}", e); //$NON-NLS-1$
             }
         }
-        LOGGER.info("closing appender [{}], {} objects inserted to datastore",
+        LOGGER.info(Messages.getString("DbAppender.12"), //$NON-NLS-1$
                 getName(), count - 1);
     }
 
@@ -109,7 +109,7 @@ public final class DbAppender extends Appender {
      */
     @Override
     public void append(final Object object) throws InterruptedException {
-        Validate.notNull(object, "object must not be null");
+        Validate.notNull(object, Messages.getString("DbAppender.13")); //$NON-NLS-1$
         getQueue().put(object);
     }
 

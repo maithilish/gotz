@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
@@ -104,17 +105,19 @@ public abstract class Appender implements Runnable {
      * If size is invalid, then queue is not initialized.
      */
     public void initializeQueue() {
-        Validate.validState(configService != null, "configService is null");
-        Validate.validState(activityService != null, "activityService is null");
+        Validate.validState(configService != null,
+                Messages.getString("Appender.0")); //$NON-NLS-1$
+        Validate.validState(activityService != null,
+                Messages.getString("Appender.1")); //$NON-NLS-1$
 
         String queueSize = null;
         try {
-            queueSize = configService.getConfig("gotz.appender.queuesize");
+            queueSize = configService.getConfig("gotz.appender.queuesize"); //$NON-NLS-1$
         } catch (ConfigNotFoundException e) {
         }
         try {
             queueSize = fieldsHelper.getLastValue(
-                    "/xf:fields/xf:appender/xf:queueSize", fields);
+                    "/xf:fields/xf:appender/xf:queueSize", fields); //$NON-NLS-1$
         } catch (FieldsNotFoundException e) {
         }
         /*
@@ -122,17 +125,17 @@ public abstract class Appender implements Runnable {
          * here
          */
         if (StringUtils.isBlank(queueSize)) {
-            queueSize = "4096";
+            queueSize = "4096"; //$NON-NLS-1$
         }
         try {
             queue = new ArrayBlockingQueue<>(Integer.parseInt(queueSize));
-            LOGGER.info("created appender [{}] queue size [{}]", name,
+            LOGGER.info(Messages.getString("Appender.5"), name, //$NON-NLS-1$
                     queueSize);
         } catch (NumberFormatException e) {
             String message =
-                    Util.join("unable to create appender queue [", name, "]");
-            LOGGER.error("{}, {}", message, Util.getMessage(e));
-            LOGGER.debug("{}", e);
+                    Util.join(Messages.getString("Appender.6"), name, "]"); //$NON-NLS-1$ //$NON-NLS-2$
+            LOGGER.error("{}, {}", message, Util.getMessage(e)); //$NON-NLS-1$
+            LOGGER.debug("{}", e); //$NON-NLS-1$
             activityService.addActivity(Type.FAIL, message, e);
         }
     }
@@ -153,7 +156,7 @@ public abstract class Appender implements Runnable {
      *            fields
      */
     public void setFields(final Fields fields) {
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(fields, Messages.getString("Appender.10")); //$NON-NLS-1$
         this.fields = fields;
     }
 
@@ -181,7 +184,7 @@ public abstract class Appender implements Runnable {
      *            name, not null
      */
     public void setName(final String appenderName) {
-        Validate.notNull(appenderName, "appenderName must not be null");
+        Validate.notNull(appenderName, Messages.getString("Appender.11")); //$NON-NLS-1$
         this.name = appenderName;
     }
 

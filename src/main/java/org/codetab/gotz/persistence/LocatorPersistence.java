@@ -135,7 +135,7 @@ public class LocatorPersistence {
         } catch (RuntimeException e) {
             String message =
                     Util.join(Messages.getString("LocatorPersistence.13"), //$NON-NLS-1$
-                            locator.getName(), ":", locator.getGroup(), "]"); //$NON-NLS-2$
+                            locator.getName(), ":", locator.getGroup(), "]"); //$NON-NLS-1$//$NON-NLS-2$
             throw new StepPersistenceException(message, e);
         }
     }

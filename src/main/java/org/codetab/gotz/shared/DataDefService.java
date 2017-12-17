@@ -16,6 +16,7 @@ import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.InvalidDataDefException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
@@ -58,7 +59,7 @@ public class DataDefService {
     }
 
     public void init() {
-        logger.info("initialize DataDefs singleton");
+        logger.info(Messages.getString("DataDefService.0")); //$NON-NLS-1$
 
         List<DataDef> newDataDefs = beanService.getBeans(DataDef.class);
 
@@ -87,7 +88,7 @@ public class DataDefService {
 
         traceDataStructure();
 
-        logger.debug("initialized DataDefs singleton");
+        logger.debug(Messages.getString("DataDefService.1")); //$NON-NLS-1$
     }
 
     private List<DataDef> cloneDataDefs(final List<DataDef> newDataDefs) {
@@ -130,7 +131,8 @@ public class DataDefService {
                 // getDataTemplate(dataDef.getName()); // only for validation
             } catch (InvalidDataDefException e) {
                 String message =
-                        Util.join("invalid datadef [", dataDef.getName(), "]");
+                        Util.join(Messages.getString("DataDefService.2"), //$NON-NLS-1$
+                                dataDef.getName(), "]"); //$NON-NLS-1$
                 throw new CriticalException(message, e);
             }
         }
@@ -146,7 +148,10 @@ public class DataDefService {
                 dataDefHelper.addFields(dataDef);
             } catch (FieldsException e) {
                 throw new CriticalException(
-                        "datadef [" + dataDef.getName() + "] set defaults", e);
+                        Messages.getString("DataDefService.4") //$NON-NLS-1$
+                                + dataDef.getName()
+                                + Messages.getString("DataDefService.5"), //$NON-NLS-1$
+                        e);
             }
         }
     }
@@ -213,8 +218,8 @@ public class DataDefService {
 
         for (DataDef dataDef : dataDefs) {
             Marker marker = MarkerUtil.getMarker(dataDef.getName());
-            logger.trace(marker, "--- trace dataDef ----");
-            logger.trace(marker, "{}", dataDef);
+            logger.trace(marker, Messages.getString("DataDefService.6")); //$NON-NLS-1$
+            logger.trace(marker, "{}", dataDef); //$NON-NLS-1$
         }
     }
 
@@ -225,8 +230,10 @@ public class DataDefService {
 
         for (DataDef dataDef : dataDefs) {
             if (dataDef.getAxis().size() == 0) {
-                String message = Util.join("datadef [", dataDef.getName(),
-                        "] no axis defined");
+                String message =
+                        Util.join(Messages.getString("DataDefService.8"), //$NON-NLS-1$
+                                dataDef.getName(),
+                                Messages.getString("DataDefService.9")); //$NON-NLS-1$
                 throw new CriticalException(message);
             }
 
@@ -236,7 +243,9 @@ public class DataDefService {
                 traceDataStructure(dataDefName, data);
             } catch (ClassNotFoundException | DataDefNotFoundException
                     | IOException e) {
-                String message = Util.join("datadef [", dataDef.getName(), "]");
+                String message =
+                        Util.join(Messages.getString("DataDefService.10"), //$NON-NLS-1$
+                                dataDef.getName(), "]"); //$NON-NLS-1$
                 throw new CriticalException(message, e);
             }
 
@@ -246,9 +255,9 @@ public class DataDefService {
     public void traceDataStructure(final String dataDefName, final Data data) {
         String trace = dataDefHelper.getDataStructureTrace(dataDefName, data);
         Marker marker = MarkerUtil.getMarker(dataDefName);
-        logger.trace(marker, "---- trace data structure ----");
-        logger.trace(marker, "");
-        logger.trace(marker, "{}", trace);
+        logger.trace(marker, Messages.getString("DataDefService.12")); //$NON-NLS-1$
+        logger.trace(marker, ""); //$NON-NLS-1$
+        logger.trace(marker, "{}", trace); //$NON-NLS-1$
     }
 
 }

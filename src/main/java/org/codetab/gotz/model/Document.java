@@ -34,7 +34,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/&gt;
  *         &lt;element name="documentObject" type="{http://www.w3.org/2001/XMLSchema}anyType" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="name" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
  *       &lt;attribute name="fromDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" /&gt;
  *       &lt;attribute name="toDate" type="{http://www.w3.org/2001/XMLSchema}dateTime" /&gt;
  *       &lt;attribute name="url" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
@@ -55,7 +55,7 @@ public class Document implements Serializable {
     @ToStringExclude
     @XmlElement
     private Object documentObject;
-    @XmlAttribute(name = "name", required = true)
+    @XmlAttribute(name = "name")
     private String name;
     @XmlAttribute(name = "fromDate")
     @XmlJavaTypeAdapter(Adapter1.class)

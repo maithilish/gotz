@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.step.Step;
@@ -44,7 +45,7 @@ public abstract class BaseConverter extends Step {
     @Override
     public boolean handover() {
         Validate.validState(convertedData != null,
-                "convertedData must not be null");
+                Messages.getString("BaseConverter.0")); //$NON-NLS-1$
         Fields nextStepFields = createNextStepFields();
         stepService.pushTask(this, convertedData, getLabels(), nextStepFields);
         return true;
@@ -61,7 +62,7 @@ public abstract class BaseConverter extends Step {
     private Fields createNextStepFields() {
         Fields nextStepFields = getFields();
         if (nextStepFields.getNodes().size() == 0) {
-            String message = "unable to get next step fields, empty nodes";
+            String message = Messages.getString("BaseConverter.1"); //$NON-NLS-1$
             throw new StepRunException(message);
         }
         return nextStepFields;
@@ -73,12 +74,11 @@ public abstract class BaseConverter extends Step {
      */
     @Override
     public void setInput(final Object input) {
-        Objects.requireNonNull(input, "input must not be null");
+        Objects.requireNonNull(input, Messages.getString("BaseConverter.2")); //$NON-NLS-1$
         if (input instanceof Data) {
             data = (Data) input;
         } else {
-            String message = Util.join(
-                    "next step input : required [Data], but is instance of ",
+            String message = Util.join(Messages.getString("BaseConverter.3"), //$NON-NLS-1$
                     input.getClass().getName());
             throw new StepRunException(message);
         }

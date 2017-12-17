@@ -6,6 +6,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Activity.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +42,8 @@ public final class ListAppender extends Appender {
     @Override
     public void init() {
         setInitialized(true);
-        LOGGER.info("initialized {} [{}]", this.getClass().getSimpleName(),
-                getName());
+        LOGGER.info(Messages.getString("ListAppender.0"), //$NON-NLS-1$
+                this.getClass().getSimpleName(), getName());
     }
 
     /**
@@ -64,12 +65,12 @@ public final class ListAppender extends Appender {
                 }
                 list.add(item);
             } catch (InterruptedException e) {
-                String message = "unable to take object from queue";
-                LOGGER.debug("{}", e);
+                String message = Messages.getString("ListAppender.1"); //$NON-NLS-1$
+                LOGGER.debug("{}", e); //$NON-NLS-1$
                 activityService.addActivity(Type.FAIL, message, e);
             }
         }
-        LOGGER.info("closing appender [{}], {} objects added to list",
+        LOGGER.info(Messages.getString("ListAppender.3"), //$NON-NLS-1$
                 getName(), count - 1);
     }
 
@@ -78,7 +79,7 @@ public final class ListAppender extends Appender {
      */
     @Override
     public void append(final Object object) throws InterruptedException {
-        Validate.notNull(object, "object must not be null");
+        Validate.notNull(object, Messages.getString("ListAppender.4")); //$NON-NLS-1$
         getQueue().put(object);
     }
 

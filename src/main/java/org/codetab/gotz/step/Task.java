@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ActivityService;
@@ -29,30 +30,30 @@ public class Task implements Runnable {
         try {
             step.initialize();
 
-            LOGGER.trace(step.getMarker(), "[{}] start step [{}]", getLabel(),
-                    step.getStepType());
+            LOGGER.trace(step.getMarker(), Messages.getString("Task.0"), //$NON-NLS-1$
+                    getLabel(), step.getStepType());
 
             step.load();
             step.process();
             step.store();
             step.handover();
 
-            LOGGER.trace(step.getMarker(), "[{}] finish step [{}]", getLabel(),
-                    step.getStepType());
+            LOGGER.trace(step.getMarker(), Messages.getString("Task.1"), //$NON-NLS-1$
+                    getLabel(), step.getStepType());
 
         } catch (StepRunException | StepPersistenceException e) {
             String label = getLabel();
             String message =
-                    Util.join("[", step.getStepType(), "] ", e.getMessage());
-            LOGGER.error("[{}] {}", label, message);
-            LOGGER.debug("[{}] [{}]", label, step.getStepType(), e);
+                    Util.join("[", step.getStepType(), "] ", e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            LOGGER.error("[{}] {}", label, message); //$NON-NLS-1$
+            LOGGER.debug("[{}] [{}]", label, step.getStepType(), e); //$NON-NLS-1$
             activityService.addActivity(Type.FAIL, label, message, e);
         } catch (Exception e) {
             String label = getLabel();
             String message =
-                    Util.join("[", step.getStepType(), "] ", e.getMessage());
-            LOGGER.error("[{}] {}", label, message);
-            LOGGER.debug("[{}] [{}]", label, step.getStepType(), e);
+                    Util.join("[", step.getStepType(), "] ", e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            LOGGER.error("[{}] {}", label, message); //$NON-NLS-1$
+            LOGGER.debug("[{}] [{}]", label, step.getStepType(), e); //$NON-NLS-1$
             activityService.addActivity(Type.INTERNAL, label, message, e);
         }
     }
@@ -60,7 +61,7 @@ public class Task implements Runnable {
     private String getLabel() {
         Labels labels = step.getLabels();
         // internal error
-        String label = "step labels not set";
+        String label = Messages.getString("Task.10"); //$NON-NLS-1$
         if (labels != null) {
             label = labels.getLabel();
         }

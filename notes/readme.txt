@@ -340,6 +340,6 @@ Externalize messages
 after moving messages.properties to src/main/resources/locale, run 
 mvn eclipse:eclipse to update the location
 
-
+don't externalize model classes !!!
 
     

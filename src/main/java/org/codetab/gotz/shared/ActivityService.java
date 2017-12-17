@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.time.StopWatch;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.misc.MemoryTask;
 import org.codetab.gotz.model.Activity;
 import org.codetab.gotz.model.Activity.Type;
@@ -76,16 +77,16 @@ public class ActivityService {
     }
 
     public void logActivities() {
-        LOGGER.info("{}", "--- Summary ---");
+        LOGGER.info("{}", Messages.getString("ActivityService.0")); //$NON-NLS-1$ //$NON-NLS-2$
         if (activities.size() == 0) {
-            LOGGER.info("no issues");
+            LOGGER.info(Messages.getString("ActivityService.2")); //$NON-NLS-1$
         }
         for (Activity activity : activities) {
             Throwable throwable = activity.getThrowable();
-            String throwableClass = "";
-            String throwableMessage = "";
-            String causeClass = "";
-            String causeMessage = "";
+            String throwableClass = ""; //$NON-NLS-1$
+            String throwableMessage = ""; //$NON-NLS-1$
+            String causeClass = ""; //$NON-NLS-1$
+            String causeMessage = ""; //$NON-NLS-1$
             Throwable cause = null;
             if (throwable != null) {
                 throwableClass = throwable.getClass().getSimpleName();
@@ -96,35 +97,39 @@ public class ActivityService {
                     causeMessage = cause.getLocalizedMessage();
                 }
             }
-            LOGGER.info("Activity type={}, label={}, message={}",
+            LOGGER.info(Messages.getString("ActivityService.7"), //$NON-NLS-1$
                     activity.getType(), activity.getLabel(),
                     activity.getMessage());
-            LOGGER.info(" exception : {} {}", throwableClass, throwableMessage);
+            LOGGER.info(Messages.getString("ActivityService.8"), throwableClass, //$NON-NLS-1$
+                    throwableMessage);
             if (cause != null) {
-                LOGGER.info(" cause     : {} {}", causeClass, causeMessage);
+                LOGGER.info(Messages.getString("ActivityService.9"), causeClass, //$NON-NLS-1$
+                        causeMessage);
             }
 
         }
-        LOGGER.info("{}  {}", "Total time:", stopWatch);
+        LOGGER.info("{}  {}", Messages.getString("ActivityService.11"), //$NON-NLS-1$ //$NON-NLS-2$
+                stopWatch);
     }
 
     public void collectMemoryStat() {
         long mm = runtime.maxMemory() / MB_DIVISOR;
         long fm = runtime.freeMemory() / MB_DIVISOR;
         long tm = runtime.totalMemory() / MB_DIVISOR;
-        LOGGER.debug("{} {} {} {}", new Date(), mm, tm, fm);
+        LOGGER.debug("{} {} {} {}", new Date(), mm, tm, fm); //$NON-NLS-1$
 
         freeMemory.accept(fm);
         totalMemory.accept(tm);
     }
 
     public void logMemoryUsage() {
-        LOGGER.info("{}", "--- Memory Usage ---");
-        LOGGER.info("Max   : {}", runtime.maxMemory() / MB_DIVISOR);
-        LOGGER.info("Total : Avg {} High {} Low {}",
+        LOGGER.info("{}", Messages.getString("ActivityService.14")); //$NON-NLS-1$ //$NON-NLS-2$
+        LOGGER.info(Messages.getString("ActivityService.15"), //$NON-NLS-1$
+                runtime.maxMemory() / MB_DIVISOR);
+        LOGGER.info(Messages.getString("ActivityService.16"), //$NON-NLS-1$
                 (long) totalMemory.getAverage(), totalMemory.getMax(),
                 totalMemory.getMin());
-        LOGGER.info("Free  : Avg {} High {} Low {}",
+        LOGGER.info(Messages.getString("ActivityService.17"), //$NON-NLS-1$
                 (long) freeMemory.getAverage(), freeMemory.getMax(),
                 freeMemory.getMin());
     }

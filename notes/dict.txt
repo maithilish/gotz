@@ -51,3 +51,5 @@ dataset
 min
 multi
 dev
+avg
+taskpool

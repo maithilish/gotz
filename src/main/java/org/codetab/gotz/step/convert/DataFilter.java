@@ -12,6 +12,7 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
@@ -53,9 +54,10 @@ public final class DataFilter extends BaseConverter {
      */
     @Override
     public boolean process() {
-        Validate.validState(getData() != null, "data must not be null");
+        Validate.validState(getData() != null,
+                Messages.getString("DataFilter.0")); //$NON-NLS-1$
 
-        LOGGER.info(getLabeled("apply filters"));
+        LOGGER.info(getLabeled(Messages.getString("DataFilter.1"))); //$NON-NLS-1$
 
         int membersCountBefore = getData().getMembers().size();
 
@@ -64,7 +66,7 @@ public final class DataFilter extends BaseConverter {
         try {
             filterMap = dataDefService.getFilterMap(getData().getDataDef());
         } catch (DataDefNotFoundException e) {
-            String message = "unable to filter";
+            String message = Messages.getString("DataFilter.2"); //$NON-NLS-1$
             throw new StepRunException(message, e);
         }
         for (Member member : getData().getMembers()) {
@@ -76,20 +78,19 @@ public final class DataFilter extends BaseConverter {
             }
         }
 
-        LOGGER.trace(getMarker(), "filtered members");
+        LOGGER.trace(getMarker(), Messages.getString("DataFilter.3")); //$NON-NLS-1$
 
         for (Member member : forRemovalMembers) {
             getData().getMembers().remove(member);
 
             if (LOGGER.isTraceEnabled()) {
-                LOGGER.trace(getMarker(), "{}", member);
+                LOGGER.trace(getMarker(), "{}", member); //$NON-NLS-1$
                 filteredSet.add(getValuesAsString(member));
             }
         }
         if (getData().getMembers().size() == 0) {
             setConsistent(false);
-            String message =
-                    "output is empty, check datadef query/indexRange/breakAfter/filter";
+            String message = Messages.getString("DataFilter.5"); //$NON-NLS-1$
             throw new StepRunException(message);
         }
 
@@ -107,13 +108,12 @@ public final class DataFilter extends BaseConverter {
         if (!LOGGER.isTraceEnabled()) {
             return;
         }
-        LOGGER.trace(getMarker(), "filter summary");
-        LOGGER.trace(getMarker(),
-                "data members count : before [{}] and after [{}]",
+        LOGGER.trace(getMarker(), Messages.getString("DataFilter.6")); //$NON-NLS-1$
+        LOGGER.trace(getMarker(), Messages.getString("DataFilter.7"), //$NON-NLS-1$
                 membersCountBefore, memberCountAfter);
-        LOGGER.trace(getMarker(), "items filtered");
+        LOGGER.trace(getMarker(), Messages.getString("DataFilter.8")); //$NON-NLS-1$
         for (String item : filteredSet) {
-            LOGGER.trace(getMarker(), "  {}", item);
+            LOGGER.trace(getMarker(), "  {}", item); //$NON-NLS-1$
         }
     }
 
@@ -122,9 +122,9 @@ public final class DataFilter extends BaseConverter {
         AxisName[] axisNames = {AxisName.COL, AxisName.ROW, AxisName.FACT};
         for (AxisName axisName : axisNames) {
             String value = member.getAxis(axisName).getValue();
-            sb.append("[");
+            sb.append("["); //$NON-NLS-1$
             sb.append(value);
-            sb.append("]");
+            sb.append("]"); //$NON-NLS-1$
         }
         return sb.toString();
     }
@@ -148,10 +148,10 @@ public final class DataFilter extends BaseConverter {
         if (filters == null) {
             return false;
         }
-        if (requireFilter(axis, filters, "match")) {
+        if (requireFilter(axis, filters, "match")) { //$NON-NLS-1$
             return true;
         }
-        if (requireFilter(axis, filters, "value")) {
+        if (requireFilter(axis, filters, "value")) { //$NON-NLS-1$
             return true;
         }
         return false;
@@ -172,19 +172,19 @@ public final class DataFilter extends BaseConverter {
      */
     private boolean requireFilter(final Axis axis, final Fields fields,
             final String filterType) {
-        String value = "";
-        if (filterType.equals("match")) {
+        String value = ""; //$NON-NLS-1$
+        if (filterType.equals("match")) { //$NON-NLS-1$
             value = axis.getMatch();
         }
-        if (filterType.equals("value")) {
+        if (filterType.equals("value")) { //$NON-NLS-1$
             value = axis.getValue();
         }
         if (value == null) {
             return false;
         }
         try {
-            String xpath = Util.join("/xf:filters[@type='", filterType,
-                    "']/xf:filter/@pattern");
+            String xpath = Util.join("/xf:filters[@type='", filterType, //$NON-NLS-1$
+                    "']/xf:filter/@pattern"); //$NON-NLS-1$
             // include blanks also in patterns
             List<String> patterns = fieldsHelper.getValues(xpath, true, fields);
             for (String pattern : patterns) {
@@ -196,7 +196,8 @@ public final class DataFilter extends BaseConverter {
                         return true;
                     }
                 } catch (PatternSyntaxException e) {
-                    String message = Util.join("unable to filter", pattern);
+                    String message = Util
+                            .join(Messages.getString("DataFilter.19"), pattern); //$NON-NLS-1$
                     throw new StepRunException(message, e);
                 }
             }

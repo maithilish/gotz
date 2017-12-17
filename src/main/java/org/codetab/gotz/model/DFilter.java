@@ -30,8 +30,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *         &lt;element ref="{http://codetab.org/xfields}fields" minOccurs="0"/&gt;
  *         &lt;element name="id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
- *       &lt;attribute name="axis" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="axis" use="required" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
+ *       &lt;attribute name="name" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -48,7 +48,7 @@ public class DFilter implements Serializable {
     private Fields fields;
     @XmlElement
     private Long id;
-    @XmlAttribute(name = "axis")
+    @XmlAttribute(name = "axis", required = true)
     private String axis;
     @XmlAttribute(name = "name")
     private String name;
@@ -140,14 +140,14 @@ public class DFilter implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         String[] excludes =
-                {"id", "dnDetachedState", "dnFlags", "dnStateManager"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
         return EqualsBuilder.reflectionEquals(this, obj, excludes);
     }
 
     @Override
     public int hashCode() {
         String[] excludes =
-                {"id", "dnDetachedState", "dnFlags", "dnStateManager"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
         return HashCodeBuilder.reflectionHashCode(this, excludes);
     }
 
