@@ -3,6 +3,7 @@ package org.codetab.gotz;
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.step.Task;
@@ -27,29 +28,29 @@ public class GotzEngine {
      *
      */
     public void start() {
-        LOGGER.info("starting GotzEngine");
+        LOGGER.info(Messages.getString("GotzEngine.0")); //$NON-NLS-1$
         activityService.start();
         try {
             // single thread env
             gSystem.initSystem();
             Task task = gSystem.createInitialTask();
-            LOGGER.info("basic system initialized");
+            LOGGER.info(Messages.getString("GotzEngine.1")); //$NON-NLS-1$
             gSystem.waitForHeapDump();
 
-            LOGGER.info("switching to multi thread environment");
+            LOGGER.info(Messages.getString("GotzEngine.2")); //$NON-NLS-1$
             gTaskRunner.executeInitalTask(task);
             task = null;
             gTaskRunner.waitForFinish();
             gSystem.waitForHeapDump();
-            LOGGER.info("shutting down GotzEngine...");
+            LOGGER.info(Messages.getString("GotzEngine.3")); //$NON-NLS-1$
         } catch (CriticalException e) {
-            LOGGER.error("{}", e.getMessage());
-            LOGGER.warn("terminating GotzEngine...");
-            LOGGER.debug("{}", e);
+            LOGGER.error("{}", e.getMessage()); //$NON-NLS-1$
+            LOGGER.warn(Messages.getString("GotzEngine.5")); //$NON-NLS-1$
+            LOGGER.debug("{}", e); //$NON-NLS-1$
             activityService.addActivity(Type.FATAL, e.getMessage(), e);
         }
         activityService.end();
-        LOGGER.info("GotzEngine finished");
+        LOGGER.info(Messages.getString("GotzEngine.7")); //$NON-NLS-1$
     }
 
 }

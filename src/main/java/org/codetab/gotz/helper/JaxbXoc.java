@@ -15,6 +15,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Wrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,7 @@ public class JaxbXoc implements IXoc {
         String packageName = ofClass.getPackage().getName();
         JAXBContext jc = JAXBContext.newInstance(packageName);
         Unmarshaller um = jc.createUnmarshaller();
-        logger.debug("unmarshall : type [{}]", ofClass);
+        logger.debug(Messages.getString("JaxbXoc.0"), ofClass); //$NON-NLS-1$
         StreamSource xmlSource = new StreamSource(xmlStream);
         Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
         List<T> list = new ArrayList<T>();
@@ -95,11 +96,11 @@ public class JaxbXoc implements IXoc {
                 T t = (T) value;
                 list.add(t);
             } else {
-                logger.error("unmarshall type {}, but found obj of type {}",
+                logger.error(Messages.getString("JaxbXoc.1"), //$NON-NLS-1$
                         ofClass.getName(), value.getClass().getName());
             }
         }
-        logger.debug("model objects created [{}]", list.size());
+        logger.debug(Messages.getString("JaxbXoc.2"), list.size()); //$NON-NLS-1$
         return list;
     }
 

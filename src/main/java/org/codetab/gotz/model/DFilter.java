@@ -140,14 +140,14 @@ public class DFilter implements Serializable {
     @Override
     public boolean equals(final Object obj) {
         String[] excludes =
-                {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+                {"id", "dnDetachedState", "dnFlags", "dnStateManager"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         return EqualsBuilder.reflectionEquals(this, obj, excludes);
     }
 
     @Override
     public int hashCode() {
         String[] excludes =
-                {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+                {"id", "dnDetachedState", "dnFlags", "dnStateManager"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         return HashCodeBuilder.reflectionHashCode(this, excludes);
     }
 

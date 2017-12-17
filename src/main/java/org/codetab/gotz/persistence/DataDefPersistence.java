@@ -13,6 +13,7 @@ import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
@@ -57,7 +58,7 @@ public class DataDefPersistence {
      */
     public List<DataDef> loadDataDefs() {
 
-        if (!configService.isPersist("gotz.useDataStore")) {
+        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
             return new ArrayList<>();
         }
 
@@ -67,10 +68,12 @@ public class DataDefPersistence {
             IDataDefDao dao = daoFactory.getDataDefDao();
             List<DataDef> dataDefs =
                     dao.getDataDefs(configService.getRunDateTime());
-            LOGGER.debug("DataDef loaded : [{}]", dataDefs.size());
+            LOGGER.debug(Messages.getString("DataDefPersistence.1"), //$NON-NLS-1$
+                    dataDefs.size());
             return dataDefs;
         } catch (RuntimeException e) {
-            throw new CriticalException("datadef creation error", e);
+            throw new CriticalException(
+                    Messages.getString("DataDefPersistence.2"), e); //$NON-NLS-1$
         }
     }
 
@@ -83,16 +86,16 @@ public class DataDefPersistence {
      *             if any persistence error
      */
     public void storeDataDef(final DataDef dataDef) {
-        Validate.notNull(dataDef, "dataDef must not be null");
+        Validate.notNull(dataDef, Messages.getString("DataDefPersistence.3")); //$NON-NLS-1$
 
-        if (!configService.isPersist("gotz.useDataStore")) {
+        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
             return;
         }
 
-        boolean persist = configService.isPersist("gotz.persist.dataDef");
+        boolean persist = configService.isPersist("gotz.persist.dataDef"); //$NON-NLS-1$
         try {
             // xpath - not abs path
-            persist = fieldsHelper.isTrue("//xf:persist", dataDef.getFields());
+            persist = fieldsHelper.isTrue("//xf:persist", dataDef.getFields()); //$NON-NLS-1$
         } catch (FieldsNotFoundException e) {
         }
 
@@ -105,13 +108,15 @@ public class DataDefPersistence {
             IDaoFactory daoFactory = daoFactoryProvider.getDaoFactory(orm);
             IDataDefDao dao = daoFactory.getDataDefDao();
             String name = dataDef.getName();
-            LOGGER.debug("store DataDef");
+            LOGGER.debug(Messages.getString("DataDefPersistence.7")); //$NON-NLS-1$
             dao.storeDataDef(dataDef);
             if (dataDef.getId() != null) {
-                LOGGER.debug("stored DataDef [{}] [{}]", dataDef.getId(), name);
+                LOGGER.debug(Messages.getString("DataDefPersistence.8"), //$NON-NLS-1$
+                        dataDef.getId(), name);
             }
         } catch (RuntimeException e) {
-            throw new CriticalException("datadef creation error", e);
+            throw new CriticalException(
+                    Messages.getString("DataDefPersistence.9"), e); //$NON-NLS-1$
         }
     }
 
@@ -130,8 +135,9 @@ public class DataDefPersistence {
      */
     public boolean markForUpdation(final List<DataDef> dataDefs,
             final List<DataDef> newDataDefs) {
-        Validate.notNull(dataDefs, "dataDefs must not be null");
-        Validate.notNull(newDataDefs, "newDataDefs must not be null");
+        Validate.notNull(dataDefs, Messages.getString("DataDefPersistence.10")); //$NON-NLS-1$
+        Validate.notNull(newDataDefs,
+                Messages.getString("DataDefPersistence.11")); //$NON-NLS-1$
 
         boolean updates = false;
         for (DataDef newDataDef : newDataDefs) {
@@ -140,19 +146,20 @@ public class DataDefPersistence {
             try {
                 DataDef dataDef = getDataDef(dataDefs, name);
                 if (dataDef.equals(newDataDef)) {
-                    message = "no changes";
+                    message = Messages.getString("DataDefPersistence.12"); //$NON-NLS-1$
                 } else {
-                    message = "changed, insert new version";
+                    message = Messages.getString("DataDefPersistence.13"); //$NON-NLS-1$
                     updates = true;
                     resetHighDate(dataDef);
                     dataDefs.add(newDataDef);
                 }
             } catch (NoSuchElementException e) {
-                message = "not in store, insert";
+                message = Messages.getString("DataDefPersistence.14"); //$NON-NLS-1$
                 updates = true;
                 dataDefs.add(newDataDef);
             }
-            LOGGER.info("DataDef [{}] {}", name, message);
+            LOGGER.info(Messages.getString("DataDefPersistence.15"), name, //$NON-NLS-1$
+                    message);
         }
         return updates;
     }

@@ -12,6 +12,7 @@ import javax.jdo.Transaction;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.dao.IDataDefDao;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.DataDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public final class DataDefDao implements IDataDefDao {
      *            JDO PMF
      */
     public DataDefDao(final PersistenceManagerFactory pmf) {
-        Validate.notNull(pmf, "pmf must not be null");
+        Validate.notNull(pmf, Messages.getString("DataDefDao.0")); //$NON-NLS-1$
         this.pmf = pmf;
     }
 
@@ -55,22 +56,22 @@ public final class DataDefDao implements IDataDefDao {
      */
     @Override
     public void storeDataDef(final DataDef dataDef) {
-        Validate.notNull(dataDef, "dataDef must not be null");
+        Validate.notNull(dataDef, Messages.getString("DataDefDao.1")); //$NON-NLS-1$
 
         PersistenceManager pm = getPM();
         Transaction tx = pm.currentTransaction();
         try {
             tx.begin();
-            String filter = "name == pname";
-            String paramDecla = "String pname";
-            String ordering = "id ascending";
+            String filter = "name == pname"; //$NON-NLS-1$
+            String paramDecla = "String pname"; //$NON-NLS-1$
+            String ordering = "id ascending"; //$NON-NLS-1$
             Extent<DataDef> extent = pm.getExtent(DataDef.class);
             Query<DataDef> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecla);
             query.setOrdering(ordering);
 
-            pm.getFetchPlan().addGroup("detachFields");
-            pm.getFetchPlan().addGroup("detachAxis");
+            pm.getFetchPlan().addGroup("detachFields"); //$NON-NLS-1$
+            pm.getFetchPlan().addGroup("detachAxis"); //$NON-NLS-1$
 
             @SuppressWarnings("unchecked")
             List<DataDef> dataDefs =
@@ -112,21 +113,21 @@ public final class DataDefDao implements IDataDefDao {
      */
     @Override
     public List<DataDef> getDataDefs(final Date date) {
-        Validate.notNull(date, "date must not be null");
+        Validate.notNull(date, Messages.getString("DataDefDao.7")); //$NON-NLS-1$
 
         List<DataDef> dataDefs = null;
         PersistenceManager pm = getPM();
         try {
-            String filter = "fromDate <= pdate && toDate >= pdate";
-            String paramDecla = "java.util.Date pdate";
+            String filter = "fromDate <= pdate && toDate >= pdate"; //$NON-NLS-1$
+            String paramDecla = "java.util.Date pdate"; //$NON-NLS-1$
             Extent<DataDef> extent = pm.getExtent(DataDef.class);
             Query<DataDef> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecla);
 
             @SuppressWarnings("unchecked")
             List<DataDef> result = (List<DataDef>) query.execute(date);
-            pm.getFetchPlan().addGroup("detachFields");
-            pm.getFetchPlan().addGroup("detachAxis");
+            pm.getFetchPlan().addGroup("detachFields"); //$NON-NLS-1$
+            pm.getFetchPlan().addGroup("detachAxis"); //$NON-NLS-1$
 
             dataDefs = (List<DataDef>) pm.detachCopyAll(result);
         } finally {
@@ -144,21 +145,21 @@ public final class DataDefDao implements IDataDefDao {
      */
     @Override
     public List<DataDef> getDataDefs(final String name) {
-        Validate.notNull(name, "name must not be null");
+        Validate.notNull(name, Messages.getString("DataDefDao.12")); //$NON-NLS-1$
 
         List<DataDef> dataDefs = null;
         PersistenceManager pm = getPM();
         try {
-            String filter = "name == pname";
-            String paramDecla = "String pname";
+            String filter = "name == pname"; //$NON-NLS-1$
+            String paramDecla = "String pname"; //$NON-NLS-1$
             Extent<DataDef> extent = pm.getExtent(DataDef.class);
             Query<DataDef> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecla);
 
             @SuppressWarnings("unchecked")
             List<DataDef> result = (List<DataDef>) query.execute(name);
-            pm.getFetchPlan().addGroup("detachFields");
-            pm.getFetchPlan().addGroup("detachAxis");
+            pm.getFetchPlan().addGroup("detachFields"); //$NON-NLS-1$
+            pm.getFetchPlan().addGroup("detachAxis"); //$NON-NLS-1$
 
             dataDefs = (List<DataDef>) pm.detachCopyAll(result);
         } finally {

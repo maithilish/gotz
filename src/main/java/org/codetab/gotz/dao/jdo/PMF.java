@@ -12,6 +12,7 @@ import javax.jdo.PersistenceManagerFactory;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.helper.IOHelper;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -88,26 +89,24 @@ public class PMF {
      */
     public synchronized void init() {
         if (factory == null) {
-            logger.info("initialize JDO PMF");
+            logger.info(Messages.getString("PMF.0")); //$NON-NLS-1$
             String configFile;
             try {
                 configFile =
-                        configService.getConfig("gotz.datastore.configFile");
+                        configService.getConfig("gotz.datastore.configFile"); //$NON-NLS-1$
             } catch (ConfigNotFoundException e) {
-                throw new CriticalException(
-                        "JDO Persistence Manager setup error", e);
+                throw new CriticalException(Messages.getString("PMF.1"), e); //$NON-NLS-1$
             }
             try (InputStream propStream = ioHelper.getInputStream(configFile)) {
                 jdoProperties.load(propStream);
                 factory = JDOHelper.getPersistenceManagerFactory(jdoProperties);
 
-                logger.info("JDO PersistenceManagerFactory created");
-                logger.debug("PMF Properties {}",
+                logger.info(Messages.getString("PMF.3")); //$NON-NLS-1$
+                logger.debug(Messages.getString("PMF.4"), //$NON-NLS-1$
                         Util.getPropertiesAsString(jdoProperties));
-                logger.debug("initialized JDO PMF");
+                logger.debug(Messages.getString("PMF.5")); //$NON-NLS-1$
             } catch (IOException e) {
-                throw new CriticalException(
-                        "JDO Persistence Manager setup error", e);
+                throw new CriticalException(Messages.getString("PMF.6"), e); //$NON-NLS-1$
             }
         }
     }

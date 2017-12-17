@@ -2,6 +2,7 @@ package org.codetab.gotz;
 
 import javax.inject.Inject;
 
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.pool.TaskPoolService;
 import org.codetab.gotz.shared.AppenderService;
@@ -27,8 +28,8 @@ public class GTaskRunner {
     /*
      */
     public boolean executeInitalTask(final Task task) {
-        LOGGER.info("submit initial task to executor pool");
-        taskPoolService.submit("seeder", task);
+        LOGGER.info(Messages.getString("GTaskRunner.0")); //$NON-NLS-1$
+        taskPoolService.submit("seeder", task); //$NON-NLS-1$
         return true;
     }
 

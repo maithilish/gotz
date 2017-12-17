@@ -3,6 +3,7 @@ package org.codetab.gotz.misc;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.shared.ActivityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,7 @@ public class ShutdownHook extends Thread {
     @Inject
     public ShutdownHook() {
         // cs - if private then class has to be final which is unable to mock
-        logger.info("shutdownhook created");
+        logger.info(Messages.getString("ShutdownHook.0")); //$NON-NLS-1$
     }
 
     /**

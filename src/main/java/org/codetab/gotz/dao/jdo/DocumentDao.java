@@ -5,6 +5,7 @@ import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.IDocumentDao;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ public final class DocumentDao implements IDocumentDao {
      *            JDO PMF
      */
     public DocumentDao(final PersistenceManagerFactory pmf) {
-        Validate.notNull(pmf, "pmf must not be null");
+        Validate.notNull(pmf, Messages.getString("DocumentDao.0")); //$NON-NLS-1$
         this.pmf = pmf;
     }
 
@@ -53,7 +54,7 @@ public final class DocumentDao implements IDocumentDao {
         try {
             Object result = pm.getObjectById(Document.class, id);
             // document with documentObject
-            pm.getFetchPlan().addGroup("detachDocumentObject");
+            pm.getFetchPlan().addGroup("detachDocumentObject"); //$NON-NLS-1$
             document = (Document) pm.detachCopy(result);
         } finally {
             pm.close();

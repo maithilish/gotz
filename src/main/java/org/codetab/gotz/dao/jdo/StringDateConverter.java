@@ -10,7 +10,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 public class StringDateConverter implements AttributeConverter<String, Date> {
 
-    private final String pattern = "YYYY-MM-dd";
+    private final String pattern = "YYYY-MM-dd"; //$NON-NLS-1$
 
     @Override
     public Date convertToDatastore(final String attributeValue) {

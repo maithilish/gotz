@@ -10,6 +10,7 @@ import org.codetab.gotz.dao.IDaoFactory;
 import org.codetab.gotz.dao.IDataSetDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.StepPersistenceException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.Util;
@@ -42,7 +43,7 @@ public class DataSetPersistence {
      *             on persistence error
      */
     public void storeDataSet(final List<DataSet> dataSets) {
-        Validate.notNull(dataSets, "dataSet must not be null");
+        Validate.notNull(dataSets, Messages.getString("DataSetPersistence.0")); //$NON-NLS-1$
 
         try {
             ORM orm = configService.getOrmType();
@@ -50,8 +51,9 @@ public class DataSetPersistence {
             IDataSetDao dao = daoFactory.getDataSetDao();
             dao.storeDataSets(dataSets);
         } catch (RuntimeException e) {
-            String message = Util.join("unable to store data",
-                    dataSets.get(0).getName(), ":", dataSets.get(0).getGroup());
+            String message = Util.join(
+                    Messages.getString("DataSetPersistence.1"), //$NON-NLS-1$
+                    dataSets.get(0).getName(), ":", dataSets.get(0).getGroup()); //$NON-NLS-1$
             throw new StepPersistenceException(message, e);
         }
     }

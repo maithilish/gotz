@@ -27,7 +27,7 @@ public class ConfigNotFoundException extends Exception {
 
     @Override
     public String getMessage() {
-        return "[" + key + "]";
+        return "[" + key + "]"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

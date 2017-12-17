@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
@@ -56,9 +57,10 @@ public class LocatorHelper {
      * @return list of locators
      */
     public List<Locator> getLocatorsFromBeans() {
-        LOGGER.info("initialize locators");
+        LOGGER.info(Messages.getString("LocatorHelper.0")); //$NON-NLS-1$
 
-        Validate.validState(beanService != null, "beanService is null");
+        Validate.validState(beanService != null,
+                Messages.getString("LocatorHelper.1")); //$NON-NLS-1$
 
         List<Locator> locatorList = new ArrayList<>();
         List<Locators> list = beanService.getBeans(Locators.class);
@@ -79,13 +81,14 @@ public class LocatorHelper {
      * @return list of locators - original plus forked
      */
     public List<Locator> forkLocators(final List<Locator> locators) {
-        Validate.notNull(locators, "locators must not be null");
-        Validate.validState(configService != null, "configService is null");
+        Validate.notNull(locators, Messages.getString("LocatorHelper.2")); //$NON-NLS-1$
+        Validate.validState(configService != null,
+                Messages.getString("LocatorHelper.3")); //$NON-NLS-1$
 
         List<Locator> forkedLocators = new ArrayList<>();
         try {
             int count = Integer
-                    .parseInt(configService.getConfig("gotz.fork.locator"));
+                    .parseInt(configService.getConfig("gotz.fork.locator")); //$NON-NLS-1$
             if (count > 0) {
                 for (Locator locator : locators) {
                     forkedLocators.add(locator);
@@ -110,7 +113,7 @@ public class LocatorHelper {
      * @return list of locator
      */
     private List<Locator> extractLocator(final Locators locatorsList) {
-        LOGGER.info("extract locators to locator");
+        LOGGER.info(Messages.getString("LocatorHelper.5")); //$NON-NLS-1$
 
         List<Locator> locatorList = new ArrayList<>();
         // for (Locators locs : locatorsList.getLocators()) {
@@ -130,7 +133,7 @@ public class LocatorHelper {
      *            - list of locators
      */
     private void trikleGroup(final Locators locators) {
-        LOGGER.info("propagate locators group to all locator");
+        LOGGER.info(Messages.getString("LocatorHelper.6")); //$NON-NLS-1$
 
         // for (Locators locs : locators.getLocators()) {
         // if (locs.getGroup() == null) {

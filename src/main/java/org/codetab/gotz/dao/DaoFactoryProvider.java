@@ -3,6 +3,7 @@ package org.codetab.gotz.dao;
 import javax.inject.Inject;
 
 import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.messages.Messages;
 
 /**
  * <p>
@@ -48,7 +49,8 @@ public class DaoFactoryProvider {
                     .instance(org.codetab.gotz.dao.jdo.JdoDaoFactory.class);
             break;
         case JPA:
-            throw new UnsupportedOperationException("JPA not yet supported");
+            throw new UnsupportedOperationException(
+                    Messages.getString("DaoFactoryProvider.0")); //$NON-NLS-1$
         default:
             instance = dInjector
                     .instance(org.codetab.gotz.dao.jdo.JdoDaoFactory.class);

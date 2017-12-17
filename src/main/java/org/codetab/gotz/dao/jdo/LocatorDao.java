@@ -10,6 +10,7 @@ import javax.jdo.Transaction;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.ILocatorDao;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Locator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public final class LocatorDao implements ILocatorDao {
      *            JDO PMF
      */
     public LocatorDao(final PersistenceManagerFactory pmf) {
-        Validate.notNull(pmf, "pmf must not be null");
+        Validate.notNull(pmf, Messages.getString("LocatorDao.0")); //$NON-NLS-1$
         this.pmf = pmf;
     }
 
@@ -67,13 +68,13 @@ public final class LocatorDao implements ILocatorDao {
      */
     @Override
     public Locator getLocator(final String name, final String group) {
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(group, "group must not be null");
+        Validate.notNull(name, Messages.getString("LocatorDao.1")); //$NON-NLS-1$
+        Validate.notNull(group, Messages.getString("LocatorDao.2")); //$NON-NLS-1$
 
         PersistenceManager pm = getPM();
         try {
-            String filter = "name == pname && group == pgroup";
-            String paramDecalre = "String pname, String pgroup";
+            String filter = "name == pname && group == pgroup"; //$NON-NLS-1$
+            String paramDecalre = "String pname, String pgroup"; //$NON-NLS-1$
             Extent<Locator> extent = pm.getExtent(Locator.class);
             Query<Locator> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecalre);
@@ -81,7 +82,7 @@ public final class LocatorDao implements ILocatorDao {
             List<Locator> locators = (List<Locator>) query.execute(name, group);
             // fetch document without documentObject !!!
             // to fetch documentObject use DocumentDao
-            pm.getFetchPlan().addGroup("detachDocuments");
+            pm.getFetchPlan().addGroup("detachDocuments"); //$NON-NLS-1$
             locators = (List<Locator>) pm.detachCopyAll(locators);
             switch (locators.size()) {
             case 0:
@@ -90,8 +91,8 @@ public final class LocatorDao implements ILocatorDao {
                 return locators.get(0);
             default:
                 throw new IllegalStateException(
-                        "found multiple locators for [name][group] [" + name
-                                + "][" + group + "]");
+                        Messages.getString("LocatorDao.6") + name //$NON-NLS-1$
+                                + "][" + group + "]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } finally {
             pm.close();
@@ -104,7 +105,7 @@ public final class LocatorDao implements ILocatorDao {
      */
     @Override
     public void storeLocator(final Locator locator) {
-        Validate.notNull(locator, "locator must not be null");
+        Validate.notNull(locator, Messages.getString("LocatorDao.9")); //$NON-NLS-1$
 
         PersistenceManager pm = getPM();
         Transaction tx = pm.currentTransaction();
@@ -135,7 +136,7 @@ public final class LocatorDao implements ILocatorDao {
             Locator locator = pm.getObjectById(Locator.class, id);
             // document without documentObject !!!
             // to fetch documentObject use DocumentDao
-            pm.getFetchPlan().addGroup("detachDocuments");
+            pm.getFetchPlan().addGroup("detachDocuments"); //$NON-NLS-1$
             return pm.detachCopy(locator);
         } finally {
             pm.close();

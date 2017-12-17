@@ -9,7 +9,7 @@ import javax.xml.namespace.NamespaceContext;
 
 public class SimpleNamespaceContext implements NamespaceContext {
 
-    private static String DEFAULT_NS = "default";
+    private static String DEFAULT_NS = "default"; //$NON-NLS-1$
     private Map<String, String> prefixMap = new HashMap<>();
 
     public SimpleNamespaceContext() {

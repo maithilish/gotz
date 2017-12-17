@@ -12,6 +12,7 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.ColComparator;
@@ -58,16 +59,16 @@ public class DataDefHelper {
      * @throws FieldsException
      */
     public void addFact(final DataDef dataDef) throws FieldsException {
-        Validate.notNull(dataDef, "dataDef must not be null");
+        Validate.notNull(dataDef, Messages.getString("DataDefHelper.0")); //$NON-NLS-1$
 
         for (DAxis axis : dataDef.getAxis()) {
-            if (axis.getName().equals("fact")) {
+            if (axis.getName().equals("fact")) { //$NON-NLS-1$
                 DMember fact = new DMember();
                 fact.setAxis(axis.getName());
-                fact.setName("fact");
+                fact.setName("fact"); //$NON-NLS-1$
                 fact.setOrder(0);
                 fact.setValue(null);
-                fact.setFields(fieldsHelper.createFields("xf"));
+                fact.setFields(fieldsHelper.createFields("xf")); //$NON-NLS-1$
                 axis.getMember().add(fact);
             }
         }
@@ -81,7 +82,7 @@ public class DataDefHelper {
      *            datadef, not null
      */
     public void setOrder(final DataDef dataDef) {
-        Validate.notNull(dataDef, "dataDef must not be null");
+        Validate.notNull(dataDef, Messages.getString("DataDefHelper.4")); //$NON-NLS-1$
 
         for (DAxis axis : dataDef.getAxis()) {
             // set member's axis name and order
@@ -107,26 +108,26 @@ public class DataDefHelper {
      * @throws FieldsException
      */
     public void addIndexRange(final DataDef dataDef) throws FieldsException {
-        Validate.notNull(dataDef, "dataDef must not be null");
+        Validate.notNull(dataDef, Messages.getString("DataDefHelper.5")); //$NON-NLS-1$
 
         for (DAxis dAxis : dataDef.getAxis()) {
             for (DMember dMember : dAxis.getMember()) {
                 Fields fields = dMember.getFields();
                 if (fields == null) {
-                    fields = fieldsHelper.createFields("xf");
+                    fields = fieldsHelper.createFields("xf"); //$NON-NLS-1$
                     dMember.setFields(fields);
                 }
                 // xpath - not abs path
-                if (!fieldsHelper.isAnyDefined(fields, "//xf:indexRange/@value",
-                        "//xf:breakAfter/@value")) {
-                    String defaultIndexRange = "1-1";
+                if (!fieldsHelper.isAnyDefined(fields, "//xf:indexRange/@value", //$NON-NLS-1$
+                        "//xf:breakAfter/@value")) { //$NON-NLS-1$
+                    String defaultIndexRange = "1-1"; //$NON-NLS-1$
                     Integer index = dMember.getIndex();
                     if (index != null) {
-                        defaultIndexRange = index + "-" + index;
+                        defaultIndexRange = index + "-" + index; //$NON-NLS-1$
                     }
                     Element node =
-                            fieldsHelper.addElement("indexRange", "", fields);
-                    fieldsHelper.addAttribute("value", defaultIndexRange, node);
+                            fieldsHelper.addElement("indexRange", "", fields); //$NON-NLS-1$ //$NON-NLS-2$
+                    fieldsHelper.addAttribute("value", defaultIndexRange, node); //$NON-NLS-1$
                 }
 
             }
@@ -141,8 +142,9 @@ public class DataDefHelper {
      *            datadef, not null
      */
     public void setDates(final DataDef dataDef) {
-        Validate.notNull(dataDef, "dataDef must not be null");
-        Validate.validState(configService != null, "configService is null");
+        Validate.notNull(dataDef, Messages.getString("DataDefHelper.14")); //$NON-NLS-1$
+        Validate.validState(configService != null,
+                Messages.getString("DataDefHelper.15")); //$NON-NLS-1$
 
         dataDef.setFromDate(configService.getRunDateTime());
         dataDef.setToDate(configService.getHighDate());
@@ -158,8 +160,8 @@ public class DataDefHelper {
      * @return DAxis
      */
     public DAxis getAxis(final DataDef dataDef, final AxisName axisName) {
-        Validate.notNull(dataDef, "dataDef must not be null");
-        Validate.notNull(axisName, "axisName must not be null");
+        Validate.notNull(dataDef, Messages.getString("DataDefHelper.16")); //$NON-NLS-1$
+        Validate.notNull(axisName, Messages.getString("DataDefHelper.17")); //$NON-NLS-1$
 
         String axisNameStr = axisName.toString();
         for (DAxis dAxis : dataDef.getAxis()) {
@@ -173,13 +175,13 @@ public class DataDefHelper {
     public List<Fields> getDataDefMemberFields(final String name,
             final Fields fields) throws FieldsException {
         // xpath - not abs path
-        String xpath = Util.join("/xf:member[@name='", name, "']");
+        String xpath = Util.join("/xf:member[@name='", name, "']"); //$NON-NLS-1$ //$NON-NLS-2$
         return fieldsHelper.split(xpath, fields);
     }
 
     public String getDataMemberGroup(final Fields fields)
             throws FieldsNotFoundException {
-        String xpath = "/xf:fields/xf:member/xf:group";
+        String xpath = "/xf:fields/xf:member/xf:group"; //$NON-NLS-1$
         String group = fieldsHelper.getLastValue(xpath, fields);
         return group;
     }
@@ -220,9 +222,9 @@ public class DataDefHelper {
             }
             return dataDefMemberSets;
         } catch (IllegalStateException e) {
-            String message = Util.join("invalid datadef [", dataDef.getName(),
-                    "]",
-                    ", unable to generate member sets, check datadef axis or member definition");
+            String message = Util.join(Messages.getString("DataDefHelper.21"), //$NON-NLS-1$
+                    dataDef.getName(), "]",
+                    Messages.getString("DataDefHelper.23")); //$NON-NLS-1$
             throw new IllegalStateException(message, e);
         }
     }
@@ -233,7 +235,7 @@ public class DataDefHelper {
         data.setDataDef(dataDef.getName());
         for (Set<DMember> members : memberSets) {
             Member dataMember = new Member();
-            dataMember.setName(""); // there is no name for member
+            dataMember.setName(""); // there is no name for member //$NON-NLS-1$
             dataMember.setFields(new Fields());
 
             // add axis and its fields
@@ -280,15 +282,15 @@ public class DataDefHelper {
             final Data data) {
         String line = System.lineSeparator();
         StringBuilder sb = new StringBuilder();
-        sb.append("DataDef [name=");
+        sb.append("DataDef [name="); //$NON-NLS-1$
         sb.append(data.getDataDef());
-        sb.append("] data structure");
+        sb.append(Messages.getString("DataDefHelper.26")); //$NON-NLS-1$
         sb.append(line);
         sb.append(line);
         Collections.sort(data.getMembers(), new RowComparator());
         Collections.sort(data.getMembers(), new ColComparator());
         for (Member member : data.getMembers()) {
-            sb.append("Member [");
+            sb.append("Member ["); //$NON-NLS-1$
             sb.append(member.getFields());
             sb.append(line);
             List<Axis> axes = new ArrayList<Axis>(member.getAxes());

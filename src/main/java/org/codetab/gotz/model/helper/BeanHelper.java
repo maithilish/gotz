@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.IXoc;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Bean;
 import org.codetab.gotz.validation.XMLValidator;
 import org.slf4j.Logger;
@@ -72,8 +73,8 @@ public class BeanHelper {
      */
     public void setFiles(final String beanFileName,
             final String schemaFileName) {
-        Validate.notNull(beanFileName, "beanFileName must not be null");
-        Validate.notNull(schemaFileName, "schemaFileName must not be null");
+        Validate.notNull(beanFileName, Messages.getString("BeanHelper.0")); //$NON-NLS-1$
+        Validate.notNull(schemaFileName, Messages.getString("BeanHelper.1")); //$NON-NLS-1$
 
         this.beanFile = beanFileName;
         this.schemaFile = schemaFileName;
@@ -94,11 +95,13 @@ public class BeanHelper {
      */
     public boolean validateBeanFile() throws JAXBException, IOException,
             SAXException, ConfigNotFoundException {
-        logger.info("initialize Bean file");
-        logger.info("using Bean configuartion file [{}]", beanFile);
+        logger.info(Messages.getString("BeanHelper.2")); //$NON-NLS-1$
+        logger.info(Messages.getString("BeanHelper.3"), beanFile); //$NON-NLS-1$
 
-        Validate.validState(beanFile != null, "beanFile is null");
-        Validate.validState(schemaFile != null, "schemaFile is null");
+        Validate.validState(beanFile != null,
+                Messages.getString("BeanHelper.4")); //$NON-NLS-1$
+        Validate.validState(schemaFile != null,
+                Messages.getString("BeanHelper.5")); //$NON-NLS-1$
 
         return xmlValidator.validate(beanFile, schemaFile);
     }
@@ -118,9 +121,9 @@ public class BeanHelper {
      */
     public boolean validateBeanFiles(final List<Bean> beanFiles)
             throws JAXBException, SAXException, IOException {
-        Validate.notNull(beanFiles, "beanFiles must not be null");
+        Validate.notNull(beanFiles, Messages.getString("BeanHelper.6")); //$NON-NLS-1$
 
-        logger.info("validate Bean files...");
+        logger.info(Messages.getString("BeanHelper.7")); //$NON-NLS-1$
 
         for (Bean bean : beanFiles) {
             xmlValidator.validate(bean.getXmlFile(), bean.getSchemaFile());
@@ -143,19 +146,21 @@ public class BeanHelper {
     public List<Bean> getBeanFiles()
             throws JAXBException, IOException, SAXException {
 
-        Validate.validState(beanFile != null, "beanFile is null");
-        Validate.validState(schemaFile != null, "schemaFile is null");
+        Validate.validState(beanFile != null,
+                Messages.getString("BeanHelper.8")); //$NON-NLS-1$
+        Validate.validState(schemaFile != null,
+                Messages.getString("BeanHelper.9")); //$NON-NLS-1$
 
         baseName = FilenameUtils.getFullPath(beanFile);
         List<Bean> list = unmarshalBeanFile(beanFile, Bean.class);
-        logger.info("configure Bean files...");
+        logger.info(Messages.getString("BeanHelper.10")); //$NON-NLS-1$
         for (Bean bean : list) {
             String fileName = baseName.concat(bean.getXmlFile());
             bean.setXmlFile(fileName);
             if (StringUtils.isEmpty(bean.getSchemaFile())) {
                 bean.setSchemaFile(schemaFile);
             }
-            logger.debug("{}", bean.toString());
+            logger.debug("{}", bean.toString()); //$NON-NLS-1$
         }
         return list;
     }
@@ -178,8 +183,8 @@ public class BeanHelper {
     public <T> List<T> unmarshalBeanFile(final String fileName,
             final Class<T> clz) throws JAXBException, IOException {
 
-        Validate.notNull(fileName, "fileName must not be null");
-        Validate.notNull(clz, "clz must not be null");
+        Validate.notNull(fileName, Messages.getString("BeanHelper.12")); //$NON-NLS-1$
+        Validate.notNull(clz, Messages.getString("BeanHelper.13")); //$NON-NLS-1$
 
         return xoc.unmarshall(fileName, clz);
     }

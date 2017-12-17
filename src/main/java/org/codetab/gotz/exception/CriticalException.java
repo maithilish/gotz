@@ -64,7 +64,7 @@ public class CriticalException extends RuntimeException {
         if (message == null) {
             return message;
         } else {
-            return "[" + message + "]";
+            return "[" + message + "]"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

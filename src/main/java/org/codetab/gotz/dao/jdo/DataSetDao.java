@@ -13,6 +13,7 @@ import javax.jdo.Transaction;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.IDataSetDao;
 import org.codetab.gotz.exception.StepPersistenceException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public final class DataSetDao implements IDataSetDao {
      *            persistence manager factory
      */
     public DataSetDao(final PersistenceManagerFactory pmf) {
-        Validate.notNull(pmf, "pmf must not be null");
+        Validate.notNull(pmf, Messages.getString("DataSetDao.0")); //$NON-NLS-1$
         this.pmf = pmf;
     }
 
@@ -61,7 +62,7 @@ public final class DataSetDao implements IDataSetDao {
      */
     @Override
     public void storeDataSets(final List<DataSet> dataSets) {
-        Validate.notNull(dataSets, "dataSet must not be null");
+        Validate.notNull(dataSets, Messages.getString("DataSetDao.1")); //$NON-NLS-1$
 
         // TODO filter on col or row
         List<String> names = dataSets.stream().map(DataSet::getName).distinct()
@@ -70,8 +71,7 @@ public final class DataSetDao implements IDataSetDao {
                 .distinct().collect(Collectors.toList());
 
         if (names.size() != 1 || groups.size() != 1) {
-            String message = Util.join(
-                    "unable persist dataset as name or group are not unique",
+            String message = Util.join(Messages.getString("DataSetDao.2"), //$NON-NLS-1$
                     names.toString(), groups.toString());
             throw new StepPersistenceException(message);
         }
@@ -85,8 +85,8 @@ public final class DataSetDao implements IDataSetDao {
         Transaction tx = pm.currentTransaction();
         try {
             tx.begin();
-            String filter = "name == pname && group == pgroup";
-            String paramDecla = "String pname,String pgroup";
+            String filter = "name == pname && group == pgroup"; //$NON-NLS-1$
+            String paramDecla = "String pname,String pgroup"; //$NON-NLS-1$
             Extent<DataSet> extent = pm.getExtent(DataSet.class);
             Query<DataSet> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecla);

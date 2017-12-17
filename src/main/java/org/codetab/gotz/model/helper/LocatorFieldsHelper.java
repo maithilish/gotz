@@ -20,6 +20,7 @@ import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.helper.IOHelper;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
@@ -66,7 +67,8 @@ public class LocatorFieldsHelper {
      * @throws ParserConfigurationException
      */
     public boolean init() {
-        Validate.validState(beanService != null, "beanService is null");
+        Validate.validState(beanService != null,
+                Messages.getString("LocatorFieldsHelper.0")); //$NON-NLS-1$
 
         try {
             fieldsList = getFields();
@@ -87,7 +89,7 @@ public class LocatorFieldsHelper {
         }
         // if not found, return empty fields
         Fields fields = fieldsHelper.createFields();
-        fields.setName("locator");
+        fields.setName("locator"); //$NON-NLS-1$
         fields.setGroup(group);
         fields.setClazz(clazz);
         return fields;
@@ -104,11 +106,11 @@ public class LocatorFieldsHelper {
             String defaultNs = XmlUtils.getDefaultNs(xBean.getNodes().get(0));
             Document doc;
             try {
-                doc = XmlUtils.createDocument(xBean.getNodes(), "fields", null,
+                doc = XmlUtils.createDocument(xBean.getNodes(), "fields", null, //$NON-NLS-1$
                         defaultNs);
             } catch (ParserConfigurationException e) {
                 throw new FieldsException(
-                        "unable to create document to transform the bean fields",
+                        Messages.getString("LocatorFieldsHelper.3"), //$NON-NLS-1$
                         e);
             }
             Document tdoc = mergeSteps(doc);
@@ -118,7 +120,7 @@ public class LocatorFieldsHelper {
             Fields holder = new Fields();
             holder.getNodes().add(effectiveDoc);
             List<Fields> newFields =
-                    fieldsHelper.split("/xf:fields/xf:tasks", holder);
+                    fieldsHelper.split("/xf:fields/xf:tasks", holder); //$NON-NLS-1$
 
             // set new fields fields
             for (Fields fields : newFields) {
@@ -134,34 +136,38 @@ public class LocatorFieldsHelper {
 
     private String getGroupFromNodes(final Fields fields)
             throws FieldsNotFoundException {
-        String xpath = "/xf:fields/xf:tasks/@group";
+        String xpath = "/xf:fields/xf:tasks/@group"; //$NON-NLS-1$
         return fieldsHelper.getLastValue(xpath, fields);
     }
 
     private Document mergeSteps(final Document doc) throws FieldsException {
-        String xslFile = "";
+        String xslFile = ""; //$NON-NLS-1$
         try {
-            xslFile = configService.getConfig("gotz.stepsXslFile");
+            xslFile = configService.getConfig("gotz.stepsXslFile"); //$NON-NLS-1$
             return transform(xslFile, doc);
         } catch (ConfigNotFoundException | FileNotFoundException
                 | TransformerFactoryConfigurationError
                 | TransformerException e) {
             throw new FieldsException(
-                    Util.join("unable to merge steps [", xslFile, "]"), e);
+                    Util.join(Messages.getString("LocatorFieldsHelper.8"), //$NON-NLS-1$
+                            xslFile, "]"), //$NON-NLS-1$
+                    e);
         }
     }
 
     private Document prefixNamespace(final Document doc)
             throws FieldsException {
-        String xslFile = "";
+        String xslFile = ""; //$NON-NLS-1$
         try {
-            xslFile = configService.getConfig("gotz.fieldsNsXslFile");
+            xslFile = configService.getConfig("gotz.fieldsNsXslFile"); //$NON-NLS-1$
             return transform(xslFile, doc);
         } catch (ConfigNotFoundException | FileNotFoundException
                 | TransformerFactoryConfigurationError
                 | TransformerException e) {
             throw new FieldsException(
-                    Util.join("unable to prefix namespace [", xslFile, "]"), e);
+                    Util.join(Messages.getString("LocatorFieldsHelper.12"), //$NON-NLS-1$
+                            xslFile, "]"), //$NON-NLS-1$
+                    e);
         }
     }
 

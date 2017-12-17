@@ -23,6 +23,7 @@ import org.apache.commons.text.StrSubstitutor;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.FieldsParseException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.misc.SimpleNamespaceContext;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.Fields;
@@ -80,8 +81,8 @@ public class FieldsHelper {
      */
     public String getValue(final String xpathExpression, final Fields fields) {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression, Messages.getString("FieldsHelper.0")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.1")); //$NON-NLS-1$
 
         String value = null;
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -112,8 +113,8 @@ public class FieldsHelper {
     public String getFirstValue(final String xpathExpression,
             final Fields fields) throws FieldsNotFoundException {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression, Messages.getString("FieldsHelper.2")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.3")); //$NON-NLS-1$
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
@@ -147,10 +148,10 @@ public class FieldsHelper {
     public String getLastValue(final String xpathExpression,
             final Fields fields) throws FieldsNotFoundException {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression, Messages.getString("FieldsHelper.4")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.5")); //$NON-NLS-1$
 
-        String value = "";
+        String value = ""; //$NON-NLS-1$
         XPath xpath = XPathFactory.newInstance().newXPath();
         for (Node node : fields.getNodes()) {
             xpath.setNamespaceContext(getNamespaceContext(node));
@@ -186,8 +187,8 @@ public class FieldsHelper {
             final boolean includeBlanks, final Fields fields)
             throws FieldsNotFoundException {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression, Messages.getString("FieldsHelper.7")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.8")); //$NON-NLS-1$
 
         List<String> values = new ArrayList<>();
         XPath xpath = XPathFactory.newInstance().newXPath();
@@ -231,11 +232,11 @@ public class FieldsHelper {
     public boolean isDefined(final String xpathExpression,
             final boolean countEmptyElements, final Fields fields) {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression, Messages.getString("FieldsHelper.9")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.10")); //$NON-NLS-1$
 
         if (countEmptyElements) {
-            String xpath = "boolean(" + xpathExpression + ")";
+            String xpath = "boolean(" + xpathExpression + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             try {
                 String val = getFirstValue(xpath, fields);
                 return Boolean.valueOf(val);
@@ -261,8 +262,9 @@ public class FieldsHelper {
     public boolean isDefined(final String xpathExpression,
             final Fields fields) {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression,
+                Messages.getString("FieldsHelper.13")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.14")); //$NON-NLS-1$
 
         return isDefined(xpathExpression, false, fields);
     }
@@ -278,8 +280,9 @@ public class FieldsHelper {
     public boolean isAnyDefined(final Fields fields,
             final String... xpathExpressions) {
 
-        Validate.notNull(xpathExpressions, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpressions,
+                Messages.getString("FieldsHelper.15")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.16")); //$NON-NLS-1$
 
         for (String xpathExpression : xpathExpressions) {
             if (isDefined(xpathExpression, false, fields)) {
@@ -304,11 +307,12 @@ public class FieldsHelper {
     public boolean isTrue(final String xpathExpression, final Fields fields)
             throws FieldsNotFoundException {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression,
+                Messages.getString("FieldsHelper.17")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.18")); //$NON-NLS-1$
 
         String value = getLastValue(xpathExpression, fields);
-        return StringUtils.equalsIgnoreCase(value, "true");
+        return StringUtils.equalsIgnoreCase(value, "true"); //$NON-NLS-1$
     }
 
     // others
@@ -341,13 +345,14 @@ public class FieldsHelper {
         // TODO try for optimization (in same or separate method) deep copy or
         // reference to nodes
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression,
+                Messages.getString("FieldsHelper.20")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.21")); //$NON-NLS-1$
 
         if (fields.getNodes().isEmpty()) {
             throw new FieldsException(
-                    Util.join("no nodes in fields, unable to split [",
-                            xpathExpression, "]"));
+                    Util.join(Messages.getString("FieldsHelper.22"), //$NON-NLS-1$
+                            xpathExpression, "]")); //$NON-NLS-1$
         }
 
         List<Fields> fieldsList = new ArrayList<>();
@@ -362,7 +367,7 @@ public class FieldsHelper {
                     String prefix = splitNode.getPrefix();
                     String ns = splitNode.lookupNamespaceURI(prefix);
                     Document doc = XmlUtils.createDocument(nodeList.item(i),
-                            "fields", prefix, ns);
+                            "fields", prefix, ns); //$NON-NLS-1$
 
                     Fields copy = new Fields();
                     copy.setName(fields.getName());
@@ -374,19 +379,21 @@ public class FieldsHelper {
 
             } catch (XPathExpressionException
                     | ParserConfigurationException e) {
-                throw new FieldsParseException("unable to split fields", e);
+                throw new FieldsParseException(
+                        Messages.getString("FieldsHelper.25"), e); //$NON-NLS-1$
             }
         }
         if (fieldsList.isEmpty()) {
-            throw new FieldsException(Util.join("unable to split fields [",
-                    xpathExpression, "]"));
+            throw new FieldsException(
+                    Util.join(Messages.getString("FieldsHelper.26"), //$NON-NLS-1$
+                            xpathExpression, "]")); //$NON-NLS-1$
         }
         return fieldsList;
     }
 
     public Fields deepCopy(final Fields fields) throws FieldsException {
 
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(fields, Messages.getString("FieldsHelper.6")); //$NON-NLS-1$
 
         try {
             Fields copy = new Fields();
@@ -398,13 +405,13 @@ public class FieldsHelper {
             }
             return copy;
         } catch (ParserConfigurationException e) {
-            throw new FieldsException("unable to clone fields", e);
+            throw new FieldsException(Messages.getString("FieldsHelper.29"), e); //$NON-NLS-1$
         }
     }
 
     public Optional<Node> getLastNode(final Fields fields) {
 
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(fields, Messages.getString("FieldsHelper.30")); //$NON-NLS-1$
 
         Node node = null;
         int last = fields.getNodes().size() - 1;
@@ -417,7 +424,7 @@ public class FieldsHelper {
 
     public Optional<Node> getFirstNode(final Fields fields) {
 
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(fields, Messages.getString("FieldsHelper.31")); //$NON-NLS-1$
 
         Node node = null;
         int first = 0;
@@ -453,13 +460,14 @@ public class FieldsHelper {
                 doc = node.get().getOwnerDocument();
             }
             if (doc == null) {
-                String message = Util.join("unable to add new element [", name,
-                        "][", text, "]. owner document is null");
+                String message = Util.join(
+                        Messages.getString("FieldsHelper.32"), name, //$NON-NLS-1$
+                        "][", text, Messages.getString("FieldsHelper.34")); //$NON-NLS-1$ //$NON-NLS-2$
                 throw new FieldsException(message);
             } else {
                 String qName = name;
                 if (namespacePrefix != null) {
-                    qName = String.join(":", namespacePrefix, name);
+                    qName = String.join(":", namespacePrefix, name); //$NON-NLS-1$
                 }
                 Element element = doc.createElementNS(
                         doc.lookupNamespaceURI(namespacePrefix), qName);
@@ -474,16 +482,20 @@ public class FieldsHelper {
                             location.appendChild(element);
                         }
                     } catch (XPathExpressionException e) {
-                        throw new FieldsParseException(Util.join(
-                                "unable to add element [", name, "][", text,
-                                "] at xpath [", parentNodeXPath, "]"), e);
+                        throw new FieldsParseException(
+                                Util.join(Messages.getString("FieldsHelper.36"), //$NON-NLS-1$
+                                        name, "][", text, //$NON-NLS-1$
+                                        Messages.getString("FieldsHelper.38"), //$NON-NLS-1$
+                                        parentNodeXPath, "]"), //$NON-NLS-1$
+                                e);
                     }
                 }
                 return element;
             }
         } else {
-            String message = Util.join("unable to add new element [", name,
-                    "][", text, "]. fields has no nodes");
+            String message =
+                    Util.join(Messages.getString("FieldsHelper.40"), name, //$NON-NLS-1$
+                            "][", text, Messages.getString("FieldsHelper.42")); //$NON-NLS-1$ //$NON-NLS-2$
             throw new FieldsException(message);
         }
     }
@@ -502,12 +514,12 @@ public class FieldsHelper {
     public Element addElement(final String name, final String text,
             final Fields fields) throws FieldsException {
 
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(text, "text must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(name, Messages.getString("FieldsHelper.43")); //$NON-NLS-1$
+        Validate.notNull(text, Messages.getString("FieldsHelper.44")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.45")); //$NON-NLS-1$
 
         // prefixed ns
-        return addElement("xf", name, text, null, fields);
+        return addElement("xf", name, text, null, fields); //$NON-NLS-1$
     }
 
     /**
@@ -520,9 +532,9 @@ public class FieldsHelper {
     public Element addElement(final String name, final String text,
             final Node parent) {
 
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(text, "text must not be null");
-        Validate.notNull(parent, "parent node must not be null");
+        Validate.notNull(name, Messages.getString("FieldsHelper.47")); //$NON-NLS-1$
+        Validate.notNull(text, Messages.getString("FieldsHelper.48")); //$NON-NLS-1$
+        Validate.notNull(parent, Messages.getString("FieldsHelper.49")); //$NON-NLS-1$
 
         Document doc = null;
         if (parent instanceof Document) {
@@ -531,8 +543,7 @@ public class FieldsHelper {
             doc = parent.getOwnerDocument();
         }
         if (doc == null) {
-            LOGGER.warn(
-                    "unable to add new element [{}][{}]. owner document is null",
+            LOGGER.warn(Messages.getString("FieldsHelper.50"), //$NON-NLS-1$
                     name, text);
         } else {
             Element element = doc.createElementNS(
@@ -547,15 +558,14 @@ public class FieldsHelper {
     public void addAttribute(final String name, final String text,
             final Node node) {
 
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(text, "text must not be null");
-        Validate.notNull(node, "node must not be null");
+        Validate.notNull(name, Messages.getString("FieldsHelper.51")); //$NON-NLS-1$
+        Validate.notNull(text, Messages.getString("FieldsHelper.52")); //$NON-NLS-1$
+        Validate.notNull(node, Messages.getString("FieldsHelper.53")); //$NON-NLS-1$
 
         Document doc = null;
         doc = node.getOwnerDocument();
         if (doc == null) {
-            LOGGER.warn(
-                    "unable to add new element [{}][{}]. owner document is null",
+            LOGGER.warn(Messages.getString("FieldsHelper.54"), //$NON-NLS-1$
                     name, text);
         } else {
             // ((Element) node).setAttributeNS(doc.lookupNamespaceURI(null),
@@ -568,8 +578,9 @@ public class FieldsHelper {
     private NodeList getNodes(final Node node, final String xpathExpression)
             throws XPathExpressionException {
 
-        Validate.notNull(node, "node must not be null");
-        Validate.notNull(xpathExpression, "xpath must not be null");
+        Validate.notNull(node, Messages.getString("FieldsHelper.55")); //$NON-NLS-1$
+        Validate.notNull(xpathExpression,
+                Messages.getString("FieldsHelper.56")); //$NON-NLS-1$
 
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(getNamespaceContext(node));
@@ -598,20 +609,21 @@ public class FieldsHelper {
             final Fields fields)
             throws FieldsNotFoundException, NumberFormatException {
 
-        Validate.notNull(xpathExpression, "xpath must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(xpathExpression,
+                Messages.getString("FieldsHelper.57")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("FieldsHelper.58")); //$NON-NLS-1$
 
         String value = getLastValue(xpathExpression, fields);
 
-        if (value.startsWith("-")) {
-            NumberFormatException e =
-                    new NumberFormatException("Invalid Range " + value);
+        if (value.startsWith("-")) { //$NON-NLS-1$
+            NumberFormatException e = new NumberFormatException(
+                    Messages.getString("FieldsHelper.60") + value); //$NON-NLS-1$
             throw e;
         }
         String[] tokens = StringUtils.split(value, '-');
         if (tokens.length < 1 || tokens.length > 2) {
-            NumberFormatException e =
-                    new NumberFormatException("Invalid Range " + value);
+            NumberFormatException e = new NumberFormatException(
+                    Messages.getString("FieldsHelper.61") + value); //$NON-NLS-1$
             throw e;
         }
         Integer min = 0, max = 0;
@@ -626,30 +638,31 @@ public class FieldsHelper {
         }
         if (min > max) {
             NumberFormatException e = new NumberFormatException(
-                    "Invalid Range [min > max] " + value);
+                    Messages.getString("FieldsHelper.62") + value); //$NON-NLS-1$
             throw e;
         }
         return Range.between(min, max);
     }
 
     public Fields createFields() throws FieldsException {
-        return createFields("xf");
+        return createFields("xf"); //$NON-NLS-1$
     }
 
     public Fields createFields(final String namespacePrefix)
             throws FieldsException {
 
-        Validate.notNull(namespacePrefix, "namespacePrefix must not be null");
+        Validate.notNull(namespacePrefix,
+                Messages.getString("FieldsHelper.64")); //$NON-NLS-1$
 
         Document doc;
         try {
-            doc = XmlUtils.createDocument("fields", namespacePrefix,
-                    "http://codetab.org/xfields");
+            doc = XmlUtils.createDocument("fields", namespacePrefix, //$NON-NLS-1$
+                    "http://codetab.org/xfields"); //$NON-NLS-1$
             Fields fields = new Fields();
             fields.getNodes().add(doc);
             return fields;
         } catch (ParserConfigurationException e) {
-            throw new FieldsException("unable to create fields", e);
+            throw new FieldsException(Messages.getString("FieldsHelper.67"), e); //$NON-NLS-1$
         }
     }
 
@@ -659,15 +672,15 @@ public class FieldsHelper {
 
         // TODO provide some examples and full explanation in javadoc
 
-        Validate.notNull(queries, "queries must not be null");
-        Validate.notNull(axisMap, "axisMap must not be null");
+        Validate.notNull(queries, Messages.getString("FieldsHelper.68")); //$NON-NLS-1$
+        Validate.notNull(axisMap, Messages.getString("FieldsHelper.69")); //$NON-NLS-1$
 
         for (String key : queries.keySet()) {
             String str = queries.get(key);
             Map<String, String> valueMap = getValueMap(str, axisMap);
             StrSubstitutor ss = new StrSubstitutor(valueMap);
-            ss.setVariablePrefix("%{");
-            ss.setVariableSuffix("}");
+            ss.setVariablePrefix("%{"); //$NON-NLS-1$
+            ss.setVariableSuffix("}"); //$NON-NLS-1$
             ss.setEscapeChar('%');
             String patchedStr = ss.replace(str);
             queries.put(key, patchedStr);
@@ -692,13 +705,13 @@ public class FieldsHelper {
     private Map<String, String> getValueMap(final String str,
             final Map<String, ?> map) throws IllegalAccessException,
             InvocationTargetException, NoSuchMethodException {
-        String[] keys = StringUtils.substringsBetween(str, "%{", "}");
+        String[] keys = StringUtils.substringsBetween(str, "%{", "}"); //$NON-NLS-1$ //$NON-NLS-2$
         if (keys == null) {
             return null;
         }
         Map<String, String> valueMap = new HashMap<>();
         for (String key : keys) {
-            String[] parts = key.split("\\.");
+            String[] parts = key.split("\\."); //$NON-NLS-1$
             String objKey = parts[0];
             String property = parts[1];
             Object obj = map.get(objKey.toUpperCase());
@@ -724,8 +737,8 @@ public class FieldsHelper {
      */
     public String prefixValue(final String value, final List<String> prefixes) {
 
-        Validate.notNull(value, "value must not be null");
-        Validate.notNull(prefixes, "prefixes must not be null");
+        Validate.notNull(value, Messages.getString("FieldsHelper.75")); //$NON-NLS-1$
+        Validate.notNull(prefixes, Messages.getString("FieldsHelper.76")); //$NON-NLS-1$
 
         String pValue = value;
         for (String prefix : prefixes) {

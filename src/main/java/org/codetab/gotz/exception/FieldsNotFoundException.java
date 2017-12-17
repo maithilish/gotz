@@ -27,7 +27,7 @@ public class FieldsNotFoundException extends Exception {
 
     @Override
     public String getMessage() {
-        return "[" + message + "]";
+        return "[" + message + "]"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

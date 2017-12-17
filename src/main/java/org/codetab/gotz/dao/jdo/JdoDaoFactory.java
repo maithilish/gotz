@@ -9,6 +9,7 @@ import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.IDataSetDao;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ILocatorDao;
+import org.codetab.gotz.messages.Messages;
 
 /**
  * <p>
@@ -41,7 +42,7 @@ public class JdoDaoFactory implements IDaoFactory {
      */
     @Inject
     public void setPmf(final PMF pmf) {
-        Validate.notNull(pmf, "pmf must not be null");
+        Validate.notNull(pmf, Messages.getString("JdoDaoFactory.0")); //$NON-NLS-1$
 
         if (pmf.getFactory() == null) {
             pmf.init();

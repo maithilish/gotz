@@ -20,6 +20,7 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.FieldsParseException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
@@ -74,7 +75,8 @@ public class DocumentHelper {
      *         input is empty or null.
      */
     public Long getActiveDocumentId(final List<Document> documents) {
-        Validate.validState(configService != null, "configService is null");
+        Validate.validState(configService != null,
+                Messages.getString("DocumentHelper.0")); //$NON-NLS-1$
 
         if (documents == null) {
             return null;
@@ -113,10 +115,11 @@ public class DocumentHelper {
     public Date getToDate(final Date fromDate, final Fields fields,
             final Labels labels) {
 
-        Validate.notNull(fromDate, "fromDate must not be null");
-        Validate.notNull(fields, "fields must not be null");
+        Validate.notNull(fromDate, Messages.getString("DocumentHelper.1")); //$NON-NLS-1$
+        Validate.notNull(fields, Messages.getString("DocumentHelper.2")); //$NON-NLS-1$
 
-        Validate.validState(configService != null, "configService is null");
+        Validate.validState(configService != null,
+                Messages.getString("DocumentHelper.3")); //$NON-NLS-1$
 
         // convert fromDate to DateTime
         ZonedDateTime fromDateTime = ZonedDateTime
@@ -126,14 +129,14 @@ public class DocumentHelper {
         // extract live value
         String live = null;
         try {
-            live = fieldsHelper.getLastValue("/xf:fields/xf:tasks/xf:live",
+            live = fieldsHelper.getLastValue("/xf:fields/xf:tasks/xf:live", //$NON-NLS-1$
                     fields);
         } catch (FieldsNotFoundException e) {
-            LOGGER.warn("{} - defaults to 0 day. ", e.getLocalizedMessage(),
-                    labels.getLabel());
+            LOGGER.warn(Messages.getString("DocumentHelper.5"), //$NON-NLS-1$
+                    e.getLocalizedMessage(), labels.getLabel());
         }
-        if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) {
-            live = "PT0S"; // zero second
+        if (StringUtils.equals(live, "0") || StringUtils.isBlank(live)) { //$NON-NLS-1$
+            live = "PT0S"; // zero second //$NON-NLS-1$
         }
 
         // calculate toDate
@@ -144,15 +147,15 @@ public class DocumentHelper {
             // if live is not Duration string then parse it as Date
             try {
                 String[] patterns =
-                        configService.getConfigArray("gotz.dateParsePattern");
+                        configService.getConfigArray("gotz.dateParsePattern"); //$NON-NLS-1$
                 // multiple patterns so needs DateUtils
                 Date td = DateUtils.parseDateStrictly(live, patterns);
                 toDate = ZonedDateTime.ofInstant(td.toInstant(),
                         ZoneId.systemDefault());
             } catch (ParseException | ConfigNotFoundException pe) {
-                LOGGER.warn("{} field [live] {} {}. Defaults to 0 days",
+                LOGGER.warn(Messages.getString("DocumentHelper.9"), //$NON-NLS-1$
                         labels.getLabel(), live, e);
-                TemporalAmount ta = Util.parseTemporalAmount("PT0S");
+                TemporalAmount ta = Util.parseTemporalAmount("PT0S"); //$NON-NLS-1$
                 toDate = fromDateTime.plus(ta);
             }
         }
@@ -160,7 +163,7 @@ public class DocumentHelper {
         if (LOGGER.isTraceEnabled()) {
             Marker marker =
                     MarkerUtil.getMarker(labels.getName(), labels.getGroup());
-            LOGGER.trace(marker, "document.toDate. [live] {} [toDate]", live,
+            LOGGER.trace(marker, "document.toDate. [live] {} [toDate]", live, //$NON-NLS-1$
                     toDate);
         }
         return Date.from(Instant.from(toDate));
@@ -179,9 +182,9 @@ public class DocumentHelper {
      */
     public byte[] getDocumentObject(final Document document)
             throws DataFormatException, IOException {
-        Validate.notNull(document, "document must not be null");
+        Validate.notNull(document, Messages.getString("DocumentHelper.12")); //$NON-NLS-1$
         Validate.notNull(document.getDocumentObject(),
-                "documentObject must not be null");
+                Messages.getString("DocumentHelper.13")); //$NON-NLS-1$
 
         final int bufferLength = 4086;
         return CompressionUtil.decompressByteArray(
@@ -201,8 +204,9 @@ public class DocumentHelper {
      */
     public boolean setDocumentObject(final Document document,
             final byte[] documentObject) throws IOException {
-        Validate.notNull(document, "document must not be null");
-        Validate.notNull(documentObject, "documentObject must not be null");
+        Validate.notNull(document, Messages.getString("DocumentHelper.14")); //$NON-NLS-1$
+        Validate.notNull(documentObject,
+                Messages.getString("DocumentHelper.15")); //$NON-NLS-1$
 
         final int bufferLength = 4086;
         byte[] compressedObject =
@@ -228,12 +232,13 @@ public class DocumentHelper {
      */
     public Document createDocument(final String name, final String url,
             final Date fromDate, final Date toDate) {
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(url, "url must not be null");
-        Validate.notNull(fromDate, "fromDate must not be null");
-        Validate.notNull(toDate, "toDate must not be null");
+        Validate.notNull(name, Messages.getString("DocumentHelper.16")); //$NON-NLS-1$
+        Validate.notNull(url, Messages.getString("DocumentHelper.17")); //$NON-NLS-1$
+        Validate.notNull(fromDate, Messages.getString("DocumentHelper.18")); //$NON-NLS-1$
+        Validate.notNull(toDate, Messages.getString("DocumentHelper.19")); //$NON-NLS-1$
 
-        Validate.validState(dInjector != null, "dInjector is null");
+        Validate.validState(dInjector != null,
+                Messages.getString("DocumentHelper.20")); //$NON-NLS-1$
 
         Document document = dInjector.instance(Document.class);
         document.setName(name);

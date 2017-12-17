@@ -9,6 +9,7 @@ import org.codetab.gotz.dao.ILocatorDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepPersistenceException;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
@@ -49,10 +50,10 @@ public class LocatorPersistence {
      *             if persistence error
      */
     public Locator loadLocator(final String name, final String group) {
-        Validate.notNull(name, "name must not be null");
-        Validate.notNull(group, "group must not be null");
+        Validate.notNull(name, Messages.getString("LocatorPersistence.0")); //$NON-NLS-1$
+        Validate.notNull(group, Messages.getString("LocatorPersistence.1")); //$NON-NLS-1$
 
-        if (!configService.isPersist("gotz.useDataStore")) {
+        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
             return null;
         }
 
@@ -64,7 +65,8 @@ public class LocatorPersistence {
             return existingLocator;
         } catch (RuntimeException e) {
             String message =
-                    Util.join("unable to load [", name, ":", group, "]");
+                    Util.join(Messages.getString("LocatorPersistence.3"), name, //$NON-NLS-1$
+                            ":", group, "]"); //$NON-NLS-1$ //$NON-NLS-2$
             throw new StepPersistenceException(message, e);
         }
     }
@@ -80,7 +82,7 @@ public class LocatorPersistence {
      */
     public Locator loadLocator(final long id) {
 
-        if (!configService.isPersist("gotz.useDataStore")) {
+        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
             return null;
         }
 
@@ -90,8 +92,9 @@ public class LocatorPersistence {
             ILocatorDao dao = daoFactory.getLocatorDao();
             return dao.getLocator(id);
         } catch (RuntimeException e) {
-            String message = Util.join("unable to load Locator[id=",
-                    String.valueOf(id), "]");
+            String message =
+                    Util.join(Messages.getString("LocatorPersistence.7"), //$NON-NLS-1$
+                            String.valueOf(id), "]"); //$NON-NLS-1$
             throw new StepPersistenceException(message, e);
         }
     }
@@ -105,16 +108,16 @@ public class LocatorPersistence {
      *             if persistence error
      */
     public boolean storeLocator(final Locator locator) {
-        Validate.notNull(locator, "locator must not be null");
+        Validate.notNull(locator, Messages.getString("LocatorPersistence.9")); //$NON-NLS-1$
 
-        if (!configService.isPersist("gotz.useDataStore")) {
+        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
             return false;
         }
 
-        boolean persist = configService.isPersist("gotz.persist.locator");
+        boolean persist = configService.isPersist("gotz.persist.locator"); //$NON-NLS-1$
         try {
             persist = fieldsHelper.isTrue(
-                    "/xf:fields/xf:tasks/xf:persist/xf:locator",
+                    "/xf:fields/xf:tasks/xf:persist/xf:locator", //$NON-NLS-1$
                     locator.getFields());
         } catch (FieldsNotFoundException e) {
         }
@@ -130,8 +133,9 @@ public class LocatorPersistence {
             dao.storeLocator(locator);
             return true;
         } catch (RuntimeException e) {
-            String message = Util.join("unable to store [", locator.getName(),
-                    ":", locator.getGroup(), "]");
+            String message =
+                    Util.join(Messages.getString("LocatorPersistence.13"), //$NON-NLS-1$
+                            locator.getName(), ":", locator.getGroup(), "]"); //$NON-NLS-2$
             throw new StepPersistenceException(message, e);
         }
     }

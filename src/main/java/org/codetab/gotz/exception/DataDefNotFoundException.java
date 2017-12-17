@@ -27,7 +27,7 @@ public final class DataDefNotFoundException extends Exception {
 
     @Override
     public String getMessage() {
-        return "[" + name + "]";
+        return "[" + name + "]"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

@@ -334,5 +334,12 @@ Precedence Example:
 1.0.0
 
 
+Externalize messages
+--------------------
+
+after moving messages.properties to src/main/resources/locale, run 
+mvn eclipse:eclipse to update the location
+
+
 
     

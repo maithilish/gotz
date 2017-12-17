@@ -10,6 +10,7 @@ import javax.jdo.Transaction;
 
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.IDataDao;
+import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public final class DataDao implements IDataDao {
      *            persistence manager factory
      */
     public DataDao(final PersistenceManagerFactory pmf) {
-        Validate.notNull(pmf, "pmf must not be null");
+        Validate.notNull(pmf, Messages.getString("DataDao.0")); //$NON-NLS-1$
         this.pmf = pmf;
     }
 
@@ -51,7 +52,7 @@ public final class DataDao implements IDataDao {
      */
     @Override
     public void storeData(final Data data) {
-        Validate.notNull(data, "data must not be null");
+        Validate.notNull(data, Messages.getString("DataDao.1")); //$NON-NLS-1$
 
         PersistenceManager pm = getPM();
         Transaction tx = pm.currentTransaction();
@@ -84,14 +85,14 @@ public final class DataDao implements IDataDao {
         PersistenceManager pm = getPM();
         List<Data> data = null;
         try {
-            String filter = "documentId == rId && dataDefId == dId";
-            String paramDecla = "Long rId,Long dId";
+            String filter = "documentId == rId && dataDefId == dId"; //$NON-NLS-1$
+            String paramDecla = "Long rId,Long dId"; //$NON-NLS-1$
             Extent<Data> extent = pm.getExtent(Data.class);
             Query<Data> query = pm.newQuery(extent, filter);
             query.declareParameters(paramDecla);
             query.setParameters(documentId, dataDefId);
             data = query.executeList();
-            pm.getFetchPlan().addGroup("detachMembers");
+            pm.getFetchPlan().addGroup("detachMembers"); //$NON-NLS-1$
             data = (List<Data>) pm.detachCopyAll(data);
         } finally {
             pm.close();
@@ -102,9 +103,8 @@ public final class DataDao implements IDataDao {
         case 1:
             return data.get(0);
         default:
-            throw new IllegalStateException(
-                    "found multiple data for [documentId][dataDefId] ["
-                            + documentId + "][" + dataDefId + "]");
+            throw new IllegalStateException(Messages.getString("DataDao.5") //$NON-NLS-1$
+                    + documentId + "][" + dataDefId + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -121,7 +121,7 @@ public final class DataDao implements IDataDao {
         Data data = null;
         try {
             Object result = pm.getObjectById(Data.class, id);
-            pm.getFetchPlan().addGroup("detachMembers");
+            pm.getFetchPlan().addGroup("detachMembers"); //$NON-NLS-1$
             data = (Data) pm.detachCopy(result);
         } finally {
             pm.close();
