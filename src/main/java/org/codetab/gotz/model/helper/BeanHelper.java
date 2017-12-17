@@ -188,4 +188,12 @@ public class BeanHelper {
 
         return xoc.unmarshall(fileName, clz);
     }
+
+    public List<Object> unmarshalBeanFile(final String fileName,
+            final String packageName) throws JAXBException, IOException {
+        Validate.notNull(fileName, Messages.getString("BeanHelper.12")); //$NON-NLS-1$
+        Validate.notNull(packageName, "packageName must not be null");
+
+        return xoc.unmarshall(fileName, packageName);
+    }
 }

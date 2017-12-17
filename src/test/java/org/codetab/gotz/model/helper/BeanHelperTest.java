@@ -230,7 +230,8 @@ public class BeanHelperTest {
         }
 
         try {
-            beanHelper.unmarshalBeanFile("x", null);
+            Class<Object> clz = null;
+            beanHelper.unmarshalBeanFile("x", clz);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("clz must not be null");

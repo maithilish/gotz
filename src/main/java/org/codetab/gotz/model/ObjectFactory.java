@@ -24,18 +24,21 @@ public class ObjectFactory {
 
     private final static QName _Fields_QNAME =
             new QName("http://codetab.org/xfields", "fields");
-    private final static QName _Wrapper_QNAME =
-            new QName("http://codetab.org/gotz", "wrapper");
+
+    private final static QName _Gotz_QNAME =
+            new QName("http://codetab.org/gotz", "gotz");
     private final static QName _Locator_QNAME =
             new QName("http://codetab.org/gotz", "locator");
     private final static QName _Locators_QNAME =
             new QName("http://codetab.org/gotz", "locators");
+
     private final static QName _Document_QNAME =
             new QName("http://codetab.org/gotz", "document");
     private final static QName _Bean_QNAME =
             new QName("http://codetab.org/gotz", "bean");
     private final static QName _Beans_QNAME =
             new QName("http://codetab.org/gotz", "beans");
+
     private final static QName _DataDef_QNAME =
             new QName("http://codetab.org/gotz", "dataDef");
     private final static QName _Axis_QNAME =
@@ -62,11 +65,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Wrapper }
+     * Create an instance of {@link Gotz }
      *
      */
-    public Wrapper createWrapper() {
-        return new Wrapper();
+    public Gotz createGotz() {
+        return new Gotz();
     }
 
     /**
@@ -153,14 +156,13 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Wrapper
+     * Create an instance of {@link JAXBElement }{@code <}{@link Gotz
      * }{@code >}}
      *
      */
-    @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "wrapper")
-    public JAXBElement<Wrapper> createWrapper(Wrapper value) {
-        return new JAXBElement<Wrapper>(_Wrapper_QNAME, Wrapper.class, null,
-                value);
+    @XmlElementDecl(namespace = "http://codetab.org/gotz", name = "gotz")
+    public JAXBElement<Gotz> createGotz(Gotz value) {
+        return new JAXBElement<Gotz>(_Gotz_QNAME, Gotz.class, null, value);
     }
 
     /**

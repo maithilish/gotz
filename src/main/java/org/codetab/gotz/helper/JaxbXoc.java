@@ -16,7 +16,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.codetab.gotz.messages.Messages;
-import org.codetab.gotz.model.Wrapper;
+import org.codetab.gotz.model.Gotz;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public class JaxbXoc implements IXoc {
         Unmarshaller um = jc.createUnmarshaller();
         logger.debug(Messages.getString("JaxbXoc.0"), ofClass); //$NON-NLS-1$
         StreamSource xmlSource = new StreamSource(xmlStream);
-        Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
+        Gotz wrapper = um.unmarshal(xmlSource, Gotz.class).getValue();
         List<T> list = new ArrayList<T>();
         for (Object e : wrapper.getAny()) {
             Object value = JAXBIntrospector.getValue(e);
@@ -99,6 +99,35 @@ public class JaxbXoc implements IXoc {
                 logger.error(Messages.getString("JaxbXoc.1"), //$NON-NLS-1$
                         ofClass.getName(), value.getClass().getName());
             }
+        }
+        logger.debug(Messages.getString("JaxbXoc.2"), list.size()); //$NON-NLS-1$
+        return list;
+    }
+
+    @Override
+    public List<Object> unmarshall(final String xmlFile,
+            final String packageName) throws JAXBException, IOException {
+        InputStream xmlStream = null;
+        xmlStream = ioHelper.getInputStream(xmlFile);
+        List<Object> list = unmarshall(xmlStream, packageName);
+        if (xmlStream != null) {
+            xmlStream.close();
+        }
+        return list;
+    }
+
+    @Override
+    public List<Object> unmarshall(final InputStream xmlStream,
+            final String packageName) throws JAXBException {
+        JAXBContext jc = JAXBContext.newInstance(packageName);
+        Unmarshaller um = jc.createUnmarshaller();
+        logger.debug("unmarshall of types in package {}", packageName);
+        StreamSource xmlSource = new StreamSource(xmlStream);
+        Gotz wrapper = um.unmarshal(xmlSource, Gotz.class).getValue();
+        List<Object> list = new ArrayList<Object>();
+        for (Object e : wrapper.getAny()) {
+            Object value = JAXBIntrospector.getValue(e);
+            list.add(value);
         }
         logger.debug(Messages.getString("JaxbXoc.2"), list.size()); //$NON-NLS-1$
         return list;

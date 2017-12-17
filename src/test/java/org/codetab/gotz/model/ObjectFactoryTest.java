@@ -16,20 +16,20 @@ public class ObjectFactoryTest {
         of = new ObjectFactory();
     }
 
-    @Test
-    public void testCreateWrapper() {
-        Wrapper actual = of.createWrapper();
-        assertThat(actual).isInstanceOf(Wrapper.class);
-        assertThat(actual).isNotSameAs(of.createWrapper());
-    }
-
-    @Test
-    public void testCreateWrapperWrapper() {
-        Wrapper value = of.createWrapper();
-        JAXBElement<Wrapper> actual = of.createWrapper(value);
-        assertThat(actual).isInstanceOf(JAXBElement.class);
-        assertThat(actual).isNotSameAs(of.createWrapper(value));
-    }
+    // @Test
+    // public void testCreateWrapper() {
+    // Wrapper actual = of.createWrapper();
+    // assertThat(actual).isInstanceOf(Wrapper.class);
+    // assertThat(actual).isNotSameAs(of.createWrapper());
+    // }
+    //
+    // @Test
+    // public void testCreateWrapperWrapper() {
+    // Wrapper value = of.createWrapper();
+    // JAXBElement<Wrapper> actual = of.createWrapper(value);
+    // assertThat(actual).isInstanceOf(JAXBElement.class);
+    // assertThat(actual).isNotSameAs(of.createWrapper(value));
+    // }
 
     @Test
     public void testCreateFields() {

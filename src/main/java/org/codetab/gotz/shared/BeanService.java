@@ -12,6 +12,7 @@ import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Bean;
+import org.codetab.gotz.model.Gotz;
 import org.codetab.gotz.model.helper.BeanHelper;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
@@ -80,8 +81,14 @@ public class BeanService {
         List<Object> list = new ArrayList<>();
         for (Bean bean : beanList) {
             Class<?> ofClass = Class.forName(bean.getClassName());
-            List<?> objs =
-                    beanHelper.unmarshalBeanFile(bean.getXmlFile(), ofClass);
+            List<?> objs = null;
+            if (ofClass == Gotz.class) {
+                String packageName = ofClass.getPackage().getName();
+                objs = beanHelper.unmarshalBeanFile(bean.getXmlFile(),
+                        packageName);
+            } else {
+                objs = beanHelper.unmarshalBeanFile(bean.getXmlFile(), ofClass);
+            }
             list.addAll(objs);
         }
         return list;

@@ -16,7 +16,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
 import org.codetab.gotz.helper.IOHelper;
-import org.codetab.gotz.model.Wrapper;
+import org.codetab.gotz.model.Gotz;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class TestJaxbHelper {
         Unmarshaller um = jc.createUnmarshaller();
         LOGGER.debug("unmarshall : type [{}]", ofClass);
         StreamSource xmlSource = new StreamSource(xmlStream);
-        Wrapper wrapper = um.unmarshal(xmlSource, Wrapper.class).getValue();
+        Gotz wrapper = um.unmarshal(xmlSource, Gotz.class).getValue();
         List<T> list = new ArrayList<T>();
         for (Object e : wrapper.getAny()) {
             @SuppressWarnings("unchecked")

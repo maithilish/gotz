@@ -342,4 +342,14 @@ mvn eclipse:eclipse to update the location
 
 don't externalize model classes !!!
 
+for internationalization add messages_<lang>_<country>.properties such
+as messages_fr_CA.properties and run app with 
+
+java -Duser.language=fr -Duser.country=CA Default
+
+
+
+
+
+
     

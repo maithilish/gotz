@@ -11,6 +11,8 @@
 
     <xs:element name="wrapper" type="tns:wrapper" />
 
+    <xs:element name="gotz" type="tns:gotz" />
+    
     <xs:element name="locator" type="tns:locator" />
 
     <xs:element name="locators" type="tns:locators" />
@@ -39,6 +41,13 @@
                 maxOccurs="unbounded" />
         </xs:sequence>
     </xs:complexType>
+    
+    <xs:complexType name="gotz">
+        <xs:sequence>
+            <xs:any processContents="lax" minOccurs="0"
+                maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>    
 
     <xs:complexType name="locatorGroups">
         <xs:sequence>

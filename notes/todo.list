@@ -7,12 +7,13 @@ FieldsException to NoFieldsException,
 IT - prefix add local path
 activity cleanup, internal error cat, meaningful activity message
 disable persistence
-
 externalize strings
 debug
 state log, check whether all trace has marker  
+
+merge bean files
+
 devdef and itest clean html files
-   
 tests
    fields builder - format xml
 memory usage and profiler
@@ -21,7 +22,6 @@ examples
 
 refactor to minimal logging before packaging 
 
-gotz.properties add comments and add example bean.xml config
     
   
 beta
