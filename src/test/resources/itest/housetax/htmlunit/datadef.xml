@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
@@ -9,7 +9,7 @@
             <xf:fields>
                 <xf:query region="//table" field="*//tr[1]/th[%{col.index}+1]" />
             </xf:fields>
-            <member name="year" >
+            <member name="year">
                 <xf:fields>
                     <xf:breakAfter value="2017" />
                 </xf:fields>
@@ -19,7 +19,7 @@
             <xf:fields>
                 <xf:query region="//table" field="*//tr[%{row.index}+1]/td[1]" />
             </xf:fields>
-            <member name="item" >
+            <member name="item">
                 <xf:fields>
                     <xf:breakAfter value="GF" />
                 </xf:fields>
@@ -40,4 +40,4 @@
         </axis>
     </dataDef>
 
-</dataDefs>
+</gotz>

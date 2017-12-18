@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<locatorGroups xmlns="http://codetab.org/gotz">
+<gotz xmlns="http://codetab.org/gotz">
     <locators group="pl">
-        <locator name="ITC" url="src/test/resources/itest/itc/pl/itc-pl.html">
+        <locator name="ITC"
+            url="src/test/resources/itest/itc/page/itc-pl.html">
         </locator>
     </locators>
-</locatorGroups>
+</gotz>

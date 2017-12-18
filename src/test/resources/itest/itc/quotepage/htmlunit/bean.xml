@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<beans xmlns="http://codetab.org/gotz">
-    <bean name="datadef" className="org.codetab.gotz.model.DataDef"
-        xmlFile="datadef.xml" />
-    <bean name="locator" className="org.codetab.gotz.model.Locators"
-        xmlFile="locator.xml" />
-    <bean name="task" className="org.codetab.gotz.model.Fields"
-    xmlFile="task.xml" schemaFile="/schema/xfields.xsd" />
-</beans>
+<gotz xmlns="http://codetab.org/gotz">
+    <bean name="datadef" xmlFile="datadef.xml" />
+    <bean name="locator" xmlFile="locator.xml" />
+    <bean name="task" xmlFile="task.xml" />
+</gotz>

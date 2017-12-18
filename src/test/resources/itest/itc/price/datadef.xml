@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
@@ -16,9 +16,9 @@
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="div#Nse_Prc_tick_div" field="*" />
+                <xf:query region="div#price_tick" field="*" />
             </xf:fields>
         </axis>
     </dataDef>
 
-</dataDefs>
+</gotz>

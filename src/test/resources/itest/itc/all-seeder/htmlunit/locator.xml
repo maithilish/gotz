@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<locatorGroups xmlns="http://codetab.org/gotz">
+<gotz xmlns="http://codetab.org/gotz">
     <locators group="quote">
         <locator name="ITC"
-            url="src/test/resources/itest/itc/all-seeder/itc-quote.html" />
+            url="src/test/resources/itest/itc/page/itc-quote-prefix.html" />
     </locators>
-</locatorGroups>
+</gotz>

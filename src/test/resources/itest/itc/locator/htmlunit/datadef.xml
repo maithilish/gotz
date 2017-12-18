@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
@@ -22,7 +22,7 @@
         </axis>
         <axis name="row">
             <xf:fields>
-                <xf:query region="//*[@id='quickLinkPrc']/table"
+                <xf:query region="//*[@id='page_links']/table"
                     field="//li/a[contains(.,'%{row.match}')]" />
             </xf:fields>
             <member name="bs" match="Balance Sheet" />
@@ -30,13 +30,13 @@
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="//*[@id='quickLinkPrc']/table"
+                <xf:query region="//*[@id='page_links']/table"
                     field="*//a[contains(.,'%{row.match}')]/@href" />
-                <xf:prefix>http://www.moneycontrol.com</xf:prefix>
+                <xf:prefix>src/test/resources/itest/itc/page/</xf:prefix>
             </xf:fields>
         </axis>
     </dataDef>
 
-</dataDefs>
+</gotz>
 
 

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<xfields xmlns="http://codetab.org/xfields">
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
 
-    <fields name="locator" class="org.codetab.gotz.model.Locator">
+    <fields name="locator" class="org.codetab.gotz.model.Locator"
+        xmlns="http://codetab.org/xfields">
 
         <steps name="stepsSeq">
             <step name="seeder"
@@ -40,4 +41,4 @@
         </tasks>
 
     </fields>
-</xfields>
+</gotz>

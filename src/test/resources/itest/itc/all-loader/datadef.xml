@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<dataDefs xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
 
@@ -23,7 +23,7 @@
         <axis name="row">
             <xf:fields>
                 <xf:query
-                    region="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul"
+                    region="#page_links > table > tbody > tr > td:nth-child(4) > ul"
                     field="li:nth-child(%{row.index}) > a[href]" />
             </xf:fields>
             <member name="bs" index="2" />
@@ -32,7 +32,7 @@
         <axis name="fact">
             <xf:fields>
                 <xf:query
-                    region="#quickLinkPrc > table > tbody > tr > td:nth-child(4) > ul"
+                    region="#page_links > table > tbody > tr > td:nth-child(4) > ul"
                     field="li:nth-child(%{row.index}) > a[href]"
                     attribute="href">
                 </xf:query>
@@ -51,7 +51,7 @@
         </axis>
         <axis name="row">
             <xf:fields>
-                <xf:query region="div#mktdet_2"
+                <xf:query region="div#snapshot"
                     field="div:matchesOwn(^%{row.match})" />
             </xf:fields>
             <member name="MC" match="MARKET CAP" />
@@ -67,7 +67,7 @@
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="div#mktdet_2"
+                <xf:query region="div#snapshot"
                     field="div:matchesOwn(^%{row.match}) + div" />
             </xf:fields>
         </axis>
@@ -84,7 +84,7 @@
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="div#Nse_Prc_tick_div" field="*" />
+                <xf:query region="div#price_tick" field="*" />
             </xf:fields>
         </axis>
     </dataDef>
@@ -173,6 +173,6 @@
         </axis>
     </dataDef>
 
-</dataDefs>
+</gotz>
 
 
