@@ -3,7 +3,6 @@ package org.codetab.gotz.model.helper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
@@ -19,7 +18,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.IXoc;
 import org.codetab.gotz.model.Bean;
-import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.validation.XMLValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -161,9 +159,10 @@ public class BeanHelperTest {
         String schemaFile = "/com/example/x.xsd";
         beanHelper.setFiles(beanFile, schemaFile);
 
-        List<Bean> testBeanFiles = getTestBeanFiles();
+        List<Object> testBeanFiles = new ArrayList<>();
+        testBeanFiles.addAll(getTestBeanFiles());
 
-        given(xoc.unmarshall(any(String.class), eq(Bean.class)))
+        given(xoc.unmarshall(any(String.class), any(String.class)))
                 .willReturn(testBeanFiles);
 
         // when
@@ -172,13 +171,13 @@ public class BeanHelperTest {
         // then
         Bean actualBean = actualBeanFiles.get(0);
         assertThat(actualBean.getName()).isEqualTo("a");
-        assertThat(actualBean.getClassName()).isEqualTo("org.codetab.A");
+        assertThat(actualBean.getPackageName()).isEqualTo("org.codetab.A");
         assertThat(actualBean.getXmlFile()).isEqualTo("/org/example/a.xml");
         assertThat(actualBean.getSchemaFile()).isEqualTo("/com/example/x.xsd");
 
         actualBean = actualBeanFiles.get(1);
         assertThat(actualBean.getName()).isEqualTo("b");
-        assertThat(actualBean.getClassName()).isEqualTo("org.codetab.B");
+        assertThat(actualBean.getPackageName()).isEqualTo("org.codetab.B");
         assertThat(actualBean.getXmlFile()).isEqualTo("/org/example/b.xml");
         assertThat(actualBean.getSchemaFile()).isEqualTo("b.xsd");
     }
@@ -208,14 +207,17 @@ public class BeanHelperTest {
     public void testUnmarshalBeanFile() throws JAXBException, IOException {
         // given
         String xmlFile = "x.xml";
-        List<Bean> beans = new ArrayList<>();
-        given(xoc.unmarshall(xmlFile, Bean.class)).willReturn(beans);
+        String packageName = Bean.class.getPackage().getName();
+        List<Object> beans = new ArrayList<>();
+
+        given(xoc.unmarshall(xmlFile, packageName)).willReturn(beans);
 
         // when
-        List<Bean> actual = beanHelper.unmarshalBeanFile(xmlFile, Bean.class);
+        List<Object> actual =
+                beanHelper.unmarshalBeanFile(xmlFile, packageName);
 
         // then
-        verify(xoc).unmarshall(xmlFile, Bean.class);
+        verify(xoc).unmarshall(xmlFile, packageName);
         assertThat(actual).isSameAs(beans);
     }
 
@@ -223,15 +225,15 @@ public class BeanHelperTest {
     public void testUnmarshalBeanFileNullParams()
             throws JAXBException, SAXException, IOException {
         try {
-            beanHelper.unmarshalBeanFile(null, Locator.class);
+            beanHelper.unmarshalBeanFile(null, "");
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("fileName must not be null");
         }
 
         try {
-            Class<Object> clz = null;
-            beanHelper.unmarshalBeanFile("x", clz);
+            String packageName = null;
+            beanHelper.unmarshalBeanFile("x", packageName);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
             assertThat(e.getMessage()).isEqualTo("clz must not be null");
@@ -243,13 +245,13 @@ public class BeanHelperTest {
         beans = new ArrayList<>();
         Bean bean = new Bean();
         bean.setName("a");
-        bean.setClassName("org.codetab.A");
+        bean.setPackageName("org.codetab.A");
         bean.setXmlFile("a.xml");
         beans.add(bean);
 
         bean = new Bean();
         bean.setName("b");
-        bean.setClassName("org.codetab.B");
+        bean.setPackageName("org.codetab.B");
         bean.setXmlFile("b.xml");
         bean.setSchemaFile("b.xsd");
         beans.add(bean);

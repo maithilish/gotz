@@ -91,9 +91,9 @@ public class ItcLocatorIT {
         Date fromDate = locator.getDocuments().get(0).getFromDate();
 
         List<String> expected = Arrays.asList("ITC|quote|" + fromDate
-                + "|Balance Sheet|http://www.moneycontrol.com/financials/itc/balance-sheet/ITC#ITC",
+                + "|Balance Sheet|src/test/resources/itest/itc/page/itc-bs.html",
                 "ITC|quote|" + fromDate
-                        + "|Profit & Loss|http://www.moneycontrol.com/financials/itc/profit-loss/ITC#ITC");
+                        + "|Profit & Loss|src/test/resources/itest/itc/page/itc-pl.html");
 
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).containsAll(expected);
@@ -124,9 +124,9 @@ public class ItcLocatorIT {
         Date fromDate = locator.getDocuments().get(0).getFromDate();
 
         List<String> expected = Arrays.asList("ITC|quote|" + fromDate
-                + "|Balance Sheet|http://www.moneycontrol.com/financials/itc/balance-sheet/ITC#ITC",
+                + "|Balance Sheet|src/test/resources/itest/itc/page/itc-bs.html",
                 "ITC|quote|" + fromDate
-                        + "|Profit & Loss|http://www.moneycontrol.com/financials/itc/profit-loss/ITC#ITC");
+                        + "|Profit & Loss|src/test/resources/itest/itc/page/itc-pl.html");
 
         assertThat(actual.size()).isEqualTo(expected.size());
         assertThat(actual).containsAll(expected);

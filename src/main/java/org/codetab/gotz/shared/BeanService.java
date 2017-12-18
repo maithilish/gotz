@@ -80,15 +80,21 @@ public class BeanService {
         LOGGER.info(Messages.getString("BeanService.7")); //$NON-NLS-1$
         List<Object> list = new ArrayList<>();
         for (Bean bean : beanList) {
-            Class<?> ofClass = Class.forName(bean.getClassName());
-            List<?> objs = null;
-            if (ofClass == Gotz.class) {
-                String packageName = ofClass.getPackage().getName();
-                objs = beanHelper.unmarshalBeanFile(bean.getXmlFile(),
-                        packageName);
-            } else {
-                objs = beanHelper.unmarshalBeanFile(bean.getXmlFile(), ofClass);
+            // Class<?> ofClass = Class.forName(bean.getClassName());
+            // List<?> objs = null;
+            // if (ofClass == Gotz.class) {
+            // String packageName = ofClass.getPackage().getName();
+            // objs = beanHelper.unmarshalBeanFile(bean.getXmlFile(),
+            // packageName);
+            // } else {
+            // objs = beanHelper.unmarshalBeanFile(bean.getXmlFile(), ofClass);
+            // }
+            String packageName = bean.getPackageName();
+            if (packageName == null) {
+                packageName = Gotz.class.getPackage().getName();
             }
+            List<?> objs = beanHelper.unmarshalBeanFile(bean.getXmlFile(),
+                    packageName);
             list.addAll(objs);
         }
         return list;

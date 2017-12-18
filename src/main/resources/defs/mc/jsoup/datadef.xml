@@ -42,7 +42,7 @@
         </axis>
     </dataDef>
 
-   <dataDef name="quotePage">
+    <dataDef name="quotePage">
         <axis name="col">
             <xf:fields>
                 <xf:script script="document.getFromDate()" />

@@ -3,7 +3,7 @@
     targetNamespace="http://codetab.org/xfields" xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xf="http://codetab.org/xfields">
 
-    <!-- we need xfields for validation -->
+    <!-- not used in gotz, we may xfields for other projects -->
     <xs:element name="xfields" type="xf:xFields" />
 
     <xs:element name="fields" type="xf:fields" />

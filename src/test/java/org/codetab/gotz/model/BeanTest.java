@@ -53,8 +53,8 @@ public class BeanTest {
 
     @Test
     public void testGetClassName() {
-        bean.setClassName("x");
-        assertThat(bean.getClassName()).isEqualTo("x");
+        bean.setPackageName("x");
+        assertThat(bean.getPackageName()).isEqualTo("x");
     }
 
     @Test
@@ -100,13 +100,13 @@ public class BeanTest {
     private List<Enhanced> createTestObjects() {
         Enhanced t1 = new Enhanced();
         t1.setName("n");
-        t1.setClassName("c");
+        t1.setPackageName("c");
         t1.setSchemaFile("s");
         t1.setXmlFile("x");
 
         Enhanced t2 = new Enhanced();
         t2.setName("n");
-        t2.setClassName("c");
+        t2.setPackageName("c");
         t2.setSchemaFile("s");
         t2.setXmlFile("x");
         t2.id = 15;

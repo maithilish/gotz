@@ -62,6 +62,7 @@ public class BeanServiceTest {
             ConfigNotFoundException {
         String beanFile = "x.xml";
         String schemaFile = "x.xsd";
+        String packageName = Bean.class.getPackage().getName();
 
         List<Bean> files = getTestBeanFiles();
         given(beanFiles.getBeanFiles()).willReturn(files);
@@ -75,8 +76,8 @@ public class BeanServiceTest {
         inOrder.verify(beanFiles).getBeanFiles();
         inOrder.verify(beanFiles).validateBeanFiles(files);
 
-        inOrder.verify(beanFiles).unmarshalBeanFile("a.xml", Locator.class);
-        inOrder.verify(beanFiles).unmarshalBeanFile("b.xml", DataDef.class);
+        inOrder.verify(beanFiles).unmarshalBeanFile("a.xml", packageName);
+
     }
 
     @Test
@@ -93,14 +94,18 @@ public class BeanServiceTest {
 
     @Test
     public void testGetBeans() throws JAXBException, IOException, SAXException {
-        List<Locator> locators = getTestLocators();
-        List<DataDef> dataDefs = getTestDataDefs();
+        List<Object> locators = new ArrayList<>();
+        locators.addAll(getTestLocators());
+        List<Object> dataDefs = new ArrayList<>();
+        dataDefs.addAll(getTestDataDefs());
         List<Bean> files = getTestBeanFiles();
 
+        String packageName = Bean.class.getPackage().getName();
+
         given(beanFiles.getBeanFiles()).willReturn(files);
-        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class))
+        given(beanFiles.unmarshalBeanFile("a.xml", packageName))
                 .willReturn(locators);
-        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class))
+        given(beanFiles.unmarshalBeanFile("b.xml", packageName))
                 .willReturn(dataDefs);
 
         beanService.init("x", "y");
@@ -115,14 +120,18 @@ public class BeanServiceTest {
     @Test
     public void testGetBeansDeepClone()
             throws JAXBException, IOException, SAXException {
-        List<Locator> locators = getTestLocators();
-        List<DataDef> dataDefs = getTestDataDefs();
+        List<Object> locators = new ArrayList<>();
+        locators.addAll(getTestLocators());
+        List<Object> dataDefs = new ArrayList<>();
+        dataDefs.addAll(getTestDataDefs());
         List<Bean> files = getTestBeanFiles();
 
+        String packageName = Bean.class.getPackage().getName();
+
         given(beanFiles.getBeanFiles()).willReturn(files);
-        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class))
+        given(beanFiles.unmarshalBeanFile("a.xml", packageName))
                 .willReturn(locators);
-        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class))
+        given(beanFiles.unmarshalBeanFile("b.xml", packageName))
                 .willReturn(dataDefs);
 
         beanService.init("x", "y");
@@ -130,19 +139,19 @@ public class BeanServiceTest {
         List<Locator> actualLocators = beanService.getBeans(Locator.class);
         List<DataDef> actualDataDefs = beanService.getBeans(DataDef.class);
 
-        Locator expectedLocator = locators.get(0);
+        Locator expectedLocator = (Locator) locators.get(0);
         Locator actualLocator = actualLocators.get(0);
 
         assertThat(actualLocator).isEqualTo(expectedLocator);
         assertThat(actualLocator).isNotSameAs(expectedLocator);
 
-        expectedLocator = locators.get(1);
+        expectedLocator = (Locator) locators.get(1);
         actualLocator = actualLocators.get(1);
 
         assertThat(actualLocator).isEqualTo(expectedLocator);
         assertThat(actualLocator).isNotSameAs(expectedLocator);
 
-        DataDef expectedDataDef = dataDefs.get(0);
+        DataDef expectedDataDef = (DataDef) dataDefs.get(0);
         DataDef actualDataDef = actualDataDefs.get(0);
 
         assertThat(actualDataDef).isEqualTo(expectedDataDef);
@@ -151,14 +160,18 @@ public class BeanServiceTest {
 
     @Test
     public void testGetCount() throws JAXBException, IOException, SAXException {
-        List<Locator> locators = getTestLocators();
-        List<DataDef> dataDefs = getTestDataDefs();
+        List<Object> locators = new ArrayList<>();
+        locators.addAll(getTestLocators());
+        List<Object> dataDefs = new ArrayList<>();
+        dataDefs.addAll(getTestDataDefs());
         List<Bean> files = getTestBeanFiles();
 
+        String packageName = Bean.class.getPackage().getName();
+
         given(beanFiles.getBeanFiles()).willReturn(files);
-        given(beanFiles.unmarshalBeanFile("a.xml", Locator.class))
+        given(beanFiles.unmarshalBeanFile("a.xml", packageName))
                 .willReturn(locators);
-        given(beanFiles.unmarshalBeanFile("b.xml", DataDef.class))
+        given(beanFiles.unmarshalBeanFile("b.xml", packageName))
                 .willReturn(dataDefs);
 
         beanService.init("x", "y");
@@ -175,13 +188,13 @@ public class BeanServiceTest {
         beans = new ArrayList<>();
         Bean bean = new Bean();
         bean.setName("a");
-        bean.setClassName("org.codetab.gotz.model.Locator");
+        bean.setPackageName("org.codetab.gotz.model");
         bean.setXmlFile("a.xml");
         beans.add(bean);
 
         bean = new Bean();
         bean.setName("b");
-        bean.setClassName("org.codetab.gotz.model.DataDef");
+        bean.setPackageName("org.codetab.gotz.model");
         bean.setXmlFile("b.xml");
         bean.setSchemaFile("b.xsd");
         beans.add(bean);

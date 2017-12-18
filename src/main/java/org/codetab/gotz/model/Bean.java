@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  *       &lt;sequence&gt;
  *       &lt;/sequence&gt;
  *       &lt;attribute name="name" use="required" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
- *       &lt;attribute name="className" use="required" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
+ *       &lt;attribute name="packageName" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
  *       &lt;attribute name="xmlFile" use="required" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
  *       &lt;attribute name="schemaFile" type="{http://codetab.org/gotz}nonEmptyString" /&gt;
  *     &lt;/restriction&gt;
@@ -45,8 +45,8 @@ public class Bean implements Serializable {
     private final static long serialVersionUID = 1L;
     @XmlAttribute(name = "name", required = true)
     private String name;
-    @XmlAttribute(name = "className", required = true)
-    private String className;
+    @XmlAttribute(name = "packageName")
+    private String packageName;
     @XmlAttribute(name = "xmlFile", required = true)
     private String xmlFile;
     @XmlAttribute(name = "schemaFile")
@@ -74,24 +74,24 @@ public class Bean implements Serializable {
     }
 
     /**
-     * Gets the value of the className property.
+     * Gets the value of the packageName property.
      *
      * @return possible object is {@link String }
      *
      */
-    public String getClassName() {
-        return className;
+    public String getPackageName() {
+        return packageName;
     }
 
     /**
-     * Sets the value of the className property.
+     * Sets the value of the packageName property.
      *
      * @param value
      *            allowed object is {@link String }
      *
      */
-    public void setClassName(String value) {
-        this.className = value;
+    public void setPackageName(String value) {
+        this.packageName = value;
     }
 
     /**

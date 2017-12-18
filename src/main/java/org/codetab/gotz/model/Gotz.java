@@ -57,7 +57,7 @@ public class Gotz implements Serializable {
      *
      * <p>
      * For example, to add a new item, do as follows:
-     *
+     * 
      * <pre>
      * getAny().add(newItem);
      * </pre>

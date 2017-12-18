@@ -1,6 +1,7 @@
 package org.codetab.gotz.model.helper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -152,41 +153,22 @@ public class BeanHelper {
                 Messages.getString("BeanHelper.9")); //$NON-NLS-1$
 
         baseName = FilenameUtils.getFullPath(beanFile);
-        List<Bean> list = unmarshalBeanFile(beanFile, Bean.class);
+        String packageName = Bean.class.getPackage().getName();
+        List<Object> list = unmarshalBeanFile(beanFile, packageName);
         logger.info(Messages.getString("BeanHelper.10")); //$NON-NLS-1$
-        for (Bean bean : list) {
+
+        List<Bean> beans = new ArrayList<>();
+        for (Object o : list) {
+            Bean bean = (Bean) o;
             String fileName = baseName.concat(bean.getXmlFile());
             bean.setXmlFile(fileName);
             if (StringUtils.isEmpty(bean.getSchemaFile())) {
                 bean.setSchemaFile(schemaFile);
             }
+            beans.add(bean);
             logger.debug("{}", bean.toString()); //$NON-NLS-1$
         }
-        return list;
-    }
-
-    /**
-     * <p>
-     * Unmarshal XML to objects of a class. <T> class type
-     * @param <T>
-     *            class type
-     * @param fileName
-     *            XML file
-     * @param clz
-     *            class of object
-     * @return list of objects
-     * @throws JAXBException
-     *             parse error
-     * @throws IOException
-     *             IO error
-     */
-    public <T> List<T> unmarshalBeanFile(final String fileName,
-            final Class<T> clz) throws JAXBException, IOException {
-
-        Validate.notNull(fileName, Messages.getString("BeanHelper.12")); //$NON-NLS-1$
-        Validate.notNull(clz, Messages.getString("BeanHelper.13")); //$NON-NLS-1$
-
-        return xoc.unmarshall(fileName, clz);
+        return beans;
     }
 
     public List<Object> unmarshalBeanFile(final String fileName,

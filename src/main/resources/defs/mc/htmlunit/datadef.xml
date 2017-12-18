@@ -22,7 +22,7 @@
         </axis>
         <axis name="row">
             <xf:fields>
-                <xf:query region="//*[@id='quickLinkPrc']/table"
+                <xf:query region="//*[@id='page_links']/table"
                     field="//li/a[contains(.,'%{row.match}')]" />
             </xf:fields>
             <member name="bs" match="Balance Sheet" />
@@ -30,7 +30,7 @@
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="//*[@id='quickLinkPrc']/table"
+                <xf:query region="//*[@id='page_links']/table"
                     field="*//a[contains(.,'%{row.match}')]/@href" />
 
                 <xf:prefix>http://www.moneycontrol.com</xf:prefix>

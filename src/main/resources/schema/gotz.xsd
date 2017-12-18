@@ -9,23 +9,15 @@
     <xs:import namespace="http://codetab.org/xfields"
         schemaLocation="xfields.xsd" />
 
-    <xs:element name="wrapper" type="tns:wrapper" />
-
     <xs:element name="gotz" type="tns:gotz" />
-    
+
     <xs:element name="locator" type="tns:locator" />
 
     <xs:element name="locators" type="tns:locators" />
 
-    <xs:element name="locatorGroups" type="tns:locatorGroups" />
-
     <xs:element name="document" type="tns:document" />
 
     <xs:element name="bean" type="tns:bean" />
-
-    <xs:element name="beans" type="tns:beans" />
-
-    <xs:element name="dataDefs" type="tns:dataDefs" />
 
     <xs:element name="dataDef" type="tns:dataDef" />
 
@@ -35,24 +27,10 @@
 
     <xs:element name="filter" type="tns:dFilter" />
 
-    <xs:complexType name="wrapper">
-        <xs:sequence>
-            <xs:any processContents="lax" minOccurs="0"
-                maxOccurs="unbounded" />
-        </xs:sequence>
-    </xs:complexType>
-    
     <xs:complexType name="gotz">
         <xs:sequence>
             <xs:any processContents="lax" minOccurs="0"
                 maxOccurs="unbounded" />
-        </xs:sequence>
-    </xs:complexType>    
-
-    <xs:complexType name="locatorGroups">
-        <xs:sequence>
-            <xs:element name="locators" minOccurs="1"
-                maxOccurs="unbounded" type="tns:locators" />
         </xs:sequence>
     </xs:complexType>
 
@@ -94,30 +72,15 @@
         <xs:attribute name="url" type="xs:string" />
     </xs:complexType>
 
-    <xs:complexType name="beans">
-        <xs:sequence>
-            <xs:element ref="tns:bean" minOccurs="0"
-                maxOccurs="unbounded" />
-        </xs:sequence>
-    </xs:complexType>
-
     <xs:complexType name="bean">
         <xs:sequence />
         <xs:attribute name="name" type="tns:nonEmptyString"
             use="required" />
-        <xs:attribute name="className" type="tns:nonEmptyString"
-            use="required" />
+        <xs:attribute name="packageName" type="tns:nonEmptyString" />
         <xs:attribute name="xmlFile" type="tns:nonEmptyString"
             use="required" />
         <xs:attribute name="schemaFile" type="tns:nonEmptyString"
             use="optional" />
-    </xs:complexType>
-
-    <xs:complexType name="dataDefs">
-        <xs:sequence>
-            <xs:element ref="tns:dataDef" minOccurs="0"
-                maxOccurs="unbounded" />
-        </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="dataDef">

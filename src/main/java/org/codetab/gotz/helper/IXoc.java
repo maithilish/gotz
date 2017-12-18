@@ -10,12 +10,6 @@ import javax.xml.bind.JAXBException;
 
 public interface IXoc {
 
-    <T> List<T> unmarshall(String xmlFile, Class<T> ofClass)
-            throws JAXBException, IOException;
-
-    <T> List<T> unmarshall(InputStream xmlStream, Class<T> ofClass)
-            throws JAXBException;
-
     List<Object> unmarshall(String xmlFile, String packageName)
             throws JAXBException, IOException;
 

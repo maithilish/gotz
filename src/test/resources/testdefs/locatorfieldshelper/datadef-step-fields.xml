@@ -29,7 +29,7 @@
                 <fields name="step" value="parser">
                     <field name="nextstep" value="loader" />
                 </fields>
-            </fields>            
+            </fields>
         </fields>
         <fields name="group" value="g2">
             <fields name="group" value="datadef">

@@ -9,12 +9,14 @@
                 <field name="unique" value="true" />
             </fields>
             <fields name="step" value="loader">
-                <field name="class" value="org.codetab.gotz.steps.JSoupHtmlLoader" />
+                <field name="class"
+                    value="org.codetab.gotz.steps.JSoupHtmlLoader" />
                 <field name="nextstep" value="parser" />
                 <field name="unique" value="true" />
             </fields>
             <fields name="step" value="parser">
-                <field name="class" value="org.codetab.gotz.steps.JSoupHtmlDataParser" />
+                <field name="class"
+                    value="org.codetab.gotz.steps.JSoupHtmlDataParser" />
                 <field name="nextstep" value="filter" />
             </fields>
             <fields name="step" value="filter">
@@ -26,7 +28,8 @@
             <fields name="group" value="datadef">
                 <field name="datadef" value="quotePage" />
                 <fields name="step" value="encoder">
-                    <field name="class" value="org.codetab.gotz.steps.CsvEncoder" />
+                    <field name="class"
+                        value="org.codetab.gotz.steps.CsvEncoder" />
                     <field name="nextstep" value="end" />
                     <fields name="appender" value="file">
                         <field name="class"
@@ -41,7 +44,8 @@
             <fields name="group" value="datadef">
                 <field name="datadef" value="price" />
                 <fields name="step" value="encoder">
-                    <field name="class" value="org.codetab.gotz.steps.CsvEncoder" />
+                    <field name="class"
+                        value="org.codetab.gotz.steps.CsvEncoder" />
                     <field name="nextstep" value="end" />
                     <fields name="appender" value="quote">
                         <field name="class"
@@ -59,7 +63,8 @@
                     <field name="datadef" value="bs" />
                     <fields name="step" value="encoder">
                         <field name="nextstep" value="end" />
-                        <field name="class" value="org.codetab.gotz.steps.CsvEncoder" />
+                        <field name="class"
+                            value="org.codetab.gotz.steps.CsvEncoder" />
                         <fields name="appender" value="bs">
                             <field name="class"
                                 value="org.codetab.gotz.step.load.appender.FileAppender" />
