@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz">
+    <bean name="job-combined" xmlFile="job-combined.xml" />
+</gotz>
