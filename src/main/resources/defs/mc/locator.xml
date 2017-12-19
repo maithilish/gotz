@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<locatorGroups xmlns="http://codetab.org/gotz">
+<gotz xmlns="http://codetab.org/gotz">
     <locators group="quote">
         <locator name="ITC"
             url="http://www.moneycontrol.com/india/stockpricequote/cigarettes/itc/ITC" />
@@ -23,4 +23,4 @@
 <!--         <locator name="Peristent" -->
 <!--             url="http://www.moneycontrol.com/india/stockpricequote/computerssoftware/persistentsystems/PS15" /> -->
     </locators>
-</locatorGroups>
+</gotz>
