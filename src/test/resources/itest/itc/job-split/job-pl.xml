@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://codetab.org/gotz gotz.xsd">
+
+    <fields name="locator" class="org.codetab.gotz.model.Locator"
+        xmlns="http://codetab.org/xfields">
+
+        <steps name="stepsSeq">
+            <step name="seeder"
+                class="org.codetab.gotz.step.extract.LocatorSeeder">
+                <nextStep>loader</nextStep>
+                <unique>true</unique>
+            </step>
+            <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
+                <nextStep>parser</nextStep>
+                <unique>true</unique>
+            </step>
+            <step name="parser"
+                class="org.codetab.gotz.step.extract.JSoupHtmlParser">
+                <nextStep>process</nextStep>
+            </step>
+            <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
+                <nextStep>converter</nextStep>
+            </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataConverter">
+                <nextStep>appender</nextStep>
+            </step>
+            <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
+                <nextStep>end</nextStep>
+                <appender name="list"
+                    class="org.codetab.gotz.step.load.appender.ListAppender">
+                    <encoder name="csv"
+                        class="org.codetab.gotz.step.load.encoder.CsvEncoder">
+                    </encoder>
+                </appender>
+            </step>
+        </steps>
+
+        <tasks name="pl" group="pl">
+            <task name="pl" dataDef="pl">
+                <steps ref="stepsSeq">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>YYYY-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
+            <live>P0D</live>
+        </tasks>
+
+    </fields>
+
+
+    <dataDef name="pl">
+        <axis name="col">
+            <xf:fields>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(1) > td:nth-child(%{col.index})">
+                </xf:query>
+            </xf:fields>
+            <member name="year">
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
+            </member>
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(1)">
+                </xf:query>
+            </xf:fields>
+            <member name="item" index="6">
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
+            </member>
+            <filter axis="row">
+                <xf:fields>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Expenditure" />
+                        <xf:filter name="f2"
+                            pattern="Per share data (annualised)" />
+                    </xf:filters>
+                </xf:fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="table:contains(Employee Cost)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})">
+                </xf:query>
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+</gotz>

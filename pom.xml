@@ -330,7 +330,7 @@
         </plugins>
     </build>
 
-    <inceptionYear>2016</inceptionYear>
+    <inceptionYear>2017</inceptionYear>
     <name>Gotz</name>
     <version>0.9.0-beta</version>
 </project>

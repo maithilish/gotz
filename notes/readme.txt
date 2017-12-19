@@ -219,6 +219,7 @@ this ensures
  - build is not failed because of failure of unit tests 
  - *IT.java tests are run 
 
+integration tests expected file name :  *IT.java
 
 Know selector or xpath in chrome
 -------------------------------
