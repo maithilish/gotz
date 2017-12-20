@@ -218,7 +218,7 @@ public abstract class BaseLoader extends Step {
                 Messages.getString("BaseLoader.15")); //$NON-NLS-1$
 
         /*
-         * fields are not persistable, so need to set them from the fields.xml
+         * fields are not persisted, so need to set them from the fields.xml
          * every time
          */
         try {
@@ -322,7 +322,7 @@ public abstract class BaseLoader extends Step {
             return nextStepFields;
         } catch (FieldsException e) {
             String message = Messages.getString("BaseLoader.27"); //$NON-NLS-1$
-            throw new StepRunException(message, e);
+            throw new RuntimeException(message, e);
         }
 
     }

@@ -45,9 +45,6 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.slf4j.Marker;
-import org.w3c.dom.Node;
 
 /**
  * <p>
@@ -72,10 +69,12 @@ public class BaseLoaderTest {
     private ActivityService activityService;
     @Mock
     private ConfigService configService;
-    @Spy
+    @Mock
     private FieldsHelper fieldsHelper;
 
+    private Locator locator;
     private String fileUrl;
+    private Labels labels;
 
     @InjectMocks
     private URLLoader loader;
@@ -86,27 +85,32 @@ public class BaseLoaderTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+
+        locator = createTestLocator();
+        loader.setInput(locator);
+        FieldUtils.writeField(loader, "document", locator.getDocuments().get(0),
+                true);
+
+        labels = new Labels("x", "y");
+        loader.setLabels(labels);
+
         fileUrl =
                 "target/test-classes/testdefs/datadefservice/valid-v1/bean.xml";
     }
 
     @Test
     public void testInitialize() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
-        loader.setInput(locator);
-
         // when
         boolean actual = loader.initialize();
 
-        Marker marker = (Marker) FieldUtils.readField(loader, "marker", true);
-
         assertThat(actual).isTrue();
-        assertThat(marker.getName()).isEqualTo("LOG_L1_G1");
     }
 
     @Test
-    public void testInitializeIllegalState() {
+    public void testInitializeIllegalState() throws IllegalAccessException {
+        // step input is null
+        FieldUtils.writeField(loader, "locator", null, true);
+
         // step input is not set
         testRule.expect(IllegalStateException.class);
         loader.initialize();
@@ -114,188 +118,146 @@ public class BaseLoaderTest {
 
     @Test
     public void testLoadSavedLocator() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator newLocator = locators.get(0);
-        Locator savedLocator = locators.get(1);
+        locator.setUrl(fileUrl);
 
-        newLocator.setUrl(fileUrl);
+        Locator savedLocator = createTestLocator();
 
-        loader.setInput(newLocator);
-        given(locatorPersistence.loadLocator("l1", "g1"))
+        given(locatorPersistence.loadLocator("n", "g"))
                 .willReturn(savedLocator);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
 
         // when
         boolean actual = loader.load();
 
-        Locator locator =
+        Locator loadedLocator =
                 (Locator) FieldUtils.readField(loader, "locator", true);
 
         assertThat(loader.getStepState()).isEqualTo(StepState.LOAD);
         assertThat(actual).isTrue();
 
-        assertThat(locator).isSameAs(savedLocator);
-        assertThat(newLocator.getUrl()).isEqualTo(fileUrl);
+        assertThat(loadedLocator).isSameAs(savedLocator);
+        assertThat(loadedLocator.getUrl()).isEqualTo(fileUrl);
         assertThat(savedLocator.getUrl()).isEqualTo(fileUrl);
 
-        assertThat(newLocator.getFields().getNodes().size()).isEqualTo(1);
+        assertThat(loadedLocator.getFields().getNodes().size()).isEqualTo(1);
         assertThat(savedLocator.getFields().getNodes().size()).isEqualTo(1);
         assertThat(savedLocator.getFields().getNodes())
-                .containsAll(newLocator.getFields().getNodes());
+                .containsAll(loadedLocator.getFields().getNodes());
     }
 
     @Test
     public void testLoadNoSavedLocator() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator newLocator = locators.get(0);
 
-        newLocator.setUrl(fileUrl);
-
-        loader.setInput(newLocator);
-        // load from db returns null
-        given(locatorPersistence.loadLocator("l1", "g1")).willReturn(null);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
+        given(locatorPersistence.loadLocator("n", "g")).willReturn(null);
 
         // when
         boolean actual = loader.load();
 
-        Locator locator =
+        Locator loadedLocator =
                 (Locator) FieldUtils.readField(loader, "locator", true);
 
         assertThat(loader.getStepState()).isEqualTo(StepState.LOAD);
         assertThat(actual).isTrue();
 
-        assertThat(locator).isSameAs(newLocator);
-        assertThat(newLocator.getUrl()).isEqualTo(fileUrl);
-        assertThat(newLocator.getFields().getNodes().size()).isEqualTo(1);
+        assertThat(loadedLocator).isSameAs(locator);
     }
 
     @Test
-    public void testLoadIllegalState() {
-        // step input is not set
+    public void testLoadIllegalState() throws IllegalAccessException {
+        // step input is null
+        FieldUtils.writeField(loader, "locator", null, true);
+
         testRule.expect(IllegalStateException.class);
         loader.load();
     }
 
     @Test
     public void testProcessLocatorWithId() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
         locator.setId(1L);
 
-        List<Document> documents = locator.getDocuments();
-        Document document = documents.get(0);
+        Document document = locator.getDocuments().get(0);
         Long documentId = document.getId();
 
-        given(documentHelper.getActiveDocumentId(documents))
+        given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(documentId);
         given(documentPersistence.loadDocument(documentId))
                 .willReturn(document);
 
-        FieldUtils.writeField(loader, "locator", locator, true);
-
         // when
         boolean actual = loader.process();
 
-        Document actualDoc =
+        Document loadedDocument =
                 (Document) FieldUtils.readField(loader, "document", true);
 
-        assertThat(actualDoc).isEqualTo(document);
+        assertThat(loadedDocument).isSameAs(document);
 
         assertThat(loader.getStepState()).isEqualTo(StepState.PROCESS);
         assertThat(actual).isTrue();
-
-        // Redundant
-        // verify(documentHelper).getActiveDocumentId(documents);
-        // verify(documentPersistence).loadDocument(documentId);
     }
 
     @Test
     public void testProcessLocatorWithoutId() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
+        // when locator is without id, new document is created
+
         locator.setUrl(fileUrl);
-        locator.setFields(new Fields());
 
-        List<Document> documents = locator.getDocuments();
-        Document document = documents.get(0);
+        Document document = locator.getDocuments().get(0);
 
-        String name = locator.getName();
-        String url = locator.getUrl();
         Date fromDate = new Date();
         Date toDate = DateUtils.addDays(fromDate, 1);
-        document.setName(name);
-        document.setUrl(url);
+        document.setName(locator.getName());
+        document.setUrl(locator.getUrl());
         document.setFromDate(fromDate);
         document.setToDate(toDate);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
 
         given(configService.getRunDateTime()).willReturn(fromDate);
         given(documentHelper.getToDate(fromDate, locator.getFields(), labels))
                 .willReturn(toDate);
-        given(documentHelper.createDocument(name, url, fromDate, toDate))
-                .willReturn(document);
-
-        FieldUtils.writeField(loader, "locator", locator, true);
+        given(documentHelper.createDocument(document.getName(),
+                document.getUrl(), fromDate, toDate)).willReturn(document);
 
         // when
         boolean actual = loader.process();
 
-        Document actualDoc =
+        Document createdDocument =
                 (Document) FieldUtils.readField(loader, "document", true);
 
-        assertThat(actualDoc).isEqualTo(document);
+        assertThat(createdDocument).isSameAs(document);
         assertThat(loader.getStepState()).isEqualTo(StepState.PROCESS);
         assertThat(actual).isTrue();
 
-        verify(documentHelper, never()).getActiveDocumentId(documents);
+        verify(documentHelper, never())
+                .getActiveDocumentId(locator.getDocuments());
         verifyZeroInteractions(documentPersistence);
     }
 
     @Test
     public void testProcessWithActiveDocument() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
+
         locator.setId(1L);
-        List<Document> documents = locator.getDocuments();
-        Document document = documents.get(0);
+        Document document = locator.getDocuments().get(0);
         Long documentId = document.getId();
 
-        given(documentHelper.getActiveDocumentId(documents))
+        given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(documentId);
         given(documentPersistence.loadDocument(documentId))
                 .willReturn(document);
 
-        FieldUtils.writeField(loader, "locator", locator, true);
-
         // when
         boolean actual = loader.process();
 
-        Document actualDoc =
+        Document loadedDocument =
                 (Document) FieldUtils.readField(loader, "document", true);
 
-        assertThat(actualDoc).isEqualTo(document);
+        assertThat(loadedDocument).isEqualTo(document);
         assertThat(loader.getStepState()).isEqualTo(StepState.PROCESS);
         assertThat(actual).isTrue();
         assertThat(loader.isConsistent()).isTrue();
-
-        // Redundant
-        // verify(documentPersistence).loadDocument(documentId);
     }
 
     @Test
     public void testProcessWithoutActiveDocument()
             throws IllegalAccessException, IOException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
         locator.setUrl(fileUrl);
-        locator.setFields(new Fields());
 
         List<Document> documents = locator.getDocuments();
         Document existingDocument = documents.get(0);
@@ -304,18 +266,15 @@ public class BaseLoaderTest {
         String url = locator.getUrl();
         Date fromDate = new Date();
         Date toDate = DateUtils.addDays(fromDate, 1);
-        Document newDocument = new Document();
-        newDocument.setName(name);
-        newDocument.setUrl(url);
-        newDocument.setFromDate(fromDate);
-        newDocument.setToDate(toDate);
+        Document createdDocument = new Document();
+        createdDocument.setName(name);
+        createdDocument.setUrl(url);
+        createdDocument.setFromDate(fromDate);
+        createdDocument.setToDate(toDate);
 
         byte[] docObject = loader.fetchDocumentObject(fileUrl);
 
         FieldUtils.writeField(loader, "locator", locator, true);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
 
         given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(null);
@@ -323,49 +282,42 @@ public class BaseLoaderTest {
         given(documentHelper.getToDate(fromDate, locator.getFields(), labels))
                 .willReturn(toDate);
         given(documentHelper.createDocument(name, url, fromDate, toDate))
-                .willReturn(newDocument);
+                .willReturn(createdDocument);
 
         // when
         boolean actual = loader.process();
 
-        Document actualDoc =
+        Document actualDocument =
                 (Document) FieldUtils.readField(loader, "document", true);
 
-        assertThat(actualDoc).isEqualTo(newDocument);
+        assertThat(actualDocument).isSameAs(createdDocument);
         assertThat(loader.getStepState()).isEqualTo(StepState.PROCESS);
         assertThat(actual).isTrue();
 
-        assertThat(newDocument.getName()).isEqualTo(locator.getName());
-        assertThat(newDocument.getFromDate()).isEqualTo(fromDate);
-        assertThat(newDocument.getToDate()).isEqualTo(toDate);
-        assertThat(newDocument.getUrl()).isEqualTo(fileUrl);
+        assertThat(createdDocument.getName()).isEqualTo(locator.getName());
+        assertThat(createdDocument.getFromDate()).isEqualTo(fromDate);
+        assertThat(createdDocument.getToDate()).isEqualTo(toDate);
+        assertThat(createdDocument.getUrl()).isEqualTo(fileUrl);
 
         assertThat(locator.getDocuments().size()).isEqualTo(2);
         assertThat(locator.getDocuments()).contains(existingDocument);
-        assertThat(locator.getDocuments()).contains(newDocument);
+        assertThat(locator.getDocuments()).contains(createdDocument);
         assertThat(loader.isConsistent()).isTrue();
 
-        verify(documentHelper).setDocumentObject(newDocument, docObject);
+        verify(documentHelper).setDocumentObject(createdDocument, docObject);
         verifyZeroInteractions(documentPersistence);
     }
 
     @Test
     public void testProcessFetchDocExpectException()
             throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
-
-        FieldUtils.writeField(loader, "locator", locator, true);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
-
+        locator.setUrl("file:///xyz"); // unknow file
         // when
         try {
             loader.process();
+            fail("should throw StepRunException");
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.FAIL),
-                    any(String.class), any(IOException.class));
+            assertThat(e.getCause()).isInstanceOf(IOException.class);
         }
 
         testRule.expect(StepRunException.class);
@@ -375,10 +327,8 @@ public class BaseLoaderTest {
     @Test
     public void testProcessSetDocumentExpectException()
             throws IllegalAccessException, IOException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
+
         locator.setUrl(fileUrl);
-        locator.setFields(new Fields());
 
         String name = locator.getName();
         String url = locator.getUrl();
@@ -389,11 +339,6 @@ public class BaseLoaderTest {
         newDocument.setUrl(url);
         newDocument.setFromDate(fromDate);
         newDocument.setToDate(toDate);
-
-        FieldUtils.writeField(loader, "locator", locator, true);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
 
         given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(null);
@@ -409,9 +354,9 @@ public class BaseLoaderTest {
         // when
         try {
             loader.process();
+            fail("should throw StepRunException");
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.FAIL),
-                    any(String.class), any(IOException.class));
+            assertThat(e.getCause()).isInstanceOf(IOException.class);
         }
 
         testRule.expect(StepRunException.class);
@@ -419,162 +364,117 @@ public class BaseLoaderTest {
     }
 
     @Test
-    public void testProcessIllegalState() {
-        // step input is not set
+    public void testProcessIllegalState() throws IllegalAccessException {
+        // step input is null
+        FieldUtils.writeField(loader, "locator", null, true);
+
         testRule.expect(IllegalStateException.class);
         loader.process();
     }
 
     @Test
-    public void testStorePersistIsFalse()
+    public void testStoreWhenLocatorNotStored()
             throws IllegalAccessException, FieldsException {
 
-        //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add(" <xf:tasks>")
-                .add("  <xf:persist>")
-                .add("    <xf:document>false</xf:document>")
-                .add("  </xf:persist>")
-                .add(" </xf:tasks>")
-                .build("xf");
-        //@formatter:on
-
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
-        Document document = locator.getDocuments().get(0);
-        locator.setFields(fields);
-
-        FieldUtils.writeField(loader, "locator", locator, true);
-        FieldUtils.writeField(loader, "document", document, true);
-
+        given(locatorPersistence.storeLocator(locator)).willReturn(false);
         // when
         boolean actual = loader.store();
+
+        Document actualDocument =
+                (Document) FieldUtils.readField(loader, "document", true);
+        Locator actualLocator =
+                (Locator) FieldUtils.readField(loader, "locator", true);
 
         assertThat(loader.getStepState()).isEqualTo(StepState.STORE);
         assertThat(actual).isTrue();
 
+        assertThat(actualLocator).isSameAs(locator);
+        assertThat(actualDocument).isSameAs(locator.getDocuments().get(0));
+
+        verify(documentHelper, never())
+                .getActiveDocumentId(locator.getDocuments());
+
+        verify(locatorPersistence, never()).loadLocator(any(Long.class));
         verifyZeroInteractions(documentPersistence);
-        verifyZeroInteractions(locatorPersistence);
+
     }
 
     @Test
-    public void testStorePersistIsTrue()
+    public void testStoreWhenLocatorStored()
             throws IllegalAccessException, FieldsException {
-        List<Locator> locators = createTestObjects();
-        Locator locator1 = locators.get(0);
-        locator1.setId(0L);
-        Locator locator2 = locators.get(1);
-        locator2.setId(0L);
-        Document document1 = locator1.getDocuments().get(0);
-        Document document2 = new Document();
 
-        FieldUtils.writeField(loader, "locator", locator1, true);
-        FieldUtils.writeField(loader, "document", document1, true);
+        locator.setId(1L);
 
-        Fields fields = fieldsHelper.createFields();
-        Node tasks = fieldsHelper.addElement("tasks", "", fields);
-        Node persist = fieldsHelper.addElement("persist", "", tasks);
-        fieldsHelper.addElement("document", "true", persist);
-        locator1.setFields(fields);
+        Locator storedLocator = createTestLocator();
+        Document storedDocument = storedLocator.getDocuments().get(0);
 
-        given(locatorPersistence.loadLocator(locator1.getId()))
-                .willReturn(locator2);
-        given(documentPersistence.loadDocument(document1.getId()))
-                .willReturn(document2);
+        given(locatorPersistence.storeLocator(locator)).willReturn(true);
+        given(locatorPersistence.loadLocator(locator.getId()))
+                .willReturn(storedLocator);
+        given(documentPersistence
+                .loadDocument(locator.getDocuments().get(0).getId()))
+                        .willReturn(storedDocument);
 
         // when
         boolean actual = loader.store();
-
-        assertThat(loader.getStepState()).isEqualTo(StepState.STORE);
-        assertThat(actual).isTrue();
-
-        assertThat(locator2.getFields().getNodes())
-                .containsAll(locator1.getFields().getNodes());
 
         Locator actualLocator =
                 (Locator) FieldUtils.readField(loader, "locator", true);
         Document actualDocument =
                 (Document) FieldUtils.readField(loader, "document", true);
 
-        assertThat(actualLocator).isSameAs(locator2);
-        assertThat(actualDocument).isSameAs(document2);
+        assertThat(loader.getStepState()).isEqualTo(StepState.STORE);
+        assertThat(actual).isTrue();
 
-        verify(locatorPersistence).storeLocator(locator1);
+        assertThat(actualLocator).isSameAs(storedLocator);
+        assertThat(actualDocument).isSameAs(storedDocument);
     }
 
     @Test
-    public void testStorePersistUndefined() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator1 = locators.get(0);
-        locator1.setId(0L);
-        Locator locator2 = locators.get(1);
-        locator2.setId(0L);
-        Document document1 = locator1.getDocuments().get(0);
-        Document document2 = new Document();
+    public void testStoreWhenLoadedNulls()
+            throws IllegalAccessException, FieldsException {
 
-        Fields fields = new Fields();
-        locator1.setFields(fields);
-        locator2.setFields(fields);
+        locator.setId(1L);
 
-        FieldUtils.writeField(loader, "locator", locator1, true);
-        FieldUtils.writeField(loader, "document", document1, true);
-
-        given(locatorPersistence.loadLocator(locator1.getId()))
-                .willReturn(locator2);
-        given(documentPersistence.loadDocument(document1.getId()))
-                .willReturn(document2);
+        given(locatorPersistence.storeLocator(locator)).willReturn(true);
+        given(locatorPersistence.loadLocator(locator.getId())).willReturn(null);
+        given(documentPersistence
+                .loadDocument(locator.getDocuments().get(0).getId()))
+                        .willReturn(null);
 
         // when
         boolean actual = loader.store();
-
-        assertThat(loader.getStepState()).isEqualTo(StepState.STORE);
-        assertThat(actual).isTrue();
-
-        assertThat(locator2.getFields().getNodes())
-                .containsAll(locator1.getFields().getNodes());
 
         Locator actualLocator =
                 (Locator) FieldUtils.readField(loader, "locator", true);
         Document actualDocument =
                 (Document) FieldUtils.readField(loader, "document", true);
 
-        assertThat(actualLocator).isSameAs(locator2);
-        assertThat(actualDocument).isSameAs(document2);
+        assertThat(loader.getStepState()).isEqualTo(StepState.STORE);
+        assertThat(actual).isTrue();
 
-        verify(locatorPersistence).storeLocator(locator1);
+        assertThat(actualLocator).isSameAs(locator);
+        assertThat(actualDocument).isSameAs(locator.getDocuments().get(0));
     }
 
     @Test
     public void testStoreExpectException() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
         locator.setId(0L);
-        locator.setFields(new Fields());
 
-        Document document = locator.getDocuments().get(0);
-
-        FieldUtils.writeField(loader, "locator", locator, true);
-        FieldUtils.writeField(loader, "document", document, true);
-
+        given(locatorPersistence.storeLocator(locator)).willReturn(true);
         given(locatorPersistence.loadLocator(locator.getId()))
                 .willThrow(RuntimeException.class);
-
-        // when
-        try {
-            loader.store();
-        } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.FAIL),
-                    any(String.class), any(RuntimeException.class));
-        }
 
         testRule.expect(StepRunException.class);
         loader.store();
     }
 
     @Test
-    public void testStoreIllegalState() {
+    public void testStoreIllegalState() throws IllegalAccessException {
+        FieldUtils.writeField(loader, "locator", null, true);
+        FieldUtils.writeField(loader, "document", null, true);
+
         try {
-            // step input is not set
             loader.store();
             fail("must throw IllegalStateException");
         } catch (IllegalStateException e) {
@@ -583,7 +483,6 @@ public class BaseLoaderTest {
         }
 
         try {
-            // document is null
             loader.setInput(new Locator());
             loader.store();
             fail("must throw IllegalStateException");
@@ -593,22 +492,35 @@ public class BaseLoaderTest {
     }
 
     @Test
-    public void testHandoverNoDataDefFields() throws IllegalAccessException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
+    public void testHandoverTaskFieldsError()
+            throws IllegalAccessException, FieldsException {
+
         locator.setFields(TestUtil.buildFields("", "xf"));
 
-        FieldUtils.writeField(loader, "locator", locator, true);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
+        given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
+                locator.getFields())).willThrow(FieldsException.class);
 
         try {
             loader.handover();
-            fail("should throw StepRunExpection");
+            fail("should throw StepRunException");
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.FAIL),
-                    any(String.class), any(FieldsException.class));
+            assertThat(e.getCause()).isInstanceOf(FieldsException.class);
+        }
+    }
+
+    @Test
+    public void testHandoverNoTasks()
+            throws IllegalAccessException, FieldsException {
+
+        List<Fields> tasks = new ArrayList<>();
+        given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
+                locator.getFields())).willReturn(tasks);
+
+        try {
+            loader.handover();
+            fail("should throw StepRunException");
+        } catch (StepRunException e) {
+            assertThat(e.getCause()).isInstanceOf(FieldsException.class);
         }
     }
 
@@ -616,63 +528,43 @@ public class BaseLoaderTest {
     public void testHandoverDocumentNotLoaded()
             throws IllegalAccessException, FieldsException {
 
-        Fields fields = fieldsHelper.createFields();
-        Node tasks = fieldsHelper.addElement("tasks", "", fields);
-        fieldsHelper.addElement("task", "x", tasks);
-        fieldsHelper.addElement("task", "y", tasks);
+        // unload document
+        FieldUtils.writeField(loader, "document", null, true);
 
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
-        locator.setFields(fields);
+        List<Fields> tasks = new ArrayList<>();
+        tasks.add(new Fields());
+        tasks.add(new Fields());
+        tasks.add(new Fields());
 
-        FieldUtils.writeField(loader, "locator", locator, true);
-
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
+        given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
+                locator.getFields())).willReturn(tasks);
 
         boolean actual = loader.handover();
 
         assertThat(loader.getStepState()).isEqualTo(StepState.HANDOVER);
         assertThat(actual).isTrue();
 
-        verify(activityService, times(2)).addActivity(eq(Type.FAIL),
+        verify(activityService, times(3)).addActivity(eq(Type.FAIL),
                 any(String.class));
         verifyZeroInteractions(stepService);
     }
 
     @Test
     public void testHandover() throws IllegalAccessException, FieldsException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
-        locator.getFields().getNodes().clear();
+
         Document document = locator.getDocuments().get(0);
-
-       //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add(" <xf:tasks>")
-                .add("  <xf:task>a</xf:task>")
-                .add("  <xf:task>b</xf:task>")
-                .add(" </xf:tasks>")
-                .build("xf");
-        //@formatter:on
-
-        locator.setFields(fields);
-
-        List<Fields> tasks =
-                fieldsHelper.split("/xf:fields/xf:tasks/xf:task", fields);
-        Fields task1 = tasks.get(0);
-        Fields task2 = tasks.get(1);
-
-        FieldUtils.writeField(loader, "locator", locator, true);
         FieldUtils.writeField(loader, "document", document, true);
 
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
+        FieldsHelper fh = new FieldsHelper();
+        List<Fields> tasks =
+                fh.split("/xf:fields/xf:tasks/xf:task", locator.getFields());
+        Fields task1 = fh.deepCopy(tasks.get(0));
+        Fields task2 = fh.deepCopy(tasks.get(1));
 
-        given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task", fields))
-                .willReturn(tasks);
-        given(fieldsHelper.deepCopy(task1)).willReturn(task1);
-        given(fieldsHelper.deepCopy(task2)).willReturn(task2);
+        given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
+                locator.getFields())).willReturn(tasks);
+        given(fieldsHelper.deepCopy(tasks.get(0))).willReturn(task1);
+        given(fieldsHelper.deepCopy(tasks.get(1))).willReturn(task2);
 
         // when
         boolean actual = loader.handover();
@@ -680,40 +572,44 @@ public class BaseLoaderTest {
         assertThat(loader.getStepState()).isEqualTo(StepState.HANDOVER);
         assertThat(actual).isTrue();
 
-        InOrder inOrder = inOrder(stepService);
+        InOrder inOrder = inOrder(stepService, fieldsHelper);
+        inOrder.verify(fieldsHelper).deepCopy(tasks.get(0));
         inOrder.verify(stepService).pushTask(loader, document, labels, task1);
+        inOrder.verify(fieldsHelper).deepCopy(tasks.get(1));
         inOrder.verify(stepService).pushTask(loader, document, labels, task2);
     }
 
     @Test
     public void testHandoverNextStepFieldsException()
             throws IllegalAccessException, FieldsException {
-        List<Locator> locators = createTestObjects();
-        Locator locator = locators.get(0);
-        locator.getFields().getNodes().clear();
         Document document = locator.getDocuments().get(0);
-
-        Fields fields = new Fields();
-        locator.setFields(fields);
-
-        FieldUtils.writeField(loader, "locator", locator, true);
         FieldUtils.writeField(loader, "document", document, true);
 
-        Labels labels = new Labels("x", "y");
-        loader.setLabels(labels);
+        FieldsHelper fh = new FieldsHelper();
+        List<Fields> tasks =
+                fh.split("/xf:fields/xf:tasks/xf:task", locator.getFields());
+
+        given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
+                locator.getFields())).willReturn(tasks);
+
+        given(fieldsHelper.deepCopy(tasks.get(0)))
+                .willThrow(FieldsException.class);
+        given(fieldsHelper.deepCopy(tasks.get(1)))
+                .willThrow(FieldsException.class);
 
         // when
-        try {
-            loader.handover();
-        } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.FAIL),
-                    any(String.class), any(FieldsException.class));
-        }
+
+        loader.handover();
+
+        verify(activityService, times(2)).addActivity(eq(Type.FAIL),
+                any(String.class));
     }
 
     @Test
-    public void testHandoverIllegalState() {
-        // step input is not set
+    public void testHandoverIllegalState() throws IllegalAccessException {
+        // step input null
+        FieldUtils.writeField(loader, "locator", null, true);
+
         testRule.expect(IllegalStateException.class);
         loader.handover();
     }
@@ -725,11 +621,11 @@ public class BaseLoaderTest {
 
         loader.setConsistent(true);
 
+        FieldUtils.writeField(loader, "document", null, true);
         actual = loader.isConsistent();
         assertThat(actual).isFalse();
 
-        Document document = new Document();
-        FieldUtils.writeField(loader, "document", document, true);
+        FieldUtils.writeField(loader, "document", new Document(), true);
 
         actual = loader.isConsistent();
         assertThat(actual).isTrue();
@@ -737,59 +633,43 @@ public class BaseLoaderTest {
 
     @Test
     public void testSetInput() throws IllegalAccessException {
-        loader.setInput("xyz");
+        Locator expected = new Locator();
+        loader.setInput(expected);
         Locator actual =
                 (Locator) FieldUtils.readField(loader, "locator", true);
-        assertThat(actual).isNull();
-
-        Locator locator = new Locator();
-        loader.setInput(locator);
-        actual = (Locator) FieldUtils.readField(loader, "locator", true);
-        assertThat(actual).isSameAs(locator);
+        assertThat(actual).isSameAs(expected);
     }
 
-    private List<Locator> createTestObjects() {
+    @Test
+    public void testSetInputShouldThrowException()
+            throws IllegalAccessException {
+        FieldUtils.writeField(loader, "locator", null, true);
+        testRule.expect(StepRunException.class);
+        loader.setInput("xyz");
+    }
 
+    private Locator createTestLocator() {
         //@formatter:off
-        Fields l1f = new FieldsBuilder()
-                .add("<l1f>")
-                .add(" <l1f1>l1v1</l1f1>")
-                .add(" <l1f2>l1v2</l1f2>")
-                .add("</l1f>")
+        Fields fields = new FieldsBuilder()
+                .add(" <xf:tasks>")
+                .add("  <xf:task>a</xf:task>")
+                .add("  <xf:task>b</xf:task>")
+                .add(" </xf:tasks>")
                 .build("xf");
         //@formatter:on
 
-        Locator locator1 = new Locator();
-        locator1.setFields(l1f);
-        locator1.setName("l1");
-        locator1.setGroup("g1");
-        locator1.setUrl("url1");
+        Locator testLocator = new Locator();
+        testLocator.setFields(fields);
+        testLocator.setName("n");
+        testLocator.setGroup("g");
+        testLocator.setUrl("u");
 
-      //@formatter:off
-        Fields l2f = new FieldsBuilder()
-                .add("<l2f>")
-                .add(" <l2f1>l2v1</l2f1>")
-                .add(" <l2f2>l2v2</l2f2>")
-                .add("</l2f>")
-                .build("xf");
-        //@formatter:on
+        Document testDocument = new Document();
+        testDocument.setId(1L);
+        testDocument.setName("d");
+        testLocator.getDocuments().add(testDocument);
 
-        Locator locator2 = new Locator();
-        locator1.setFields(l2f);
-        locator2.setName("l1");
-        locator2.setGroup("g1");
-        locator2.setUrl("url2");
-
-        List<Locator> locators = new ArrayList<>();
-        locators.add(locator1);
-        locators.add(locator2);
-
-        Document document = new Document();
-        document.setId(1L);
-        document.setName("d1");
-        locator1.getDocuments().add(document);
-
-        return locators;
+        return testLocator;
     }
 
 }
