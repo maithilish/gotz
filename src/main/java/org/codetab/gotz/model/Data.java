@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 public final class Data implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -68,6 +71,20 @@ public final class Data implements Serializable {
 
     public void addMember(final Member member) {
         members.add(member);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        String[] excludes =
+                {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        return EqualsBuilder.reflectionEquals(this, obj, excludes);
+    }
+
+    @Override
+    public int hashCode() {
+        String[] excludes =
+                {"id", "dnDetachedState", "dnFlags", "dnStateManager"};
+        return HashCodeBuilder.reflectionHashCode(this, excludes);
     }
 
     public String toStringIds() {
