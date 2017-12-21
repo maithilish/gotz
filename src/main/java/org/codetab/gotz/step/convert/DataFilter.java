@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -121,7 +122,11 @@ public final class DataFilter extends BaseConverter {
         StringBuilder sb = new StringBuilder();
         AxisName[] axisNames = {AxisName.COL, AxisName.ROW, AxisName.FACT};
         for (AxisName axisName : axisNames) {
-            String value = member.getAxis(axisName).getValue();
+            String value = "";
+            try {
+                value = member.getAxis(axisName).getValue();
+            } catch (NoSuchElementException e) {
+            }
             sb.append("["); //$NON-NLS-1$
             sb.append(value);
             sb.append("]"); //$NON-NLS-1$

@@ -122,7 +122,6 @@ public class DataDefValidator {
                 fieldsHelper.getLastValue("/xf:script/@script", fields); //$NON-NLS-1$
                 valid = true;
             } catch (FieldsNotFoundException e) {
-
             }
 
             try {

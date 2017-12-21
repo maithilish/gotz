@@ -15,6 +15,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.IOUtils;
 import org.codetab.gotz.helper.IOHelper;
 import org.codetab.gotz.model.Gotz;
 import org.slf4j.Logger;
@@ -30,6 +31,12 @@ public class TestJaxbHelper {
         try (InputStream xmlStream = getInputStream(xmlFile)) {
             return unmarshall(xmlStream, ofClass);
         }
+    }
+
+    public <T> List<T> unmarshallFromString(final String xmlString,
+            final Class<T> ofClass) throws JAXBException, IOException {
+        InputStream xmlStream = IOUtils.toInputStream(xmlString, "UTF-8");
+        return unmarshall(xmlStream, ofClass);
     }
 
     public <T> List<T> unmarshall(final InputStream xmlStream,

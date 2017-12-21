@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
@@ -35,6 +36,19 @@ import org.w3c.dom.NodeList;
 public final class TestUtil {
 
     private TestUtil() {
+    }
+
+    public static <T> List<T> unmarshallTestObject(final StringBuilder xmlSb,
+            final Class<T> ofClass) throws JAXBException {
+        xmlSb.insert(0,
+                "<gotz xmlns='http://codetab.org/gotz' xmlns:xf='http://codetab.org/xfields' >");
+        xmlSb.append("</gotz>");
+        TestJaxbHelper jh = new TestJaxbHelper();
+        try {
+            return jh.unmarshallFromString(xmlSb.toString(), ofClass);
+        } catch (JAXBException | IOException e) {
+            throw new JAXBException(e);
+        }
     }
 
     public static Fields buildFields(final String xml, final String nsPrefix) {
@@ -164,8 +178,7 @@ public final class TestUtil {
         } else {
             doc = parent.getOwnerDocument();
         }
-        if (doc == null) {
-        } else {
+        if (doc != null) {
             Element element = doc.createElementNS(
                     doc.lookupNamespaceURI(parent.getPrefix()), name);
             element.setTextContent(text);

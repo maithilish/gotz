@@ -1,22 +1,20 @@
 package org.codetab.gotz.step.convert;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
@@ -50,12 +48,19 @@ public class DataFilterTest {
     @InjectMocks
     private DataFilter filter;
 
+    private Data data;
+
     @Rule
     public ExpectedException testRule = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        Labels labels = new Labels("x", "y");
+        filter.setLabels(labels);
+
+        data = getTestData();
+        filter.setInput(data);
     }
 
     @Test
@@ -69,8 +74,6 @@ public class DataFilterTest {
     @Test
     public void testProcessFilterOnValue() throws IllegalArgumentException,
             DataDefNotFoundException, FieldsException {
-        Data data = getTestData();
-        filter.setInput(data);
 
         Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "m0-col-value");
@@ -87,8 +90,6 @@ public class DataFilterTest {
     @Test
     public void testProcessFilterOnMatch() throws IllegalArgumentException,
             DataDefNotFoundException, FieldsException {
-        Data data = getTestData();
-        filter.setInput(data);
 
         Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "match", "m1-col-match");
@@ -106,8 +107,6 @@ public class DataFilterTest {
     public void testProcessFilterNoMatchingItem()
             throws IllegalArgumentException, DataDefNotFoundException,
             FieldsException {
-        Data data = getTestData();
-        filter.setInput(data);
 
         Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "mx-col-match");
@@ -124,8 +123,6 @@ public class DataFilterTest {
     public void testProcessFilterAxisValueMismatch()
             throws IllegalArgumentException, DataDefNotFoundException,
             FieldsException {
-        Data data = getTestData();
-        filter.setInput(data);
 
         // axis - row but value is from col axis
         Map<AxisName, Fields> filterMap =
@@ -142,8 +139,6 @@ public class DataFilterTest {
     @Test
     public void testProcessFilterUnknowAxis() throws IllegalArgumentException,
             DataDefNotFoundException, FieldsException {
-        Data data = getTestData();
-        filter.setInput(data);
 
         // fact axis not in test data
         Map<AxisName, Fields> filterMap =
@@ -160,8 +155,6 @@ public class DataFilterTest {
     @Test
     public void testProcessFilterTwoMembers() throws IllegalArgumentException,
             DataDefNotFoundException, FieldsException {
-        Data data = getTestData();
-        filter.setInput(data);
 
         Map<AxisName, Fields> filterMap =
                 getTestFilterMap(AxisName.COL, "value", "m0-col-value");
@@ -179,8 +172,9 @@ public class DataFilterTest {
     }
 
     @Test
-    public void testProcessIllegalState() {
+    public void testProcessIllegalState() throws IllegalAccessException {
         // step input is null
+        FieldUtils.writeField(filter, "data", null, true);
         testRule.expect(IllegalStateException.class);
         filter.process();
     }
@@ -188,9 +182,6 @@ public class DataFilterTest {
     @Test
     public void testProcessNoFilterMapShouldThrowException()
             throws DataDefNotFoundException {
-        Data data = getTestData();
-        filter.setInput(data);
-
         given(dataDefService.getFilterMap("dd"))
                 .willThrow(DataDefNotFoundException.class);
 
@@ -198,8 +189,8 @@ public class DataFilterTest {
         try {
             filter.process();
         } catch (StepRunException e) {
-            verify(activityService).addActivity(eq(Type.FAIL),
-                    any(String.class), any(DataDefNotFoundException.class));
+            assertThat(e.getCause())
+                    .isInstanceOf(DataDefNotFoundException.class);
         }
 
         testRule.expect(StepRunException.class);
@@ -208,8 +199,8 @@ public class DataFilterTest {
 
     private Data getTestData() {
 
-        Data data = new Data();
-        data.setDataDef("dd");
+        Data testData = new Data();
+        testData.setDataDef("dd");
 
         for (int i = 0; i < 4; i++) {
             Axis col = new Axis();
@@ -225,7 +216,7 @@ public class DataFilterTest {
             Member m = new Member();
             m.addAxis(col);
             m.addAxis(row);
-            data.addMember(m);
+            testData.addMember(m);
         }
 
         // null value and match member
@@ -238,9 +229,9 @@ public class DataFilterTest {
         Member m = new Member();
         m.addAxis(col);
         m.addAxis(row);
-        data.addMember(m);
+        testData.addMember(m);
 
-        return data;
+        return testData;
     }
 
     private Map<AxisName, Fields> getTestFilterMap(final AxisName axis,
@@ -264,9 +255,10 @@ public class DataFilterTest {
 
     // to get expected data from test data - crude filter, removes last
     // matching member
-    private void removeMember(final Data data, final String filterString) {
+    private void removeMember(final Data dataToFilter,
+            final String filterString) {
         Member removeMember = null;
-        for (Member member : data.getMembers()) {
+        for (Member member : dataToFilter.getMembers()) {
             for (Axis axis : member.getAxes()) {
                 if (axis.getMatch() == null && axis.getValue() == null) {
                     continue;
@@ -277,6 +269,6 @@ public class DataFilterTest {
                 }
             }
         }
-        data.getMembers().remove(removeMember);
+        dataToFilter.getMembers().remove(removeMember);
     }
 }

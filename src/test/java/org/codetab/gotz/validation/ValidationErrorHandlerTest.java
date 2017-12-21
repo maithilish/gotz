@@ -31,7 +31,7 @@ public class ValidationErrorHandlerTest {
 
         SAXParseException exception = new SAXParseException("x", null);
 
-        testRule.expect(SAXParseException.class);
+        testRule.expect(SAXException.class);
         errorHandler.error(exception);
     }
 
@@ -41,7 +41,7 @@ public class ValidationErrorHandlerTest {
         SAXParseException exception =
                 new SAXParseException("cvc-elt.1.a", null);
 
-        testRule.expect(SAXParseException.class);
+        testRule.expect(SAXException.class);
         errorHandler.error(exception);
     }
 

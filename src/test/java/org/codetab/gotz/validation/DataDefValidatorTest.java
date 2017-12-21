@@ -2,19 +2,23 @@ package org.codetab.gotz.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.verify;
 
-import org.codetab.gotz.exception.FieldsException;
+import javax.xml.bind.JAXBException;
+
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.InvalidDataDefException;
+import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DFilter;
-import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
-import org.codetab.gotz.testutil.FieldsBuilder;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
@@ -32,138 +36,400 @@ public class DataDefValidatorTest {
     @InjectMocks
     private DataDefValidator validator;
 
+    @Rule
+    public ExpectedException testRule = ExpectedException.none();
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
     }
 
+    /*
+     * in ROW or COL axis query and script are optional and in FACT they are
+     * mandatory. As coverage will show any deviation, tests only for COL and
+     * FACT.
+     */
     @Test
-    public void testValidateNoField() throws InvalidDataDefException {
-        DataDef dataDef = new DataDef();
+    public void testValidateQueryNullFields()
+            throws JAXBException, InvalidDataDefException {
+
+        DAxis axis = getAxis(AxisName.COL, null, null);
+        axis.setFields(null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
         boolean actual = validator.validate(dataDef);
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void testValidateDataDefField()
-            throws FieldsException, InvalidDataDefException {
-        Fields fields =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
-        DataDef dataDef = new DataDef();
-        dataDef.setFields(fields);
+    public void testValidateQueryNoQueryOrScript()
+            throws JAXBException, InvalidDataDefException {
+
+        String notQuery = "<xf:xyz />";
+
+        DAxis axis = getAxis(AxisName.COL, notQuery, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
 
         boolean actual = validator.validate(dataDef);
-
         assertThat(actual).isTrue();
     }
 
     @Test
-    public void testValidateAxisField()
-            throws FieldsException, InvalidDataDefException {
-        Fields fields =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
+    public void testValidateQueryValidQuery()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:query region='abc' field='xyz' />";
+        DAxis axis = getAxis(AxisName.COL, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
+        boolean actual = validator.validate(dataDef);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void testValidateQueryEmptyRegion()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:query region=' ' field='xyz' />";
+        DAxis axis = getAxis(AxisName.COL, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    @Test
+    public void testValidateQueryEmptyField()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:query region='abc' field=' ' />";
+        DAxis axis = getAxis(AxisName.COL, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    @Test
+    public void testValidateQueryValidScript()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:script script='abc' />";
+        DAxis axis = getAxis(AxisName.COL, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
+        boolean actual = validator.validate(dataDef);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void testValidateQueryEmptyScript()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:script script=' ' />";
+        DAxis axis = getAxis(AxisName.COL, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    /*
+     * in FACT axis either query or script is mandatory
+     */
+    @Test
+    public void testValidateFactNullFields()
+            throws JAXBException, InvalidDataDefException {
+
+        DAxis fact = getAxis(AxisName.FACT, null, null);
+        fact.setFields(null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(fact);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    @Test
+    public void testValidateFactNoQueryOrScript()
+            throws JAXBException, InvalidDataDefException {
+
+        String notQuery = "<xf:xyz />";
+
+        DAxis fact = getAxis(AxisName.FACT, notQuery, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(fact);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    @Test
+    public void testValidateFactValidQuery()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:query region='abc' field='xyz' />";
+        DAxis fact = getAxis(AxisName.FACT, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(fact);
+
+        boolean actual = validator.validate(dataDef);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void testValidateFactEmptyRegion()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:query region=' ' field='xyz' />";
+        DAxis fact = getAxis(AxisName.FACT, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(fact);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    @Test
+    public void testValidateFactEmptyField()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:query region='abc' field=' ' />";
+        DAxis fact = getAxis(AxisName.FACT, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(fact);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    @Test
+    public void testValidateFactValidScript()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:script script='abc' />";
+        DAxis fact = getAxis(AxisName.FACT, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(fact);
+
+        boolean actual = validator.validate(dataDef);
+        assertThat(actual).isTrue();
+    }
+
+    @Test
+    public void testValidateFactEmptyScript()
+            throws JAXBException, InvalidDataDefException {
+
+        String query = "<xf:script script=' ' />";
+        DAxis fact = getAxis(AxisName.FACT, query, null);
+
+        DataDef dataDef = getDataDef();
+        dataDef.getAxis().add(fact);
+
+        testRule.expect(InvalidDataDefException.class);
+        validator.validate(dataDef);
+    }
+
+    @Test
+    public void testValidateValidIndexRange()
+            throws JAXBException, InvalidDataDefException,
+            NumberFormatException, FieldsNotFoundException {
+
+        String axisFields = "<xf:indexRange value='1-1' />";
+        Fields fields = getFields(axisFields);
+
         DAxis axis = new DAxis();
+        axis.setName("col");
         axis.setFields(fields);
 
-        DataDef dataDef = new DataDef();
+        DataDef dataDef = getDataDef();
         dataDef.getAxis().add(axis);
 
         boolean actual = validator.validate(dataDef);
 
         assertThat(actual).isTrue();
+
+        // check whether proper xpath (without abs path) is used
+        verify(fieldsHelper).getRange("//xf:indexRange/@value", fields);
     }
 
     @Test
-    public void testValidateMemberField()
-            throws FieldsException, InvalidDataDefException {
+    public void testValidateIndexRangeCheckCause()
+            throws JAXBException, InvalidDataDefException {
 
-        Fields fields =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
+        String axisFields = "<xf:indexRange value='3-4' />";
 
-        DMember member = new DMember();
-        member.setFields(fields);
+        DAxis axis = getAxis(AxisName.COL, axisFields, null);
 
-        DAxis axis = new DAxis();
-        axis.getMember().add(member);
-        axis.setFields(new Fields());
-
-        DataDef dataDef = new DataDef();
+        DataDef dataDef = getDataDef();
         dataDef.getAxis().add(axis);
-        dataDef.setFields(new Fields());
 
         boolean actual = validator.validate(dataDef);
-
         assertThat(actual).isTrue();
+
+        // invalid
+        axisFields = "<xf:indexRange value='3-x' />";
+        axis = getAxis(AxisName.COL, axisFields, null);
+        dataDef.getAxis().add(axis);
+
+        try {
+            validator.validate(dataDef);
+            fail("should throw InvalidDataDefException");
+        } catch (InvalidDataDefException e) {
+            assertThat(e.getCause()).isInstanceOf(NumberFormatException.class);
+        }
     }
 
     @Test
-    public void testValidateInvalidRange()
-            throws FieldsException, InvalidDataDefException {
-        Fields dataDefField =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
-        Fields axisField =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
-        Fields memberField =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
-        Fields filterField =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
+    public void testValidateIndexRangeOfAllLevels()
+            throws JAXBException, InvalidDataDefException {
 
-        DMember member = new DMember();
-        member.setFields(memberField);
+        // invalid dataDef fields
+        String dataDefFields = "<xf:indexRange value='1-x' />";
+        String axisFields = "<xf:indexRange value='3-4' />";
+        String memberFields = "<xf:indexRange value='5-6' />";
+
+        DAxis axis = getAxis(AxisName.COL, axisFields, memberFields);
+
+        DataDef dataDef = getDataDef();
+        dataDef.setFields(getFields(dataDefFields));
+        dataDef.getAxis().add(axis);
+
+        try {
+            validator.validate(dataDef);
+            fail("should throw InvalidDataDefException");
+        } catch (InvalidDataDefException e) {
+        }
+
+        // invalid axis fields
+        dataDefFields = "<xf:indexRange value='1-2' />";
+        axisFields = "<xf:indexRange value='3-x' />";
+
+        dataDef.setFields(getFields(dataDefFields));
+        axis = getAxis(AxisName.COL, axisFields, memberFields);
+
+        dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
+        try {
+            validator.validate(dataDef);
+            fail("should throw InvalidDataDefException");
+        } catch (InvalidDataDefException e) {
+        }
+
+        // invalid member fields
+        axisFields = "<xf:indexRange value='3-4' />";
+        memberFields = "<xf:indexRange value='5-x' />";
+
+        axis = getAxis(AxisName.COL, axisFields, memberFields);
+
+        dataDef = getDataDef();
+        dataDef.getAxis().add(axis);
+
+        try {
+            validator.validate(dataDef);
+            fail("should throw InvalidDataDefException");
+        } catch (InvalidDataDefException e) {
+        }
+    }
+
+    @Test
+    public void testValidateIndexRangeOfFilter()
+            throws JAXBException, InvalidDataDefException {
+
+        String dataDefFields = "<xf:indexRange value='1-1' />";
+        String axisFields = "<xf:indexRange value='3-4' />";
+        String memberFields = "<xf:indexRange value='5-6' />";
+        String filterFields = "<xf:indexRange value='7-8' />";
+
+        DAxis axis = getAxis(AxisName.COL, axisFields, memberFields);
+
+        DataDef dataDef = getDataDef();
+        dataDef.setFields(getFields(dataDefFields));
+        dataDef.getAxis().add(axis);
 
         DFilter filter = new DFilter();
-        filter.setFields(filterField);
+        filter.setFields(getFields(filterFields));
+        dataDef.getAxis().get(0).setFilter(filter);
 
-        DAxis axis = new DAxis();
-        axis.setFields(axisField);
-        axis.getMember().add(member);
-        axis.setFilter(filter);
+        boolean actual = validator.validate(dataDef);
+        assertThat(actual).isTrue();
 
-        DataDef dataDef = new DataDef();
-        dataDef.setFields(dataDefField);
-        dataDef.getAxis().add(axis);
+        // invalid
+        filterFields = "<xf:indexRange value='7-x' />";
+        filter.setFields(getFields(filterFields));
+        dataDef.getAxis().get(0).setFilter(filter);
 
-        assertThat(validator.validate(dataDef)).isTrue();
-
-        // invalid range
-        filter.setFields(new FieldsBuilder()
-                .add("<xf:indexRange value='1-x' />").build("xf"));
-        assertThat(validator.validate(dataDef)).isFalse();
-
-        // invalid range
-        filter.setFields(
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
-        member.setFields(
-                TestUtil.buildFields("<xf:indexRange value='1-x' />", "xf"));
-        assertThat(validator.validate(dataDef)).isFalse();
-
-        // invalid range
-        axis.setFields(
-                TestUtil.buildFields("<xf:indexRange value='1-x' />", "xf"));
-        member.setFields(
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
-        assertThat(validator.validate(dataDef)).isFalse();
-
-        // invalid range
-        axis.setFields(
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
-        dataDef.setFields(
-                TestUtil.buildFields("<xf:indexRange value='1-x' />", "xf"));
-        assertThat(validator.validate(dataDef)).isFalse();
-
-        dataDef.setFields(
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf"));
-        assertThat(validator.validate(dataDef)).isTrue();
-
+        try {
+            validator.validate(dataDef);
+            fail("should throw InvalidDataDefException");
+        } catch (InvalidDataDefException e) {
+        }
     }
 
-    @Test
-    public void testValidateNullParams() throws InvalidDataDefException {
-        try {
-            validator.validate(null);
-            fail("should throw NullPointerException");
-        } catch (NullPointerException e) {
-            assertThat(e.getMessage()).isEqualTo("dataDef must not be null");
+    private DataDef getDataDef() throws JAXBException {
+
+        // @formatter:off
+        StringBuilder sb = new StringBuilder();
+        sb.append("<dataDef name='bs'>");
+        sb.append("</dataDef>");
+        // @formatter:on
+
+        return TestUtil.unmarshallTestObject(sb, DataDef.class).get(0);
+    }
+
+    private DAxis getAxis(final AxisName axisName, final String axisFields,
+            final String memberFields) throws JAXBException {
+
+        // @formatter:off
+        StringBuilder sb = new StringBuilder();
+        sb.append("    <axis name='" + axisName + "'>");
+        if (axisFields != null) {
+            sb.append("    <xf:fields>");
+            sb.append(axisFields);
+            sb.append("    </xf:fields>");
         }
+        if (memberFields != null) {
+            sb.append("  <member name='year'>");
+            sb.append("    <xf:fields>");
+            sb.append(memberFields);
+            sb.append("    </xf:fields>");
+            sb.append("  </member>");
+        }
+        sb.append("    </axis>");
+        // @formatter:on
+
+        return TestUtil.unmarshallTestObject(sb, DAxis.class).get(0);
+    }
+
+    private Fields getFields(final String fields) throws JAXBException {
+        // @formatter:off
+        StringBuilder sb = new StringBuilder();
+        sb.append("    <xf:fields>");
+        sb.append(fields);
+        sb.append("    </xf:fields>");
+        // @formatter:on
+
+        return TestUtil.unmarshallTestObject(sb, Fields.class).get(0);
     }
 }
