@@ -12,6 +12,7 @@ import java.util.List;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
@@ -21,7 +22,9 @@ import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.testutil.TestUtil;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -51,6 +54,9 @@ public class LocatorSeederTest {
 
     @InjectMocks
     private LocatorSeeder locatorSeeder;
+
+    @Rule
+    public ExpectedException testRule = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -85,16 +91,10 @@ public class LocatorSeederTest {
     }
 
     @Test
-    public void testSetInputOtherThanLocator() throws IllegalAccessException {
-
+    public void testSetInputOtherThanLocator() {
         // when
+        testRule.expect(StepRunException.class);
         locatorSeeder.setInput("some object");
-
-        @SuppressWarnings("unchecked")
-        List<Locator> actual = (List<Locator>) FieldUtils
-                .readDeclaredField(locatorSeeder, "locatorList", true);
-
-        assertThat(actual.size()).isEqualTo(0);
     }
 
     @Test

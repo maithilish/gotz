@@ -10,21 +10,28 @@ disable persistence
 externalize strings
 debug
 state log, check whether all trace has marker  
-
-merge bean files
-
 devdef and itest clean html files
+merge and combine bean files
+itest - merge and combine bean files
+
 tests
    fields builder - format xml
+   cleanup
+   
 memory usage and profiler
    
 examples   
 
 refactor to minimal logging before packaging 
 
-    
+license and lib distribution    
   
 beta
 ----
+
+remove FieldsBuilder instead add XOBuilder for all JAXB objects
+move test DataDefs created with TestUtil.unmarshall to XOBuilder  
+cleanup and complete tests
+itests for persist
 
 when live duration is reduced adjust existing document todate 

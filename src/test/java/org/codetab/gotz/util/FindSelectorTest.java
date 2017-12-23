@@ -18,26 +18,25 @@ public class FindSelectorTest {
     @Test
     public void testMain() {
         String[] args = new String[] {
-                "src/test/resources/itest/itc/bs/itc-bs.html",
+                "src/test/resources/itest/itc/page/itc-bs.html",
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)"};
         FindSelector.main(args);
     }
 
     @Test
     public void testParseHtml() throws IOException {
-        String fileName = "src/test/resources/itest/itc/bs/itc-bs.html";
+        String fileName = "src/test/resources/itest/itc/page/itc-bs.html";
         String selector =
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)";
         FindSelector fs = new FindSelector();
         Elements elements = fs.parseHtml(fileName, selector);
         assertThat(elements.size()).isEqualTo(1);
-        assertThat(elements.get(0).outerHtml())
-                .isEqualTo("<td align=\"right\" class=\"detb\">Mar '16</td>");
+        assertThat(elements.get(0).outerHtml()).isEqualTo("<td>Mar '16</td>");
     }
 
     @Test
     public void testBuildOutputInner() throws IOException {
-        String fileName = "src/test/resources/itest/itc/bs/itc-bs.html";
+        String fileName = "src/test/resources/itest/itc/page/itc-bs.html";
         String selector =
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)";
         FindSelector fs = new FindSelector();
@@ -50,7 +49,7 @@ public class FindSelectorTest {
 
     @Test
     public void testBuildOutputOuter() throws IOException {
-        String fileName = "src/test/resources/itest/itc/bs/itc-bs.html";
+        String fileName = "src/test/resources/itest/itc/page/itc-bs.html";
         String selector =
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)";
         FindSelector fs = new FindSelector();
@@ -70,7 +69,7 @@ public class FindSelectorTest {
         if (inner) {
             sb.append("Mar '16");
         } else {
-            sb.append("<td align=\"right\" class=\"detb\">Mar '16</td>");
+            sb.append("<td>Mar '16</td>");
         }
         sb.append(Util.LINE);
         sb.append(Util.LINE);

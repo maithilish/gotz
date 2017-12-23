@@ -9,8 +9,10 @@ import org.codetab.gotz.dao.DaoFactoryProvider;
 import org.codetab.gotz.dao.ILocatorDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.dao.jdo.JdoDaoFactory;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Locator;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,6 +43,9 @@ public class LocatorPersistenceTest {
     @Mock
     private ILocatorDao locatorDao;
 
+    @Mock
+    private FieldsHelper fieldsHelper;
+
     @InjectMocks
     private LocatorPersistence locatorPersistence;
 
@@ -53,13 +58,15 @@ public class LocatorPersistenceTest {
     }
 
     @Test
-    public void testLoadLocatorByNameGroup() {
+    public void testLoadLocatorByNameGroup() throws FieldsNotFoundException {
         Locator locator = new Locator();
 
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
         given(jdoDao.getLocatorDao()).willReturn(locatorDao);
         given(locatorDao.getLocator("n", "g")).willReturn(locator);
+
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
 
         Locator actual = locatorPersistence.loadLocator("n", "g");
 
@@ -74,6 +81,7 @@ public class LocatorPersistenceTest {
 
     @Test
     public void testLoadLocatorByNameGroupShouldThrowException() {
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
@@ -108,6 +116,8 @@ public class LocatorPersistenceTest {
         given(jdoDao.getLocatorDao()).willReturn(locatorDao);
         given(locatorDao.getLocator(1L)).willReturn(locator);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         Locator actual = locatorPersistence.loadLocator(1L);
 
         InOrder inOrder =
@@ -125,17 +135,23 @@ public class LocatorPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         testRule.expect(StepPersistenceException.class);
         locatorPersistence.loadLocator(1L);
     }
 
     @Test
-    public void testStoreLocator() {
+    public void testStoreLocator() throws FieldsNotFoundException {
         Locator locator = new Locator();
 
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
         given(jdoDao.getLocatorDao()).willReturn(locatorDao);
+
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(fieldsHelper.isTrue("/xf:fields/xf:tasks/xf:persist/xf:locator", //$NON-NLS-1$
+                locator.getFields())).willReturn(true);
 
         locatorPersistence.storeLocator(locator);
 
@@ -148,12 +164,17 @@ public class LocatorPersistenceTest {
     }
 
     @Test
-    public void testStoreLocatorShouldThrowException() {
+    public void testStoreLocatorShouldThrowException()
+            throws FieldsNotFoundException {
         Locator locator = new Locator();
 
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
+
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(fieldsHelper.isTrue("/xf:fields/xf:tasks/xf:persist/xf:locator", //$NON-NLS-1$
+                locator.getFields())).willReturn(true);
 
         testRule.expect(StepPersistenceException.class);
         locatorPersistence.storeLocator(locator);

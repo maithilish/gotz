@@ -9,9 +9,11 @@ import org.codetab.gotz.dao.DaoFactoryProvider;
 import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.dao.jdo.JdoDaoFactory;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.Fields;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +44,9 @@ public class DataPersistenceTest {
     @Mock
     private IDataDao dataDao;
 
+    @Mock
+    private FieldsHelper fieldsHelper;
+
     @InjectMocks
     private DataPersistence dataPersistence;
 
@@ -61,6 +66,8 @@ public class DataPersistenceTest {
         given(jdoDao.getDataDao()).willReturn(dataDao);
         given(dataDao.getData(1L, 1L)).willReturn(data);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         Data actual = dataPersistence.loadData(1L, 1L);
 
         InOrder inOrder =
@@ -78,6 +85,8 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         testRule.expect(StepPersistenceException.class);
         dataPersistence.loadData(1L, 1L);
     }
@@ -89,6 +98,8 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
         given(jdoDao.getDataDao()).willReturn(dataDao);
         given(dataDao.getData(1L)).willReturn(data);
+
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
 
         Data actual = dataPersistence.loadData(1L);
 
@@ -107,19 +118,26 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         testRule.expect(StepPersistenceException.class);
         dataPersistence.loadData(1L);
     }
 
     @Test
-    public void testStoreData() {
+    public void testStoreData() throws FieldsNotFoundException {
         Data data = new Data();
+        Fields fields = new Fields();
 
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
         given(jdoDao.getDataDao()).willReturn(dataDao);
 
-        Fields fields = new Fields();
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.persist.data")).willReturn(true);
+        given(fieldsHelper.isTrue("/xf:fields/xf:task/xf:persist/xf:data",
+                fields)).willReturn(true);
+
         dataPersistence.storeData(data, fields);
 
         InOrder inOrder =
@@ -131,13 +149,19 @@ public class DataPersistenceTest {
     }
 
     @Test
-    public void testStoreDataShouldThrowException() {
+    public void testStoreDataShouldThrowException()
+            throws FieldsNotFoundException {
+        Data data = new Data();
+        Fields fields = new Fields();
+
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
-        Data data = new Data();
-        Fields fields = new Fields();
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.persist.data")).willReturn(true);
+        given(fieldsHelper.isTrue("/xf:fields/xf:task/xf:persist/xf:data",
+                fields)).willReturn(true);
 
         testRule.expect(StepPersistenceException.class);
         dataPersistence.storeData(data, fields);

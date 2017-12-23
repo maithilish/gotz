@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
@@ -302,6 +303,10 @@ public class DataDefHelper {
             sb.append(line);
         }
         return sb.toString();
+    }
+
+    public DataDef cloneDataDef(final DataDef dataDef) {
+        return SerializationUtils.clone(dataDef);
     }
 
 }

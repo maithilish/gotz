@@ -26,9 +26,9 @@ import org.mockito.MockitoAnnotations;
 
 public class ConfigServiceTest {
 
-    private static final int DEFAULT_CONFIGS_COUNT = 23;
+    private static final int DEFAULT_CONFIGS_COUNT = 27;
 
-    private static final int USER_PROVIDED_CONFIGS_COUNT = 23;
+    private static final int USER_PROVIDED_CONFIGS_COUNT = 27;
 
     @Mock
     private CompositeConfiguration configs;
@@ -191,6 +191,15 @@ public class ConfigServiceTest {
         String[] datePatterns = {"dd-MM-yyyy", "dd/MM/yyyy"};
         assertArrayEquals(datePatterns,
                 configuration.getStringArray("gotz.dateParsePattern"));
+
+        assertThat(configuration.getString("gotz.useDataStore"))
+                .isEqualTo("true");
+        assertThat(configuration.getString("gotz.persist.dataDef"))
+                .isEqualTo("true");
+        assertThat(configuration.getString("gotz.persist.locator"))
+                .isEqualTo("true");
+        assertThat(configuration.getString("gotz.persist.data"))
+                .isEqualTo("true");
     }
 
     @Test
@@ -460,45 +469,10 @@ public class ConfigServiceTest {
         Configuration configuration =
                 configService.getConfiguration(ConfigIndex.DEFAULTS);
 
-        // default
-        assertThat(configService.isPersist("locator")).isTrue();
-
-        // global true, type undefined
-        configuration.setProperty("gotz.persist", "true");
-        assertThat(configService.isPersist("locator")).isTrue();
-
-        // global false, type undefined
-        configuration.setProperty("gotz.persist", "false");
-        assertThat(configService.isPersist("locator")).isFalse();
-
-        // global undefined, type false
-        configuration.clearProperty("gotz.persist");
-        configuration.setProperty("gotz.persist.locator", "false");
-        assertThat(configService.isPersist("locator")).isFalse();
-
-        // global undefined, type true
-        configuration.clearProperty("gotz.persist");
         configuration.setProperty("gotz.persist.locator", "true");
-        assertThat(configService.isPersist("locator")).isTrue();
+        assertThat(configService.isPersist("gotz.persist.locator")).isTrue();
 
-        // global false, type false
-        configuration.setProperty("gotz.persist", "false");
         configuration.setProperty("gotz.persist.locator", "false");
-        assertThat(configService.isPersist("locator")).isFalse();
-
-        // global false, type true
-        configuration.setProperty("gotz.persist", "false");
-        configuration.setProperty("gotz.persist.locator", "true");
-        assertThat(configService.isPersist("locator")).isTrue();
-
-        // global true, type false
-        configuration.setProperty("gotz.persist", "true");
-        configuration.setProperty("gotz.persist.locator", "false");
-        assertThat(configService.isPersist("locator")).isFalse();
-
-        // global true, type true
-        configuration.setProperty("gotz.persist", "true");
-        configuration.setProperty("gotz.persist.locator", "true");
-        assertThat(configService.isPersist("locator")).isTrue();
+        assertThat(configService.isPersist("gotz.persist.locator")).isFalse();
     }
 }

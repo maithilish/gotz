@@ -236,7 +236,8 @@ public class BeanHelperTest {
             beanHelper.unmarshalBeanFile("x", packageName);
             fail("should throw NullPointerException");
         } catch (NullPointerException e) {
-            assertThat(e.getMessage()).isEqualTo("clz must not be null");
+            assertThat(e.getMessage())
+                    .isEqualTo("packageName must not be null");
         }
     }
 

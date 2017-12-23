@@ -1,7 +1,6 @@
 package org.codetab.gotz.shared;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ public class DataDefService {
     // stored datadefs
     private List<DataDef> dataDefs;
 
-    private Map<String, Set<Set<DMember>>> memberSetsMap;
     private Map<String, Data> dataTemplateMap;
 
     @Inject
@@ -61,81 +59,31 @@ public class DataDefService {
     public void init() {
         logger.info(Messages.getString("DataDefService.0")); //$NON-NLS-1$
 
+        // get new datadefs and set defaults
         List<DataDef> newDataDefs = beanService.getBeans(DataDef.class);
-
         setDefaults(newDataDefs);
 
-        memberSetsMap = new HashMap<>();
-        dataTemplateMap = new HashMap<>();
+        // validate new datadefs
         dataDefs = newDataDefs;
         validateDataDefs(newDataDefs);
 
-        // clear maps populated for validation
-        memberSetsMap = new HashMap<>();
-        dataTemplateMap = new HashMap<>();
-
+        // load existing dataDefs, mark and store changed dataDefs, if there are
+        // updates then reload latest datadef.
         dataDefs = dataDefPersistence.loadDataDefs();
-        /*
-         * store changed datadef and load latest datadef, persistence will alter
-         * object so clone newDataDefs
-         */
-        storeDataDefs(cloneDataDefs(newDataDefs));
+        storeAndReloadDataDefs(newDataDefs);
 
-        // add new datadefs from file which are not persisted
+        // when persist is false (globally or for a datadef) then reload will
+        // not return any or that datadef then add those dateDef
         addTransientDataDefs(newDataDefs);
 
-        traceDataDefs();
+        // generate data templates from dataDefs
+        createAndCacheDataTemplates();
 
+        // trace
+        traceDataDefs();
         traceDataStructure();
 
         logger.debug(Messages.getString("DataDefService.1")); //$NON-NLS-1$
-    }
-
-    private List<DataDef> cloneDataDefs(final List<DataDef> newDataDefs) {
-        List<DataDef> clone = new ArrayList<>();
-
-        for (DataDef dataDef : newDataDefs) {
-            clone.add(SerializationUtils.clone(dataDef));
-        }
-        return clone;
-    }
-
-    private void addTransientDataDefs(final List<DataDef> newDataDefs) {
-        for (DataDef newDataDef : newDataDefs) {
-            boolean exists = dataDefs.stream()
-                    .anyMatch(df -> df.getName().equals(newDataDef.getName()));
-            if (!exists) {
-                dataDefs.add(newDataDef);
-            }
-        }
-    }
-
-    private void storeDataDefs(final List<DataDef> newDataDefs) {
-
-        boolean updates =
-                dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
-
-        if (updates) {
-            for (DataDef dataDef : dataDefs) {
-                dataDefPersistence.storeDataDef(dataDef);
-            }
-            dataDefs = dataDefPersistence.loadDataDefs();
-        }
-    }
-
-    private void validateDataDefs(final List<DataDef> newDataDefs) {
-
-        for (DataDef dataDef : newDataDefs) {
-            try {
-                validator.validate(dataDef);
-                // getDataTemplate(dataDef.getName()); // only for validation
-            } catch (InvalidDataDefException e) {
-                String message =
-                        Util.join(Messages.getString("DataDefService.2"), //$NON-NLS-1$
-                                dataDef.getName(), "]"); //$NON-NLS-1$
-                throw new CriticalException(message, e);
-            }
-        }
     }
 
     private void setDefaults(final List<DataDef> newDataDefs) {
@@ -156,62 +104,67 @@ public class DataDefService {
         }
     }
 
-    public DataDef getDataDef(final String name)
-            throws DataDefNotFoundException {
-        try {
-            return dataDefs.stream().filter(e -> e.getName().equals(name))
-                    .findFirst().get();
-        } catch (NoSuchElementException e) {
-            throw new DataDefNotFoundException(name);
+    private void validateDataDefs(final List<DataDef> newDataDefs) {
+
+        for (DataDef dataDef : newDataDefs) {
+            try {
+                validator.validate(dataDef);
+            } catch (InvalidDataDefException e) {
+                String message =
+                        Util.join(Messages.getString("DataDefService.2"), //$NON-NLS-1$
+                                dataDef.getName(), "]"); //$NON-NLS-1$
+                throw new CriticalException(message, e);
+            }
         }
     }
 
-    public List<DataDef> getDataDefs() {
-        return dataDefs;
+    private void storeAndReloadDataDefs(final List<DataDef> newDataDefs) {
+
+        boolean updates =
+                dataDefPersistence.markForUpdation(dataDefs, newDataDefs);
+
+        if (updates) {
+            for (DataDef dataDef : dataDefs) {
+                // persist alters the dataDef, so persist the clone
+                DataDef clone = dataDefHelper.cloneDataDef(dataDef);
+                dataDefPersistence.storeDataDef(clone);
+            }
+            dataDefs = dataDefPersistence.loadDataDefs();
+        }
     }
 
-    // transforms DAxis/DMember to Member/Axis
-    public Data getDataTemplate(final String dataDefName)
-            throws DataDefNotFoundException, ClassNotFoundException,
-            IOException {
-        Data data = null;
-        if (dataTemplateMap.containsKey(dataDefName)) {
-            data = dataTemplateMap.get(dataDefName);
-        } else {
-            // create and cache the memberSets and data
-            DataDef dataDef = getDataDef(dataDefName);
-            Set<Set<DMember>> memberSets = null;
-            if (memberSetsMap.containsKey(dataDefName)) {
-                memberSets = memberSetsMap.get(dataDefName);
-            } else {
-                memberSets = dataDefHelper.generateMemberSets(dataDef); // synchronized
-                memberSetsMap.put(dataDefName, memberSets);
+    private void addTransientDataDefs(final List<DataDef> newDataDefs) {
+        for (DataDef newDataDef : newDataDefs) {
+            boolean exists = dataDefs.stream()
+                    .anyMatch(df -> df.getName().equals(newDataDef.getName()));
+            if (!exists) {
+                dataDefs.add(newDataDef);
             }
-            data = dataDefHelper.createDataTemplate(dataDef, memberSets);
+        }
+    }
+
+    private void createAndCacheDataTemplates() {
+        dataTemplateMap = new HashMap<>();
+
+        for (DataDef dataDef : dataDefs) {
+            // create and cache the memberSets and data
+            String dataDefName = dataDef.getName();
+            Set<Set<DMember>> memberSets = null;
+
+            try {
+                memberSets = dataDefHelper.generateMemberSets(dataDef); // synchronized
+            } catch (ClassNotFoundException | IOException e) {
+                String message =
+                        Util.join(Messages.getString("DataDefService.10"), //$NON-NLS-1$
+                                dataDef.getName(), "]"); //$NON-NLS-1$
+                throw new CriticalException(message, e);
+            }
+            Data data = dataDefHelper.createDataTemplate(dataDef, memberSets);
             dataTemplateMap.put(dataDefName, data);
         }
-        return SerializationUtils.clone(data);
     }
 
-    public Map<AxisName, Fields> getFilterMap(final String dataDef)
-            throws DataDefNotFoundException {
-        Map<AxisName, Fields> filterMap = new HashMap<>();
-        List<DAxis> axes = getDataDef(dataDef).getAxis();
-        for (DAxis axis : axes) {
-            AxisName axisName = AxisName.valueOf(axis.getName().toUpperCase());
-            DFilter filter = axis.getFilter();
-            if (filter != null) {
-                filterMap.put(axisName, filter.getFields());
-            }
-        }
-        return filterMap;
-    }
-
-    public int getCount() {
-        return dataDefs.size();
-    }
-
-    public void traceDataDefs() {
+    private void traceDataDefs() {
         if (!logger.isTraceEnabled()) {
             return;
         }
@@ -241,15 +194,59 @@ public class DataDefService {
                 String dataDefName = dataDef.getName();
                 Data data = getDataTemplate(dataDefName);
                 traceDataStructure(dataDefName, data);
-            } catch (ClassNotFoundException | DataDefNotFoundException
-                    | IOException e) {
+            } catch (NoSuchElementException e) {
                 String message =
                         Util.join(Messages.getString("DataDefService.10"), //$NON-NLS-1$
                                 dataDef.getName(), "]"); //$NON-NLS-1$
                 throw new CriticalException(message, e);
             }
-
         }
+    }
+
+    // accessor methods
+    public DataDef getDataDef(final String name)
+            throws DataDefNotFoundException {
+        try {
+            return dataDefs.stream().filter(e -> e.getName().equals(name))
+                    .findFirst().get();
+        } catch (NoSuchElementException e) {
+            throw new DataDefNotFoundException(name);
+        }
+    }
+
+    public List<DataDef> getDataDefs() {
+        return dataDefs;
+    }
+
+    // transforms DAxis/DMember to Member/Axis
+    public Data getDataTemplate(final String dataDefName) {
+        Data data = null;
+        if (dataTemplateMap.containsKey(dataDefName)) {
+            data = dataTemplateMap.get(dataDefName);
+        } else {
+            throw new NoSuchElementException(
+                    Util.join(Messages.getString("DataDefService.3"), //$NON-NLS-1$
+                            dataDefName, "]")); //$NON-NLS-1$
+        }
+        return SerializationUtils.clone(data);
+    }
+
+    public Map<AxisName, Fields> getFilterMap(final String dataDef)
+            throws DataDefNotFoundException {
+        Map<AxisName, Fields> filterMap = new HashMap<>();
+        List<DAxis> axes = getDataDef(dataDef).getAxis();
+        for (DAxis axis : axes) {
+            AxisName axisName = AxisName.valueOf(axis.getName().toUpperCase());
+            DFilter filter = axis.getFilter();
+            if (filter != null) {
+                filterMap.put(axisName, filter.getFields());
+            }
+        }
+        return filterMap;
+    }
+
+    public int getCount() {
+        return dataDefs.size();
     }
 
     public void traceDataStructure(final String dataDefName, final Data data) {
@@ -259,5 +256,4 @@ public class DataDefService {
         logger.trace(marker, ""); //$NON-NLS-1$
         logger.trace(marker, "{}", trace); //$NON-NLS-1$
     }
-
 }

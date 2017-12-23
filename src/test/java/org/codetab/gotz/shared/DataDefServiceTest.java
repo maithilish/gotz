@@ -1,38 +1,41 @@
 package org.codetab.gotz.shared;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
+import javax.xml.bind.JAXBException;
+
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.InvalidDataDefException;
-import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
-import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DMember;
 import org.codetab.gotz.model.Data;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
-import org.codetab.gotz.testutil.FieldsBuilder;
+import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.validation.DataDefValidator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,7 +45,6 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 public class DataDefServiceTest {
 
@@ -56,14 +58,14 @@ public class DataDefServiceTest {
     private DataDefValidator validator;
     @Mock
     private DataDefHelper dataDefHelper;
-    @Spy
+    @Mock
     private FieldsHelper fieldsHelper;
 
     @InjectMocks
     private DataDefService dataDefService;
 
     @Rule
-    public ExpectedException exception = ExpectedException.none();
+    public ExpectedException testRule = ExpectedException.none();
 
     @Before
     public void setUp() throws Exception {
@@ -85,17 +87,28 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testInit() throws IllegalAccessException, FieldsException,
-            InvalidDataDefException {
+    public void testInitNoUpdates()
+            throws IllegalAccessException, FieldsException,
+            InvalidDataDefException, ClassNotFoundException, IOException {
         List<DataDef> dataDefs = createSimpleDataDefs();
+        DataDef dataDef1 = dataDefs.get(0);
+        DataDef dataDef2 = dataDefs.get(1);
+        Set<Set<DMember>> set1 = new HashSet<>();
+        Set<Set<DMember>> set2 = new HashSet<>();
 
-        given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
-        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
-        given(validator.validate(dataDefs.get(1))).willReturn(true);
-        given(dataDefPersistence.markForUpdation(dataDefs, dataDefs))
+        List<DataDef> newDataDefs = createSimpleDataDefs();
+        DataDef newDataDef1 = newDataDefs.get(0);
+        DataDef newDataDef2 = newDataDefs.get(1);
+
+        // update false
+        given(dataDefPersistence.markForUpdation(dataDefs, newDataDefs))
                 .willReturn(false);
 
+        given(beanService.getBeans(DataDef.class)).willReturn(newDataDefs);
+        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
+        given(dataDefHelper.generateMemberSets(dataDef1)).willReturn(set1);
+        given(dataDefHelper.generateMemberSets(dataDef2)).willReturn(set2);
+
         // when
         dataDefService.init();
 
@@ -103,37 +116,75 @@ public class DataDefServiceTest {
         InOrder inOrder = inOrder(dataDefPersistence, beanService,
                 dataDefHelper, validator);
 
+        // get beans
         inOrder.verify(beanService).getBeans(DataDef.class);
-        inOrder.verify(dataDefHelper).addFact(dataDefs.get(0));
-        inOrder.verify(dataDefHelper).setOrder(dataDefs.get(0));
-        inOrder.verify(dataDefHelper).setDates(dataDefs.get(0));
-        inOrder.verify(dataDefHelper).addIndexRange(dataDefs.get(0));
-        inOrder.verify(dataDefHelper).addFact(dataDefs.get(1));
-        inOrder.verify(dataDefHelper).setOrder(dataDefs.get(1));
-        inOrder.verify(dataDefHelper).setDates(dataDefs.get(1));
-        inOrder.verify(dataDefHelper).addIndexRange(dataDefs.get(1));
 
-        inOrder.verify(validator).validate(dataDefs.get(0));
-        inOrder.verify(validator).validate(dataDefs.get(1));
+        // set defaults
+        inOrder.verify(dataDefHelper).addFact(newDataDef1);
+        inOrder.verify(dataDefHelper).setOrder(newDataDef1);
+        inOrder.verify(dataDefHelper).setDates(newDataDef1);
+        inOrder.verify(dataDefHelper).addIndexRange(newDataDef1);
+        inOrder.verify(dataDefHelper).addFields(newDataDef1);
 
+        inOrder.verify(dataDefHelper).addFact(newDataDef2);
+        inOrder.verify(dataDefHelper).setOrder(newDataDef2);
+        inOrder.verify(dataDefHelper).setDates(newDataDef2);
+        inOrder.verify(dataDefHelper).addIndexRange(newDataDef2);
+        inOrder.verify(dataDefHelper).addFields(newDataDef2);
+
+        // validate
+        inOrder.verify(validator).validate(newDataDef1);
+        inOrder.verify(validator).validate(newDataDef2);
+
+        // no updates
         inOrder.verify(dataDefPersistence).loadDataDefs();
+        inOrder.verify(dataDefPersistence).markForUpdation(dataDefs,
+                newDataDefs);
 
-        List<DataDef> actual = dataDefService.getDataDefs();
-        assertThat(actual).isSameAs(dataDefs);
+        // data templates
+        inOrder.verify(dataDefHelper).generateMemberSets(dataDef1);
+        inOrder.verify(dataDefHelper).createDataTemplate(dataDef1, set1);
+        inOrder.verify(dataDefHelper).generateMemberSets(dataDef2);
+        inOrder.verify(dataDefHelper).createDataTemplate(dataDef2, set2);
+
+        inOrder.verify(dataDefHelper).getDataStructureTrace(eq("x"),
+                nullable(Data.class));
+        inOrder.verify(dataDefHelper).getDataStructureTrace(eq("y"),
+                nullable(Data.class));
+
+        verifyNoMoreInteractions(dataDefPersistence, beanService, dataDefHelper,
+                validator);
     }
 
     @Test
-    public void testInitUpdateDataDefs()
-            throws IllegalAccessException, InvalidDataDefException {
+    public void testInitWithUpdates()
+            throws IllegalAccessException, FieldsException,
+            InvalidDataDefException, ClassNotFoundException, IOException {
         List<DataDef> dataDefs = createSimpleDataDefs();
+        DataDef dataDef1 = dataDefs.get(0);
+        DataDef dataDef2 = dataDefs.get(1);
+        Set<Set<DMember>> set1 = new HashSet<>();
+        Set<Set<DMember>> set2 = new HashSet<>();
 
-        given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
-        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
-        given(validator.validate(dataDefs.get(1))).willReturn(true);
-        given(dataDefPersistence.markForUpdation(dataDefs, dataDefs))
+        List<DataDef> newDataDefs = createSimpleDataDefs();
+        DataDef newDataDef1 = newDataDefs.get(0);
+        DataDef newDataDef2 = newDataDefs.get(1);
+
+        List<DataDef> clones = createSimpleDataDefs();
+        DataDef clone1 = clones.get(0);
+        DataDef clone2 = clones.get(1);
+
+        // update true
+        given(dataDefPersistence.markForUpdation(dataDefs, newDataDefs))
                 .willReturn(true);
 
+        given(beanService.getBeans(DataDef.class)).willReturn(newDataDefs);
+        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
+        given(dataDefHelper.generateMemberSets(dataDef1)).willReturn(set1);
+        given(dataDefHelper.generateMemberSets(dataDef2)).willReturn(set2);
+        given(dataDefHelper.cloneDataDef(newDataDef1)).willReturn(clone1);
+        given(dataDefHelper.cloneDataDef(newDataDef2)).willReturn(clone2);
+
         // when
         dataDefService.init();
 
@@ -141,196 +192,275 @@ public class DataDefServiceTest {
         InOrder inOrder = inOrder(dataDefPersistence, beanService,
                 dataDefHelper, validator);
 
+        // get beans
+        inOrder.verify(beanService).getBeans(DataDef.class);
+
+        // set defaults
+        inOrder.verify(dataDefHelper).addFact(newDataDef1);
+        inOrder.verify(dataDefHelper).setOrder(newDataDef1);
+        inOrder.verify(dataDefHelper).setDates(newDataDef1);
+        inOrder.verify(dataDefHelper).addIndexRange(newDataDef1);
+        inOrder.verify(dataDefHelper).addFields(newDataDef1);
+
+        inOrder.verify(dataDefHelper).addFact(newDataDef2);
+        inOrder.verify(dataDefHelper).setOrder(newDataDef2);
+        inOrder.verify(dataDefHelper).setDates(newDataDef2);
+        inOrder.verify(dataDefHelper).addIndexRange(newDataDef2);
+        inOrder.verify(dataDefHelper).addFields(newDataDef2);
+
+        // validate
+        inOrder.verify(validator).validate(newDataDef1);
+        inOrder.verify(validator).validate(newDataDef2);
+
+        // with updates
         inOrder.verify(dataDefPersistence).loadDataDefs();
-        inOrder.verify(dataDefPersistence).storeDataDef(dataDefs.get(0));
-        inOrder.verify(dataDefPersistence).storeDataDef(dataDefs.get(1));
+        inOrder.verify(dataDefPersistence).markForUpdation(dataDefs,
+                newDataDefs);
+        inOrder.verify(dataDefHelper).cloneDataDef(newDataDef1);
+        inOrder.verify(dataDefPersistence).storeDataDef(clone1);
+        inOrder.verify(dataDefHelper).cloneDataDef(newDataDef2);
+        inOrder.verify(dataDefPersistence).storeDataDef(clone2);
         inOrder.verify(dataDefPersistence).loadDataDefs();
+
+        // data templates
+        inOrder.verify(dataDefHelper).generateMemberSets(dataDef1);
+        inOrder.verify(dataDefHelper).createDataTemplate(dataDef1, set1);
+        inOrder.verify(dataDefHelper).generateMemberSets(dataDef2);
+        inOrder.verify(dataDefHelper).createDataTemplate(dataDef2, set2);
+
+        inOrder.verify(dataDefHelper).getDataStructureTrace(eq("x"),
+                nullable(Data.class));
+        inOrder.verify(dataDefHelper).getDataStructureTrace(eq("y"),
+                nullable(Data.class));
+
+        verifyNoMoreInteractions(dataDefPersistence, beanService, dataDefHelper,
+                validator);
     }
 
     @Test
-    public void testInitValidationThrowCriticalException()
-            throws IllegalAccessException, InvalidDataDefException {
-        // given
+    public void testInitaddTransientDataDefs() throws DataDefNotFoundException {
         List<DataDef> dataDefs = createSimpleDataDefs();
+        DataDef dataDef1 = dataDefs.get(0);
+        dataDefs.remove(1); // dataDef2
 
-        given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
+        List<DataDef> newDataDefs = createSimpleDataDefs();
+        DataDef newDataDef2 = newDataDefs.get(1); // transient i.e. new one
+
+        given(beanService.getBeans(DataDef.class)).willReturn(newDataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
-
-        // when then
-        exception.expect(CriticalException.class);
-        dataDefService.init();
-    }
-
-    @Test
-    public void testGetDataDef() throws DataDefNotFoundException {
-        // given
-        List<DataDef> dataDefs = createSimpleDataDefs();
-        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        dataDefService.init();
 
         // when
-        DataDef actual = dataDefService.getDataDef("x");
+        dataDefService.init();
 
-        // then
-        DataDef expected = dataDefs.stream()
-                .filter(e -> e.getName().equals("x")).findFirst().get();
-        assertThat(actual).isEqualTo(expected);
+        assertThat(dataDefService.getDataDef("x")).isSameAs(dataDef1);
+        assertThat(dataDefService.getDataDef("y")).isSameAs(newDataDef2);
     }
 
     @Test
-    public void testGetDataDefThrowException() throws DataDefNotFoundException {
-        // given
+    public void testInitCheckDataDefs() throws DataDefNotFoundException {
         List<DataDef> dataDefs = createSimpleDataDefs();
-        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        dataDefService.init();
+        DataDef dataDef1 = dataDefs.get(0);
+        DataDef dataDef2 = dataDefs.get(1);
 
-        // when then
-        exception.expect(DataDefNotFoundException.class);
+        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
+
+        // when
+        dataDefService.init();
+        List<DataDef> actual = dataDefService.getDataDefs();
+
+        assertThat(actual).containsExactly(dataDef1, dataDef2);
+    }
+
+    @Test
+    public void testInitSetDefaultShouldThrowException()
+            throws FieldsException {
+        List<DataDef> newDataDefs = createSimpleDataDefs();
+        DataDef newDataDef1 = newDataDefs.get(0);
+
+        given(beanService.getBeans(DataDef.class)).willReturn(newDataDefs);
+        doThrow(FieldsException.class).when(dataDefHelper)
+                .addIndexRange(newDataDef1);
+
+        testRule.expect(CriticalException.class);
+        dataDefService.init();
+    }
+
+    @Test
+    public void testInitValidationShouldThrowException()
+            throws InvalidDataDefException {
+        List<DataDef> newDataDefs = createSimpleDataDefs();
+        DataDef newDataDef1 = newDataDefs.get(0);
+
+        given(beanService.getBeans(DataDef.class)).willReturn(newDataDefs);
+        doThrow(InvalidDataDefException.class).when(validator)
+                .validate(newDataDef1);
+
+        testRule.expect(CriticalException.class);
+        dataDefService.init();
+    }
+
+    @Test
+    public void testInitCreateAndCacheTemplateShouldThrowException()
+            throws ClassNotFoundException, IOException {
+        List<DataDef> dataDefs = createSimpleDataDefs();
+        DataDef dataDef1 = dataDefs.get(0);
+
+        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
+
+        doThrow(IOException.class).when(dataDefHelper)
+                .generateMemberSets(dataDef1);
+
+        try {
+            dataDefService.init();
+            fail("should throw CriticalException");
+        } catch (CriticalException e) {
+        }
+
+        doThrow(ClassNotFoundException.class).when(dataDefHelper)
+                .generateMemberSets(dataDef1);
+
+        try {
+            dataDefService.init();
+            fail("should throw CriticalException");
+        } catch (CriticalException e) {
+        }
+    }
+
+    @Test
+    public void testInitTraceDataStructureShouldThrowException()
+            throws ClassNotFoundException, IOException, IllegalAccessException {
+        List<DataDef> dataDefs = createSimpleDataDefs();
+        DataDef dataDef1 = dataDefs.get(0);
+        dataDef1.getAxis().clear();
+
+        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
+
+        try {
+            dataDefService.init();
+            fail("should throw CriticalException");
+        } catch (CriticalException e) {
+        }
+
+        // for test coverage
+        dataDefs = createSimpleDataDefs();
+        dataDef1 = dataDefs.get(0);
+        Set<Set<DMember>> set1 = new HashSet<>();
+        Data data = new Data();
+
+        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
+        given(dataDefHelper.generateMemberSets(dataDef1)).willReturn(set1);
+        given(dataDefHelper.createDataTemplate(dataDef1, set1))
+                .willReturn(data);
+        given(dataDefHelper.getDataStructureTrace("x", data))
+                .willThrow(NoSuchElementException.class); // just a hack
+
+        try {
+            dataDefService.init();
+            fail("should throw CriticalException");
+        } catch (CriticalException e) {
+        }
+    }
+
+    @Test
+    public void testGetDataDef()
+            throws IllegalAccessException, DataDefNotFoundException {
+        List<DataDef> dataDefs = createSimpleDataDefs();
+        DataDef dataDef = dataDefs.get(0);
+
+        FieldUtils.writeField(dataDefService, "dataDefs", dataDefs, true);
+
+        DataDef actual = dataDefService.getDataDef("x");
+
+        assertThat(actual).isSameAs(dataDef);
+    }
+
+    @Test
+    public void testGetDataDefShouldThrowException()
+            throws IllegalAccessException, DataDefNotFoundException {
+        List<DataDef> dataDefs = createSimpleDataDefs();
+
+        FieldUtils.writeField(dataDefService, "dataDefs", dataDefs, true);
+
+        testRule.expect(DataDefNotFoundException.class);
         dataDefService.getDataDef("z");
     }
 
     @Test
-    public void testGetDataTemplate() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException, InvalidDataDefException {
-        List<DataDef> dataDefs = createTestDataDefs();
+    public void testGetDataTemplate() throws IllegalAccessException {
+        Data data = new Data();
+        data.setDataDef("x");
 
-        given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
-        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
+        Map<String, Data> map = new HashMap<>();
+        map.put("x", data);
 
-        dataDefService.init();
+        FieldUtils.writeField(dataDefService, "dataTemplateMap", map, true);
 
-        Data data = dataDefService.getDataTemplate("x");
+        Data actual = dataDefService.getDataTemplate("x");
 
-        Axis col = createAxis(AxisName.COL, "colvalue", "colmatch", 11, 12);
-        Axis row = createAxis(AxisName.ROW, "rowvalue", "rowmatch", 21, 22);
-        Axis fact = createAxis(AxisName.FACT, "factvalue", "factmatch", 31, 32);
-
-        assertThat(data.getDataDef()).isEqualTo("x");
-
-        assertThat(data.getMembers().size()).isEqualTo(1);
-        Set<Axis> axes = data.getMembers().get(0).getAxes();
-        assertThat(axes.size()).isEqualTo(3);
-        assertThat(axes).contains(col, row, fact);
-
-        // for test coverage
-        data = dataDefService.getDataTemplate("x");
-
-        assertThat(data.getDataDef()).isEqualTo("x");
-
-        assertThat(data.getMembers().size()).isEqualTo(1);
-        axes = data.getMembers().get(0).getAxes();
-        assertThat(axes.size()).isEqualTo(3);
-        assertThat(axes).contains(col, row, fact);
+        assertThat(actual).isEqualTo(data);
+        assertThat(actual).isNotSameAs(data); // clone
     }
 
     @Test
-    public void testGenerateMemberSetsSynchronized() {
-        Method method = MethodUtils.getMatchingMethod(DataDefService.class,
-                "generateMemberSets", DataDef.class);
-        assertThat(method).isNotNull();
-        assertThat(Modifier.isSynchronized(method.getModifiers())).isTrue();
-    }
+    public void testGetDataTemplateShouldThrowException()
+            throws IllegalAccessException {
+        Data data = new Data();
+        data.setDataDef("x");
 
-    @Test
-    public void testMemberSets() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException, IllegalAccessException {
+        Map<String, Data> map = new HashMap<>();
+        map.put("x", data);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Set<Set<DMember>>> memberSetsMap =
-                (Map<String, Set<Set<DMember>>>) FieldUtils.readDeclaredField(
-                        dataDefService, "memberSetsMap", true);
+        FieldUtils.writeField(dataDefService, "dataTemplateMap", map, true);
 
-        assertThat(memberSetsMap).isNotNull();
-    }
-
-    @Test
-    public void testGetDataTemplateMemberFields() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException, FieldsException,
-            FieldsNotFoundException, InvalidDataDefException {
-        List<DataDef> dataDefs = createTestDataDefs();
-        DataDef dataDef = dataDefs.get(0);
-
-        //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("<xf:member name='row'>")
-                .add("  <xf:group>xyz</xf:group>")
-                .add("</xf:member>")
-                .build("xf");
-        //@formatter:on
-        List<Fields> list = new ArrayList<>();
-        list.add(fields);
-
-        given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
-        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
-        given(dataDefHelper.getDataDefMemberFields("row", dataDef.getFields()))
-                .willReturn(list);
-        given(dataDefHelper.getDataMemberGroup(fields)).willReturn("xyz");
-
-        dataDefService.init();
-
-        Data data = dataDefService.getDataTemplate("x");
-
-        Member member = data.getMembers().get(0);
-
-        assertThat(member.getFields()).isEqualTo(dataDef.getFields());
-        assertThat(member.getGroup()).isEqualTo("xyz");
-    }
-
-    @Test
-    public void testGetDataTemplateNoFields() throws ClassNotFoundException,
-            DataDefNotFoundException, IOException, InvalidDataDefException {
-        List<DataDef> dataDefs = createTestDataDefs();
-        DataDef dataDef = dataDefs.get(0);
-        dataDef.getFields().getNodes().clear();
-
-        given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
-        given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
-
-        dataDefService.init();
-
-        Data data = dataDefService.getDataTemplate("x");
-
-        Member member = data.getMembers().get(0);
-
-        assertThat(member.getFields()).isEqualTo(dataDef.getFields());
-        assertThat(member.getGroup()).isNull();
+        testRule.expect(NoSuchElementException.class);
+        dataDefService.getDataTemplate("z");
     }
 
     @Test
     public void testGetFilterMap()
-            throws DataDefNotFoundException, InvalidDataDefException {
+            throws JAXBException, DataDefNotFoundException {
         List<DataDef> dataDefs = createTestDataDefs();
+        List<Fields> expectedFilters = createTestFilters();
+
+        // for coverage - axis with null filter
+        DAxis axis = new DAxis();
+        axis.setName("row");
+        dataDefs.get(0).getAxis().add(axis);
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         dataDefService.init();
 
         Map<AxisName, Fields> filterMap = dataDefService.getFilterMap("x");
 
-        DFilter filter = createFilter();
+        // fields toString is used for comparison as XML format may differ
+        assertThat(filterMap.get(AxisName.COL).toString())
+                .isEqualToNormalizingWhitespace(
+                        expectedFilters.get(0).toString());
+        assertThat(filterMap.get(AxisName.ROW)).isNull();
         assertThat(filterMap.get(AxisName.FACT)).isNull();
+
+        filterMap = dataDefService.getFilterMap("y");
+
         assertThat(filterMap.get(AxisName.COL)).isNull();
-        assertThat(filterMap.get(AxisName.ROW)).isEqualTo(filter.getFields());
+        assertThat(filterMap.get(AxisName.ROW).toString())
+                .isEqualToNormalizingWhitespace(
+                        expectedFilters.get(1).toString());
+        assertThat(filterMap.get(AxisName.FACT)).isNull();
     }
 
     @Test
     public void testGetFilterMapShouldThrowException()
-            throws DataDefNotFoundException, InvalidDataDefException {
+            throws DataDefNotFoundException, JAXBException {
         List<DataDef> dataDefs = createTestDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
         given(dataDefPersistence.loadDataDefs()).willReturn(dataDefs);
-        given(validator.validate(dataDefs.get(0))).willReturn(true);
 
         dataDefService.init();
 
-        exception.expect(DataDefNotFoundException.class);
+        testRule.expect(DataDefNotFoundException.class);
         dataDefService.getFilterMap("unknown");
     }
 
@@ -351,8 +481,10 @@ public class DataDefServiceTest {
     private List<DataDef> createSimpleDataDefs() {
         DataDef dataDef1 = new DataDef();
         dataDef1.setName("x");
+        dataDef1.getAxis().add(new DAxis());
         DataDef dataDef2 = new DataDef();
         dataDef2.setName("y");
+        dataDef2.getAxis().add(new DAxis());
 
         List<DataDef> dataDefs = new ArrayList<>();
         dataDefs.add(dataDef1);
@@ -360,95 +492,56 @@ public class DataDefServiceTest {
         return dataDefs;
     }
 
-    private List<DataDef> createTestDataDefs() {
-        DMember member = new DMember();
-        member.setAxis("col");
-        member.setIndex(11);
-        member.setOrder(12);
-        member.setMatch("colmatch");
-        member.setName("col");
-        member.setValue("colvalue");
+    private List<DataDef> createTestDataDefs() throws JAXBException {
 
-        DAxis col = new DAxis();
-        col.setName("col");
-        col.getMember().add(member);
+        // @formatter:off
+        StringBuilder sb = new StringBuilder();
+        sb.append("<dataDef name='x'>");
+        sb.append(" <axis name='col'>");
+        sb.append("  <filter axis='col'>");
+        sb.append("   <xf:fields>");
+        sb.append("    <xf:filters type='value'>");
+        sb.append("      <xf:filter name='fx1' pattern='filter fx1' />");
+        sb.append("      <xf:filter name='fx2' pattern='filter fx2' />");
+        sb.append("    </xf:filters>");
+        sb.append("   </xf:fields>");
+        sb.append("  </filter>");
+        sb.append(" </axis>");
+        sb.append("</dataDef>");
+        sb.append("<dataDef name='y'>");
+        sb.append(" <axis name='row'>");
+        sb.append("  <filter axis='row'>");
+        sb.append("   <xf:fields>");
+        sb.append("    <xf:filters type='match'>");
+        sb.append("      <xf:filter name='fy1' pattern='filter fy1' />");
+        sb.append("    </xf:filters>");
+        sb.append("   </xf:fields>");
+        sb.append("  </filter>");
+        sb.append(" </axis>");
+        sb.append("</dataDef>");
+        // @formatter:on
 
-        member = new DMember();
-        member.setAxis("row");
-        member.setIndex(21);
-        member.setOrder(22);
-        member.setMatch("rowmatch");
-        member.setName("row");
-        member.setValue("rowvalue");
-
-        DAxis row = new DAxis();
-        row.setName("row");
-        row.getMember().add(member);
-
-        member = new DMember();
-        member.setAxis("fact");
-        member.setName("fact");
-        member.setIndex(31);
-        member.setOrder(32);
-        member.setValue("factvalue");
-        member.setMatch("factmatch");
-
-        DAxis fact = new DAxis();
-        fact.setName("fact");
-        fact.getMember().add(member);
-
-        DFilter dFilter = createFilter();
-        row.setFilter(dFilter);
-
-        //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("<xf:member name='row'>")
-                .add("  <xf:group>xyz</xf:group>")
-                .add("</xf:member>")
-                .build("xf");
-        //@formatter:on
-
-        DataDef dataDef = new DataDef();
-        dataDef.setName("x");
-        dataDef.getAxis().add(col);
-        dataDef.getAxis().add(row);
-        dataDef.getAxis().add(fact);
-        dataDef.setFields(fields);
-
-        List<DataDef> dataDefs = new ArrayList<>();
-        dataDefs.add(dataDef);
-
-        return dataDefs;
+        return TestUtil.unmarshallTestObject(sb, DataDef.class);
     }
 
-    private DFilter createFilter() {
+    private List<Fields> createTestFilters() throws JAXBException {
 
         //@formatter:off
-        Fields f1 = new FieldsBuilder()
-
-                .add("<xf:filters type='value' >")
-                .add("  <xf:filter name='f1' pattern='v1' />")
-                .add("  <xf:filter name='f2' pattern='v2' />")
-                .add("</xf:filters>")
-                .build("xf");
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xf:fields>");
+        sb.append("<xf:filters type='value' >");
+        sb.append(" <xf:filter name='fx1' pattern='filter fx1' />");
+        sb.append(" <xf:filter name='fx2' pattern='filter fx2' />");
+        sb.append("</xf:filters>");
+        sb.append("</xf:fields>");
+        sb.append("<xf:fields>");
+        sb.append("<xf:filters type='match' >");
+        sb.append(" <xf:filter name='fy1' pattern='filter fy1' />");
+        sb.append("</xf:filters>");
+        sb.append("</xf:fields>");
         //@formatter:on
 
-        DFilter dFilter = new DFilter();
-        dFilter.setAxis("row");
-        dFilter.setFields(f1);
-        return dFilter;
-    }
-
-    private Axis createAxis(final AxisName name, final String value,
-            final String match, final int index, final int order) {
-        Axis axis = new Axis();
-        axis.setName(name);
-        axis.setValue(value);
-        axis.setMatch(match);
-        axis.setIndex(index);
-        axis.setOrder(order);
-        // axis.setFields(new Fields());
-        return axis;
+        return TestUtil.unmarshallTestObject(sb, Fields.class);
     }
 
 }

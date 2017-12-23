@@ -112,8 +112,6 @@ public class LocatorHelperTest {
         List<Locators> locators = createTestObjects();
         Locator locator1 = locators.get(0).getLocator().get(0);
         Locator locator2 = locators.get(0).getLocator().get(1);
-        // Locator locator3 =
-        // locators.get(0).getLocators().get(0).getLocator().get(0);
 
         given(beanService.getBeans(Locators.class)).willReturn(locators);
 
@@ -121,8 +119,8 @@ public class LocatorHelperTest {
         List<Locator> actual = locatorHelper.getLocatorsFromBeans();
 
         // then
-        assertThat(actual.size()).isEqualTo(3);
-        // assertThat(actual).contains(locator1, locator2, locator3);
+        assertThat(actual.size()).isEqualTo(2);
+        assertThat(actual).contains(locator1, locator2);
     }
 
     @Test

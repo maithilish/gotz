@@ -60,6 +60,8 @@ public class DocumentPersistenceTest {
         given(jdoDao.getDocumentDao()).willReturn(documentDao);
         given(documentDao.getDocument(1L)).willReturn(document);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         Document actual = documentPersistence.loadDocument(1L);
 
         InOrder inOrder =
@@ -76,6 +78,8 @@ public class DocumentPersistenceTest {
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
+
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
 
         testRule.expect(StepPersistenceException.class);
         documentPersistence.loadDocument(1L);

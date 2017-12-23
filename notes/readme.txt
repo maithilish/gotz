@@ -339,7 +339,10 @@ Externalize messages
 --------------------
 
 after moving messages.properties to src/main/resources/locale, run 
-mvn eclipse:eclipse to update the location
+mvn eclipse:eclipse to update the location. This flattens the resources 
+folders and to make them hierarchical, select the folders and
+use build path context menu to exclude them.
+   
 
 don't externalize model classes !!!
 

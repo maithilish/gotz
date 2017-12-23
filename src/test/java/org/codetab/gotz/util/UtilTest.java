@@ -123,7 +123,7 @@ public class UtilTest {
         x.add("x2");
         Set<String> emptySet = new HashSet<String>();
 
-        testRule.expect(IllegalArgumentException.class);
+        testRule.expect(IllegalStateException.class);
         Util.cartesianProduct(x, emptySet);
     }
 
@@ -133,20 +133,20 @@ public class UtilTest {
         x.add("x1");
         x.add("x2");
 
-        testRule.expect(IllegalArgumentException.class);
+        testRule.expect(IllegalStateException.class);
         Util.cartesianProduct(x);
     }
 
     @Test
     public void testCartesianProductNoArg() {
-        testRule.expect(IllegalArgumentException.class);
+        testRule.expect(IllegalStateException.class);
         Util.cartesianProduct();
     }
 
     @Test
     public void testCartesianProductNullParams() {
         Set<String> set = null;
-        testRule.expect(IllegalArgumentException.class);
+        testRule.expect(IllegalStateException.class);
         Util.cartesianProduct(set);
     }
 

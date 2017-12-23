@@ -15,8 +15,10 @@ import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.dao.jdo.JdoDaoFactory;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DataDef;
+import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -47,6 +49,9 @@ public class DataDefPersistenceTest {
     @Mock
     private IDataDefDao dataDefDao;
 
+    @Mock
+    private FieldsHelper fieldsHelper;
+
     @InjectMocks
     private DataDefPersistence dataDefPersistence;
 
@@ -68,6 +73,8 @@ public class DataDefPersistenceTest {
         given(configService.getRunDateTime()).willReturn(runDate);
         given(dataDefDao.getDataDefs(runDate)).willReturn(dataDefs);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         List<DataDef> actual = dataDefPersistence.loadDataDefs();
 
         InOrder inOrder =
@@ -86,16 +93,23 @@ public class DataDefPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+
         testRule.expect(CriticalException.class);
         dataDefPersistence.loadDataDefs();
     }
 
     @Test
-    public void testStoreDataDef() {
+    public void testStoreDataDef() throws FieldsNotFoundException {
         DataDef dataDef = new DataDef();
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
         given(jdoDao.getDataDefDao()).willReturn(dataDefDao);
+
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.persist.dataDef")).willReturn(true);
+        given(fieldsHelper.isTrue("//xf:persist", dataDef.getFields()))
+                .willReturn(true);
 
         dataDefPersistence.storeDataDef(dataDef);
 
@@ -108,11 +122,17 @@ public class DataDefPersistenceTest {
     }
 
     @Test
-    public void testStoreDataDefShouldThrowException() {
+    public void testStoreDataDefShouldThrowException()
+            throws FieldsNotFoundException {
         DataDef dataDef = new DataDef();
         given(configService.getOrmType()).willReturn(ORM.JDO);
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
+
+        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.persist.dataDef")).willReturn(true);
+        given(fieldsHelper.isTrue("//xf:persist", dataDef.getFields()))
+                .willReturn(true);
 
         testRule.expect(CriticalException.class);
         dataDefPersistence.storeDataDef(dataDef);

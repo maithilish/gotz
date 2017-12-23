@@ -1,10 +1,13 @@
 package org.codetab.gotz;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.step.Task;
 import org.junit.Before;
@@ -56,8 +59,9 @@ public class GotzEngineTest {
 
     @Test
     public void testStartShouldCatchException() {
+        CriticalException ex = new CriticalException("");
         // given
-        given(gSystem.initSystem()).willThrow(CriticalException.class);
+        given(gSystem.initSystem()).willThrow(ex);
 
         gotzEngine.start();
 
@@ -65,6 +69,8 @@ public class GotzEngineTest {
         InOrder inOrder = inOrder(gSystem, activityService);
         inOrder.verify(activityService).start();
         inOrder.verify(gSystem).initSystem();
+        inOrder.verify(activityService).addActivity(eq(Type.FATAL),
+                any(String.class), eq(ex));
         inOrder.verify(activityService).end();
         verifyNoMoreInteractions(gSystem, gTaskRunner, activityService);
     }
