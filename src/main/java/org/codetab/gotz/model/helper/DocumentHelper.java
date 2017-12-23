@@ -19,7 +19,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
-import org.codetab.gotz.exception.FieldsParseException;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
@@ -109,7 +108,7 @@ public class DocumentHelper {
      * @param fields
      *            list of fields, not null
      * @return a Date which is document expire date, not null
-     * @throws FieldsParseException
+     * @throws org.codetab.gotz.exception.FieldsParseException
      * @see java.time.Duration
      */
     public Date getToDate(final Date fromDate, final Fields fields,

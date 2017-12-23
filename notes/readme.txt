@@ -156,10 +156,13 @@ test run
    mvn test  # enhance and test
 
 dev run 
-   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dpicks.mode=dev
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dgotz.mode=dev
    
 prod run 
    mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz"
+
+profile
+   mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dgotz.waitForHeapDump=true
 
 tests and IT tests
    mvn verify

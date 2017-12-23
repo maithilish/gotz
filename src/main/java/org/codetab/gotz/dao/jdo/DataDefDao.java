@@ -14,8 +14,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.DataDef;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -24,12 +22,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class DataDefDao implements IDataDefDao {
-
-    /**
-     * logger.
-     */
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(DataDefDao.class);
 
     /**
      * JDO PMF.

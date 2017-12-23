@@ -31,6 +31,8 @@ import org.junit.rules.ExpectedException;
  */
 public class UtilTest {
 
+    private String newLine = System.lineSeparator();
+
     @Rule
     public ExpectedException testRule = ExpectedException.none();
 
@@ -264,20 +266,26 @@ public class UtilTest {
         String str = Util.stripe("test", 2, null, null);
         assertThat(StringUtils.startsWith(str, "test")).isTrue();
         assertThat(StringUtils.endsWith(str, "test")).isTrue();
-        assertThat(0).isEqualTo(StringUtils.countMatches(str, "\n"));
+        assertThat(0).isEqualTo(StringUtils.countMatches(str, newLine));
 
         str = Util.stripe("test", 2, "prefix", "suffix");
         assertThat("prefixtestsuffix").isEqualTo(str);
-        assertThat(0).isEqualTo(StringUtils.countMatches(str, "\n"));
+        assertThat(0).isEqualTo(StringUtils.countMatches(str, newLine));
 
-        str = Util.stripe("line1\nline2\nline3\nline4", 1, null, null);
-        assertThat(2).isEqualTo(StringUtils.countMatches(str, "\n")); // head 1
-                                                                      // dots 1
+        String inStr = String.join(newLine, "line1", "line2", "line3", "line4");
+        str = Util.stripe(inStr, 1, null, null);
+        assertThat(2).isEqualTo(StringUtils.countMatches(str, newLine)); // head
+                                                                         // 1
+                                                                         // dots
+                                                                         // 1
 
-        str = Util.stripe("line1\nline2\nline3\nline4\nline5\nline6", 2, null,
-                null);
-        assertThat(4).isEqualTo(StringUtils.countMatches(str, "\n")); // head 2
-                                                                      // dots 1
+        inStr = String.join(newLine, "line1", "line2", "line3", "line4",
+                "line5", "line6");
+        str = Util.stripe(inStr, 2, null, null);
+        assertThat(4).isEqualTo(StringUtils.countMatches(str, newLine)); // head
+                                                                         // 2
+                                                                         // dots
+                                                                         // 1
         // tail 1
     }
 
@@ -293,13 +301,17 @@ public class UtilTest {
 
     @Test
     public void testHead() {
-        String str = Util.head("line1\nline2\nline3\nline4\nline5\nline6", 3);
-        assertThat(str.equals("line1\nline2\nline3")).isTrue();
+        String inStr = String.join(newLine, "line1", "line2", "line3", "line4",
+                "line5", "line6");
+        String expectedStr = String.join(newLine, "line1", "line2", "line3");
 
-        str = Util.head("line1\nline2", 1);
+        String str = Util.head(inStr, 3);
+        assertThat(str.equals(expectedStr)).isTrue();
+
+        str = Util.head(String.join(newLine, "line1", "line2"), 1);
         assertThat("line1").isEqualTo(str);
 
-        str = Util.head("line1\nline2", 0);
+        str = Util.head(String.join(newLine, "line1", "line2"), 0);
         assertThat("line1").isEqualTo(str);
     }
 
@@ -315,16 +327,20 @@ public class UtilTest {
 
     @Test
     public void testTail() {
-        String str = Util.tail("line1\nline2\nline3\nline4\nline5\nline6", 3);
-        assertThat(str.equals("line4\nline5\nline6")).isTrue();
+        String inStr = String.join(newLine, "line1", "line2", "line3", "line4",
+                "line5", "line6");
+        String expectedStr = String.join(newLine, "line4", "line5", "line6");
 
-        str = Util.tail("line1\nline2\nline3\nline4\nline5\nline6\n", 3);
-        assertThat("line4\nline5\nline6\n").isEqualTo(str);
+        String str = Util.tail(inStr, 3);
+        assertThat(str.equals(expectedStr)).isTrue();
 
-        str = Util.tail("line1\nline2", 1);
+        str = Util.tail(inStr + newLine, 3);
+        assertThat(expectedStr + newLine).isEqualTo(str);
+
+        str = Util.tail(String.join(newLine, "line1", "line2"), 1);
         assertThat("line2").isEqualTo(str);
 
-        str = Util.tail("line1\nline2", 0);
+        str = Util.tail(String.join(newLine, "line1", "line2"), 0);
         assertThat("line2").isEqualTo(str);
     }
 

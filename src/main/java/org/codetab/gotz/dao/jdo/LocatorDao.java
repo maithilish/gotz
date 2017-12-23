@@ -12,8 +12,6 @@ import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.dao.ILocatorDao;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Locator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -30,12 +28,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class LocatorDao implements ILocatorDao {
-
-    /**
-     * logger.
-     */
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(LocatorDao.class);
 
     /**
      * JDO PMF.

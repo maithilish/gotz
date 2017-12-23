@@ -193,7 +193,7 @@ public final class Util {
         if (n < 1) {
             n = 1;
         }
-        return string.substring(0, StringUtils.ordinalIndexOf(string, "\n", n)); //$NON-NLS-1$
+        return string.substring(0, StringUtils.ordinalIndexOf(string, LINE, n)); // $NON-NLS-1$
     }
 
     /**
@@ -213,11 +213,11 @@ public final class Util {
         if (n < 1) {
             n = 1;
         }
-        if (StringUtils.endsWith(string, "\n")) { //$NON-NLS-1$
+        if (StringUtils.endsWith(string, LINE)) { // $NON-NLS-1$
             n++;
         }
         return string
-                .substring(StringUtils.lastOrdinalIndexOf(string, "\n", n) + 1); //$NON-NLS-1$
+                .substring(StringUtils.lastOrdinalIndexOf(string, LINE, n) + 1); // $NON-NLS-1$
     }
 
     /**

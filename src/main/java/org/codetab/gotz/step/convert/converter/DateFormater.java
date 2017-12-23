@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
@@ -36,7 +35,7 @@ public class DateFormater implements IConverter<String, String> {
      *            date string
      * @return date parsed date rounded off to month end.
      * @throws FieldsNotFoundException
-     * @throws FieldsException
+     * @throws org.codetab.gotz.exception.FieldsException
      *             if pattern field is not found
      * @throws ParseException
      *             if parse error

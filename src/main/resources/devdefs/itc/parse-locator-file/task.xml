@@ -51,7 +51,7 @@
             <task name="price" dataDef="price">
                 <steps ref="stepsSeq" />
             </task>
-            <live>P1D</live>
+            <live>P0D</live>
         </tasks>
 
         <tasks name="bs" group="bs">
@@ -97,7 +97,7 @@
                     </step>
                 </steps>
             </task>
-            <live>P1D</live>
+            <live>P0D</live>
         </tasks>
 
     </fields>

@@ -16,8 +16,6 @@ import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.DataSet;
 import org.codetab.gotz.util.Util;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -26,12 +24,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class DataSetDao implements IDataSetDao {
-
-    /**
-     * logger.
-     */
-    private static final Logger LOGGER =
-            LoggerFactory.getLogger(DataSetDao.class);
 
     /**
      * persistence manager factory.
