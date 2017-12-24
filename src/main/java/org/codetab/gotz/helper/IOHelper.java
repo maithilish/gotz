@@ -21,7 +21,10 @@ public class IOHelper {
             throws FileNotFoundException {
         InputStream stream = IOHelper.class.getResourceAsStream(fileName);
         if (stream == null) {
-            throw new FileNotFoundException(fileName);
+            stream = ClassLoader.getSystemResourceAsStream(fileName);
+            if (stream == null) {
+                throw new FileNotFoundException(fileName);
+            }
         }
         return stream;
     }
@@ -29,7 +32,10 @@ public class IOHelper {
     public URL getURL(final String fileName) throws FileNotFoundException {
         URL url = IOHelper.class.getResource(fileName);
         if (url == null) {
-            throw new FileNotFoundException(fileName);
+            url = ClassLoader.getSystemResource(fileName);
+            if (url == null) {
+                throw new FileNotFoundException(fileName);
+            }
         }
         return url;
     }
