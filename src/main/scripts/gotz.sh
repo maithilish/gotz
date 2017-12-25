@@ -1,1 +1,1 @@
-java -cp gotz-0.9.0-beta.jar:config:lib/* org.codetab.gotz.Gotz
+java -cp lib/*:conf:defs org.codetab.gotz.Gotz

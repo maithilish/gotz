@@ -1,0 +1,1 @@
+this folder contains examples of gotz definition files

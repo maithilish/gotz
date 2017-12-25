@@ -15,53 +15,48 @@
                 <include>NOTICE*</include>
             </includes>
         </fileSet>
+        <!-- copy gotz jar to lib -->
         <fileSet>
             <directory>${project.build.directory}</directory>
-            <outputDirectory>${file.separator}</outputDirectory>
+            <outputDirectory>${file.separator}/lib</outputDirectory>
             <includes>
                 <include>*.jar</include>
             </includes>
         </fileSet>
+        <!-- copy dependencies to lib -->
+        <fileSet>
+            <directory>${project.build.directory}/lib</directory>
+            <outputDirectory>lib</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+        <!-- copy conf files -->
+        <fileSet>
+            <directory>${project.build.directory}/classes</directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>gotz.properties</include>
+                <include>jdoconfig.properties</include>
+                <include>logback.xml</include>
+                <include>log4j.properties</include>
+            </includes>
+        </fileSet>
+        <!-- copy scripts -->
         <fileSet>
             <directory>${project.build.scriptSourceDirectory}</directory>
             <outputDirectory>${file.separator}</outputDirectory>
             <includes>
-                <include>*.sh</include>
+                <include>gotz.sh</include>
+                <include>gotz.bat</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/lib</directory>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/lib</directory>
-            <outputDirectory>lib</outputDirectory>
-            <includes>
-                <include>*</include>
-            </includes>
-        </fileSet>
+        <!-- copy examples -->
         <fileSet>
             <directory>${project.build.directory}/classes</directory>
-            <outputDirectory>config</outputDirectory>
+            <outputDirectory>${file.separator}</outputDirectory>
             <includes>
-                <include>*.xml</include>
-                <include>gotz.properties</include>
-                <include>jdoconfig.properties</include>
-            </includes>
-            <excludes>
-                <exclude>gotz-default.xml</exclude>
-                <exclude>production.xml</exclude>
-            </excludes>
-        </fileSet>
-        <!-- change the below to copy mc xml files to config dir -->
-        <fileSet>
-            <directory>${project.build.directory}/classes/simple</directory>
-            <outputDirectory>config/simple</outputDirectory>
-            <includes>
-                <include>*.xml</include>
+                <include>defs/examples/**</include>
             </includes>
         </fileSet>
     </fileSets>
