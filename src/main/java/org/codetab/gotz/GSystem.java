@@ -51,7 +51,7 @@ public class GSystem {
         LOGGER.info(Messages.getString("GSystem.0")); //$NON-NLS-1$
         runTime.addShutdownHook(shutdownHook);
 
-        String userProvidedFile = "gotz.properties"; //$NON-NLS-1$
+        String userProvidedFile = getPropertyFileName();
         String defaultsFile = "gotz-default.xml"; //$NON-NLS-1$
         configService.init(userProvidedFile, defaultsFile);
 
@@ -75,6 +75,51 @@ public class GSystem {
         locatorFieldsHelper.init();
 
         return true;
+    }
+
+    /**
+     * Get user defined properties file name. The properties file to be is used
+     * as user defined properties is set either through environment variable or
+     * system property.
+     * <p>
+     * <ul>
+     * <li>if system property [gotz.propertyFile] is set then its value is
+     * used</li>
+     * <li>else if system property [gotz.mode=dev] is set then
+     * gotz-dev.properties file is used</li>
+     * <li>else environment variable [gotz_property_file] is set then its value
+     * is used</li>
+     * <li>when none of above is set, then default file gotz.properties file is
+     * used</li>
+     * </ul>
+     * </p>
+     *
+     * @return
+     */
+    private String getPropertyFileName() {
+        String fileName = null;
+
+        String system = System.getProperty("gotz.propertyFile"); //$NON-NLS-1$
+        if (system != null) {
+            fileName = system;
+        }
+
+        if (fileName == null) {
+            String mode = System.getProperty("gotz.mode", "prod");
+            if (mode != null && mode.equalsIgnoreCase("dev")) {
+                fileName = "gotz-dev.properties";
+            }
+        }
+
+        if (fileName == null) {
+            fileName = System.getenv("gotz_property_file"); //$NON-NLS-1$
+        }
+
+        // default nothing is set then production property file
+        if (fileName == null) {
+            fileName = "gotz.properties"; //$NON-NLS-1$
+        }
+        return fileName;
     }
 
     /*
