@@ -66,7 +66,7 @@ public class DataPersistenceTest {
         given(jdoDao.getDataDao()).willReturn(dataDao);
         given(dataDao.getData(1L, 1L)).willReturn(data);
 
-        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.useDatastore")).willReturn(true);
 
         Data actual = dataPersistence.loadData(1L, 1L);
 
@@ -85,7 +85,7 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
-        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.useDatastore")).willReturn(true);
 
         testRule.expect(StepPersistenceException.class);
         dataPersistence.loadData(1L, 1L);
@@ -99,7 +99,7 @@ public class DataPersistenceTest {
         given(jdoDao.getDataDao()).willReturn(dataDao);
         given(dataDao.getData(1L)).willReturn(data);
 
-        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.useDatastore")).willReturn(true);
 
         Data actual = dataPersistence.loadData(1L);
 
@@ -118,7 +118,7 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
-        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.useDatastore")).willReturn(true);
 
         testRule.expect(StepPersistenceException.class);
         dataPersistence.loadData(1L);
@@ -133,7 +133,7 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO)).willReturn(jdoDao);
         given(jdoDao.getDataDao()).willReturn(dataDao);
 
-        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.useDatastore")).willReturn(true);
         given(configService.isPersist("gotz.persist.data")).willReturn(true);
         given(fieldsHelper.isTrue("/xf:fields/xf:task/xf:persist/xf:data",
                 fields)).willReturn(true);
@@ -158,7 +158,7 @@ public class DataPersistenceTest {
         given(daoFactoryProvider.getDaoFactory(ORM.JDO))
                 .willThrow(RuntimeException.class);
 
-        given(configService.isPersist("gotz.useDataStore")).willReturn(true);
+        given(configService.isPersist("gotz.useDatastore")).willReturn(true);
         given(configService.isPersist("gotz.persist.data")).willReturn(true);
         given(fieldsHelper.isTrue("/xf:fields/xf:task/xf:persist/xf:data",
                 fields)).willReturn(true);

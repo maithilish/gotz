@@ -58,7 +58,7 @@ public class DataDefPersistence {
      */
     public List<DataDef> loadDataDefs() {
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return new ArrayList<>();
         }
 
@@ -88,7 +88,7 @@ public class DataDefPersistence {
     public void storeDataDef(final DataDef dataDef) {
         Validate.notNull(dataDef, Messages.getString("DataDefPersistence.3")); //$NON-NLS-1$
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return;
         }
 

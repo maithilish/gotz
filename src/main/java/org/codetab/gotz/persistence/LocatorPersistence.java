@@ -53,7 +53,7 @@ public class LocatorPersistence {
         Validate.notNull(name, Messages.getString("LocatorPersistence.0")); //$NON-NLS-1$
         Validate.notNull(group, Messages.getString("LocatorPersistence.1")); //$NON-NLS-1$
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return null;
         }
 
@@ -82,7 +82,7 @@ public class LocatorPersistence {
      */
     public Locator loadLocator(final long id) {
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return null;
         }
 
@@ -110,7 +110,7 @@ public class LocatorPersistence {
     public boolean storeLocator(final Locator locator) {
         Validate.notNull(locator, Messages.getString("LocatorPersistence.9")); //$NON-NLS-1$
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return false;
         }
 

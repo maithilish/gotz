@@ -51,7 +51,7 @@ public class DataPersistence {
      */
     public Data loadData(final long dataDefId, final long documentId) {
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return null;
         }
 
@@ -81,7 +81,7 @@ public class DataPersistence {
      */
     public Data loadData(final long id) {
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return null;
         }
 
@@ -112,7 +112,7 @@ public class DataPersistence {
         Validate.notNull(data, Messages.getString("DataPersistence.7")); //$NON-NLS-1$
         Validate.notNull(fields, Messages.getString("DataPersistence.8")); //$NON-NLS-1$
 
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return false;
         }
         boolean persist = configService.isPersist("gotz.persist.data"); //$NON-NLS-1$

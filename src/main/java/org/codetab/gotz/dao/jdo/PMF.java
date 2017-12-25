@@ -92,8 +92,8 @@ public class PMF {
             logger.info(Messages.getString("PMF.0")); //$NON-NLS-1$
             String configFile;
             try {
-                configFile =
-                        configService.getConfig("gotz.datastore.configFile"); //$NON-NLS-1$
+                configFile = Util.join("/", //$NON-NLS-1$
+                        configService.getConfig("gotz.datastore.configFile")); // $NON-NLS-2$
             } catch (ConfigNotFoundException e) {
                 throw new CriticalException(Messages.getString("PMF.1"), e); //$NON-NLS-1$
             }

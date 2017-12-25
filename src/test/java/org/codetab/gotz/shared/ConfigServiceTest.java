@@ -192,7 +192,7 @@ public class ConfigServiceTest {
         assertArrayEquals(datePatterns,
                 configuration.getStringArray("gotz.dateParsePattern"));
 
-        assertThat(configuration.getString("gotz.useDataStore"))
+        assertThat(configuration.getString("gotz.useDatastore"))
                 .isEqualTo("true");
         assertThat(configuration.getString("gotz.persist.dataDef"))
                 .isEqualTo("true");

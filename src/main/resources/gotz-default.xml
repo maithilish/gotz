@@ -39,11 +39,11 @@
         <fork>
             <locator>0</locator>
         </fork>
-        <useDataStore>true</useDataStore>
+        <useDatastore>true</useDatastore>
         <datastore>
             <name>datastore</name>
             <orm>jdo</orm>
-            <configFile>/jdoconfig.properties</configFile>
+            <configFile>jdoconfig.properties</configFile>
         </datastore>
         <persist>
             <dataDef>true</dataDef>

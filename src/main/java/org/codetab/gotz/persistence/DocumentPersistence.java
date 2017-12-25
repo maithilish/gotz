@@ -41,7 +41,7 @@ public class DocumentPersistence {
      *             if persistence error
      */
     public Document loadDocument(final long id) {
-        if (!configService.isPersist("gotz.useDataStore")) { //$NON-NLS-1$
+        if (!configService.isPersist("gotz.useDatastore")) { //$NON-NLS-1$
             return null;
         }
 
