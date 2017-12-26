@@ -67,7 +67,7 @@ public final class URLLoader extends BaseLoader {
     @Override
     public byte[] fetchDocumentObject(final String urlSpec) throws IOException {
         // TODO charset encoding
-        byte[] bytes;
+        byte[] bytes = null;
         if (UrlValidator.getInstance().isValid(urlSpec)) {
             LOGGER.info(Messages.getString("URLLoader.0"), urlSpec); //$NON-NLS-1$
             URLConnection uc = ucHelper.getURLConnection(urlSpec);
@@ -81,8 +81,18 @@ public final class URLLoader extends BaseLoader {
             LOGGER.debug(Messages.getString("URLLoader.2"), urlSpec); //$NON-NLS-1$
         } else {
             LOGGER.info(Messages.getString("URLLoader.3"), urlSpec); //$NON-NLS-1$
-            URL fileURL = new URL(new URL("file:"), urlSpec); //$NON-NLS-1$
-            bytes = IOUtils.toByteArray(fileURL);
+            try {
+                URL fileURL = new URL(new URL("file:"), urlSpec); //$NON-NLS-1$
+                bytes = IOUtils.toByteArray(fileURL);
+            } catch (IOException | NullPointerException e) {
+                try {
+                    URL fileURL = URLLoader.class.getResource(urlSpec);
+                    bytes = IOUtils.toByteArray(fileURL);
+                } catch (IOException | NullPointerException e1) {
+                    throw new IOException(
+                            Util.join("file not found [", urlSpec, "]"));
+                }
+            }
             LOGGER.debug(Messages.getString("URLLoader.5"), urlSpec); //$NON-NLS-1$
         }
         return bytes;

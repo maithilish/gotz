@@ -1,1 +1,1 @@
-java -cp lib/*:conf:defs org.codetab.gotz.Gotz
+java -cp lib/*:conf:. org.codetab.gotz.Gotz

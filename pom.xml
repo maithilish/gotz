@@ -215,9 +215,10 @@
                     <excludes>
                         <exclude>*.properties</exclude>
                         <exclude>logback.xml</exclude>
-                        <exclude>process.xml</exclude>
                         <exclude>simple/</exclude>
-                        <exclude>mc/</exclude>
+                        <exclude>defs/**</exclude>
+                        <exclude>devdefs/**</exclude>
+                        <exclude>eclipse/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
