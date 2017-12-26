@@ -18,7 +18,8 @@
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="div#price_tick" field="*" />
+                <xf:query region="//*[@id='price_tick_span']"
+                    field="strong" />
             </xf:fields>
         </axis>
     </dataDef>
@@ -36,8 +37,7 @@
                 <nextStep>parser</nextStep>
                 <unique>true</unique>
             </step>
-            <step name="parser"
-                class="org.codetab.gotz.step.extract.JSoupHtmlParser">
+            <step name="parser" class="org.codetab.gotz.step.extract.HtmlParser">
                 <nextStep>converter</nextStep>
             </step>
             <step name="converter"
