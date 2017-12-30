@@ -16,19 +16,20 @@ itest - merge and combine bean files
 tests fields builder - format xml
 memory usage and profiler
 checkstyle
-   
-examples
+license and lib distribution   
 run on wine
 
+examples
 packaging, example dir, config dir, script jar version   
 refactor to minimal logging before packaging 
-license and lib distribution
-     
+test with OpenJDK JRE and Oracle JRE
 
   
 beta
 ----
 
+next step creation error - dump all items state to trace so that user can
+  know the state of objects 
 cleanup testutils, test xml format, test resource files
 remove FieldsBuilder instead add XOBuilder for all JAXB objects
 move test DataDefs created with TestUtil.unmarshall to XOBuilder  

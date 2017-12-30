@@ -148,7 +148,7 @@ public final class DataConverter extends BaseConverter {
             }
         }
         if (LOGGER.isTraceEnabled()) {
-            if (!orgValue.equals(rvalue)) {
+            if (orgValue != null && !orgValue.equals(rvalue)) {
                 convertedValues.put(orgValue, rvalue);
             }
         }

@@ -2,22 +2,16 @@
 
 <gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
 
-    <locators group="bs">
-        <locator name="ITC" url="/devdefs/itc/page/itc-bs.html" />
-    </locators>
-
     <fields name="locator" class="org.codetab.gotz.model.Locator"
         xmlns="http://codetab.org/xfields">
 
-        <steps name="stepsSeq">
+        <steps name="commonSteps">
             <step name="seeder"
                 class="org.codetab.gotz.step.extract.LocatorSeeder">
                 <nextStep>loader</nextStep>
-                <unique>true</unique>
             </step>
             <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
                 <nextStep>parser</nextStep>
-                <unique>true</unique>
             </step>
             <step name="parser"
                 class="org.codetab.gotz.step.extract.JSoupHtmlParser">
@@ -26,6 +20,10 @@
             <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
                 <nextStep>converter</nextStep>
             </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataConverter">
+                <nextStep>appender</nextStep>
+            </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
                 <appender name="file"
@@ -33,14 +31,31 @@
                     <encoder name="csv"
                         class="org.codetab.gotz.step.load.encoder.CsvEncoder">
                     </encoder>
-                    <file>output/x.txt</file>
+                    <file>output/data.txt</file>
                 </appender>
             </step>
         </steps>
 
-        <tasks name="bs" group="bs">
-            <task name="bs" dataDef="bs">
-                <steps ref="stepsSeq">
+        <tasks name="quote tasks" group="quote">
+            <task name="fin links" dataDef="finLinks">
+                <steps ref="commonSteps">
+                    <step name="process"
+                        class="org.codetab.gotz.step.convert.LocatorCreator">
+                        <nextStep>seeder</nextStep>
+                    </step>
+                </steps>
+            </task>
+            <task name="snapshot" dataDef="snapshot">
+                <steps ref="commonSteps" />
+            </task>
+            <task name="price" dataDef="price">
+                <steps ref="commonSteps" />
+            </task>
+        </tasks>
+
+        <tasks name="bs tasks" group="bs">
+            <task name="bs task" dataDef="bs">
+                <steps ref="commonSteps">
                     <step name="converter"
                         class="org.codetab.gotz.step.convert.DataConverter">
                         <nextStep>appender</nextStep>
@@ -55,48 +70,27 @@
                     </step>
                 </steps>
             </task>
-            <live>P0D</live>
+        </tasks>
+
+        <tasks name="pl tasks" group="pl">
+            <task name="pl task" dataDef="pl">
+                <steps ref="commonSteps">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>YYYY-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
         </tasks>
 
     </fields>
 
-    <dataDef name="bs">
-        <axis name="col">
-            <xf:fields>
-                <xf:query region="table:contains(Sources Of Funds)"
-                    field="tr:nth-child(1) > td:nth-child(%{col.index})" />
-            </xf:fields>
-            <member name="year">
-                <xf:fields>
-                    <xf:indexRange value="2-6" />
-                </xf:fields>
-            </member>
-        </axis>
-        <axis name="row">
-            <xf:fields>
-                <xf:query region="table:contains(Sources Of Funds)"
-                    field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
-            </xf:fields>
-            <member name="item" index="5">
-                <xf:fields>
-                    <xf:breakAfter value="Book Value (Rs)" />
-                </xf:fields>
-            </member>
-            <filter axis="row">
-                <xf:fields>
-                    <xf:filters type="value">
-                        <xf:filter name="blank" pattern="" />
-                        <xf:filter name="f1" pattern="Sources Of Funds" />
-                        <xf:filter name="f2" pattern="Application Of Funds" />
-                    </xf:filters>
-                </xf:fields>
-            </filter>
-        </axis>
-        <axis name="fact">
-            <xf:fields>
-                <xf:query region="table:contains(Sources Of Funds)"
-                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
-            </xf:fields>
-        </axis>
-    </dataDef>
 </gotz>

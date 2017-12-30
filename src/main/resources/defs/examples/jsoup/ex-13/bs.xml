@@ -2,22 +2,16 @@
 
 <gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
 
-    <locators group="bs">
-        <locator name="ITC" url="/devdefs/itc/page/itc-bs.html" />
-    </locators>
-
     <fields name="locator" class="org.codetab.gotz.model.Locator"
         xmlns="http://codetab.org/xfields">
 
-        <steps name="stepsSeq">
+        <steps name="commonSteps">
             <step name="seeder"
                 class="org.codetab.gotz.step.extract.LocatorSeeder">
                 <nextStep>loader</nextStep>
-                <unique>true</unique>
             </step>
             <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
                 <nextStep>parser</nextStep>
-                <unique>true</unique>
             </step>
             <step name="parser"
                 class="org.codetab.gotz.step.extract.JSoupHtmlParser">
@@ -26,6 +20,10 @@
             <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
                 <nextStep>converter</nextStep>
             </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataConverter">
+                <nextStep>appender</nextStep>
+            </step>
             <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
                 <nextStep>end</nextStep>
                 <appender name="file"
@@ -33,14 +31,14 @@
                     <encoder name="csv"
                         class="org.codetab.gotz.step.load.encoder.CsvEncoder">
                     </encoder>
-                    <file>output/x.txt</file>
+                    <file>output/data.txt</file>
                 </appender>
             </step>
         </steps>
 
-        <tasks name="bs" group="bs">
-            <task name="bs" dataDef="bs">
-                <steps ref="stepsSeq">
+        <tasks name="bs tasks" group="bs">
+            <task name="bs task" dataDef="bs">
+                <steps ref="commonSteps">
                     <step name="converter"
                         class="org.codetab.gotz.step.convert.DataConverter">
                         <nextStep>appender</nextStep>
@@ -55,7 +53,6 @@
                     </step>
                 </steps>
             </task>
-            <live>P0D</live>
         </tasks>
 
     </fields>
@@ -99,4 +96,5 @@
             </xf:fields>
         </axis>
     </dataDef>
+
 </gotz>

@@ -2,37 +2,37 @@
 
 <gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
 
-    <locators group="quote">
-        <locator name="acme" url="/defs/examples/page/acme-quote.html" />
+    <locators group="bs">
+        <locator name="Acme" url="/defs/examples/page/acme-bs.html" />
     </locators>
 
-    <dataDef name="snapshot">
+    <dataDef name="bs">
         <axis name="col">
             <xf:fields>
-                <xf:script script="document.getFromDate()" />
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(1) > td:nth-child(%{col.index})" />
             </xf:fields>
-            <member name="date" />
+            <member name="year">
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
+            </member>
         </axis>
         <axis name="row">
             <xf:fields>
-                <xf:query region="div#snapshot"
-                    field="div:matchesOwn(^%{row.match})" />
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
             </xf:fields>
-            <member name="MC" match="MARKET CAP" />
-            <member name="EPS" match="EPS \(TTM\)" />
-            <member name="PE" match="P/E" />
-            <member name="PC" match="P/C" />
-            <member name="BV" match="BOOK VALUE" />
-            <member name="PB" match="PRICE/BOOK" />
-            <member name="DIV" match="DIV \(%\)" />
-            <member name="DY" match="DIV YIELD" />
-            <member name="FV" match="FACE VALUE" />
-            <member name="IND PE" match="INDUSTRY P/E" />
+            <member name="item" index="5">
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
+            </member>
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="div#snapshot"
-                    field="div:matchesOwn(^%{row.match}) + div" />
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
             </xf:fields>
         </axis>
     </dataDef>
@@ -40,9 +40,9 @@
     <fields name="locator" class="org.codetab.gotz.model.Locator"
         xmlns="http://codetab.org/xfields">
 
-        <tasks name="quote tasks" group="quote">
-            <task name="snapshot" dataDef="snapshot">
-                <steps name="task steps">
+        <tasks name="bs tasks" group="bs">
+            <task name="bs" dataDef="bs">
+                <steps name="process steps">
                     <step name="seeder"
                         class="org.codetab.gotz.step.extract.LocatorSeeder">
                         <nextStep>loader</nextStep>
