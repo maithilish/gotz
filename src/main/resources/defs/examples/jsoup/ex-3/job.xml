@@ -12,11 +12,7 @@
                 <xf:query region="table:contains(Sources Of Funds)"
                     field="tr:nth-child(1) > td:nth-child(%{col.index})" />
             </xf:fields>
-            <member name="year">
-                <xf:fields>
-                    <xf:indexRange value="2-2" />
-                </xf:fields>
-            </member>
+            <member name="year" index="2" />
         </axis>
         <axis name="row">
             <xf:fields>
