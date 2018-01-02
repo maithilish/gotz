@@ -6,8 +6,13 @@
         <locator name="acme" url="/defs/examples/page/acme-quote.html" />
     </locators>
 
+    <locators group="bs">
+        <locator name="acme" url="/defs/examples/page/acme-bs.html" />
+    </locators>
+
     <fields name="locator" class="org.codetab.gotz.model.Locator"
         xmlns="http://codetab.org/xfields">
+
         <steps name="commonSteps">
             <step name="seeder"
                 class="org.codetab.gotz.step.extract.LocatorSeeder">
@@ -18,6 +23,9 @@
             </step>
             <step name="parser"
                 class="org.codetab.gotz.step.extract.JSoupHtmlParser">
+                <nextStep>process</nextStep>
+            </step>
+            <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
                 <nextStep>converter</nextStep>
             </step>
             <step name="converter"
@@ -44,7 +52,31 @@
                 <steps ref="commonSteps" />
             </task>
         </tasks>
+
+        <tasks name="bs" group="bs">
+            <task name="bs" dataDef="bs">
+                <steps ref="commonSteps" />
+            </task>
+        </tasks>
+
     </fields>
+
+    <dataDef name="price">
+        <axis name="col">
+            <xf:fields>
+                <xf:script script="document.getFromDate()" />
+            </xf:fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <member name="Price" value="Price" />
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="div#price_tick" field="*" />
+            </xf:fields>
+        </axis>
+    </dataDef>
 
     <dataDef name="snapshot">
         <axis name="col">
@@ -77,21 +109,43 @@
         </axis>
     </dataDef>
 
-    <dataDef name="price">
+    <dataDef name="bs">
         <axis name="col">
             <xf:fields>
-                <xf:script script="configs.getRunDateTime()" />
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(1) > td:nth-child(%{col.index})" />
             </xf:fields>
-            <member name="date" />
+            <member name="year">
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
+            </member>
         </axis>
         <axis name="row">
-            <member name="Price" value="Price" />
+            <xf:fields>
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+            </xf:fields>
+            <member name="item" index="5">
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
+            </member>
+            <filter axis="row">
+                <xf:fields>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Sources Of Funds" />
+                        <xf:filter name="f2" pattern="Application Of Funds" />
+                    </xf:filters>
+                </xf:fields>
+            </filter>
         </axis>
         <axis name="fact">
             <xf:fields>
-                <xf:query region="div#price_tick" field="*" />
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
             </xf:fields>
         </axis>
     </dataDef>
-
 </gotz>
