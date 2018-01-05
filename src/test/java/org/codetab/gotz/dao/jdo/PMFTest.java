@@ -73,7 +73,7 @@ public class PMFTest {
             InvocationTargetException, ConfigNotFoundException {
 
         given(configService.getConfig("gotz.datastore.configFile"))
-                .willReturn("/jdoconfig.properties");
+                .willReturn("jdoconfig.properties");
 
         pmf.init();
 
@@ -91,7 +91,7 @@ public class PMFTest {
             InvocationTargetException, ConfigNotFoundException {
 
         given(configService.getConfig("gotz.datastore.configFile"))
-                .willReturn("/jdoconfig.properties");
+                .willReturn("jdoconfig.properties");
 
         pmf.init();
 

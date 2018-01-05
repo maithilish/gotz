@@ -59,7 +59,7 @@
             <task name="price" dataDef="price">
                 <steps ref="commonSteps" />
             </task>
-            <live>P1W</live>
+            <live>P1D</live>
         </tasks>
 
         <tasks name="bs tasks" group="bs">
@@ -78,13 +78,8 @@
                         </converter>
                     </step>
                 </steps>
-                <persist>
-                    <data>false</data>
-                </persist>
             </task>
-            <persist>
-                <locator>false</locator>
-            </persist>
+            <live>P3M</live>
         </tasks>
 
         <tasks name="pl tasks" group="pl">
@@ -104,7 +99,7 @@
                     </step>
                 </steps>
             </task>
-            <live>P6M</live>
+            <live>P3M</live>
         </tasks>
 
     </fields>
