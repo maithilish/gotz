@@ -245,7 +245,7 @@ public class DataDefDaoTest {
     public void testGetDataDefByDate() {
         DataDefDao dao = new DataDefDao(pmf);
 
-        Date now = new Date();
+        Date now = DateUtils.truncate(new Date(), Calendar.SECOND);
         Date tMinus2 = DateUtils.addDays(now, -2);
         Date tMinus1 = DateUtils.addDays(now, -1);
         Date tPlus1 = DateUtils.addDays(now, 1);
@@ -412,7 +412,7 @@ public class DataDefDaoTest {
     public void testGetDataDefByName() {
         DataDefDao dao = new DataDefDao(pmf);
 
-        Date now = new Date();
+        Date now = DateUtils.truncate(new Date(), Calendar.SECOND);
         Date tMinus2 = DateUtils.addDays(now, -2);
         Date tMinus1 = DateUtils.addDays(now, -1);
 
