@@ -72,14 +72,18 @@ public class PMFTest {
             SecurityException, IllegalAccessException, IllegalArgumentException,
             InvocationTargetException, ConfigNotFoundException {
 
+        String dsConfigFile = System.getProperty("gotz.datastore.configFile");
+        if (dsConfigFile == null) {
+            dsConfigFile = "jdoconfig.properties";
+        }
         given(configService.getConfig("gotz.datastore.configFile"))
-                .willReturn("jdoconfig.properties");
+                .willReturn(dsConfigFile);
 
         pmf.init();
 
         InOrder inOrder = inOrder(configService, ioHelper, jdoProperties);
         inOrder.verify(configService).getConfig("gotz.datastore.configFile");
-        inOrder.verify(ioHelper).getInputStream("/jdoconfig.properties");
+        inOrder.verify(ioHelper).getInputStream("/" + dsConfigFile);
         inOrder.verify(jdoProperties).load(any(InputStream.class));
 
         assertThat(pmf.getFactory()).isNotNull();
@@ -90,14 +94,19 @@ public class PMFTest {
             SecurityException, IllegalAccessException, IllegalArgumentException,
             InvocationTargetException, ConfigNotFoundException {
 
+        String dsConfigFile = System.getProperty("gotz.datastore.configFile");
+        if (dsConfigFile == null) {
+            dsConfigFile = "jdoconfig.properties";
+        }
+
         given(configService.getConfig("gotz.datastore.configFile"))
-                .willReturn("jdoconfig.properties");
+                .willReturn(dsConfigFile);
 
         pmf.init();
 
         InOrder inOrder = inOrder(configService, ioHelper, jdoProperties);
         inOrder.verify(configService).getConfig("gotz.datastore.configFile");
-        inOrder.verify(ioHelper).getInputStream("/jdoconfig.properties");
+        inOrder.verify(ioHelper).getInputStream("/" + dsConfigFile);
         inOrder.verify(jdoProperties).load(any(InputStream.class));
 
         assertThat(pmf.getFactory()).isNotNull();

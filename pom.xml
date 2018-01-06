@@ -8,10 +8,6 @@
 
     <url>http://www.codetab.org/gotz</url>
 
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -294,7 +290,7 @@
                     </execution>
                     <execution>
                         <id>default-report</id>
-                        <phase>prepare-package</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>report</goal>
                         </goals>
@@ -321,7 +317,12 @@
                     </execution>
                 </executions>
             </plugin>
-            
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.3.0</version>
+            </plugin>
+
 			<!-- to know latest versions of dependencies,plugins etc -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

@@ -351,7 +351,7 @@ public class DataDefDaoTest {
     public void testGetDataDefByDateMultiple() {
         DataDefDao dao = new DataDefDao(pmf);
 
-        Date now = new Date();
+        Date now = DateUtils.truncate(new Date(), Calendar.SECOND);
         Date tMinus1 = DateUtils.addDays(now, -1);
 
         // T-1 to now
