@@ -1,5 +1,8 @@
 # Gotz ETL
 
+[![Build Status](https://travis-ci.org/maithilish/gotz.svg?branch=master)](https://travis-ci.org/maithilish/gotz) 
+[![Coverage Status](https://coveralls.io/repos/github/maithilish/gotz/badge.svg?branch=master)](https://coveralls.io/github/maithilish/gotz?branch=master)
+
 Gotz ETL is a tool to extract data from HTML pages. In Java, one can scrape web pages with libraries such as JSoup and HtmlUnit. But, when one intents to extract huge amount of data from hundreds of pages as a dataset then task becomes daunting. Scraping libraries such as JSoup do well in scraping data but they are not meant to handle large set of data.
 
 Gotz is built upon <a href="https://jsoup.org/" target="_blank">JSoup</a> and <a href="http://htmlunit.sourceforge.net/" target="_blank">HtmlUnit</a> and some of the functionality offered by Gotz over and above the scrapping libraries are:

@@ -1,0 +1,20 @@
+
+language: java
+sudo: false
+
+cache:
+    directories:
+        - $HOME/.m2
+
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS gotztest;'
+
+script: mvn clean
+
+after_success:
+  - mvn verify jacoco:report coveralls:report -Dgotz.datastore.configFile=jdoconfig-mysql.properties
+
+jdk:
+  - openjdk8
+  - oraclejdk8
+
