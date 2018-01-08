@@ -1,6 +1,7 @@
 package org.codetab.gotz.shared;
 
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -229,7 +230,7 @@ public class ConfigService {
     }
 
     private void addRunDate() {
-        Date runDate = new Date();
+        Date runDate = DateUtils.truncate(new Date(), Calendar.SECOND);
         String runDateStr = configs.getString("gotz.runDate"); //$NON-NLS-1$
         if (runDateStr == null) {
             String dateFormat = configs.getString("gotz.dateParsePattern"); //$NON-NLS-1$
@@ -239,7 +240,7 @@ public class ConfigService {
     }
 
     private void addRunDateTime() {
-        Date runDateTime = new Date();
+        Date runDateTime = DateUtils.truncate(new Date(), Calendar.SECOND);
         String runDateTimeStr = configs.getString("gotz.runDateTime"); //$NON-NLS-1$
         if (runDateTimeStr == null) {
             String dateTimeFormat =

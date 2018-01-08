@@ -48,14 +48,17 @@ public class DateRollerrTest {
                 .add("  <xf:converter name='date'>")
                 .add("    <xf:axis>col</xf:axis>")
                 .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-                .add("    <xf:outPattern>YYYY-MM-dd</xf:outPattern>")
-                .add("    <xf:roll>DAY_OF_MONTH=ceil</xf:roll>")
+                .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
+                .add("    <xf:roll>DATE=ceil</xf:roll>")
                 .add("  </xf:converter>")
                 .build("xf");
         //@formatter:on
         dt.setFields(fields);
 
-        String actual = dt.convert("Mar '17");
+        String actual = dt.convert("Dec '17");
+        assertThat(actual).isEqualTo("2017-12-31");
+
+        actual = dt.convert("Mar '17");
         assertThat(actual).isEqualTo("2017-03-31");
 
         actual = dt.convert("Feb '16");
@@ -63,6 +66,12 @@ public class DateRollerrTest {
 
         actual = dt.convert("Feb '17");
         assertThat(actual).isEqualTo("2017-02-28");
+
+        actual = dt.convert("Dec '16");
+        assertThat(actual).isEqualTo("2016-12-31");
+
+        actual = dt.convert("Dec '12");
+        assertThat(actual).isEqualTo("2012-12-31");
     }
 
     @Test

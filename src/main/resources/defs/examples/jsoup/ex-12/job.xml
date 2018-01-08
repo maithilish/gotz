@@ -29,7 +29,7 @@
                     class="org.codetab.gotz.step.convert.converter.DateFormater">
                     <axis>col</axis>
                     <inPattern>EEE MMM dd HH:mm:ss z yyyy</inPattern>
-                    <outPattern>YYYY-MM-dd</outPattern>
+                    <outPattern>yyyy-MM-dd</outPattern>
                     <roll>DAY_OF_MONTH=ceil</roll>
                 </converter>
             </step>

@@ -64,7 +64,7 @@
                             class="org.codetab.gotz.step.convert.converter.DateRoller">
                             <axis>col</axis>
                             <inPattern>MMM ''YY</inPattern>
-                            <outPattern>YYYY-MM-dd</outPattern>
+                            <outPattern>yyyy-MM-dd</outPattern>
                             <roll>DAY_OF_MONTH=ceil</roll>
                         </converter>
                     </step>
@@ -83,7 +83,7 @@
                             class="org.codetab.gotz.step.convert.converter.DateRoller">
                             <axis>col</axis>
                             <inPattern>MMM ''YY</inPattern>
-                            <outPattern>YYYY-MM-dd</outPattern>
+                            <outPattern>yyyy-MM-dd</outPattern>
                             <roll>DAY_OF_MONTH=ceil</roll>
                         </converter>
                     </step>
