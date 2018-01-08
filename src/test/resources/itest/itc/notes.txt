@@ -1,7 +1,0 @@
-directories bs, pl, locator etc are single datadef tests.
-
-while all-seeder and all-loader test all datadef - pl,bs,quote,finlocators etc.
-In all-seeder, locator parser pushes tasks to seeder and in all-loader they
-are pushed to loader.
-
-To test prefix, in all-seeder and locator itests, we set prefix in datadef.xml  

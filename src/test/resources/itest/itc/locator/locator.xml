@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<gotz xmlns="http://codetab.org/gotz">
-    <locators group="quote">
-        <locator name="ITC"
-            url="src/test/resources/itest/itc/page/itc-quote-prefix.html">
-        </locator>
-    </locators>
-</gotz>

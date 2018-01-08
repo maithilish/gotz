@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<gotz xmlns="http://codetab.org/gotz">
-    <bean name="datadef" xmlFile="datadef.xml" />
-    <bean name="locator" xmlFile="locator.xml" />
-    <bean name="task" xmlFile="task.xml" />
-</gotz>
