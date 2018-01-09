@@ -1,6 +1,7 @@
 
 language: java
 sudo: false
+email: false
 
 cache:
     directories:

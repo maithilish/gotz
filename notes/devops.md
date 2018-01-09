@@ -1,3 +1,70 @@
+## Maven build
+
+to switch from default config files :
+
+- for mysqldb use -Dgotz.datastore.configFile=jdoconfig-mysql.properties, default jdoconfig.properties    
+- for gotz-dev.properties use -Dgotz.mode=dev, default gotz.properties
+- for logback-dev.xml use -Dlogback.configurationFile=src/main/resources/logback-dev.xml, default logback.xml
+
+Various build and run commands are given here :
+
+to add new run configuration, go to Run As -> Maven Build and enter
+
+     Main -> Base directory - ${project_loc:gotz}
+     Goals -> process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dlogback.configurationFile=src/main/resources/logback-dev.xml -Dgotz.mode=dev
+
+dev run
+
+     mvn process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dlogback.configurationFile=src/main/resources/logback-dev.xml -Dgotz.mode=dev
+
+prod run
+
+    mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz"
+
+to profile memory and cpu
+
+      mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dgotz.waitForHeapDump=true
+
+compile, enhance JDO classes and run tests
+
+    mvn test
+
+run tests and Integration tests
+
+    mvn verify
+
+skip tests and run integration tests (itests)
+
+   mvn integration-test -Dtest=zzz.java -DfailIfNoTests=false
+
+to generate coverage report
+
+      mvn clean test jacoco:report    # excludes itests
+      mvn clean verify                # excludes itests    
+      mvn clean verify jacoco:report  # includes itests
+
+find selector
+
+    mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector"
+       -Dexec.args="fileName 'selector' "
+
+selector example
+
+     mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector"
+   -Dexec.args="src/main/resources/devdefs/mc/parse-locator-file/itc-quote.html 'div#mktdet_2 div:matchesOwn(^P/E$)' "        
+
+generate JavaDoc
+
+    mvn JavaDoc:JavaDoc
+
+to know dependency updates
+
+    mvn versions:display-dependency-updates
+
+download JavaDoc and source
+
+    mvn dependency:resolve -Dclassifier=JavaDoc
+    mvn dependency:sources   
 
 ## Eclipse setup
 
@@ -140,68 +207,6 @@ for hsqldb client run
 For desktop shortcut, in Gnome we can create and add this to hsqldb.desktop to ~/.local/share/applications/hsqldb.desktop for easy access.
 
 - maven hsqldb dependency and server version should be same else Gotz may throw JDBC error.
-
-## Maven build
-
-Various build and run commands are given here :
-
-to add new run configuration, go to Run As -> Maven Build and enter
-
-     Main -> Base directory - ${project_loc:gotz}
-     Goals -> process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dpicks.mode=dev
-
-dev run
-
-     mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dgotz.mode=dev
-
-prod run
-
-    mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz"
-
-to profile memory and cpu
-
-      mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dgotz.waitForHeapDump=true
-
-compile, enhance JDO classes and run tests
-
-    mvn test
-
-run tests and Integration tests
-
-    mvn verify
-
-skip tests and run integration tests (itests)
-
-   mvn integration-test -Dtest=zzz.java -DfailIfNoTests=false
-
-to generate coverage report
-
-      mvn clean test jacoco:report    # excludes itests
-      mvn clean verify                # excludes itests    
-      mvn clean verify jacoco:report  # includes itests
-
-find selector
-
-    mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector"
-       -Dexec.args="fileName 'selector' "
-selector example
-
-     mvn exec:java -Dexec.mainClass="org.codetab.gotz.util.FindSelector"
-   -Dexec.args="src/main/resources/devdefs/mc/parse-locator-file/itc-quote.html 'div#mktdet_2 div:matchesOwn(^P/E$)' "        
-
-generate JavaDoc
-
-    mvn JavaDoc:JavaDoc
-
-to know dependency updates
-
-    mvn versions:display-dependency-updates
-
-download JavaDoc and source
-
-    mvn dependency:resolve -Dclassifier=JavaDoc
-    mvn dependency:sources   
-
 
 ## Model Generation
 
