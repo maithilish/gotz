@@ -18,25 +18,25 @@ public class FindSelectorTest {
     @Test
     public void testMain() {
         String[] args = new String[] {
-                "src/test/resources/itest/itc/page/itc-bs.html",
+                "src/main/resources/defs/examples/page/acme-bs.html",
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)"};
         FindSelector.main(args);
     }
 
     @Test
     public void testParseHtml() throws IOException {
-        String fileName = "src/test/resources/itest/itc/page/itc-bs.html";
+        String fileName = "src/main/resources/defs/examples/page/acme-bs.html";
         String selector =
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)";
         FindSelector fs = new FindSelector();
         Elements elements = fs.parseHtml(fileName, selector);
         assertThat(elements.size()).isEqualTo(1);
-        assertThat(elements.get(0).outerHtml()).isEqualTo("<td>Mar '16</td>");
+        assertThat(elements.get(0).outerHtml()).isEqualTo("<td>Dec '16</td>");
     }
 
     @Test
     public void testBuildOutputInner() throws IOException {
-        String fileName = "src/test/resources/itest/itc/page/itc-bs.html";
+        String fileName = "src/main/resources/defs/examples/page/acme-bs.html";
         String selector =
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)";
         FindSelector fs = new FindSelector();
@@ -49,7 +49,7 @@ public class FindSelectorTest {
 
     @Test
     public void testBuildOutputOuter() throws IOException {
-        String fileName = "src/test/resources/itest/itc/page/itc-bs.html";
+        String fileName = "src/main/resources/defs/examples/page/acme-bs.html";
         String selector =
                 "table:contains(Sources Of Funds) tr:nth-child(1) > td:nth-child(2)";
         FindSelector fs = new FindSelector();
@@ -67,16 +67,16 @@ public class FindSelectorTest {
         sb.append(Util.LINE);
         sb.append(Util.LINE);
         if (inner) {
-            sb.append("Mar '16");
+            sb.append("Dec '16");
         } else {
-            sb.append("<td>Mar '16</td>");
+            sb.append("<td>Dec '16</td>");
         }
         sb.append(Util.LINE);
         sb.append(Util.LINE);
         sb.append("       --- Text ---");
         sb.append(Util.LINE);
         sb.append(Util.LINE);
-        sb.append("Mar '16");
+        sb.append("Dec '16");
         sb.append(Util.LINE);
         sb.append(Util.LINE);
         sb.append("Number of matched elements : 1");

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
+
+    <locators group="quote">
+        <locator name="acme" url="/defs/examples/page/acme-quote.html" />
+    </locators>
+
+    <locators group="bs">
+        <locator name="acme" url="/defs/examples/page/acme-bs.html" />
+    </locators>
+
+    <fields name="locator" class="org.codetab.gotz.model.Locator"
+        xmlns="http://codetab.org/xfields">
+
+        <steps name="commonSteps">
+            <step name="seeder"
+                class="org.codetab.gotz.step.extract.LocatorSeeder">
+                <nextStep>loader</nextStep>
+            </step>
+            <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
+                <nextStep>parser</nextStep>
+            </step>
+            <step name="parser"
+                class="org.codetab.gotz.step.extract.JSoupHtmlParser">
+                <nextStep>process</nextStep>
+            </step>
+            <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
+                <nextStep>converter</nextStep>
+            </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataConverter">
+                <nextStep>appender</nextStep>
+            </step>
+            <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
+                <nextStep>end</nextStep>
+                <appender name="file"
+                    class="org.codetab.gotz.step.load.appender.FileAppender">
+                    <encoder name="csv"
+                        class="org.codetab.gotz.step.load.encoder.CsvEncoder">
+                    </encoder>
+                    <file>output/data.txt</file>
+                </appender>
+            </step>
+        </steps>
+
+        <tasks name="quote tasks" group="quote">
+            <task name="snapshot task" dataDef="snapshot">
+                <steps ref="commonSteps" />
+            </task>
+            <task name="price task" dataDef="price">
+                <steps ref="commonSteps" />
+            </task>
+        </tasks>
+
+        <tasks name="bs" group="bs">
+            <task name="bs" dataDef="bs">
+                <steps ref="commonSteps">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>yyyy-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
+        </tasks>
+
+    </fields>
+
+    <dataDef name="price">
+        <axis name="col">
+            <xf:fields>
+                <xf:script script="document.getFromDate()" />
+            </xf:fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <member name="Price" value="Price" />
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="div#price_tick" field="*" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+    <dataDef name="snapshot">
+        <axis name="col">
+            <xf:fields>
+                <xf:script script="document.getFromDate()" />
+            </xf:fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query region="div#snapshot"
+                    field="div:matchesOwn(^%{row.match})" />
+            </xf:fields>
+            <member name="MC" match="MARKET CAP" />
+            <member name="EPS" match="EPS \(TTM\)" />
+            <member name="PE" match="P/E" />
+            <member name="PC" match="P/C" />
+            <member name="BV" match="BOOK VALUE" />
+            <member name="PB" match="PRICE/BOOK" />
+            <member name="DIV" match="DIV \(%\)" />
+            <member name="DY" match="DIV YIELD" />
+            <member name="FV" match="FACE VALUE" />
+            <member name="IND PE" match="INDUSTRY P/E" />
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="div#snapshot"
+                    field="div:matchesOwn(^%{row.match}) + div" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+    <dataDef name="bs">
+        <axis name="col">
+            <xf:fields>
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(1) > td:nth-child(%{col.index})" />
+            </xf:fields>
+            <member name="year">
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
+            </member>
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(1)" />
+            </xf:fields>
+            <member name="item" index="5">
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
+            </member>
+            <filter axis="row">
+                <xf:fields>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Sources Of Funds" />
+                        <xf:filter name="f2" pattern="Application Of Funds" />
+                    </xf:filters>
+                </xf:fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="table:contains(Sources Of Funds)"
+                    field="tr:nth-child(%{row.index}) > td:nth-child(%{col.index})" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+</gotz>

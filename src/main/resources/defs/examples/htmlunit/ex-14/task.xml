@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
+
+    <fields name="locator" class="org.codetab.gotz.model.Locator"
+        xmlns="http://codetab.org/xfields">
+
+        <steps name="commonSteps">
+            <step name="seeder"
+                class="org.codetab.gotz.step.extract.LocatorSeeder">
+                <nextStep>loader</nextStep>
+            </step>
+            <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
+                <nextStep>parser</nextStep>
+            </step>
+            <step name="parser" class="org.codetab.gotz.step.extract.HtmlParser">
+                <nextStep>process</nextStep>
+            </step>
+            <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
+                <nextStep>converter</nextStep>
+            </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataConverter">
+                <nextStep>appender</nextStep>
+            </step>
+            <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
+                <nextStep>end</nextStep>
+                <appender name="file"
+                    class="org.codetab.gotz.step.load.appender.FileAppender">
+                    <encoder name="csv"
+                        class="org.codetab.gotz.step.load.encoder.CsvEncoder">
+                    </encoder>
+                    <file>output/data.txt</file>
+                </appender>
+            </step>
+        </steps>
+
+        <tasks name="quote tasks" group="quote">
+            <task name="fin links" dataDef="finLinks">
+                <steps ref="commonSteps">
+                    <step name="process"
+                        class="org.codetab.gotz.step.convert.LocatorCreator">
+                        <nextStep>seeder</nextStep>
+                    </step>
+                </steps>
+            </task>
+            <task name="snapshot" dataDef="snapshot">
+                <steps ref="commonSteps" />
+            </task>
+            <task name="price" dataDef="price">
+                <steps ref="commonSteps" />
+            </task>
+        </tasks>
+
+        <tasks name="bs tasks" group="bs">
+            <task name="bs task" dataDef="bs">
+                <steps ref="commonSteps">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>yyyy-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
+        </tasks>
+
+        <tasks name="pl tasks" group="pl">
+            <task name="pl task" dataDef="pl">
+                <steps ref="commonSteps">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>yyyy-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
+        </tasks>
+
+    </fields>
+
+</gotz>

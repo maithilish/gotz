@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz">
+    <bean name="task quote" xmlFile="quote.xml" />
+    <bean name="task bs" xmlFile="bs.xml" />
+    <bean name="task pl" xmlFile="pl.xml" />
+</gotz>

@@ -1,0 +1,11 @@
+acme|quote|%{runDateTime}|Price|315.25
+acme|quote|%{documentFromDate}|P/C|-
+acme|quote|%{documentFromDate}|FACE VALUE (Rs)|1.00
+acme|quote|%{documentFromDate}|BOOK VALUE (Rs)|27.89
+acme|quote|%{documentFromDate}|DIV (%)|850.00%
+acme|quote|%{documentFromDate}|PRICE/BOOK|11.29
+acme|quote|%{documentFromDate}|P/E|-
+acme|quote|%{documentFromDate}|INDUSTRY P/E|37.06
+acme|quote|%{documentFromDate}|MARKET CAP (Rs Cr)|382,642.57
+acme|quote|%{documentFromDate}|EPS (TTM)|-
+acme|quote|%{documentFromDate}|DIV YIELD.(%)|2.70%

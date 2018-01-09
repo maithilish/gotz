@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
+
+    <dataDef name="snapshot">
+        <axis name="col">
+            <xf:fields>
+                <xf:script script="document.getFromDate()" />
+            </xf:fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query region="//*[@id='snapshot']"
+                    field="div/div/div[starts-with(child::text(),'%{row.match}')]/child::text()" />
+            </xf:fields>
+            <member name="MC" match="MARKET CAP" />
+            <member name="EPS" match="EPS (TTM)" />
+            <member name="PE" match="P/E" />
+            <member name="PC" match="P/C" />
+            <member name="BV" match="BOOK VALUE" />
+            <member name="PB" match="PRICE/BOOK" />
+            <member name="DIV" match="DIV (%)" />
+            <member name="DY" match="DIV YIELD" />
+            <member name="FV" match="FACE VALUE" />
+            <member name="IND PE" match="INDUSTRY P/E" />
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="//*[@id='snapshot']"
+                    field="div/div/div[starts-with(child::text(),'%{row.match}')]/following-sibling::div[1]" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+    <dataDef name="price">
+        <axis name="col">
+            <xf:fields>
+                <xf:script script="configs.getRunDateTime()" />
+            </xf:fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <member name="Price" value="Price" />
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="//*[@id='price_tick_span']"
+                    field="strong" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+    <dataDef name="finLinks">
+        <xf:fields>
+            <xf:member name="bs">
+                <xf:group>bs</xf:group>
+            </xf:member>
+            <xf:member name="pl">
+                <xf:group>pl</xf:group>
+            </xf:member>
+        </xf:fields>
+
+        <axis name="col">
+            <xf:fields>
+                <xf:script script="configs.getRunDateTime()" />
+            </xf:fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query region="//*[@id='page_links']/table"
+                    field="tbody/tr/td[4]/ul/li[%{row.index}]/a" />
+            </xf:fields>
+            <member name="bs" index="2" />
+            <member name="pl" index="3" />
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="//div[@id='page_links']/table"
+                    field="tbody/tr/td[4]/ul/li[%{row.index}]/a/@href" />
+                <!-- for pages with relative paths provide prefix and for abs path prefix not required  -->
+                <!-- trailing / is required as prefix simply appends value -->
+                <xf:prefix>/defs/examples/page/</xf:prefix>
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+    <dataDef name="bs">
+        <axis name="col">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
+                    field="*//tr[1]/td[%{col.index}]" />
+            </xf:fields>
+            <member name="year">
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
+            </member>
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
+                    field="*//tr[%{row.index}+1]/td[1]" />
+            </xf:fields>
+            <member name="item" index="5">
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
+            </member>
+            <filter axis="row">
+                <xf:fields>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Sources Of Funds" />
+                        <xf:filter name="f2" pattern="Application Of Funds" />
+                    </xf:filters>
+                </xf:fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Total Share Capital')]/ancestor::table[1]"
+                    field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}-1]" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+    <dataDef name="pl">
+        <axis name="col">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//tr[1]/td[%{col.index}]" />
+            </xf:fields>
+            <member name="year">
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
+            </member>
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//tr[%{row.index}+0]/td[1]" />
+            </xf:fields>
+            <member name="item" index="6">
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
+            </member>
+            <filter axis="row">
+                <xf:fields>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Expenditure" />
+                        <xf:filter name="f2"
+                            pattern="Per share data (annualised)" />
+                    </xf:filters>
+                </xf:fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}-1]" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+</gotz>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
+
+    <fields name="locator" class="org.codetab.gotz.model.Locator"
+        xmlns="http://codetab.org/xfields">
+
+        <steps name="commonSteps">
+            <step name="seeder"
+                class="org.codetab.gotz.step.extract.LocatorSeeder">
+                <nextStep>loader</nextStep>
+            </step>
+            <step name="loader" class="org.codetab.gotz.step.extract.URLLoader">
+                <nextStep>parser</nextStep>
+            </step>
+            <step name="parser" class="org.codetab.gotz.step.extract.HtmlParser">
+                <nextStep>process</nextStep>
+            </step>
+            <step name="process" class="org.codetab.gotz.step.convert.DataFilter">
+                <nextStep>converter</nextStep>
+            </step>
+            <step name="converter"
+                class="org.codetab.gotz.step.convert.DataConverter">
+                <nextStep>appender</nextStep>
+            </step>
+            <step name="appender" class="org.codetab.gotz.step.load.DataAppender">
+                <nextStep>end</nextStep>
+                <appender name="file"
+                    class="org.codetab.gotz.step.load.appender.FileAppender">
+                    <encoder name="csv"
+                        class="org.codetab.gotz.step.load.encoder.CsvEncoder">
+                    </encoder>
+                    <file>output/data.txt</file>
+                </appender>
+            </step>
+        </steps>
+
+        <tasks name="pl tasks" group="pl">
+            <task name="pl task" dataDef="pl">
+                <steps ref="commonSteps">
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+
+                        <converter name="date"
+                            class="org.codetab.gotz.step.convert.converter.DateRoller">
+                            <axis>col</axis>
+                            <inPattern>MMM ''YY</inPattern>
+                            <outPattern>yyyy-MM-dd</outPattern>
+                            <roll>DAY_OF_MONTH=ceil</roll>
+                        </converter>
+                    </step>
+                </steps>
+            </task>
+        </tasks>
+
+    </fields>
+
+    <dataDef name="pl">
+        <axis name="col">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//tr[1]/td[%{col.index}]" />
+            </xf:fields>
+            <member name="year">
+                <xf:fields>
+                    <xf:indexRange value="2-6" />
+                </xf:fields>
+            </member>
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//tr[%{row.index}+0]/td[1]" />
+            </xf:fields>
+            <member name="item" index="6">
+                <xf:fields>
+                    <xf:breakAfter value="Book Value (Rs)" />
+                </xf:fields>
+            </member>
+            <filter axis="row">
+                <xf:fields>
+                    <xf:filters type="value">
+                        <xf:filter name="blank" pattern="" />
+                        <xf:filter name="f1" pattern="Expenditure" />
+                        <xf:filter name="f2"
+                            pattern="Per share data (annualised)" />
+                    </xf:filters>
+                </xf:fields>
+            </filter>
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query
+                    region="//table//*[count(*)=0 and contains(.,'Employee Cost')]/ancestor::table[1]"
+                    field="*//*[.='%{row.value}']/following-sibling::td[%{col.index}-1]" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+</gotz>
