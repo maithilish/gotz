@@ -8,6 +8,7 @@ import java.util.Objects;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.messages.Messages;
@@ -148,6 +149,33 @@ public abstract class BaseLoader extends Step {
                     documentHelper.getActiveDocumentId(locator.getDocuments());
         }
 
+        /*
+         * load the active document, get new todate for new live and reset
+         * document toDate to new toDate. If still active for new toDate then
+         * use the active document else reset toDate to runDateTime - 1 and set
+         * activeDocument to null so that new document is created
+         */
+
+        if (activeDocumentId != null) {
+            document = documentHelper.getDocument(activeDocumentId,
+                    locator.getDocuments());
+            Date newToDate = documentHelper.getToDate(document.getFromDate(),
+                    locator.getFields(), getLabels());
+            document.setToDate(newToDate);
+
+            // expired for new toDate
+            if (newToDate.compareTo(configService.getRunDateTime()) < 0) {
+                newToDate = DateUtils.addSeconds(configService.getRunDateTime(),
+                        -1);
+                document.setToDate(newToDate);
+                activeDocumentId = null;
+            }
+        }
+
+        /**
+         * if activeDocumentId is null create new document otherwise load the
+         * active document.
+         */
         if (activeDocumentId == null) {
             // no existing active document, we need to create new one
             byte[] documentObject = null;

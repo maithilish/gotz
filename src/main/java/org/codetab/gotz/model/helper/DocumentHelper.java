@@ -9,6 +9,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
@@ -90,6 +91,16 @@ public class DocumentHelper {
             }
         }
         return activeDocumentId;
+    }
+
+    public Document getDocument(final Long id, final List<Document> documents) {
+        for (Document doc : documents) {
+            if (doc.getId() == id) {
+                return doc;
+            }
+        }
+        throw new NoSuchElementException(
+                Util.join("No document with id [", String.valueOf(id), "]"));
     }
 
     /**
@@ -246,4 +257,5 @@ public class DocumentHelper {
         document.setToDate(toDate);
         return document;
     }
+
 }
