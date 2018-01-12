@@ -24,7 +24,7 @@ import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.step.load.appender.Appender.Marker;
-import org.codetab.gotz.testutil.FieldsBuilder;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -166,13 +166,13 @@ public class FileAppenderTest {
         String fileName = "target/test.txt";
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("<xf:appender>")
-                .add("  <xf:file>")
-                .add(fileName)
-                .add("  </xf:file>")
-                .add("</xf:appender>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:appender>")
+          .add("  <xf:file>")
+          .add(fileName)
+          .add("  </xf:file>")
+          .add("</xf:appender>")
+          .buildField("xf");
         //@formatter:on
 
         appender.setFields(fields);
@@ -198,14 +198,15 @@ public class FileAppenderTest {
         String fileName = "/home/xyzz/test.txt";
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("<xf:appender>")
-                .add("  <xf:file>")
-                .add(fileName)
-                .add("  </xf:file>")
-                .add("</xf:appender>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:appender>")
+          .add("  <xf:file>")
+          .add(fileName)
+          .add("  </xf:file>")
+          .add("</xf:appender>")
+          .buildField("xf");
         //@formatter:on
+
         appender.setFields(fields);
         appender.init();
 

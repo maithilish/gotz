@@ -51,10 +51,6 @@ public final class TestUtil {
         }
     }
 
-    public static Fields buildFields(final String xml, final String nsPrefix) {
-        return new FieldsBuilder().add(xml).build(nsPrefix);
-    }
-
     public static Fields createFields() throws FieldsException {
         // no prefix
         return createFields(null);
@@ -279,4 +275,5 @@ public final class TestUtil {
             }
         }
     }
+
 }

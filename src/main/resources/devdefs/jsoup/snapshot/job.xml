@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<gotz xmlns="http://codetab.org/gotz" xmlns:xf="http://codetab.org/xfields">
+
+    <locators group="quote">
+        <locator name="acme" url="/defs/examples/page/acme-quote.html" />
+    </locators>
+
+    <dataDef name="snapshot">
+        <axis name="col">
+            <xf:fields>
+                <xf:script script="document.getFromDate()" />
+            </xf:fields>
+            <member name="date" />
+        </axis>
+        <axis name="row">
+            <xf:fields>
+                <xf:query region="div#snapshot"
+                    field="div:matchesOwn(^%{row.match})" />
+            </xf:fields>
+            <member name="MC" match="MARKET CAP" />
+            <member name="EPS" match="EPS \(TTM\)" />
+            <member name="PE" match="P/E" />
+            <member name="PC" match="P/C" />
+            <member name="BV" match="BOOK VALUE" />
+            <member name="PB" match="PRICE/BOOK" />
+            <member name="DIV" match="DIV \(%\)" />
+            <member name="DY" match="DIV YIELD" />
+            <member name="FV" match="FACE VALUE" />
+            <member name="IND PE" match="INDUSTRY P/E" />
+        </axis>
+        <axis name="fact">
+            <xf:fields>
+                <xf:query region="div#snapshot"
+                    field="div:matchesOwn(^%{row.match}) + div" />
+            </xf:fields>
+        </axis>
+    </dataDef>
+
+    <fields name="locator" class="org.codetab.gotz.model.Locator"
+        xmlns="http://codetab.org/xfields">
+
+        <tasks name="quote tasks" group="quote">
+            <task name="snapshot" dataDef="snapshot">
+                <steps name="task steps">
+                    <step name="seeder"
+                        class="org.codetab.gotz.step.extract.LocatorSeeder">
+                        <nextStep>loader</nextStep>
+                        <unique>true</unique>
+                    </step>
+                    <step name="loader"
+                        class="org.codetab.gotz.step.extract.URLLoader">
+                        <nextStep>parser</nextStep>
+                        <unique>true</unique>
+                    </step>
+                    <step name="parser"
+                        class="org.codetab.gotz.step.extract.JSoupHtmlParser">
+                        <nextStep>converter</nextStep>
+                    </step>
+                    <step name="converter"
+                        class="org.codetab.gotz.step.convert.DataConverter">
+                        <nextStep>appender</nextStep>
+                    </step>
+                    <step name="appender"
+                        class="org.codetab.gotz.step.load.DataAppender">
+                        <nextStep>end</nextStep>
+                        <appender name="file"
+                            class="org.codetab.gotz.step.load.appender.FileAppender">
+                            <encoder name="csv"
+                                class="org.codetab.gotz.step.load.encoder.CsvEncoder">
+                            </encoder>
+                            <file>output/data.txt</file>
+                        </appender>
+                    </step>
+                </steps>
+            </task>
+            <live>P7D</live>
+        </tasks>
+
+    </fields>
+
+</gotz>

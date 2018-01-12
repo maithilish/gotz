@@ -18,8 +18,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
-
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.CriticalException;
@@ -35,7 +33,7 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.persistence.DataDefPersistence;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.codetab.gotz.validation.DataDefValidator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -417,8 +415,7 @@ public class DataDefServiceTest {
     }
 
     @Test
-    public void testGetFilterMap()
-            throws JAXBException, DataDefNotFoundException {
+    public void testGetFilterMap() throws DataDefNotFoundException {
         List<DataDef> dataDefs = createTestDataDefs();
         List<Fields> expectedFilters = createTestFilters();
 
@@ -452,7 +449,7 @@ public class DataDefServiceTest {
 
     @Test
     public void testGetFilterMapShouldThrowException()
-            throws DataDefNotFoundException, JAXBException {
+            throws DataDefNotFoundException {
         List<DataDef> dataDefs = createTestDataDefs();
 
         given(beanService.getBeans(DataDef.class)).willReturn(dataDefs);
@@ -492,56 +489,58 @@ public class DataDefServiceTest {
         return dataDefs;
     }
 
-    private List<DataDef> createTestDataDefs() throws JAXBException {
+    private List<DataDef> createTestDataDefs() {
 
         // @formatter:off
-        StringBuilder sb = new StringBuilder();
-        sb.append("<dataDef name='x'>");
-        sb.append(" <axis name='col'>");
-        sb.append("  <filter axis='col'>");
-        sb.append("   <xf:fields>");
-        sb.append("    <xf:filters type='value'>");
-        sb.append("      <xf:filter name='fx1' pattern='filter fx1' />");
-        sb.append("      <xf:filter name='fx2' pattern='filter fx2' />");
-        sb.append("    </xf:filters>");
-        sb.append("   </xf:fields>");
-        sb.append("  </filter>");
-        sb.append(" </axis>");
-        sb.append("</dataDef>");
-        sb.append("<dataDef name='y'>");
-        sb.append(" <axis name='row'>");
-        sb.append("  <filter axis='row'>");
-        sb.append("   <xf:fields>");
-        sb.append("    <xf:filters type='match'>");
-        sb.append("      <xf:filter name='fy1' pattern='filter fy1' />");
-        sb.append("    </xf:filters>");
-        sb.append("   </xf:fields>");
-        sb.append("  </filter>");
-        sb.append(" </axis>");
-        sb.append("</dataDef>");
+        List<DataDef> dataDefs = new XOBuilder<DataDef>()
+        .add("<dataDef name='x'>")
+        .add(" <axis name='col'>")
+        .add("  <filter axis='col'>")
+        .add("   <xf:fields>")
+        .add("    <xf:filters type='value'>")
+        .add("      <xf:filter name='fx1' pattern='filter fx1' />")
+        .add("      <xf:filter name='fx2' pattern='filter fx2' />")
+        .add("    </xf:filters>")
+        .add("   </xf:fields>")
+        .add("  </filter>")
+        .add(" </axis>")
+        .add("</dataDef>")
+        .add("<dataDef name='y'>")
+        .add(" <axis name='row'>")
+        .add("  <filter axis='row'>")
+        .add("   <xf:fields>")
+        .add("    <xf:filters type='match'>")
+        .add("      <xf:filter name='fy1' pattern='filter fy1' />")
+        .add("    </xf:filters>")
+        .add("   </xf:fields>")
+        .add("  </filter>")
+        .add(" </axis>")
+        .add("</dataDef>")
+        .build(DataDef.class);
         // @formatter:on
 
-        return TestUtil.unmarshallTestObject(sb, DataDef.class);
+        return dataDefs;
     }
 
-    private List<Fields> createTestFilters() throws JAXBException {
+    private List<Fields> createTestFilters() {
 
         //@formatter:off
-        StringBuilder sb = new StringBuilder();
-        sb.append("<xf:fields>");
-        sb.append("<xf:filters type='value' >");
-        sb.append(" <xf:filter name='fx1' pattern='filter fx1' />");
-        sb.append(" <xf:filter name='fx2' pattern='filter fx2' />");
-        sb.append("</xf:filters>");
-        sb.append("</xf:fields>");
-        sb.append("<xf:fields>");
-        sb.append("<xf:filters type='match' >");
-        sb.append(" <xf:filter name='fy1' pattern='filter fy1' />");
-        sb.append("</xf:filters>");
-        sb.append("</xf:fields>");
+        List<Fields> filter = new XOBuilder<Fields>()
+        .add("<xf:fields>")
+        .add("  <xf:filters type='value' >")
+        .add("     <xf:filter name='fx1' pattern='filter fx1' />")
+        .add("     <xf:filter name='fx2' pattern='filter fx2' />")
+        .add("  </xf:filters>")
+        .add("</xf:fields>")
+        .add("<xf:fields>")
+        .add("  <xf:filters type='match' >")
+        .add("     <xf:filter name='fy1' pattern='filter fy1' />")
+        .add("  </xf:filters>")
+        .add("</xf:fields>")
+        .build(Fields.class);
         //@formatter:on
 
-        return TestUtil.unmarshallTestObject(sb, Fields.class);
+        return filter;
     }
 
 }

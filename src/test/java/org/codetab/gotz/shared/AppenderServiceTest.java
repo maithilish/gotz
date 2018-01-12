@@ -20,7 +20,7 @@ import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.pool.AppenderPoolService;
 import org.codetab.gotz.step.load.appender.Appender;
 import org.codetab.gotz.step.load.appender.Appender.Marker;
-import org.codetab.gotz.testutil.FieldsBuilder;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -63,15 +63,15 @@ public class AppenderServiceTest {
         String fileName = "target/test.txt";
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("<xf:appender class='")
-                .add(className)
-                .add("' >")
-                .add("  <xf:file>")
-                .add(fileName)
-                .add("  </xf:file>")
-                .add("</xf:appender>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+        .add("<xf:appender class='")
+        .add(className)
+        .add("' >")
+        .add("  <xf:file>")
+        .add(fileName)
+        .add("  </xf:file>")
+        .add("</xf:appender>")
+        .buildField("xf");
         //@formatter:on
 
         String userProvidedFile = "gotz.properties";
@@ -98,17 +98,17 @@ public class AppenderServiceTest {
         String fileName = "target/test.txt";
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("<xf:appender class='")
-                .add(className)
-                .add("' name='")
-                .add(appenderName)
-                .add("' >")
-                .add("  <xf:file>")
-                .add(fileName)
-                .add("  </xf:file>")
-                .add("</xf:appender>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:appender class='")
+          .add(className)
+          .add("' name='")
+          .add(appenderName)
+          .add("' >")
+          .add("  <xf:file>")
+          .add(fileName)
+          .add("  </xf:file>")
+          .add("</xf:appender>")
+          .buildField("xf");
         //@formatter:on
 
         String userProvidedFile = "gotz.properties";
@@ -128,14 +128,14 @@ public class AppenderServiceTest {
         className = "org.codetab.gotz.appender.FileAppenderX";
 
         //@formatter:off
-        fields = new FieldsBuilder()
-                .add("<xf:appender class='")
-                .add(className)
-                .add("' name='")
-                .add(appenderName)
-                .add("' >")
-                .add("</xf:appender>")
-                .build("xf");
+        fields = new XOBuilder<Fields>()
+          .add("<xf:appender class='")
+          .add(className)
+          .add("' name='")
+          .add(appenderName)
+          .add("' >")
+          .add("</xf:appender>")
+          .buildField("xf");
         //@formatter:on
 
         appenderService.createAppender("x", fields);

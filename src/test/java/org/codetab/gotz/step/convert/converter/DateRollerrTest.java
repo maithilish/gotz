@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.model.Fields;
-import org.codetab.gotz.testutil.FieldsBuilder;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -44,15 +44,16 @@ public class DateRollerrTest {
     public void testConvertCeil() throws Exception {
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("  <xf:converter name='date'>")
-                .add("    <xf:axis>col</xf:axis>")
-                .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-                .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
-                .add("    <xf:roll>DATE=ceil</xf:roll>")
-                .add("  </xf:converter>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:converter name='date'>")
+          .add("    <xf:axis>col</xf:axis>")
+          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
+          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
+          .add("    <xf:roll>DATE=ceil</xf:roll>")
+          .add("  </xf:converter>")
+          .buildField("xf");
         //@formatter:on
+
         dt.setFields(fields);
 
         String actual = dt.convert("Dec '17");
@@ -78,15 +79,16 @@ public class DateRollerrTest {
     public void testConvertFloor() throws Exception {
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("  <xf:converter name='date'>")
-                .add("    <xf:axis>col</xf:axis>")
-                .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-                .add("    <xf:outPattern>YYYY-MM-dd</xf:outPattern>")
-                .add("    <xf:roll>DAY_OF_MONTH=floor</xf:roll>")
-                .add("  </xf:converter>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:converter name='date'>")
+          .add("    <xf:axis>col</xf:axis>")
+          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
+          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
+          .add("    <xf:roll>DATE=floor</xf:roll>")
+          .add("  </xf:converter>")
+          .buildField("xf");
         //@formatter:on
+
         dt.setFields(fields);
 
         String actual = dt.convert("Mar '17");
@@ -103,15 +105,16 @@ public class DateRollerrTest {
     public void testConvertRound() throws Exception {
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("  <xf:converter name='date'>")
-                .add("    <xf:axis>col</xf:axis>")
-                .add("    <xf:inPattern>dd-MM-YYYY</xf:inPattern>")
-                .add("    <xf:outPattern>YYYY-MM-dd</xf:outPattern>")
-                .add("    <xf:roll>DAY_OF_MONTH=round</xf:roll>")
-                .add("  </xf:converter>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:converter name='date'>")
+          .add("    <xf:axis>col</xf:axis>")
+          .add("    <xf:inPattern>dd-MM-yyyy</xf:inPattern>")
+          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
+          .add("    <xf:roll>DATE=round</xf:roll>")
+          .add("  </xf:converter>")
+          .buildField("xf");
         //@formatter:on
+
         dt.setFields(fields);
 
         String actual = dt.convert("16-03-2017");
@@ -146,14 +149,15 @@ public class DateRollerrTest {
     public void testConvertPatternInParseException() throws Exception {
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("  <xf:converter name='date'>")
-                .add("    <xf:axis>col</xf:axis>")
-                .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-                .add("    <xf:outPattern>YYYY-MM-dd</xf:outPattern>")
-                .add("  </xf:converter>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:converter name='date'>")
+          .add("    <xf:axis>col</xf:axis>")
+          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
+          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
+          .add("  </xf:converter>")
+          .buildField("xf");
         //@formatter:on
+
         dt.setFields(fields);
 
         testRule.expect(FieldsNotFoundException.class);
@@ -164,15 +168,16 @@ public class DateRollerrTest {
     public void testConvertPatternOutParseException() throws Exception {
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("  <xf:converter name='date'>")
-                .add("    <xf:axis>col</xf:axis>")
-                .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-                .add("    <xf:outPattern>x</xf:outPattern>")
-                .add("    <xf:roll>DAY_OF_MONTH=ceil</xf:roll>")
-                .add("  </xf:converter>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:converter name='date'>")
+          .add("    <xf:axis>col</xf:axis>")
+          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
+          .add("    <xf:outPattern>x</xf:outPattern>")
+          .add("    <xf:roll>DATE=ceil</xf:roll>")
+          .add("  </xf:converter>")
+          .buildField("xf");
         //@formatter:on
+
         dt.setFields(fields);
 
         testRule.expect(IllegalArgumentException.class);
@@ -181,16 +186,18 @@ public class DateRollerrTest {
 
     @Test
     public void testConvertPatternInNotFound() throws Exception {
+
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("  <xf:converter name='date'>")
-                .add("    <xf:axis>col</xf:axis>")
-                .add("    <xf:x>MMM ''YY</xf:x>")
-                .add("    <xf:outPattern>YYYY-MM-dd</xf:outPattern>")
-                .add("    <xf:roll>DAY_OF_MONTH=ceil</xf:roll>")
-                .add("  </xf:converter>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:converter name='date'>")
+          .add("    <xf:axis>col</xf:axis>")
+          .add("    <xf:x>MMM ''YY</xf:x>")
+          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
+          .add("    <xf:roll>DATE=floor</xf:roll>")
+          .add("  </xf:converter>")
+          .buildField("xf");
         //@formatter:on
+
         dt.setFields(fields);
 
         testRule.expect(FieldsNotFoundException.class);
@@ -201,15 +208,16 @@ public class DateRollerrTest {
     public void testConvertPatternOutNotFound() throws Exception {
 
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add("  <xf:converter name='date'>")
-                .add("    <xf:axis>col</xf:axis>")
-                .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-                .add("    <xf:x>YYYY-MM-dd</xf:x>")
-                .add("    <xf:roll>DAY_OF_MONTH=ceil</xf:roll>")
-                .add("  </xf:converter>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:converter name='date'>")
+          .add("    <xf:axis>col</xf:axis>")
+          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
+          .add("    <xf:x>yyyy-MM-dd</xf:x>")
+          .add("    <xf:roll>DATE=floor</xf:roll>")
+          .add("  </xf:converter>")
+          .buildField("xf");
         //@formatter:on
+
         dt.setFields(fields);
 
         testRule.expect(FieldsNotFoundException.class);

@@ -35,8 +35,7 @@ import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.extract.URLLoader;
-import org.codetab.gotz.testutil.FieldsBuilder;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -173,14 +172,23 @@ public class BaseLoaderTest {
     @Test
     public void testProcessLocatorWithId() throws IllegalAccessException {
         locator.setId(1L);
+        Date fromDate = new Date();
+        Date toDate = DateUtils.addDays(fromDate, 1);
 
         Document document = locator.getDocuments().get(0);
         Long documentId = document.getId();
+        document.setFromDate(fromDate);
+        document.setToDate(toDate);
 
         given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(documentId);
         given(documentPersistence.loadDocument(documentId))
                 .willReturn(document);
+        given(documentHelper.getDocument(documentId, locator.getDocuments()))
+                .willReturn(document);
+        given(documentHelper.getToDate(document.getFromDate(),
+                locator.getFields(), labels)).willReturn(document.getToDate());
+        given(configService.getRunDateTime()).willReturn(fromDate);
 
         // when
         boolean actual = loader.process();
@@ -232,15 +240,24 @@ public class BaseLoaderTest {
 
     @Test
     public void testProcessWithActiveDocument() throws IllegalAccessException {
-
         locator.setId(1L);
+        Date fromDate = new Date();
+        Date toDate = DateUtils.addDays(fromDate, 1);
+
         Document document = locator.getDocuments().get(0);
         Long documentId = document.getId();
+        document.setFromDate(fromDate);
+        document.setToDate(toDate);
 
         given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(documentId);
         given(documentPersistence.loadDocument(documentId))
                 .willReturn(document);
+        given(documentHelper.getDocument(documentId, locator.getDocuments()))
+                .willReturn(document);
+        given(documentHelper.getToDate(document.getFromDate(),
+                locator.getFields(), labels)).willReturn(document.getToDate());
+        given(configService.getRunDateTime()).willReturn(fromDate);
 
         // when
         boolean actual = loader.process();
@@ -495,7 +512,13 @@ public class BaseLoaderTest {
     public void testHandoverTaskFieldsError()
             throws IllegalAccessException, FieldsException {
 
-        locator.setFields(TestUtil.buildFields("", "xf"));
+        //@formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("")
+          .buildField("xf");
+        //@formatter:on
+
+        locator.setFields(fields);
 
         given(fieldsHelper.split("/xf:fields/xf:tasks/xf:task",
                 locator.getFields())).willThrow(FieldsException.class);
@@ -649,13 +672,14 @@ public class BaseLoaderTest {
     }
 
     private Locator createTestLocator() {
+
         //@formatter:off
-        Fields fields = new FieldsBuilder()
-                .add(" <xf:tasks>")
-                .add("  <xf:task>a</xf:task>")
-                .add("  <xf:task>b</xf:task>")
-                .add(" </xf:tasks>")
-                .build("xf");
+        Fields fields = new XOBuilder<Fields>()
+          .add(" <xf:tasks>")
+          .add("  <xf:task>a</xf:task>")
+          .add("  <xf:task>b</xf:task>")
+          .add(" </xf:tasks>")
+          .buildField("xf");
         //@formatter:on
 
         Locator testLocator = new Locator();

@@ -3,6 +3,8 @@ package org.codetab.gotz.step.base;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
+
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
@@ -14,7 +16,7 @@ import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.convert.DataFilter;
-import org.codetab.gotz.testutil.FieldsBuilder;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,11 +87,15 @@ public class BaseConverterTest {
     @Test
     public void testHandover() throws FieldsException {
 
-        //@formatter:off
-        Fields fields = new FieldsBuilder()
+     // @formatter:off
+        List<Fields> list = new XOBuilder<Fields>()
+                .add("<xf:fields>")
                 .add(" <xf:x>y</xf:x>")
-                .build("xf");
+                .add("</xf:fields>")
+                .build(Fields.class);
         //@formatter:on
+
+        Fields fields = list.get(0);
 
         converter.setFields(fields);
 

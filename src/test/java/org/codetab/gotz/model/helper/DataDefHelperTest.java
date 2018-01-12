@@ -16,6 +16,7 @@ import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -46,6 +47,12 @@ public class DataDefHelperTest {
     @Test
     public void testAddFact() throws FieldsException {
 
+        //@formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("")
+          .buildField("xf");
+        //@formatter:on
+
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -58,7 +65,7 @@ public class DataDefHelperTest {
         fact.setName("fact");
         fact.setOrder(0);
         fact.setValue(null);
-        fact.setFields(TestUtil.buildFields("", "xf")); // only fields element
+        fact.setFields(fields); // only fields element
 
         DAxis factAxis = getAxis(dataDef, "fact");
         DAxis colAxis = getAxis(dataDef, "col");
@@ -125,6 +132,7 @@ public class DataDefHelperTest {
 
     @Test
     public void testAddIndexRange() throws FieldsException {
+
         // given
         DataDef dataDef = createTestDataDef();
 
@@ -132,8 +140,12 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        Fields fields =
-                TestUtil.buildFields("<xf:indexRange value='1-1' />", "xf");
+
+        //@formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:indexRange value='1-1' />")
+          .buildField("xf");
+        //@formatter:on
 
         DAxis colAxis = getAxis(dataDef, "col");
         DAxis rowAxis = getAxis(dataDef, "row");
@@ -181,8 +193,12 @@ public class DataDefHelperTest {
     @Test
     public void testAddIndexRangeWithIndexRange() throws FieldsException {
         // given
-        Fields fields =
-                TestUtil.buildFields("<xf:indexRange value='3-10' />", "xf");
+
+        //@formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:indexRange value='3-10' />")
+          .buildField("xf");
+        //@formatter:on
 
         DMember m1 = new DMember();
         m1.setFields(fields);
@@ -205,8 +221,12 @@ public class DataDefHelperTest {
     @Test
     public void testAddIndexRangeWithBreakAfter() throws FieldsException {
         // given
-        Fields fields =
-                TestUtil.buildFields("<xf:breakAfter value='xyz' />", "xf");
+
+        //@formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:breakAfter value='xyz' />")
+          .buildField("xf");
+        //@formatter:on
 
         DMember m1 = new DMember();
         m1.setFields(fields);
