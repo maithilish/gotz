@@ -71,7 +71,7 @@ public class AppenderServiceTest {
         .add(fileName)
         .add("  </xf:file>")
         .add("</xf:appender>")
-        .buildField("xf");
+        .buildFields();
         //@formatter:on
 
         String userProvidedFile = "gotz.properties";
@@ -108,7 +108,7 @@ public class AppenderServiceTest {
           .add(fileName)
           .add("  </xf:file>")
           .add("</xf:appender>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         String userProvidedFile = "gotz.properties";
@@ -135,7 +135,7 @@ public class AppenderServiceTest {
           .add(appenderName)
           .add("' >")
           .add("</xf:appender>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         appenderService.createAppender("x", fields);

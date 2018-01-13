@@ -20,7 +20,7 @@ import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.model.helper.LocatorHelper;
 import org.codetab.gotz.shared.StepService;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -72,10 +72,15 @@ public class LocatorSeederTest {
 
     @Test
     public void testSetInput() throws IllegalAccessException, FieldsException {
+        //@formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:f1>v1</xf:f1>")
+          .buildFields();
+        //@formatter:on
+
         Locator locator = new Locator();
         locator.setName("x");
         locator.setGroup("gx");
-        Fields fields = TestUtil.createFields("f1", "v1");
         locator.setFields(fields);
 
         // when

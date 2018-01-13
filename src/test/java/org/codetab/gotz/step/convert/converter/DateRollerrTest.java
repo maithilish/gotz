@@ -51,7 +51,7 @@ public class DateRollerrTest {
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
           .add("    <xf:roll>DATE=ceil</xf:roll>")
           .add("  </xf:converter>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         dt.setFields(fields);
@@ -86,7 +86,7 @@ public class DateRollerrTest {
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
           .add("    <xf:roll>DATE=floor</xf:roll>")
           .add("  </xf:converter>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         dt.setFields(fields);
@@ -112,7 +112,7 @@ public class DateRollerrTest {
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
           .add("    <xf:roll>DATE=round</xf:roll>")
           .add("  </xf:converter>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         dt.setFields(fields);
@@ -155,7 +155,7 @@ public class DateRollerrTest {
           .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
           .add("  </xf:converter>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         dt.setFields(fields);
@@ -175,7 +175,7 @@ public class DateRollerrTest {
           .add("    <xf:outPattern>x</xf:outPattern>")
           .add("    <xf:roll>DATE=ceil</xf:roll>")
           .add("  </xf:converter>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         dt.setFields(fields);
@@ -195,7 +195,7 @@ public class DateRollerrTest {
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
           .add("    <xf:roll>DATE=floor</xf:roll>")
           .add("  </xf:converter>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         dt.setFields(fields);
@@ -215,7 +215,7 @@ public class DateRollerrTest {
           .add("    <xf:x>yyyy-MM-dd</xf:x>")
           .add("    <xf:roll>DATE=floor</xf:roll>")
           .add("  </xf:converter>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         dt.setFields(fields);

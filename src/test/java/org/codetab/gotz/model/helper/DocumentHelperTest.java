@@ -31,7 +31,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.w3c.dom.Node;
 
 /**
  * <p>
@@ -131,11 +130,8 @@ public class DocumentHelperTest {
 
     @Test
     public void testGetToDateNoLiveField() throws ParseException {
-        //@formatter:off
-        Fields fields = new XOBuilder<Fields>()
-          .add("")
-          .buildField("xf");
-        //@formatter:on
+
+        Fields fields = TestUtil.createEmptyFields();
 
         String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         Date fromDate =
@@ -156,10 +152,14 @@ public class DocumentHelperTest {
         Date fromDate =
                 DateUtils.parseDate("01-07-2017 10:00:00.000", parsePatterns);
 
-        Fields fields = TestUtil.createFields("xf");
-        Node tasks = TestUtil.addElement("tasks", "", "xf", fields);
-        TestUtil.addElement("live", "P2D", tasks);
-        TestUtil.addElement("label", "x:y", "xf", fields);
+        // @formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:tasks>")
+          .add("    <xf:live>P2D</xf:live>")
+          .add("  </xf:tasks>")
+          .add("  <xf:label>x:y</xf:label>")
+          .buildFields();
+        //@formatter:on
 
         Date expected = DateUtils.addDays(fromDate, 2);
 
@@ -216,16 +216,24 @@ public class DocumentHelperTest {
     @Test
     public void testGetToDateWithDateString()
             throws ParseException, ConfigNotFoundException, FieldsException {
-        String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
+
         Date fromDate = new Date();
+
+        String[] parsePatterns = {"dd-MM-yyyy HH:mm:ss.SSS"};
         String toDateStr = "01-08-2017 11:00:00.000";
 
-        Fields fields = TestUtil.createFields("xf");
-        Node tasks = TestUtil.addElement("tasks", "", "xf", fields);
-        TestUtil.addElement("live", toDateStr, tasks);
-        TestUtil.addElement("label", "x:y", "xf", fields);
-
         Labels labels = new Labels("x", "y");
+
+        // @formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("  <xf:tasks>")
+          .add("    <xf:live>")
+          .add(toDateStr)
+          .add("    </xf:live>")
+          .add("  </xf:tasks>")
+          .add("  <xf:label>x:y</xf:label>")
+          .buildFields();
+        //@formatter:on
 
         given(configService.getConfigArray("gotz.dateParsePattern"))
                 .willReturn(parsePatterns);

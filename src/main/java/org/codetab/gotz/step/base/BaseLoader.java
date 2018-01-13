@@ -122,9 +122,17 @@ public abstract class BaseLoader extends Step {
      * Loads the active document for locator.
      * <p>
      * In case, locator id it not null (locator is loaded from DB), then gets
-     * active document id by scanning locator documents. If document id is not
-     * null, then it loads the document with its documentObject. Otherwise, it
-     * creates new document and adds it locator.
+     * active document id from locator documents list.
+     * </p>
+     * <p>
+     * If document id is not null, then it gets document from locator list and
+     * checks whether it is expired for current live value ignoring the old
+     * document toDate which is based on earlier live value. If expired, then
+     * activeDocument id is set to null so that new document can be created.
+     * </p>
+     * <p>
+     * If active document id is not null, then it loads the document with its
+     * documentObject. Otherwise, it creates new document and adds it locator.
      * <p>
      * When new document is created, it fetches the documentObject either from
      * web or file system and adds it to document using DocumentHelper which
