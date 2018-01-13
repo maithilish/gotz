@@ -28,10 +28,24 @@ public class XOBuilder<T> {
     private StringBuilder sb = new StringBuilder();
 
     public XOBuilder<T> add(final String xml) {
-        sb.append(xml);
+        sb.append(xml.trim());
         return this;
     }
 
+    /**
+     * <p>
+     * Creates object from XML with JAXB.
+     * </p>
+     * <p>
+     * </p>
+     * Adds xmlns='http://codetab.org/gotz' and
+     * xmlns:xf='http://codetab.org/xfields' namespaces.
+     * <p>
+     * For Fields, in case, nodes are to be wrapped in <xf:fields>, then use
+     * buildFields() method otherwise use this method.
+     * </p>
+     * @return
+     */
     public List<T> build(final Class<T> ofClass) {
         sb.insert(0,
                 "<gotz xmlns='http://codetab.org/gotz' xmlns:xf='http://codetab.org/xfields' >");
@@ -43,7 +57,24 @@ public class XOBuilder<T> {
         }
     }
 
-    public Fields buildField(final String nsPrefix) {
+    /**
+     * Build Fields instance with xf prefix using JAXP. Adds <xf:fields> element
+     * as root.
+     * <p>
+     * The other method build(ofClass) creates object from XML with JAXB which
+     * unmarshall child elements of <xf:fields> into nodes.
+     * </p>
+     * <p>
+     * In case, nodes are to be wrapped in <xf:fields>, then use this method
+     * otherwise use build(ofClass).
+     * </p>
+     * @return
+     */
+    public Fields buildFields() {
+        return buildFields("xf");
+    }
+
+    public Fields buildFields(final String nsPrefix) {
         Fields fields = new Fields();
         try {
             Node node = createNode(nsPrefix);

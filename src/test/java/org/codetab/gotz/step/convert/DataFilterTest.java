@@ -19,7 +19,7 @@ import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.FieldsHelper;
 import org.codetab.gotz.shared.ActivityService;
 import org.codetab.gotz.shared.DataDefService;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +28,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import org.w3c.dom.Element;
 
 /**
  * <p>
@@ -238,14 +237,26 @@ public class DataFilterTest {
             final String group, final String... filterStrings)
             throws FieldsException {
 
-        // !!! can't use FieldsBuilder as we need fields with filters as root
-        Fields fields = TestUtil.createFieldsWithNamedRoot("filters", "xf");
-        TestUtil.addAttribute("type", group, TestUtil.getRootElement(fields));
+        //@formatter:off
+        XOBuilder<Fields> xo = new XOBuilder<Fields>()
+          .add("<xf:fields>")
+          .add("<xf:filters type='")
+          .add(group)
+          .add("'>");
+
         for (String filterString : filterStrings) {
-            Element f = TestUtil.addElement("filter", "", "xf", fields);
-            TestUtil.addAttribute("name", "f", f);
-            TestUtil.addAttribute("pattern", filterString, f);
+            xo.add("<xf:filter name='f' pattern='")
+            .add(filterString)
+            .add("' />");
         }
+
+        xo.add("</xf:filters>")
+          .add("</xf:fields>");
+        //@formatter:on
+
+        // need fields with filters as root so calling build() instead of
+        // buildFields()
+        Fields fields = xo.build(Fields.class).get(0);
 
         Map<AxisName, Fields> filterMap = new HashMap<>();
 

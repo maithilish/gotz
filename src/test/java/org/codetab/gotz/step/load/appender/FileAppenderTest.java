@@ -172,7 +172,7 @@ public class FileAppenderTest {
           .add(fileName)
           .add("  </xf:file>")
           .add("</xf:appender>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         appender.setFields(fields);
@@ -204,7 +204,7 @@ public class FileAppenderTest {
           .add(fileName)
           .add("  </xf:file>")
           .add("</xf:appender>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         appender.setFields(fields);

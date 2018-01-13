@@ -507,7 +507,7 @@ public class DataDefDaoTest {
         //@formatter:off
         Fields fields = new XOBuilder<Fields>()
           .add("<xf:member name='x' />")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         DataDef dataDef2 = createDataDef();

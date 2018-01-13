@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 
+import java.util.List;
+
 import javax.xml.bind.JAXBException;
 
 import org.codetab.gotz.exception.FieldsNotFoundException;
@@ -14,7 +16,7 @@ import org.codetab.gotz.model.DFilter;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.helper.FieldsHelper;
-import org.codetab.gotz.testutil.TestUtil;
+import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -390,46 +392,46 @@ public class DataDefValidatorTest {
     private DataDef getDataDef() throws JAXBException {
 
         // @formatter:off
-        StringBuilder sb = new StringBuilder();
-        sb.append("<dataDef name='bs'>");
-        sb.append("</dataDef>");
+        List<DataDef> list = new XOBuilder<DataDef>()
+        .add("<dataDef name='bs'></dataDef>")
+        .build(DataDef.class);
         // @formatter:on
 
-        return TestUtil.unmarshallTestObject(sb, DataDef.class).get(0);
+        return list.get(0);
     }
 
     private DAxis getAxis(final AxisName axisName, final String axisFields,
             final String memberFields) throws JAXBException {
 
         // @formatter:off
-        StringBuilder sb = new StringBuilder();
-        sb.append("    <axis name='" + axisName + "'>");
+        XOBuilder<DAxis> xo = new XOBuilder<>();
+        xo.add("    <axis name='" + axisName + "'>");
         if (axisFields != null) {
-            sb.append("    <xf:fields>");
-            sb.append(axisFields);
-            sb.append("    </xf:fields>");
+            xo.add("    <xf:fields>");
+            xo.add(axisFields);
+            xo.add("    </xf:fields>");
         }
         if (memberFields != null) {
-            sb.append("  <member name='year'>");
-            sb.append("    <xf:fields>");
-            sb.append(memberFields);
-            sb.append("    </xf:fields>");
-            sb.append("  </member>");
+            xo.add("  <member name='year'>");
+            xo.add("    <xf:fields>");
+            xo.add(memberFields);
+            xo.add("    </xf:fields>");
+            xo.add("  </member>");
         }
-        sb.append("    </axis>");
+        xo.add("    </axis>");
         // @formatter:on
 
-        return TestUtil.unmarshallTestObject(sb, DAxis.class).get(0);
+        return xo.build(DAxis.class).get(0);
     }
 
-    private Fields getFields(final String fields) throws JAXBException {
+    private Fields getFields(final String fieldsContents) throws JAXBException {
+
         // @formatter:off
-        StringBuilder sb = new StringBuilder();
-        sb.append("    <xf:fields>");
-        sb.append(fields);
-        sb.append("    </xf:fields>");
+        Fields fields  = new XOBuilder<Fields>()
+          .add(fieldsContents)
+          .buildFields();
         // @formatter:on
 
-        return TestUtil.unmarshallTestObject(sb, Fields.class).get(0);
+        return fields;
     }
 }

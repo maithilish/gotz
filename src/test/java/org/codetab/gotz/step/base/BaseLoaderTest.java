@@ -35,6 +35,7 @@ import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.shared.StepService;
 import org.codetab.gotz.step.StepState;
 import org.codetab.gotz.step.extract.URLLoader;
+import org.codetab.gotz.testutil.TestUtil;
 import org.codetab.gotz.testutil.XOBuilder;
 import org.junit.Before;
 import org.junit.Rule;
@@ -269,6 +270,74 @@ public class BaseLoaderTest {
         assertThat(loader.getStepState()).isEqualTo(StepState.PROCESS);
         assertThat(actual).isTrue();
         assertThat(loader.isConsistent()).isTrue();
+    }
+
+    @Test
+    public void testProcessWithActiveDocumentExpiredForNewLive()
+            throws IllegalAccessException, IOException {
+        locator.setUrl(fileUrl);
+        locator.setId(1L);
+
+        List<Document> documents = locator.getDocuments();
+        Document activeDocument = documents.get(0);
+        Long documentId = activeDocument.getId();
+        Date runDate = new Date();
+        Date fromDate = DateUtils.addDays(runDate, -3);
+        Date toDate = DateUtils.addDays(runDate, 2);
+        // new toDate is less then old toDate
+        Date newToDate = DateUtils.addDays(runDate, -1);
+
+        String name = locator.getName();
+        String url = locator.getUrl();
+        fromDate = runDate;
+        toDate = DateUtils.addDays(runDate, 1);
+        Document createdDocument = new Document();
+        createdDocument.setName(name);
+        createdDocument.setUrl(url);
+        createdDocument.setFromDate(fromDate);
+        createdDocument.setToDate(toDate);
+
+        byte[] docObject = loader.fetchDocumentObject(fileUrl);
+
+        FieldUtils.writeField(loader, "locator", locator, true);
+
+        given(configService.getRunDateTime()).willReturn(fromDate);
+        given(documentHelper.getActiveDocumentId(locator.getDocuments()))
+                .willReturn(documentId);
+        given(documentHelper.getDocument(documentId, locator.getDocuments()))
+                .willReturn(activeDocument);
+
+        given(documentHelper.getToDate(activeDocument.getFromDate(),
+                locator.getFields(), labels)).willReturn(newToDate);
+
+        given(documentHelper.getToDate(createdDocument.getFromDate(),
+                locator.getFields(), labels))
+                        .willReturn(createdDocument.getToDate());
+        given(documentHelper.createDocument(name, url, fromDate, toDate))
+                .willReturn(createdDocument);
+
+        // when
+        boolean actual = loader.process();
+
+        Document actualDocument =
+                (Document) FieldUtils.readField(loader, "document", true);
+
+        assertThat(actualDocument).isSameAs(createdDocument);
+        assertThat(loader.getStepState()).isEqualTo(StepState.PROCESS);
+        assertThat(actual).isTrue();
+
+        assertThat(createdDocument.getName()).isEqualTo(locator.getName());
+        assertThat(createdDocument.getFromDate()).isEqualTo(fromDate);
+        assertThat(createdDocument.getToDate()).isEqualTo(toDate);
+        assertThat(createdDocument.getUrl()).isEqualTo(fileUrl);
+
+        assertThat(locator.getDocuments().size()).isEqualTo(2);
+        assertThat(locator.getDocuments()).contains(activeDocument);
+        assertThat(locator.getDocuments()).contains(createdDocument);
+        assertThat(loader.isConsistent()).isTrue();
+
+        verify(documentHelper).setDocumentObject(createdDocument, docObject);
+        verifyZeroInteractions(documentPersistence);
     }
 
     @Test
@@ -512,11 +581,7 @@ public class BaseLoaderTest {
     public void testHandoverTaskFieldsError()
             throws IllegalAccessException, FieldsException {
 
-        //@formatter:off
-        Fields fields = new XOBuilder<Fields>()
-          .add("")
-          .buildField("xf");
-        //@formatter:on
+        Fields fields = TestUtil.createEmptyFields();
 
         locator.setFields(fields);
 
@@ -679,7 +744,7 @@ public class BaseLoaderTest {
           .add("  <xf:task>a</xf:task>")
           .add("  <xf:task>b</xf:task>")
           .add(" </xf:tasks>")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         Locator testLocator = new Locator();

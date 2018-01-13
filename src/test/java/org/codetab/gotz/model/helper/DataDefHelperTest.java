@@ -47,11 +47,7 @@ public class DataDefHelperTest {
     @Test
     public void testAddFact() throws FieldsException {
 
-        //@formatter:off
-        Fields fields = new XOBuilder<Fields>()
-          .add("")
-          .buildField("xf");
-        //@formatter:on
+        Fields fields = TestUtil.createEmptyFields();
 
         // given
         DataDef dataDef = createTestDataDef();
@@ -103,11 +99,11 @@ public class DataDefHelperTest {
         DMember m1 = new DMember();
         m1.setAxis("col");
         m1.setOrder(0);
-        m1.setFields(TestUtil.createFields("xf"));
+        m1.setFields(TestUtil.createEmptyFields());
         DMember m2 = new DMember();
         m2.setAxis("col");
         m2.setOrder(1);
-        m2.setFields(TestUtil.createFields("xf"));
+        m2.setFields(TestUtil.createEmptyFields());
         DMember m3 = new DMember();
         m3.setAxis("row");
         m3.setOrder(10);
@@ -144,7 +140,7 @@ public class DataDefHelperTest {
         //@formatter:off
         Fields fields = new XOBuilder<Fields>()
           .add("<xf:indexRange value='1-1' />")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         DAxis colAxis = getAxis(dataDef, "col");
@@ -183,7 +179,13 @@ public class DataDefHelperTest {
         dataDefHelper.addIndexRange(dataDef);
 
         // then
-        Fields fields = TestUtil.createFields("indexRange", "5-5");
+
+        //@formatter:off
+        Fields fields = new XOBuilder<Fields>()
+          .add("<xf:indexRange value='5-5' />")
+          .buildFields();
+        //@formatter:on
+
         m1.setFields(fields);
 
         assertThat(colAxis.getMember().size()).isEqualTo(1);
@@ -197,7 +199,7 @@ public class DataDefHelperTest {
         //@formatter:off
         Fields fields = new XOBuilder<Fields>()
           .add("<xf:indexRange value='3-10' />")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         DMember m1 = new DMember();
@@ -225,7 +227,7 @@ public class DataDefHelperTest {
         //@formatter:off
         Fields fields = new XOBuilder<Fields>()
           .add("<xf:breakAfter value='xyz' />")
-          .buildField("xf");
+          .buildFields();
         //@formatter:on
 
         DMember m1 = new DMember();
@@ -358,8 +360,8 @@ public class DataDefHelperTest {
         DMember m1 = new DMember();
         DMember m2 = new DMember();
         m2.setAxis("x");
-        m1.setFields(TestUtil.createFields("xf"));
-        m2.setFields(TestUtil.createFields("xf"));
+        m1.setFields(TestUtil.createEmptyFields());
+        m2.setFields(TestUtil.createEmptyFields());
 
         DAxis colAxis = new DAxis();
         colAxis.setName("col");
