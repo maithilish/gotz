@@ -36,6 +36,7 @@ import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
 import org.codetab.gotz.model.helper.DataDefHelper;
+import org.codetab.gotz.model.helper.DataHelper;
 import org.codetab.gotz.persistence.DataPersistence;
 import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.Util;
@@ -56,6 +57,8 @@ public abstract class BaseParser extends Step {
     private String blockBegin;
     private String blockEnd;
 
+    @Inject
+    private DataHelper dataHelper;
     @Inject
     private DataPersistence dataPersistence;
     @Inject
@@ -87,7 +90,7 @@ public abstract class BaseParser extends Step {
     protected abstract boolean postInitialize();
 
     /*
-     * (non-Javadoc)
+     * Load data from dataDef id and document id. (non-Javadoc)
      *
      * @see org.codetab.gotz.step.IStepO#load()
      */
@@ -112,9 +115,15 @@ public abstract class BaseParser extends Step {
         if (data == null) {
             LOGGER.info(Messages.getString("BaseParser.5"), getLabel()); //$NON-NLS-1$
             try {
-                prepareData();
+
+                data = dataHelper.getDataTemplate(dataDefName, document.getId(),
+                        getLabel());
+                LOGGER.trace(getMarker(), Messages.getString("BaseParser.45"), //$NON-NLS-1$
+                        Util.LINE, getLabels().getName(), Util.LINE, data);
+
                 parse();
                 setConsistent(true);
+
             } catch (ClassNotFoundException | DataDefNotFoundException
                     | IOException | NumberFormatException
                     | IllegalAccessException | InvocationTargetException
@@ -290,16 +299,6 @@ public abstract class BaseParser extends Step {
         return value;
     }
 
-    private void prepareData() throws DataDefNotFoundException,
-            ClassNotFoundException, IOException {
-        data = dataDefService.getDataTemplate(dataDefName);
-        data.setName(getLabel());
-        data.setDataDefId(dataDefService.getDataDef(dataDefName).getId());
-        data.setDocumentId(getDocument().getId());
-        LOGGER.trace(getMarker(), Messages.getString("BaseParser.45"), //$NON-NLS-1$
-                Util.LINE, getLabels().getName(), Util.LINE, data);
-    }
-
     public void parse() throws DataDefNotFoundException, ScriptException,
             ClassNotFoundException, IOException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
@@ -336,12 +335,19 @@ public abstract class BaseParser extends Step {
             if (axis.getName().equals(AxisName.FACT)) {
                 continue;
             }
-            if (!hasFinished(axis)) {
+            int endIndex;
+            try {
+                endIndex = getEndIndex(axis.getFields());
+            } catch (FieldsNotFoundException e) {
+                endIndex = -1;
+            }
+            if (!dataHelper.hasFinished(axis, endIndex)) {
                 Integer[] nextMemberIndexes =
-                        nextMemberIndexes(member, axisName);
-                if (!alreadyProcessed(nextMemberIndexes)) {
+                        dataHelper.nextMemberIndexes(member, axisName);
+                if (!dataHelper.alreadyProcessed(memberIndexSet,
+                        nextMemberIndexes)) {
                     // Member newMember = Util.deepClone(Member.class, member);
-                    Member newMember = createMember(member);
+                    Member newMember = dataHelper.createMember(member);
                     Axis newAxis = newMember.getAxis(axisName);
                     newAxis.setIndex(newAxis.getIndex() + 1);
                     newAxis.setOrder(newAxis.getOrder() + 1);
@@ -354,103 +360,6 @@ public abstract class BaseParser extends Step {
                 }
             }
         }
-    }
-
-    /**
-     * Deep copy member, but for performance fields are not cloned instead
-     * reference is passed to copy.
-     * @param member
-     * @return
-     */
-    private Member createMember(final Member member) {
-        Member cMember = new Member();
-        cMember.setName(member.getName());
-        cMember.setGroup(member.getGroup());
-        for (Axis axis : member.getAxes()) {
-            Axis cAxis = new Axis();
-            cAxis.setName(axis.getName());
-            cAxis.setMatch(axis.getMatch());
-            cAxis.setOrder(Integer.valueOf(axis.getOrder()));
-            cAxis.setIndex(Integer.valueOf(axis.getIndex()));
-            cAxis.setValue(axis.getValue());
-            cAxis.setFields(axis.getFields());
-            cMember.addAxis(cAxis);
-        }
-        cMember.setFields(member.getFields());
-        return cMember;
-    }
-
-    private boolean hasFinished(final Axis axis)
-            throws NumberFormatException, FieldsException {
-        boolean noField = true;
-        try {
-            // xpath - not abs path
-            String breakAfter = fieldsHelper
-                    .getLastValue("//xf:breakAfter/@value", axis.getFields()); //$NON-NLS-1$
-            noField = false;
-            String value = axis.getValue();
-            if (value == null) {
-                String message = Messages.getString("BaseParser.48"); //$NON-NLS-1$
-                throw new StepRunException(message);
-            } else {
-                if (value.equals(breakAfter)) {
-                    return true;
-                }
-            }
-        } catch (FieldsNotFoundException e) {
-        }
-        try {
-            Integer endIndex = getEndIndex(axis.getFields());
-            noField = false;
-            if (axis.getIndex() + 1 > endIndex) {
-                return true;
-            }
-        } catch (FieldsNotFoundException e) {
-        }
-        if (noField) {
-            String message = Messages.getString("BaseParser.49"); //$NON-NLS-1$
-            throw new FieldsException(message);
-        }
-        return false;
-    }
-
-    private Integer[] nextMemberIndexes(final Member member,
-            final AxisName axisName) {
-        Integer[] indexes = getMemberIndexes(member);
-        indexes[axisName.ordinal()] = indexes[axisName.ordinal()] + 1;
-        return indexes;
-    }
-
-    private boolean alreadyProcessed(final Integer[] memberIndexes) {
-        for (Integer[] indexes : memberIndexSet) {
-            boolean processed = true;
-            for (int i = 0; i < AxisName.values().length; i++) {
-                int index = indexes[i];
-                int memberIndex = memberIndexes[i];
-                if (index != memberIndex) {
-                    processed = false;
-                }
-            }
-            if (processed) {
-                return processed;
-            }
-        }
-        return false;
-    }
-
-    private Integer[] getMemberIndexes(final Member member) {
-        Integer[] memberIndexes = new Integer[AxisName.values().length];
-        for (AxisName axisName : AxisName.values()) {
-            Axis axis = null;
-            int index = 0;
-            try {
-                axis = member.getAxis(axisName);
-                index = new Integer(axis.getIndex());
-            } catch (NoSuchElementException e) {
-            }
-            memberIndexes[axisName.ordinal()] = index;
-        }
-        return memberIndexes;
     }
 
     /*
