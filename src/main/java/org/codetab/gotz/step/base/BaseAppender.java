@@ -189,8 +189,7 @@ public abstract class BaseAppender extends Step {
             throws FieldsException {
         List<Fields> encoders = new ArrayList<>();
         try {
-            encoders = fieldsHelper.split(
-                    Util.join("/xf:fields/xf:appender/xf:encoder"), //$NON-NLS-1$
+            encoders = fieldsHelper.split("/xf:fields/xf:appender/xf:encoder", //$NON-NLS-1$
                     appenderFields);
         } catch (FieldsException e) {
         }
