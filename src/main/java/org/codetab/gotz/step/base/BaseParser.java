@@ -16,7 +16,6 @@ import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
@@ -189,7 +188,12 @@ public abstract class BaseParser extends Step {
             throws ScriptException {
         // TODO - check whether thread safety is involved
         if (jsEngine == null) {
-            initializeScriptEngine();
+            LOGGER.debug("{}", getLabeled(Messages.getString("BaseParser.21"))); //$NON-NLS-1$ //$NON-NLS-2$
+            jsEngine = dataHelper.getScriptEngine();
+            if (jsEngine == null) {
+                throw new CriticalException(
+                        Messages.getString("BaseParser.23")); //$NON-NLS-1$
+            }
         }
 
         LOGGER.trace(getMarker(), Messages.getString("BaseParser.11"), //$NON-NLS-1$
@@ -210,15 +214,6 @@ public abstract class BaseParser extends Step {
         return value;
     }
 
-    private void initializeScriptEngine() {
-        LOGGER.debug("{}", getLabeled(Messages.getString("BaseParser.21"))); //$NON-NLS-1$ //$NON-NLS-2$
-        ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
-        jsEngine = scriptEngineMgr.getEngineByName("JavaScript"); //$NON-NLS-1$
-        if (jsEngine == null) {
-            throw new CriticalException(Messages.getString("BaseParser.23")); //$NON-NLS-1$
-        }
-    }
-
     protected String getValue(final Object page, final DataDef dataDef,
             final Member member, final Axis axis)
             throws ScriptException, IllegalAccessException,
@@ -227,6 +222,7 @@ public abstract class BaseParser extends Step {
         // to return value else raise StepRunException
         StringBuilder sb = null; // to trace query strings
         String value = null;
+        boolean traceEnabled = LOGGER.isTraceEnabled();
         Fields fields =
                 dataDefHelper.getAxis(dataDef, axis.getName()).getFields();
 
@@ -240,11 +236,11 @@ public abstract class BaseParser extends Step {
                     fieldsHelper.getLastValue("/xf:script/@script", fields)); //$NON-NLS-1$
 
             sb = new StringBuilder();
-            setTraceString(sb, scripts, "<<<"); //$NON-NLS-1$
+            setTraceString(sb, scripts, "<<<", traceEnabled); //$NON-NLS-1$
 
             fieldsHelper.replaceVariables(scripts, member.getAxisMap());
 
-            setTraceString(sb, scripts, ">>>"); //$NON-NLS-1$
+            setTraceString(sb, scripts, ">>>", traceEnabled); //$NON-NLS-1$
             LOGGER.trace(getMarker(), "{}{}{}{}", //$NON-NLS-1$
                     getLabeled(Messages.getString("BaseParser.30")), //$NON-NLS-1$
                     getBlockBegin(), sb.toString(), getBlockEnd());
@@ -269,11 +265,11 @@ public abstract class BaseParser extends Step {
             }
 
             sb = new StringBuilder();
-            setTraceString(sb, queries, "<<<"); //$NON-NLS-1$
+            setTraceString(sb, queries, "<<<", traceEnabled); //$NON-NLS-1$
 
             fieldsHelper.replaceVariables(queries, member.getAxisMap());
 
-            setTraceString(sb, queries, ">>>"); //$NON-NLS-1$
+            setTraceString(sb, queries, ">>>", traceEnabled); //$NON-NLS-1$
             LOGGER.trace(getMarker(), "{}{}{}{}", //$NON-NLS-1$
                     getLabeled(Messages.getString("BaseParser.42")), //$NON-NLS-1$
                     getBlockBegin(), sb.toString(), getBlockEnd());
@@ -450,8 +446,9 @@ public abstract class BaseParser extends Step {
     }
 
     protected void setTraceString(final StringBuilder sb,
-            final Map<String, String> strings, final String header) {
-        if (!LOGGER.isTraceEnabled()) {
+            final Map<String, String> strings, final String header,
+            final boolean traceEnabled) {
+        if (!traceEnabled) {
             return;
         }
         sb.append(Util.LINE);

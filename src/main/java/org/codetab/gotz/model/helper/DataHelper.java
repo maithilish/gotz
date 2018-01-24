@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
@@ -153,6 +155,11 @@ public class DataHelper {
             memberIndexes[axisName.ordinal()] = index;
         }
         return memberIndexes;
+    }
+
+    public ScriptEngine getScriptEngine() {
+        ScriptEngineManager scriptEngineMgr = new ScriptEngineManager();
+        return scriptEngineMgr.getEngineByName("JavaScript"); //$NON-NLS-1$
     }
 
 }
