@@ -2,12 +2,12 @@ package org.codetab.gotz.step.extract;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.helper.ThreadSleep;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Locator;
@@ -58,6 +58,12 @@ public final class LocatorSeeder extends BaseSeeder {
      */
     @Inject
     private LocatorHelper locatorHelper;
+
+    /**
+     * helper - thread sleep
+     */
+    @Inject
+    private ThreadSleep threadSleep;
 
     /**
      * <p>
@@ -146,10 +152,7 @@ public final class LocatorSeeder extends BaseSeeder {
             stepService.pushTask(seederStep, locator, seederStep.getLabels(),
                     locator.getFields());
             count++;
-            try {
-                TimeUnit.MILLISECONDS.sleep(SLEEP_MILLIS);
-            } catch (InterruptedException e) {
-            }
+            threadSleep.sleep(SLEEP_MILLIS);
         }
         LOGGER.info(Messages.getString("LocatorSeeder.6"), //$NON-NLS-1$
                 locatorList.size(), count);
