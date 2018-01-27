@@ -15,13 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-/**
- * <p>
- * DateConverter tests.
- * @author Maithilish
- *
- */
-public class DateRollerrTest {
+public class DateFormaterTest {
 
     private static DInjector dInjector;
 
@@ -37,72 +31,11 @@ public class DateRollerrTest {
 
     @Before
     public void setUp() throws Exception {
-        dt = dInjector.instance(DateRoller.class);
+        dt = dInjector.instance(DateFormater.class);
     }
 
     @Test
-    public void testConvertCeil() throws Exception {
-
-        //@formatter:off
-        Fields fields = new XOBuilder<Fields>()
-          .add("  <xf:converter name='date'>")
-          .add("    <xf:axis>col</xf:axis>")
-          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
-          .add("    <xf:roll>DATE=ceil</xf:roll>")
-          .add("  </xf:converter>")
-          .buildFields();
-        //@formatter:on
-
-        dt.setFields(fields);
-
-        String actual = dt.convert("Dec '17");
-        assertThat(actual).isEqualTo("2017-12-31");
-
-        actual = dt.convert("Mar '17");
-        assertThat(actual).isEqualTo("2017-03-31");
-
-        actual = dt.convert("Feb '16");
-        assertThat(actual).isEqualTo("2016-02-29");
-
-        actual = dt.convert("Feb '17");
-        assertThat(actual).isEqualTo("2017-02-28");
-
-        actual = dt.convert("Dec '16");
-        assertThat(actual).isEqualTo("2016-12-31");
-
-        actual = dt.convert("Dec '12");
-        assertThat(actual).isEqualTo("2012-12-31");
-    }
-
-    @Test
-    public void testConvertFloor() throws Exception {
-
-        //@formatter:off
-        Fields fields = new XOBuilder<Fields>()
-          .add("  <xf:converter name='date'>")
-          .add("    <xf:axis>col</xf:axis>")
-          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
-          .add("    <xf:roll>DATE=floor</xf:roll>")
-          .add("  </xf:converter>")
-          .buildFields();
-        //@formatter:on
-
-        dt.setFields(fields);
-
-        String actual = dt.convert("Mar '17");
-        assertThat(actual).isEqualTo("2017-03-01");
-
-        actual = dt.convert("Feb '16");
-        assertThat(actual).isEqualTo("2016-02-01");
-
-        actual = dt.convert("Feb '17");
-        assertThat(actual).isEqualTo("2017-02-01");
-    }
-
-    @Test
-    public void testConvertRound() throws Exception {
+    public void testConvert() throws Exception {
 
         //@formatter:off
         Fields fields = new XOBuilder<Fields>()
@@ -110,18 +43,14 @@ public class DateRollerrTest {
           .add("    <xf:axis>col</xf:axis>")
           .add("    <xf:inPattern>dd-MM-yyyy</xf:inPattern>")
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
-          .add("    <xf:roll>DATE=round</xf:roll>")
           .add("  </xf:converter>")
           .buildFields();
         //@formatter:on
 
         dt.setFields(fields);
 
-        String actual = dt.convert("16-03-2017");
-        assertThat(actual).isEqualTo("2017-03-31");
-
-        actual = dt.convert("15-03-2017");
-        assertThat(actual).isEqualTo("2017-03-01");
+        String actual = dt.convert("10-12-2017");
+        assertThat(actual).isEqualTo("2017-12-10");
     }
 
     @Test
@@ -138,30 +67,11 @@ public class DateRollerrTest {
     @Test
     public void testConvertIllegalState() throws Exception {
         try {
-            dt.convert("Mar 17");
+            dt.convert("10-12-2017");
             fail("should throw IllegalStateException");
         } catch (IllegalStateException e) {
             assertThat(e.getMessage()).isEqualTo("fields is null");
         }
-    }
-
-    @Test
-    public void testConvertNoRollField() throws Exception {
-
-        //@formatter:off
-        Fields fields = new XOBuilder<Fields>()
-          .add("  <xf:converter name='date'>")
-          .add("    <xf:axis>col</xf:axis>")
-          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
-          .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
-          .add("  </xf:converter>")
-          .buildFields();
-        //@formatter:on
-
-        dt.setFields(fields);
-
-        testRule.expect(FieldsNotFoundException.class);
-        dt.convert("Mar '17");
     }
 
     @Test
@@ -173,7 +83,6 @@ public class DateRollerrTest {
           .add("    <xf:axis>col</xf:axis>")
           .add("    <xf:inPattern>x</xf:inPattern>")
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
-          .add("    <xf:roll>DATE=ceil</xf:roll>")
           .add("  </xf:converter>")
           .buildFields();
         //@formatter:on
@@ -181,7 +90,7 @@ public class DateRollerrTest {
         dt.setFields(fields);
 
         testRule.expect(IllegalArgumentException.class);
-        dt.convert("Mar '17");
+        dt.convert("10-12-2017");
     }
 
     @Test
@@ -191,9 +100,8 @@ public class DateRollerrTest {
         Fields fields = new XOBuilder<Fields>()
           .add("  <xf:converter name='date'>")
           .add("    <xf:axis>col</xf:axis>")
-          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
+          .add("    <xf:inPattern>dd-MM-yyyy</xf:inPattern>")
           .add("    <xf:outPattern>x</xf:outPattern>")
-          .add("    <xf:roll>DATE=ceil</xf:roll>")
           .add("  </xf:converter>")
           .buildFields();
         //@formatter:on
@@ -201,7 +109,7 @@ public class DateRollerrTest {
         dt.setFields(fields);
 
         testRule.expect(IllegalArgumentException.class);
-        dt.convert("Mar '17");
+        dt.convert("10-12-2017");
     }
 
     @Test
@@ -211,7 +119,7 @@ public class DateRollerrTest {
         Fields fields = new XOBuilder<Fields>()
           .add("  <xf:converter name='date'>")
           .add("    <xf:axis>col</xf:axis>")
-          .add("    <xf:x>MMM ''YY</xf:x>")
+          .add("    <xf:x>dd-MM-yyyy</xf:x>")
           .add("    <xf:outPattern>yyyy-MM-dd</xf:outPattern>")
           .add("    <xf:roll>DATE=floor</xf:roll>")
           .add("  </xf:converter>")
@@ -221,7 +129,7 @@ public class DateRollerrTest {
         dt.setFields(fields);
 
         testRule.expect(FieldsNotFoundException.class);
-        dt.convert("Mar '17");
+        dt.convert("10-12-2017");
     }
 
     @Test
@@ -231,7 +139,7 @@ public class DateRollerrTest {
         Fields fields = new XOBuilder<Fields>()
           .add("  <xf:converter name='date'>")
           .add("    <xf:axis>col</xf:axis>")
-          .add("    <xf:inPattern>MMM ''YY</xf:inPattern>")
+          .add("    <xf:inPattern>dd-MM-yyyy</xf:inPattern>")
           .add("    <xf:x>yyyy-MM-dd</xf:x>")
           .add("    <xf:roll>DATE=floor</xf:roll>")
           .add("  </xf:converter>")
@@ -241,6 +149,6 @@ public class DateRollerrTest {
         dt.setFields(fields);
 
         testRule.expect(FieldsNotFoundException.class);
-        dt.convert("Mar '17");
+        dt.convert("10-12-2017");
     }
 }
