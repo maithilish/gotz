@@ -5,8 +5,8 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.helper.ThreadSleep;
 import org.codetab.gotz.messages.Messages;
-import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
@@ -38,6 +38,8 @@ public final class LocatorCreator extends BaseConverter {
     private LocatorFieldsHelper locatorFieldsHelper;
     @Inject
     private LocatorHelper locatorHelper;
+    @Inject
+    private ThreadSleep threadSleep;
 
     @Override
     public IStep instance() {
@@ -51,7 +53,18 @@ public final class LocatorCreator extends BaseConverter {
         for (Member member : getData().getMembers()) {
             Locator locator = null;
             try {
-                locator = createLocator(member);
+                locator = locatorHelper.createLocator(member,
+                        getLabels().getName(), getLabel());
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace(getMarker(),
+                            Messages.getString("LocatorCreator.2"), //$NON-NLS-1$
+                            member);
+                    // marker and trace for new locator
+                    Marker marker = MarkerUtil.getMarker(locator.getName(),
+                            locator.getGroup());
+                    LOGGER.trace(marker, Messages.getString("LocatorCreator.3"), //$NON-NLS-1$
+                            locator, locator.getUrl());
+                }
                 setConvertedData(locator);
                 setConsistent(true);
             } catch (FieldsException | InvalidDataDefException e) {
@@ -62,42 +75,9 @@ public final class LocatorCreator extends BaseConverter {
             Fields nextStepField = createNextStepFields(locator);
             Labels labels = locatorHelper.createLabels(locator);
             stepService.pushTask(this, locator, labels, nextStepField);
-            try {
-                Thread.sleep(sleepMillis);
-            } catch (InterruptedException e) {
-            }
+            threadSleep.sleep(sleepMillis);
         }
         return true;
-    }
-
-    private Locator createLocator(final Member member)
-            throws FieldsException, InvalidDataDefException {
-        Locator locator = new Locator();
-        locator.setName(getLabels().getName());
-        locator.setUrl(member.getValue(AxisName.FACT));
-        if (member.getGroup() == null) {
-            String message = getLabeled(Messages.getString("LocatorCreator.1")); //$NON-NLS-1$
-            throw new InvalidDataDefException(message);
-        } else {
-            locator.setGroup(member.getGroup());
-            Fields fields = locatorFieldsHelper.getFields(
-                    locator.getClass().getName(), locator.getGroup());
-            locator.setFields(fields);
-            if (member.getFields() != null) {
-                locator.getFields().getNodes()
-                        .addAll(member.getFields().getNodes());
-            }
-        }
-        if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace(getMarker(), Messages.getString("LocatorCreator.2"), //$NON-NLS-1$
-                    member);
-            // marker and trace for new locator
-            Marker marker =
-                    MarkerUtil.getMarker(locator.getName(), locator.getGroup());
-            LOGGER.trace(marker, Messages.getString("LocatorCreator.3"), //$NON-NLS-1$
-                    locator, locator.getUrl());
-        }
-        return locator;
     }
 
     private Fields createNextStepFields(final Locator locator) {

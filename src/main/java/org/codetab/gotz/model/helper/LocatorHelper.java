@@ -8,12 +8,18 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.exception.FieldsException;
+import org.codetab.gotz.exception.InvalidDataDefException;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.model.AxisName;
+import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.Locators;
+import org.codetab.gotz.model.Member;
 import org.codetab.gotz.shared.BeanService;
 import org.codetab.gotz.shared.ConfigService;
+import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +49,12 @@ public class LocatorHelper {
      */
     @Inject
     private ConfigService configService;
+
+    /**
+     * LocatorFieldsHelper
+     */
+    @Inject
+    private LocatorFieldsHelper locatorFieldsHelper;
 
     /**
      * private constructor.
@@ -150,5 +162,28 @@ public class LocatorHelper {
 
     public Labels createLabels(final Locator locator) {
         return new Labels(locator.getName(), locator.getGroup());
+    }
+
+    public Locator createLocator(final Member member, final String locatorName,
+            final String label)
+            throws FieldsException, InvalidDataDefException {
+        Locator locator = new Locator();
+        locator.setName(locatorName);
+        locator.setUrl(member.getValue(AxisName.FACT));
+        if (member.getGroup() == null) {
+            String message = Util.join("[", label, "] ", //$NON-NLS-1$
+                    Messages.getString("LocatorCreator.1"));
+            throw new InvalidDataDefException(message);
+        } else {
+            locator.setGroup(member.getGroup());
+            Fields fields = locatorFieldsHelper.getFields(
+                    locator.getClass().getName(), locator.getGroup());
+            locator.setFields(fields);
+            if (member.getFields() != null) {
+                locator.getFields().getNodes()
+                        .addAll(member.getFields().getNodes());
+            }
+        }
+        return locator;
     }
 }
