@@ -25,6 +25,12 @@ public class EncoderHelper {
     @Inject
     private ActivityService activityService;
 
+    /**
+     *
+     * @param data
+     * @param fields
+     * @throws IllegalArgumentException
+     */
     public void sort(final Data data, final Fields fields) {
         String sortOrder = ""; //$NON-NLS-1$
         String xpath = "/xf:fields/xf:encoder/xf:sortOrder"; //$NON-NLS-1$
@@ -41,8 +47,14 @@ public class EncoderHelper {
         }
 
         sortOrder = sortOrder.toUpperCase();
+        /*
+         * throws IllegalArgumentException if any axis names are valid
+         */
         for (String axisName : sortOrder.split(",")) { //$NON-NLS-1$
-            AxisName axis = AxisName.valueOf(axisName);
+            AxisName.valueOf(axisName.trim());
+        }
+        for (String axisName : sortOrder.split(",")) { //$NON-NLS-1$
+            AxisName axis = AxisName.valueOf(axisName.trim());
             Comparator<Member> comparator = null;
             switch (axis) {
             case COL:

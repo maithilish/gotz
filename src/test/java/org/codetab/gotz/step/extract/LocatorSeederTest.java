@@ -1,6 +1,7 @@
 package org.codetab.gotz.step.extract;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verifyZeroInteractions;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.helper.ThreadSleep;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
@@ -47,6 +49,8 @@ public class LocatorSeederTest {
     private LocatorHelper locatorHelper;
     @Mock
     private LocatorFieldsHelper locatorFieldsHelper;
+    @Mock
+    private ThreadSleep threadSleep;
     @Spy
     private FieldsHelper fieldsHelper;
     @Spy
@@ -207,6 +211,22 @@ public class LocatorSeederTest {
     }
 
     @Test
+    public void testProcessThrowsException() throws FieldsException {
+        List<Locator> locators = createTestObjects();
+        given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
+        locatorSeeder.initialize();
+
+        Fields groupOneFields = fieldsHelper.createFields();
+        fieldsHelper.addElement("x", "xv", groupOneFields);
+
+        given(locatorFieldsHelper.getFields(Locator.class.getName(), "g1"))
+                .willThrow(FieldsException.class);
+
+        testRule.expect(StepRunException.class);
+        locatorSeeder.process();
+    }
+
+    @Test
     public void testHandover() throws FieldsException, ClassNotFoundException,
             InstantiationException, IllegalAccessException {
         Fields fields1 = fieldsHelper.createFields();
@@ -243,13 +263,54 @@ public class LocatorSeederTest {
 
         locatorSeeder.handover();
 
-        InOrder inOrder = inOrder(stepService);
+        InOrder inOrder = inOrder(stepService, threadSleep);
         inOrder.verify(stepService).pushTask(locatorSeeder1, locator1, labels1,
                 locator1.getFields());
+        inOrder.verify(threadSleep).sleep(1000);
         inOrder.verify(stepService).pushTask(locatorSeeder2, locator2, labels2,
                 locator2.getFields());
+        inOrder.verify(threadSleep).sleep(1000);
         inOrder.verify(stepService).pushTask(locatorSeeder3, locator3, labels3,
                 locator3.getFields());
+        inOrder.verify(threadSleep).sleep(1000);
+    }
+
+    @Test
+    public void testHandoverGetSeederStepThrowsException()
+            throws FieldsException, ClassNotFoundException,
+            InstantiationException, IllegalAccessException {
+
+        List<Locator> locators = createTestObjects();
+
+        given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
+
+        given(stepService.getStep(LocatorSeeder.class.getName()))
+                .willThrow(ClassNotFoundException.class)
+                .willThrow(InstantiationException.class)
+                .willThrow(IllegalAccessException.class);
+
+        locatorSeeder.initialize();
+
+        try {
+            locatorSeeder.handover();
+            fail("should throw exception");
+        } catch (StepRunException e) {
+            assertThat(e.getCause()).isInstanceOf(ClassNotFoundException.class);
+        }
+
+        try {
+            locatorSeeder.handover();
+            fail("should throw exception");
+        } catch (StepRunException e) {
+            assertThat(e.getCause()).isInstanceOf(InstantiationException.class);
+        }
+
+        try {
+            locatorSeeder.handover();
+            fail("should throw exception");
+        } catch (StepRunException e) {
+            assertThat(e.getCause()).isInstanceOf(IllegalAccessException.class);
+        }
     }
 
     private List<Locator> createTestObjects() {

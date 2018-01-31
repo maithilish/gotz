@@ -56,6 +56,13 @@ public class ListAppenderTest {
     }
 
     @Test
+    public void testInit() {
+        appender.init();
+
+        assertThat(appender.isInitialized()).isTrue();
+    }
+
+    @Test
     public void testAppend() throws InterruptedException {
         String obj = "test object";
 

@@ -81,8 +81,10 @@ public class HtmlParser extends BaseParser {
                     Messages.getString("HtmlParser.2")); //$NON-NLS-1$
             throw new StepRunException(message, e);
         } finally {
-            webClient.setRefreshHandler(new ImmediateRefreshHandler());
-            webClient.close();
+            if (webClient != null) {
+                webClient.setRefreshHandler(new ImmediateRefreshHandler());
+                webClient.close();
+            }
         }
         setStepState(StepState.INIT);
         return true;

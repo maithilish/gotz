@@ -3,6 +3,7 @@ package org.codetab.gotz.step.convert;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -84,6 +85,37 @@ public class DataFilterTest {
         removeMember(expectedData, "m0-col-value");
 
         assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
+    public void testProcessFilterOnValueRegEx() throws IllegalArgumentException,
+            DataDefNotFoundException, FieldsException {
+
+        // remove m0,m1
+        Map<AxisName, Fields> filterMap =
+                getTestFilterMap(AxisName.COL, "value", "m[0-1]-col-value");
+        given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
+
+        filter.process();
+
+        Data expectedData = getTestData();
+        removeMember(expectedData, "m0-col-value");
+        removeMember(expectedData, "m1-col-value");
+
+        assertThat(data).isEqualTo(expectedData);
+    }
+
+    @Test
+    public void testProcessFilterInvalidRegEx() throws IllegalArgumentException,
+            DataDefNotFoundException, FieldsException {
+
+        // remove m0,m1
+        Map<AxisName, Fields> filterMap =
+                getTestFilterMap(AxisName.COL, "value", "m***-col-value");
+        given(dataDefService.getFilterMap("dd")).willReturn(filterMap);
+
+        testRule.expect(StepRunException.class);
+        filter.process();
     }
 
     @Test
@@ -194,6 +226,16 @@ public class DataFilterTest {
 
         testRule.expect(StepRunException.class);
         filter.process();
+    }
+
+    @Test
+    public void testProcessNoMemberThrowsException() {
+        data.setMembers(new ArrayList<>());
+
+        testRule.expect(StepRunException.class);
+        filter.process();
+
+        assertThat(filter.isConsistent()).isFalse();
     }
 
     private Data getTestData() {

@@ -69,10 +69,10 @@ public final class DataConverter extends BaseConverter {
 
         List<Fields> converters = new ArrayList<>();
         try {
-            converters = fieldsHelper.split(
+            String xpath =
                     Util.join("/xf:fields/xf:task/xf:steps/xf:step[@name='", //$NON-NLS-1$
-                            getStepType(), "']/xf:converter"), //$NON-NLS-1$
-                    getFields());
+                            getStepType(), "']/xf:converter");
+            converters = fieldsHelper.split(xpath, getFields());
         } catch (FieldsException e) {
         }
 
