@@ -69,7 +69,7 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
 
             if (prevRow == null) {
                 sb.append(StringUtils.rightPad(row, ITEM_COL_SIZE));
-                sb.append(" |"); //$NON-NLS-1$
+                sb.append(delimiter);
             } else {
                 // row break
                 if (!prevRow.equals(row)) {
@@ -84,6 +84,7 @@ public class CsvRecordEncoder implements IEncoder<List<String>> {
             sb.append(StringUtils.leftPad(fact, FACT_COL_SIZE));
             prevRow = row;
         }
+        encodedData.add(sb.toString()); // output row
         return encodedData;
     }
 
