@@ -49,7 +49,7 @@ public class DataHelper {
     private DataHelper() {
     }
 
-    public Data getDataTemplate(final String dataDefName, final long documentId,
+    public Data getDataTemplate(final String dataDefName, final Long documentId,
             final String label) throws DataDefNotFoundException,
             ClassNotFoundException, IOException {
         Data data = dataDefService.getDataTemplate(dataDefName);
