@@ -24,6 +24,13 @@ public class DataSet {
     }
 
     /**
+     * @param id
+     */
+    public void setId(final long id) {
+        this.id = id;
+    }
+
+    /**
      * @return the id
      */
     public long getId() {

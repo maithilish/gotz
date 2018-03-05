@@ -17,6 +17,8 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.net.UrlEscapers;
+
 /**
  * <p>
  * Create or loads document from persistence store and uses URL to fetch
@@ -56,21 +58,63 @@ public final class URLLoader extends BaseLoader {
     }
 
     /**
-     * Fetch document content from web or file system using the URL and convert
-     * it to byte array. URL can be address prefixed with http:// or file path -
-     * absolute or relative to class path.
+     * Fetch document content from web, file system or classpath using the URL
+     * and convert it to byte array. Where urlspec
+     * <ul>
+     * <li>starts with http or https - fetch from web</li>
+     * <li>starts with file - fetch from file system, path can be abs or
+     * relative</li>
+     * <li>path without protocol - loads from classpath</li>
+     * </ul>
      * @param urlSpec
      *            URL string
-     * @return byte[] document content fetched from web or file system
+     * @return byte[] document content fetched from web, file system or
+     *         classpath
      * @see org.codetab.gotz.step.base.BaseLoader#fetchDocumentObject(String)
      */
     @Override
     public byte[] fetchDocumentObject(final String urlSpec) throws IOException {
         // TODO charset encoding
         byte[] bytes = null;
-        if (UrlValidator.getInstance().isValid(urlSpec)) {
-            LOGGER.info(Messages.getString("URLLoader.0"), urlSpec); //$NON-NLS-1$
-            URLConnection uc = ucHelper.getURLConnection(urlSpec);
+
+        String protocol = ucHelper.getProtocol(urlSpec);
+        if (protocol.equals("resource")) {
+            LOGGER.info(Messages.getString("URLLoader.9"), urlSpec); //$NON-NLS-1$
+            try {
+                URL fileURL = URLLoader.class.getResource(urlSpec);
+                bytes = IOUtils.toByteArray(fileURL);
+                LOGGER.debug(Messages.getString("URLLoader.10"), urlSpec); //$NON-NLS-1$
+                return bytes;
+            } catch (IOException | NullPointerException e1) {
+                throw new IOException(
+                        Util.join("file not found [", urlSpec, "]"));
+            }
+        }
+
+        if (protocol.equals("file")) {
+            LOGGER.info(Messages.getString("URLLoader.3"), urlSpec); //$NON-NLS-1$
+            try {
+                URL fileURL = new URL(urlSpec); // $NON-NLS-1$
+                bytes = IOUtils.toByteArray(fileURL);
+                LOGGER.debug(Messages.getString("URLLoader.5"), urlSpec); //$NON-NLS-1$
+                return bytes;
+            } catch (IOException | NullPointerException e) {
+                throw new IOException(
+                        Util.join("file not found [", urlSpec, "]"));
+            }
+        }
+
+        if (protocol.equals("http") || protocol.equals("https")) {
+            String urlSpecEscaped = null;
+            if (UrlValidator.getInstance().isValid(urlSpec)) {
+                urlSpecEscaped = urlSpec;
+            } else {
+                urlSpecEscaped =
+                        UrlEscapers.urlFragmentEscaper().escape(urlSpec);
+            }
+
+            LOGGER.info(Messages.getString("URLLoader.0"), urlSpecEscaped); //$NON-NLS-1$
+            URLConnection uc = ucHelper.getURLConnection(urlSpecEscaped);
 
             int timeout = getTimeout();
             uc.setConnectTimeout(timeout);
@@ -78,24 +122,11 @@ public final class URLLoader extends BaseLoader {
             ucHelper.setRequestProperty(uc, "User-Agent", getUserAgent()); //$NON-NLS-1$
 
             bytes = IOUtils.toByteArray(uc);
-            LOGGER.debug(Messages.getString("URLLoader.2"), urlSpec); //$NON-NLS-1$
-        } else {
-            LOGGER.info(Messages.getString("URLLoader.3"), urlSpec); //$NON-NLS-1$
-            try {
-                URL fileURL = new URL(new URL("file:"), urlSpec); //$NON-NLS-1$
-                bytes = IOUtils.toByteArray(fileURL);
-            } catch (IOException | NullPointerException e) {
-                try {
-                    URL fileURL = URLLoader.class.getResource(urlSpec);
-                    bytes = IOUtils.toByteArray(fileURL);
-                } catch (IOException | NullPointerException e1) {
-                    throw new IOException(
-                            Util.join("file not found [", urlSpec, "]"));
-                }
-            }
-            LOGGER.debug(Messages.getString("URLLoader.5"), urlSpec); //$NON-NLS-1$
+            LOGGER.debug(Messages.getString("URLLoader.2"), urlSpecEscaped); //$NON-NLS-1$
+            return bytes;
         }
-        return bytes;
+
+        throw new IOException(Util.join("unknown protocol [", urlSpec, "]"));
     }
 
     /**

@@ -21,6 +21,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.helper.URLConnectionHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
@@ -64,6 +65,8 @@ public class BaseLoaderTest {
     private StepService stepService;
     @Mock
     private DInjector dInjector;
+    @Mock
+    private URLConnectionHelper ucHelper;
 
     @Mock
     private ActivityService activityService;
@@ -73,7 +76,7 @@ public class BaseLoaderTest {
     private FieldsHelper fieldsHelper;
 
     private Locator locator;
-    private String fileUrl;
+    private String resourceUrl;
     private Labels labels;
 
     @InjectMocks
@@ -94,8 +97,7 @@ public class BaseLoaderTest {
         labels = new Labels("x", "y");
         loader.setLabels(labels);
 
-        fileUrl =
-                "target/test-classes/testdefs/datadefservice/valid-v1/bean.xml";
+        resourceUrl = "/testdefs/datadefservice/valid-v1/bean.xml";
     }
 
     @Test
@@ -118,7 +120,7 @@ public class BaseLoaderTest {
 
     @Test
     public void testLoadSavedLocator() throws IllegalAccessException {
-        locator.setUrl(fileUrl);
+        locator.setUrl(resourceUrl);
 
         Locator savedLocator = createTestLocator();
 
@@ -135,8 +137,8 @@ public class BaseLoaderTest {
         assertThat(actual).isTrue();
 
         assertThat(loadedLocator).isSameAs(savedLocator);
-        assertThat(loadedLocator.getUrl()).isEqualTo(fileUrl);
-        assertThat(savedLocator.getUrl()).isEqualTo(fileUrl);
+        assertThat(loadedLocator.getUrl()).isEqualTo(resourceUrl);
+        assertThat(savedLocator.getUrl()).isEqualTo(resourceUrl);
 
         assertThat(loadedLocator.getFields().getNodes().size()).isEqualTo(1);
         assertThat(savedLocator.getFields().getNodes().size()).isEqualTo(1);
@@ -207,7 +209,7 @@ public class BaseLoaderTest {
     public void testProcessLocatorWithoutId() throws IllegalAccessException {
         // when locator is without id, new document is created
 
-        locator.setUrl(fileUrl);
+        locator.setUrl(resourceUrl);
 
         Document document = locator.getDocuments().get(0);
 
@@ -218,6 +220,7 @@ public class BaseLoaderTest {
         document.setFromDate(fromDate);
         document.setToDate(toDate);
 
+        given(ucHelper.getProtocol(resourceUrl)).willReturn("resource");
         given(configService.getRunDateTime()).willReturn(fromDate);
         given(documentHelper.getToDate(fromDate, locator.getFields(), labels))
                 .willReturn(toDate);
@@ -275,7 +278,7 @@ public class BaseLoaderTest {
     @Test
     public void testProcessWithActiveDocumentExpiredForNewLive()
             throws IllegalAccessException, IOException {
-        locator.setUrl(fileUrl);
+        locator.setUrl(resourceUrl);
         locator.setId(1L);
 
         List<Document> documents = locator.getDocuments();
@@ -297,7 +300,8 @@ public class BaseLoaderTest {
         createdDocument.setFromDate(fromDate);
         createdDocument.setToDate(toDate);
 
-        byte[] docObject = loader.fetchDocumentObject(fileUrl);
+        given(ucHelper.getProtocol(url)).willReturn("resource");
+        byte[] docObject = loader.fetchDocumentObject(resourceUrl);
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
@@ -329,7 +333,7 @@ public class BaseLoaderTest {
         assertThat(createdDocument.getName()).isEqualTo(locator.getName());
         assertThat(createdDocument.getFromDate()).isEqualTo(fromDate);
         assertThat(createdDocument.getToDate()).isEqualTo(toDate);
-        assertThat(createdDocument.getUrl()).isEqualTo(fileUrl);
+        assertThat(createdDocument.getUrl()).isEqualTo(resourceUrl);
 
         assertThat(locator.getDocuments().size()).isEqualTo(2);
         assertThat(locator.getDocuments()).contains(activeDocument);
@@ -343,7 +347,7 @@ public class BaseLoaderTest {
     @Test
     public void testProcessWithoutActiveDocument()
             throws IllegalAccessException, IOException {
-        locator.setUrl(fileUrl);
+        locator.setUrl(resourceUrl);
 
         List<Document> documents = locator.getDocuments();
         Document existingDocument = documents.get(0);
@@ -358,7 +362,8 @@ public class BaseLoaderTest {
         createdDocument.setFromDate(fromDate);
         createdDocument.setToDate(toDate);
 
-        byte[] docObject = loader.fetchDocumentObject(fileUrl);
+        given(ucHelper.getProtocol(resourceUrl)).willReturn("resource");
+        byte[] docObject = loader.fetchDocumentObject(resourceUrl);
 
         FieldUtils.writeField(loader, "locator", locator, true);
 
@@ -383,7 +388,7 @@ public class BaseLoaderTest {
         assertThat(createdDocument.getName()).isEqualTo(locator.getName());
         assertThat(createdDocument.getFromDate()).isEqualTo(fromDate);
         assertThat(createdDocument.getToDate()).isEqualTo(toDate);
-        assertThat(createdDocument.getUrl()).isEqualTo(fileUrl);
+        assertThat(createdDocument.getUrl()).isEqualTo(resourceUrl);
 
         assertThat(locator.getDocuments().size()).isEqualTo(2);
         assertThat(locator.getDocuments()).contains(existingDocument);
@@ -397,7 +402,11 @@ public class BaseLoaderTest {
     @Test
     public void testProcessFetchDocExpectException()
             throws IllegalAccessException {
-        locator.setUrl("file:///xyz"); // unknow file
+        String url = "file:///xyz";
+        locator.setUrl(url); // unknown file
+
+        given(ucHelper.getProtocol(url)).willReturn("file");
+
         // when
         try {
             loader.process();
@@ -414,7 +423,7 @@ public class BaseLoaderTest {
     public void testProcessSetDocumentExpectException()
             throws IllegalAccessException, IOException {
 
-        locator.setUrl(fileUrl);
+        locator.setUrl(resourceUrl);
 
         String name = locator.getName();
         String url = locator.getUrl();
@@ -426,6 +435,7 @@ public class BaseLoaderTest {
         newDocument.setFromDate(fromDate);
         newDocument.setToDate(toDate);
 
+        given(ucHelper.getProtocol(resourceUrl)).willReturn("resource");
         given(documentHelper.getActiveDocumentId(locator.getDocuments()))
                 .willReturn(null);
         given(configService.getRunDateTime()).willReturn(fromDate);

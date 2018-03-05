@@ -47,4 +47,22 @@ public class URLConnectionHelper {
             final String value) {
         uc.setRequestProperty(key, value);
     }
+
+    /**
+     * Get protocol [http,https,ftp, file or resource] from urlSpec. In case, no
+     * protocol is specified or urlSpec is malformed then returns protocol name
+     * as resource.
+     * @param urlSpec
+     * @return protocol as returned by URL class or resource when no protocol is
+     *         specified or urlSpec is malformed.
+     */
+    public String getProtocol(final String urlSpec) {
+        try {
+            URL url = new URL(urlSpec);
+            return url.getProtocol();
+        } catch (MalformedURLException e) {
+            return "resource";
+        }
+    }
+
 }

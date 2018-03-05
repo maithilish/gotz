@@ -294,6 +294,11 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+<!--                         <configuration> -->
+<!--                             <excludes> -->
+<!--                                 <exclude>**/org/codetab/gotz/model/*</exclude> -->
+<!--                             </excludes> -->
+<!--                         </configuration> -->
                     </execution>
                     <execution>
                         <id>default-check</id>
