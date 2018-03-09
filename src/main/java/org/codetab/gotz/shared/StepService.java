@@ -94,6 +94,13 @@ public class StepService {
                 step.getStepType(), Messages.getString("StepService.9")); //$NON-NLS-1$
 
         try {
+            if (!isTaskDefined(nextStepFields)) {
+                message =
+                        Util.join(message, Messages.getString("StepService.16"), //$NON-NLS-1$
+                                labels.getGroup(), "]"); //$NON-NLS-1$
+                throw new StepRunException(message);
+            }
+
             String nextStepType =
                     getNextStepType(step.getFields(), step.getStepType());
             if (nextStepType
@@ -142,6 +149,12 @@ public class StepService {
         // xpath - not abs path
         String xpath =
                 Util.join("//xf:task/xf:steps/xf:step[@name='", stepType, "']"); //$NON-NLS-1$ //$NON-NLS-2$
+        return fieldsHelper.isDefined(xpath, true, fields);
+    }
+
+    private boolean isTaskDefined(final Fields fields) {
+        // xpath - not abs path
+        String xpath = Util.join("//xf:task"); //$NON-NLS-1$
         return fieldsHelper.isDefined(xpath, true, fields);
     }
 
