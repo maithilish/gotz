@@ -193,8 +193,8 @@ public class Fields implements Serializable {
     }
 
     /**
-     * two nodes with same contents returns hash, so nodes converted to xml and
-     * hash is calculated.
+     * two nodes with same contents returns different hash, so nodes converted
+     * to xml and hash is calculated.
      */
     @Override
     public int hashCode() {

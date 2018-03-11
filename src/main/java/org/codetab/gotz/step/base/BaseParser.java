@@ -34,6 +34,7 @@ import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.helper.BreakAfterHelper;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.DataHelper;
 import org.codetab.gotz.persistence.DataPersistence;
@@ -58,6 +59,8 @@ public abstract class BaseParser extends Step {
 
     @Inject
     private DataHelper dataHelper;
+    @Inject
+    private BreakAfterHelper breakAfterHelper;
     @Inject
     private DataPersistence dataPersistence;
     @Inject
@@ -337,7 +340,7 @@ public abstract class BaseParser extends Step {
             } catch (FieldsNotFoundException e) {
                 endIndex = -1;
             }
-            if (!dataHelper.hasFinished(axis, endIndex)) {
+            if (!breakAfterHelper.hasFinished(axis, endIndex)) {
                 Integer[] nextMemberIndexes =
                         dataHelper.nextMemberIndexes(member, axisName);
                 if (!dataHelper.alreadyProcessed(memberIndexSet,

@@ -9,10 +9,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
 import org.codetab.gotz.exception.DataDefNotFoundException;
-import org.codetab.gotz.exception.FieldsException;
-import org.codetab.gotz.exception.FieldsNotFoundException;
-import org.codetab.gotz.exception.StepRunException;
-import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
@@ -38,9 +34,6 @@ public class DataHelper {
      */
     @Inject
     private DataDefService dataDefService;
-
-    @Inject
-    private FieldsHelper fieldsHelper;
 
     /**
      * private constructor.
@@ -81,40 +74,6 @@ public class DataHelper {
         }
         cMember.setFields(member.getFields());
         return cMember;
-    }
-
-    public boolean hasFinished(final Axis axis, final int endIndex)
-            throws NumberFormatException, FieldsException {
-        boolean noField = true;
-        try {
-            // xpath - not abs path
-            String breakAfter = fieldsHelper
-                    .getLastValue("//xf:breakAfter/@value", axis.getFields()); //$NON-NLS-1$
-            noField = false;
-            String value = axis.getValue();
-            if (value == null) {
-                String message = Messages.getString("BaseParser.48"); //$NON-NLS-1$
-                throw new StepRunException(message);
-            } else {
-                if (value.equals(breakAfter)) {
-                    return true;
-                }
-            }
-        } catch (FieldsNotFoundException e) {
-        }
-
-        if (endIndex >= 0) {
-            noField = false;
-            if (axis.getIndex() + 1 > endIndex) {
-                return true;
-            }
-        }
-
-        if (noField) {
-            String message = Messages.getString("BaseParser.49"); //$NON-NLS-1$
-            throw new FieldsException(message);
-        }
-        return false;
     }
 
     public Integer[] nextMemberIndexes(final Member member,

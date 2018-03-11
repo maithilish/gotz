@@ -42,6 +42,7 @@ import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Member;
+import org.codetab.gotz.model.helper.BreakAfterHelper;
 import org.codetab.gotz.model.helper.DataDefHelper;
 import org.codetab.gotz.model.helper.DataHelper;
 import org.codetab.gotz.model.helper.DocumentHelper;
@@ -72,6 +73,8 @@ public class BaseParserTest {
     private DocumentHelper documentHelper;
     @Mock
     private DataHelper dataHelper;
+    @Mock
+    private BreakAfterHelper breakAfterHelper;
     @Mock
     private DataDefHelper dataDefHelper;
     @Mock
@@ -267,7 +270,7 @@ public class BaseParserTest {
                 parser.getLabel())).willReturn(data);
         given(fieldsHelper.getRange(eq("//xf:indexRange/@value"),
                 any(Fields.class))).willReturn(indexRange);
-        given(dataHelper.hasFinished(any(Axis.class), anyInt()))
+        given(breakAfterHelper.hasFinished(any(Axis.class), anyInt()))
                 .willReturn(true);
 
         parser.process();
@@ -309,13 +312,13 @@ public class BaseParserTest {
         doReturn(false).doReturn(true).when(dataHelper)
                 .alreadyProcessed(any(Set.class), any(Integer[].class));
 
-        given(dataHelper.hasFinished(member.getAxis(AxisName.ROW), 1))
+        given(breakAfterHelper.hasFinished(member.getAxis(AxisName.ROW), 1))
                 .willReturn(false).willReturn(true);
 
-        given(dataHelper.hasFinished(newMember.getAxis(AxisName.COL), 1))
+        given(breakAfterHelper.hasFinished(newMember.getAxis(AxisName.COL), 1))
                 .willReturn(true);
 
-        given(dataHelper.hasFinished(member.getAxis(AxisName.COL), 1))
+        given(breakAfterHelper.hasFinished(member.getAxis(AxisName.COL), 1))
                 .willReturn(false);
 
         parser.process();
@@ -359,7 +362,8 @@ public class BaseParserTest {
                 parser.getLabel())).willReturn(data);
         given(fieldsHelper.getRange(eq("//xf:indexRange/@value"),
                 any(Fields.class))).willThrow(FieldsNotFoundException.class);
-        given(dataHelper.hasFinished(any(Axis.class), eq(-1))).willReturn(true);
+        given(breakAfterHelper.hasFinished(any(Axis.class), eq(-1)))
+                .willReturn(true);
 
         parser.process();
 
