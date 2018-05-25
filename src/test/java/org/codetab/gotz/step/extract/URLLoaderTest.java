@@ -59,11 +59,10 @@ public class URLLoaderTest {
     @Test
     public void testFetchDocumentObjectFromWeb()
             throws IOException, ConfigNotFoundException {
-        String url = "http://example.com";
-        String standinLocalUrl =
-                "target/test-classes/testdefs/urlloader/example.html";
+        String url = "http://localhost";
+        String standinLocalUrl = "test-classes/testdefs/urlloader/example.html";
 
-        URL localUrl = new URL(new URL("file:"), standinLocalUrl);
+        URL localUrl = new URL(new URL(url), standinLocalUrl);
         URLConnection localUc = localUrl.openConnection();
 
         given(ucHelper.getProtocol(url)).willReturn("http");
@@ -76,8 +75,8 @@ public class URLLoaderTest {
         // when
         byte[] actual = urlLoader.fetchDocumentObject(url);
 
-        byte[] expected =
-                IOUtils.toByteArray(new URL(new URL("file:"), standinLocalUrl));
+        byte[] expected = IOUtils.toByteArray(
+                new URL(new URL("file:"), "target/" + standinLocalUrl));
 
         assertThat(actual).isEqualTo(expected);
 
@@ -89,11 +88,10 @@ public class URLLoaderTest {
     @Test
     public void testFetchDocumentObjectFromWebHttps()
             throws IOException, ConfigNotFoundException {
-        String url = "https://example.com";
-        String standinLocalUrl =
-                "target/test-classes/testdefs/urlloader/example.html";
+        String url = "http://localhost";
+        String standinLocalUrl = "test-classes/testdefs/urlloader/example.html";
 
-        URL localUrl = new URL(new URL("file:"), standinLocalUrl);
+        URL localUrl = new URL(new URL(url), standinLocalUrl);
         URLConnection localUc = localUrl.openConnection();
 
         given(ucHelper.getProtocol(url)).willReturn("https");
@@ -106,8 +104,8 @@ public class URLLoaderTest {
         // when
         byte[] actual = urlLoader.fetchDocumentObject(url);
 
-        byte[] expected =
-                IOUtils.toByteArray(new URL(new URL("file:"), standinLocalUrl));
+        byte[] expected = IOUtils.toByteArray(
+                new URL(new URL("file:"), "target/" + standinLocalUrl));
 
         assertThat(actual).isEqualTo(expected);
 
@@ -119,12 +117,11 @@ public class URLLoaderTest {
     @Test
     public void testFetchDocumentObjectFromWebUrlWithSpace()
             throws IOException, ConfigNotFoundException {
-        String url = "http://example.com/with space";
-        String urlEscaped = "http://example.com/with%20space";
-        String standinLocalUrl =
-                "target/test-classes/testdefs/urlloader/example.html";
+        String url = "http://localhost/with space";
+        String urlEscaped = "http://localhost/with%20space";
+        String standinLocalUrl = "test-classes/testdefs/urlloader/example.html";
 
-        URL localUrl = new URL(new URL("file:"), standinLocalUrl);
+        URL localUrl = new URL(new URL(url), standinLocalUrl);
         URLConnection localUc = localUrl.openConnection();
 
         given(ucHelper.getProtocol(url)).willReturn("http");
@@ -137,8 +134,8 @@ public class URLLoaderTest {
         // when
         byte[] actual = urlLoader.fetchDocumentObject(url);
 
-        byte[] expected =
-                IOUtils.toByteArray(new URL(new URL("file:"), standinLocalUrl));
+        byte[] expected = IOUtils.toByteArray(
+                new URL(new URL("file:"), "target/" + standinLocalUrl));
 
         assertThat(actual).isEqualTo(expected);
 
@@ -150,11 +147,10 @@ public class URLLoaderTest {
     @Test
     public void testFetchDocumentObjectFromWebDefaultConfigs()
             throws IOException, ConfigNotFoundException {
-        String url = "http://example.com";
-        String standinLocalUrl =
-                "target/test-classes/testdefs/urlloader/example.html";
+        String url = "http://localhost";
+        String standinLocalUrl = "test-classes/testdefs/urlloader/example.html";
 
-        URL localUrl = new URL(new URL("file:"), standinLocalUrl);
+        URL localUrl = new URL(new URL(url), standinLocalUrl);
         URLConnection localUc = localUrl.openConnection();
 
         given(ucHelper.getProtocol(url)).willReturn("http");
@@ -181,11 +177,10 @@ public class URLLoaderTest {
     @Test
     public void testFetchDocumentObjectFromWebInvalidConfig()
             throws IOException, ConfigNotFoundException {
-        String url = "http://example.com";
-        String standinLocalUrl =
-                "target/test-classes/testdefs/urlloader/example.html";
+        String url = "http://localhost";
+        String standinLocalUrl = "test-classes/testdefs/urlloader/example.html";
 
-        URL localUrl = new URL(new URL("file:"), standinLocalUrl);
+        URL localUrl = new URL(new URL(url), standinLocalUrl);
         URLConnection localUc = localUrl.openConnection();
 
         given(ucHelper.getProtocol(url)).willReturn("http");
@@ -205,11 +200,11 @@ public class URLLoaderTest {
     @Test
     public void testFetchDocumentObjectFromWebExpectExcetpion()
             throws IOException {
-        String url = "http://example.com";
+        String url = "http://localhost";
         String standinLocalUrl =
-                "target/test-classes/testdefs/urlloader/non-exist.html";
+                "test-classes/testdefs/urlloader/non-exist.html";
 
-        URL localUrl = new URL(new URL("file:"), standinLocalUrl);
+        URL localUrl = new URL(new URL(url), standinLocalUrl);
         URLConnection localUc = localUrl.openConnection();
 
         given(ucHelper.getProtocol(url)).willReturn("http");

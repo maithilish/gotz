@@ -1,0 +1,25 @@
+version: "3"
+services:
+  gotztestdb:
+      image: mariadb:latest
+      command: 
+          --log_warnings=1
+          --lower_case_table_names=1 
+          --innodb-compression-default=1
+          --innodb_compression_algorithm=zlib
+      environment:
+          - MYSQL_ROOT_PASSWORD=root
+          - MYSQL_DATABASE=gotztest
+      ports:
+          - "3301:3306"
+      volumes:
+          - ./data:/var/lib/mysql
+          - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+
+  gotztestjetty:
+      image: jetty:alpine
+      ports:
+          - "80:8080"
+          - "443:8443"
+      volumes:
+          - ../target:/var/lib/jetty/webapps

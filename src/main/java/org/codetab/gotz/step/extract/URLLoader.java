@@ -1,8 +1,8 @@
 package org.codetab.gotz.step.extract;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 import javax.inject.Inject;
 
@@ -114,15 +114,25 @@ public final class URLLoader extends BaseLoader {
             }
 
             LOGGER.info(Messages.getString("URLLoader.0"), urlSpecEscaped); //$NON-NLS-1$
-            URLConnection uc = ucHelper.getURLConnection(urlSpecEscaped);
+            HttpURLConnection uc = (HttpURLConnection) ucHelper
+                    .getURLConnection(urlSpecEscaped);
 
             int timeout = getTimeout();
             uc.setConnectTimeout(timeout);
             uc.setReadTimeout(timeout);
             ucHelper.setRequestProperty(uc, "User-Agent", getUserAgent()); //$NON-NLS-1$
 
+            uc.connect();
+            int respCode = uc.getResponseCode();
+            if (respCode != HttpURLConnection.HTTP_OK) {
+                throw new IOException(Util.join(
+                        "HTTP response : " + respCode + ", URL : ", urlSpec));
+            }
+
             bytes = IOUtils.toByteArray(uc);
-            LOGGER.debug(Messages.getString("URLLoader.2"), urlSpecEscaped); //$NON-NLS-1$
+            LOGGER.debug(Messages.getString("URLLoader.2"), urlSpecEscaped, //$NON-NLS-1$
+                    bytes.length);
+
             return bytes;
         }
 

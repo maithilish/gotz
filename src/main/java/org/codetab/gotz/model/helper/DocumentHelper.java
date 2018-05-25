@@ -222,6 +222,8 @@ public class DocumentHelper {
         byte[] compressedObject =
                 CompressionUtil.compressByteArray(documentObject, bufferLength);
         document.setDocumentObject(compressedObject);
+        LOGGER.debug(Messages.getString("DocumentHelper.21"), //$NON-NLS-1$
+                documentObject.length, compressedObject.length);
         return true;
     }
 
