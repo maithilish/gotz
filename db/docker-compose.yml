@@ -11,7 +11,7 @@ services:
           - MYSQL_ROOT_PASSWORD=root
           - MYSQL_DATABASE=gotztest
       ports:
-          - "3301:3306"
+          - "3306:3306"
       volumes:
           - ./data:/var/lib/mysql
           - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro

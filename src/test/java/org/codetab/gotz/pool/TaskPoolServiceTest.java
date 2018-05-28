@@ -2,6 +2,7 @@ package org.codetab.gotz.pool;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +20,8 @@ public class TaskPoolServiceTest {
 
     @Mock
     private ConfigService configService;
+    @Mock
+    private MetricsHelper metricsHelper;
 
     @InjectMocks
     private TaskPoolService pools;

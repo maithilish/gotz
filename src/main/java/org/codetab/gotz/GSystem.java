@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.metrics.MetricsServer;
 import org.codetab.gotz.misc.ShutdownHook;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.shared.BeanService;
@@ -34,6 +35,8 @@ public class GSystem {
     private StepService stepService;
     @Inject
     private LocatorFieldsHelper locatorFieldsHelper;
+    @Inject
+    private MetricsServer metricsServer;
 
     @Inject
     private ShutdownHook shutdownHook;
@@ -54,6 +57,8 @@ public class GSystem {
         String userProvidedFile = getPropertyFileName();
         String defaultsFile = "gotz-default.xml"; //$NON-NLS-1$
         configService.init(userProvidedFile, defaultsFile);
+
+        startMetricsServer();
 
         String mode = getMode();
         LOGGER.info(mode);
@@ -163,5 +168,13 @@ public class GSystem {
             console.printf("%s", Messages.getString("GSystem.20")); //$NON-NLS-1$ //$NON-NLS-2$
             console.readLine();
         }
+    }
+
+    public void startMetricsServer() {
+        metricsServer.start();
+    }
+
+    public void stopMetricsServer() {
+        metricsServer.stop();
     }
 }

@@ -22,6 +22,7 @@ import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.dao.jdo.LocatorDao;
 import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.testutil.TestUtil;
@@ -35,6 +36,7 @@ public class ITestBase {
     private static IDaoUtil daoUtil;
     private static PersistenceManagerFactory pmf;
     private static HashSet<String> schemaClasses;
+    private static MetricsHelper metricsHelper;
 
     @BeforeClass
     public static void setUpBeforeClass() throws IOException {
@@ -49,6 +51,7 @@ public class ITestBase {
 
         daoUtil.deleteSchemaForClasses(schemaClasses);
         daoUtil.clearCache();
+        metricsHelper = new MetricsHelper();
     }
 
     @AfterClass
@@ -61,6 +64,7 @@ public class ITestBase {
     public void setUp() {
         // create schema
         daoUtil.createSchemaForClasses(schemaClasses);
+        metricsHelper.clearGuages();
     }
 
     @After

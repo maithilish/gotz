@@ -15,6 +15,7 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.helper.ThreadSleep;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.model.Locator;
@@ -33,6 +34,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 
+import com.codahale.metrics.Meter;
+
 /**
  * <p>
  * LocatorSeeder Tests.
@@ -47,6 +50,8 @@ public class LocatorSeederTest {
     private StepService stepService;
     @Mock
     private LocatorHelper locatorHelper;
+    @Mock
+    private MetricsHelper metricsHelper;
     @Mock
     private LocatorFieldsHelper locatorFieldsHelper;
     @Mock
@@ -87,6 +92,10 @@ public class LocatorSeederTest {
         locator.setGroup("gx");
         locator.setFields(fields);
 
+        Meter meter = new Meter();
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "parsed"))
+                .willReturn(meter);
+
         // when
         locatorSeeder.setInput(locator);
 
@@ -97,6 +106,7 @@ public class LocatorSeederTest {
         assertThat(actual.size()).isEqualTo(1);
         assertThat(actual).contains(locator);
         assertThat(actual.get(0).getFields().getNodes().size()).isEqualTo(1);
+        assertThat(meter.getCount()).isEqualTo(1L);
     }
 
     @Test
@@ -109,8 +119,11 @@ public class LocatorSeederTest {
     @Test
     public void testInitialize() throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
+        Meter meter = new Meter();
 
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(meter);
 
         // when
         locatorSeeder.initialize();
@@ -120,6 +133,7 @@ public class LocatorSeederTest {
                 .readDeclaredField(locatorSeeder, "locatorList", true);
 
         assertThat(actual).isEqualTo(locators);
+        assertThat(meter.getCount()).isEqualTo(3L);
     }
 
     @Test
@@ -127,6 +141,13 @@ public class LocatorSeederTest {
         Locator locator = new Locator();
         locator.setName("x");
         locator.setGroup("gx");
+        Meter meter1 = new Meter();
+        Meter meter2 = new Meter();
+
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(meter1);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "parsed"))
+                .willReturn(meter2);
 
         locatorSeeder.setInput(locator);
 
@@ -139,6 +160,8 @@ public class LocatorSeederTest {
 
         assertThat(actual.size()).isEqualTo(1);
         assertThat(actual).contains(locator);
+        assertThat(meter1.getCount()).isEqualTo(0);
+        assertThat(meter2.getCount()).isEqualTo(1L);
 
         verifyZeroInteractions(locatorHelper);
     }
@@ -153,8 +176,12 @@ public class LocatorSeederTest {
         extraLocator.setGroup("gx");
         forkedLocators.add(extraLocator);
 
+        Meter meter = new Meter();
+
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
         given(locatorHelper.forkLocators(locators)).willReturn(forkedLocators);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(meter);
 
         // when
         locatorSeeder.initialize();
@@ -164,17 +191,20 @@ public class LocatorSeederTest {
                 .readDeclaredField(locatorSeeder, "locatorList", true);
 
         assertThat(actual).isEqualTo(forkedLocators);
+        assertThat(meter.getCount()).isEqualTo(4L);
     }
 
     @Test
     public void testInitializeForkedLocatorsEmptyList()
             throws IllegalAccessException {
         List<Locator> locators = createTestObjects();
-
         List<Locator> forkedLocators = new ArrayList<>();
+        Meter meter = new Meter();
 
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
         given(locatorHelper.forkLocators(locators)).willReturn(forkedLocators);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(meter);
 
         // when
         locatorSeeder.initialize();
@@ -184,12 +214,17 @@ public class LocatorSeederTest {
                 .readDeclaredField(locatorSeeder, "locatorList", true);
 
         assertThat(actual).isEqualTo(locators);
+        assertThat(meter.getCount()).isEqualTo(3L);
     }
 
     @Test
     public void testProcessSetGroupFields() throws FieldsException {
         List<Locator> locators = createTestObjects();
+        Meter meter = new Meter();
+
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(meter);
         locatorSeeder.initialize();
 
         Fields groupOneFields = fieldsHelper.createFields();
@@ -214,6 +249,8 @@ public class LocatorSeederTest {
     public void testProcessThrowsException() throws FieldsException {
         List<Locator> locators = createTestObjects();
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(new Meter());
         locatorSeeder.initialize();
 
         Fields groupOneFields = fieldsHelper.createFields();
@@ -252,16 +289,26 @@ public class LocatorSeederTest {
         LocatorSeeder locatorSeeder2 = dInjector.instance(LocatorSeeder.class);
         LocatorSeeder locatorSeeder3 = dInjector.instance(LocatorSeeder.class);
 
+        Meter meter1 = new Meter();
+        Meter meter2 = new Meter();
+
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
         when(stepService.getStep(LocatorSeeder.class.getName()))
                 .thenReturn(locatorSeeder1, locatorSeeder2, locatorSeeder3);
         given(locatorHelper.createLabels(locator1)).willReturn(labels1);
         given(locatorHelper.createLabels(locator2)).willReturn(labels2);
         given(locatorHelper.createLabels(locator3)).willReturn(labels3);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(meter1);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "seeded"))
+                .willReturn(meter2);
 
         locatorSeeder.initialize();
 
         locatorSeeder.handover();
+
+        assertThat(meter1.getCount()).isEqualTo(3L);
+        assertThat(meter2.getCount()).isEqualTo(3L);
 
         InOrder inOrder = inOrder(stepService, threadSleep);
         inOrder.verify(stepService).pushTask(locatorSeeder1, locator1, labels1,
@@ -282,12 +329,20 @@ public class LocatorSeederTest {
 
         List<Locator> locators = createTestObjects();
 
+        Meter meter1 = new Meter();
+        Meter meter2 = new Meter();
+
         given(locatorHelper.getLocatorsFromBeans()).willReturn(locators);
 
         given(stepService.getStep(LocatorSeeder.class.getName()))
                 .willThrow(ClassNotFoundException.class)
                 .willThrow(InstantiationException.class)
                 .willThrow(IllegalAccessException.class);
+
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "provided"))
+                .willReturn(meter1);
+        given(metricsHelper.getMeter(locatorSeeder, "locator", "seeded"))
+                .willReturn(meter2);
 
         locatorSeeder.initialize();
 
@@ -311,6 +366,9 @@ public class LocatorSeederTest {
         } catch (StepRunException e) {
             assertThat(e.getCause()).isInstanceOf(IllegalAccessException.class);
         }
+
+        assertThat(meter1.getCount()).isEqualTo(3L); // provided
+        assertThat(meter2.getCount()).isEqualTo(0L); // seeded
     }
 
     private List<Locator> createTestObjects() {

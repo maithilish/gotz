@@ -43,12 +43,14 @@ public class GotzEngine {
             gTaskRunner.waitForFinish();
             gSystem.waitForHeapDump();
             LOGGER.info(Messages.getString("GotzEngine.3")); //$NON-NLS-1$
+
         } catch (CriticalException e) {
             LOGGER.error("{}", e.getMessage()); //$NON-NLS-1$
             LOGGER.warn(Messages.getString("GotzEngine.5")); //$NON-NLS-1$
             LOGGER.debug("{}", e); //$NON-NLS-1$
             activityService.addActivity(Type.FATAL, e.getMessage(), e);
         }
+        gSystem.stopMetricsServer();
         activityService.end();
         LOGGER.info(Messages.getString("GotzEngine.7")); //$NON-NLS-1$
     }

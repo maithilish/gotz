@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ActivityService;
@@ -22,6 +23,8 @@ public class TaskTest {
 
     @Mock
     private Step step;
+    @Mock
+    private MetricsHelper metricsHelper;
     @Mock
     private ActivityService activityService;
     @InjectMocks

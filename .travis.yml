@@ -12,8 +12,10 @@ before_install:
 
 script: mvn clean
 
+# in travis maven build - disable metrics server and deactivate ng-build profile
+
 after_success:
-  - mvn verify jacoco:report coveralls:report -Dgotz.datastore.configFile=jdoconfig-mysql.properties
+  - mvn verify jacoco:report coveralls:report -Dgotz.datastore.configFile=jdoconfig-mysql.properties -Dgotz.metrics.server.enable=false -P -ng-build
 
 jdk:
   - openjdk8

@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.inject.Inject;
 
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.codetab.gotz.util.MarkerUtil;
 import org.codetab.gotz.util.Util;
@@ -54,7 +56,11 @@ public abstract class Pools {
      */
     @Inject
     private ConfigService configService;
-
+    /**
+     * helper - metrics
+     */
+    @Inject
+    private MetricsHelper metricsHelper;
     /**
      * pool map - shared state variable.
      */
@@ -137,6 +143,7 @@ public abstract class Pools {
         }
         shutdownAll();
         while (!isAllTerminated()) {
+
             try {
                 Thread.sleep(SLEEP_MILLIS);
             } catch (InterruptedException e) {
@@ -179,7 +186,10 @@ public abstract class Pools {
             LOGGER.info(Messages.getString("Pools.8"), poolName, //$NON-NLS-1$
                     poolSize);
             executorsMap.put(poolName, executor);
+            PoolStat poolStat = new PoolStat((ThreadPoolExecutor) executor);
+            metricsHelper.registerPoolGuage(poolStat, this, "pool", poolName);
         }
+
         return executor;
     }
 
@@ -230,4 +240,5 @@ public abstract class Pools {
         }
         return sb.toString();
     }
+
 }

@@ -26,9 +26,9 @@ import org.mockito.MockitoAnnotations;
 
 public class ConfigServiceTest {
 
-    private static final int DEFAULT_CONFIGS_COUNT = 27;
+    private static final int DEFAULT_CONFIGS_COUNT = 29;
 
-    private static final int USER_PROVIDED_CONFIGS_COUNT = 27;
+    private static final int USER_PROVIDED_CONFIGS_COUNT = 29;
 
     @Mock
     private CompositeConfiguration configs;
@@ -200,6 +200,11 @@ public class ConfigServiceTest {
                 .isEqualTo("true");
         assertThat(configuration.getString("gotz.persist.data"))
                 .isEqualTo("true");
+
+        assertThat(configuration.getString("gotz.metrics.server.port"))
+                .isEqualTo("9010");
+        assertThat(configuration.getString("gotz.metrics.server.enable"))
+                .isEqualTo("true");
     }
 
     @Test
@@ -292,6 +297,20 @@ public class ConfigServiceTest {
                 .isEqualTo(configuration.getString("gotz.runDate"));
         assertThat("03-31-2017 01:02:03.004")
                 .isEqualTo(configuration.getString("gotz.runDateTime"));
+
+        assertThat(configuration.getString("gotz.useDatastore"))
+                .isEqualTo("user-true");
+        assertThat(configuration.getString("gotz.persist.dataDef"))
+                .isEqualTo("user-true");
+        assertThat(configuration.getString("gotz.persist.locator"))
+                .isEqualTo("user-true");
+        assertThat(configuration.getString("gotz.persist.data"))
+                .isEqualTo("user-true");
+
+        assertThat(configuration.getString("gotz.metrics.server.port"))
+                .isEqualTo("user-9010");
+        assertThat(configuration.getString("gotz.metrics.server.enable"))
+                .isEqualTo("user-true");
     }
 
     /*

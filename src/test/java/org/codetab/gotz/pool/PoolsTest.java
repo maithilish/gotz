@@ -3,8 +3,10 @@ package org.codetab.gotz.pool;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.lang.Thread.State;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,6 +45,8 @@ public class PoolsTest {
 
     @Mock
     private ConfigService configService;
+    @Mock
+    private MetricsHelper metricsHelper;
 
     @InjectMocks
     private TaskPoolService pools;
@@ -129,6 +134,8 @@ public class PoolsTest {
         // no other way to assert that it is a FixedPoolExecutor
         assertThat(executor.getCorePoolSize()).isEqualTo(4);
         assertThat(executor.getMaximumPoolSize()).isEqualTo(4);
+        verify(metricsHelper).registerPoolGuage(any(PoolStat.class), eq(pools),
+                eq("pool"), eq("x"));
     }
 
     @Test

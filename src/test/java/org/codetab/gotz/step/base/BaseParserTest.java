@@ -33,6 +33,7 @@ import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DAxis;
@@ -63,6 +64,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.codahale.metrics.Counter;
+
 public class BaseParserTest {
 
     @Mock
@@ -84,6 +87,8 @@ public class BaseParserTest {
 
     @Mock
     private ActivityService activityService;
+    @Mock
+    private MetricsHelper metricsHelper;
     @Mock
     private ConfigService configService;
     @Mock
@@ -265,6 +270,9 @@ public class BaseParserTest {
         Data data = createTestData();
         List<Member> members = data.getMembers();
 
+        Counter parseCounter = new Counter();
+        Counter reuseCounter = new Counter();
+
         FieldUtils.writeField(parser, "dataDefName", dataDefName, true);
         given(dataHelper.getDataTemplate(dataDefName, document.getId(),
                 parser.getLabel())).willReturn(data);
@@ -272,12 +280,19 @@ public class BaseParserTest {
                 any(Fields.class))).willReturn(indexRange);
         given(breakAfterHelper.hasFinished(any(Axis.class), anyInt()))
                 .willReturn(true);
+        given(metricsHelper.getCounter(parser, "data", "parse"))
+                .willReturn(parseCounter);
+        given(metricsHelper.getCounter(parser, "data", "reuse"))
+                .willReturn(reuseCounter);
 
         parser.process();
 
         assertThat(data.getMembers().size()).isEqualTo(1);
         assertThat(data.getMembers()).isEqualTo(members);
         assertThat(data.getMembers()).isNotSameAs(members);
+
+        assertThat(parseCounter.getCount()).isEqualTo(1);
+        assertThat(reuseCounter.getCount()).isEqualTo(0);
     }
 
     @SuppressWarnings("unchecked")
@@ -298,6 +313,9 @@ public class BaseParserTest {
         indexes[AxisName.COL.ordinal()] = 2;
         indexes[AxisName.ROW.ordinal()] = 2;
         indexes[AxisName.FACT.ordinal()] = 2;
+
+        Counter parseCounter = new Counter();
+        Counter reuseCounter = new Counter();
 
         FieldUtils.writeField(parser, "dataDefName", dataDefName, true);
         given(dataHelper.getDataTemplate(dataDefName, document.getId(),
@@ -320,6 +338,10 @@ public class BaseParserTest {
 
         given(breakAfterHelper.hasFinished(member.getAxis(AxisName.COL), 1))
                 .willReturn(false);
+        given(metricsHelper.getCounter(parser, "data", "parse"))
+                .willReturn(parseCounter);
+        given(metricsHelper.getCounter(parser, "data", "reuse"))
+                .willReturn(reuseCounter);
 
         parser.process();
 
@@ -344,6 +366,9 @@ public class BaseParserTest {
         assertThat(newMember.getAxis(AxisName.COL).getValue()).isNull();
         assertThat(newMember.getAxis(AxisName.ROW).getValue()).isNull();
         assertThat(newMember.getAxis(AxisName.FACT).getValue()).isNull();
+
+        assertThat(parseCounter.getCount()).isEqualTo(1);
+        assertThat(reuseCounter.getCount()).isEqualTo(0);
     }
 
     @Test
@@ -357,6 +382,9 @@ public class BaseParserTest {
         Data data = createTestData();
         List<Member> members = data.getMembers();
 
+        Counter parseCounter = new Counter();
+        Counter reuseCounter = new Counter();
+
         FieldUtils.writeField(parser, "dataDefName", dataDefName, true);
         given(dataHelper.getDataTemplate(dataDefName, document.getId(),
                 parser.getLabel())).willReturn(data);
@@ -364,6 +392,10 @@ public class BaseParserTest {
                 any(Fields.class))).willThrow(FieldsNotFoundException.class);
         given(breakAfterHelper.hasFinished(any(Axis.class), eq(-1)))
                 .willReturn(true);
+        given(metricsHelper.getCounter(parser, "data", "parse"))
+                .willReturn(parseCounter);
+        given(metricsHelper.getCounter(parser, "data", "reuse"))
+                .willReturn(reuseCounter);
 
         parser.process();
 
@@ -371,6 +403,8 @@ public class BaseParserTest {
         assertThat(data.getMembers()).isEqualTo(members);
         assertThat(data.getMembers()).isNotSameAs(members);
 
+        assertThat(parseCounter.getCount()).isEqualTo(1);
+        assertThat(reuseCounter.getCount()).isEqualTo(0);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -414,9 +448,22 @@ public class BaseParserTest {
             InvocationTargetException, NoSuchMethodException,
             DataDefNotFoundException, ScriptException, IOException,
             DataFormatException, FieldsException, FieldsNotFoundException {
+
+        Counter parseCounter = new Counter();
+        Counter reuseCounter = new Counter();
+
         FieldUtils.writeField(parser, "data", new Data(), true);
+
+        given(metricsHelper.getCounter(parser, "data", "parse"))
+                .willReturn(parseCounter);
+        given(metricsHelper.getCounter(parser, "data", "reuse"))
+                .willReturn(reuseCounter);
+
         boolean actual = parser.process();
         assertThat(actual).isTrue();
+
+        assertThat(parseCounter.getCount()).isEqualTo(0);
+        assertThat(reuseCounter.getCount()).isEqualTo(1);
     }
 
     @Test

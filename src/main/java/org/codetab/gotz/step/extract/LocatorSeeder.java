@@ -9,6 +9,7 @@ import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.helper.ThreadSleep;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Fields;
 import org.codetab.gotz.model.Locator;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
@@ -22,6 +23,8 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
+
+import com.codahale.metrics.Meter;
 
 /**
  * Creates seeder tasks and handover them to queue.
@@ -64,6 +67,11 @@ public final class LocatorSeeder extends BaseSeeder {
      */
     @Inject
     private ThreadSleep threadSleep;
+    /**
+     * helper - metrics
+     */
+    @Inject
+    private MetricsHelper metricsHelper;
 
     /**
      * <p>
@@ -89,6 +97,9 @@ public final class LocatorSeeder extends BaseSeeder {
             Locator locator = (Locator) input;
             locatorList = new ArrayList<>();
             locatorList.add(locator);
+
+            Meter meter = metricsHelper.getMeter(this, "locator", "parsed");
+            meter.mark(locatorList.size());
         } else {
             String message = Util.join(Messages.getString("LocatorSeeder.1"), //$NON-NLS-1$
                     input.getClass().getName());
@@ -110,6 +121,8 @@ public final class LocatorSeeder extends BaseSeeder {
             if (forkedLocators.size() > 0) {
                 locatorList = forkedLocators;
             }
+            Meter meter = metricsHelper.getMeter(this, "locator", "provided");
+            meter.mark(locatorList.size());
         }
         logState(Messages.getString("LocatorSeeder.2")); //$NON-NLS-1$
         setStepState(StepState.INIT);
@@ -145,12 +158,14 @@ public final class LocatorSeeder extends BaseSeeder {
     @Override
     public boolean handover() {
         LOGGER.info(Messages.getString("LocatorSeeder.5")); //$NON-NLS-1$
+        Meter meter = metricsHelper.getMeter(this, "locator", "seeded");
         int count = 0;
         for (Locator locator : locatorList) {
             // create new instance of seeder step for each locator
             Step seederStep = getSeederStep(locator);
             stepService.pushTask(seederStep, locator, seederStep.getLabels(),
                     locator.getFields());
+            meter.mark();
             count++;
             threadSleep.sleep(SLEEP_MILLIS);
         }

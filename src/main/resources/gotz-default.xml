@@ -50,6 +50,12 @@
             <locator>true</locator>
             <data>true</data>
         </persist>
+        <metrics>
+            <server>
+                <enable>true</enable>
+                <port>9010</port>
+            </server>
+        </metrics>
     </gotz>
 </configuration>
 

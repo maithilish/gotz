@@ -26,6 +26,7 @@ import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.FieldsNotFoundException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.Data;
@@ -42,6 +43,8 @@ import org.codetab.gotz.step.Step;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.codahale.metrics.Counter;
 
 public abstract class BaseParser extends Step {
 
@@ -65,6 +68,8 @@ public abstract class BaseParser extends Step {
     private DataPersistence dataPersistence;
     @Inject
     private DataDefHelper dataDefHelper;
+    @Inject
+    private MetricsHelper metricsHelper;
 
     @Override
     public boolean initialize() {
@@ -114,6 +119,10 @@ public abstract class BaseParser extends Step {
 
     @Override
     public boolean process() {
+        Counter dataParseCounter =
+                metricsHelper.getCounter(this, "data", "parse");
+        Counter dataReuseCounter =
+                metricsHelper.getCounter(this, "data", "reuse");
         if (data == null) {
             LOGGER.info(Messages.getString("BaseParser.5"), getLabel()); //$NON-NLS-1$
             try {
@@ -125,7 +134,7 @@ public abstract class BaseParser extends Step {
 
                 parse();
                 setConsistent(true);
-
+                dataParseCounter.inc();
             } catch (ClassNotFoundException | DataDefNotFoundException
                     | IOException | NumberFormatException
                     | IllegalAccessException | InvocationTargetException
@@ -136,6 +145,7 @@ public abstract class BaseParser extends Step {
             }
         } else {
             setConsistent(true);
+            dataReuseCounter.inc();
             LOGGER.info(Messages.getString("BaseParser.7"), getLabel()); //$NON-NLS-1$
         }
         return true;

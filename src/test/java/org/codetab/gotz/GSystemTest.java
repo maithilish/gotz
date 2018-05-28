@@ -2,11 +2,14 @@ package org.codetab.gotz;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.metrics.MetricsServer;
 import org.codetab.gotz.misc.ShutdownHook;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.shared.BeanService;
@@ -19,6 +22,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -41,6 +45,8 @@ public class GSystemTest {
     private Task task;
     @Mock
     private ShutdownHook shutdownHook;
+    @Mock
+    private MetricsServer metricsServer;
     @Mock
     private Runtime runTime;
 
@@ -72,10 +78,22 @@ public class GSystemTest {
 
         String userProvidedFile = "gotz.properties";
         String defaultsFile = "gotz-default.xml";
-        verify(configService).init(userProvidedFile, defaultsFile);
 
-        verify(beanService).init("bean.xml", "schema.xsd");
-        verify(dataDefService).init();
+        InOrder inOrder = inOrder(beanService, dataDefService, configService,
+                metricsServer);
+        inOrder.verify(configService).init(userProvidedFile, defaultsFile);
+        inOrder.verify(metricsServer).start();
+
+        inOrder.verify(configService).isTestMode();
+        inOrder.verify(configService).isDevMode();
+        inOrder.verify(configService).getRunDate();
+        inOrder.verify(configService).getConfig("gotz.beanFile");
+        inOrder.verify(configService).getConfig("gotz.schemaFile");
+        inOrder.verify(beanService).init("bean.xml", "schema.xsd");
+        inOrder.verify(dataDefService).init();
+        inOrder.verify(dataDefService).getCount();
+        verifyNoMoreInteractions(beanService, dataDefService, configService,
+                metricsServer);
     }
 
     @Test

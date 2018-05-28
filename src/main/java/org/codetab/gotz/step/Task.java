@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.StepPersistenceException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Labels;
 import org.codetab.gotz.shared.ActivityService;
@@ -12,14 +13,18 @@ import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Timer.Context;
+
 public class Task implements Runnable {
 
     static final Logger LOGGER = LoggerFactory.getLogger(Task.class);
 
-    private IStep step;
-
     @Inject
     private ActivityService activityService;
+    @Inject
+    private MetricsHelper metricsHelper;
+
+    private IStep step;
 
     public void setStep(final IStep step) {
         this.step = step;
@@ -28,8 +33,9 @@ public class Task implements Runnable {
     @Override
     public void run() {
         try {
-            step.initialize();
+            Context taskTimer = metricsHelper.getTimer(step, "task");
 
+            step.initialize();
             LOGGER.trace(step.getMarker(), Messages.getString("Task.0"), //$NON-NLS-1$
                     getLabel(), step.getStepType());
 
@@ -40,6 +46,8 @@ public class Task implements Runnable {
 
             LOGGER.trace(step.getMarker(), Messages.getString("Task.1"), //$NON-NLS-1$
                     getLabel(), step.getStepType());
+
+            taskTimer.stop();
 
         } catch (StepRunException | StepPersistenceException e) {
             String label = getLabel();
