@@ -10,12 +10,16 @@ cache:
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS gotztest;'
 
-script: mvn clean
+install: 
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -P production
 
-# in travis maven build - disable metrics server and deactivate ng-build profile
+script: 
+  - mvn clean
+
+# in travis maven build - disable metrics server, ng-build profile and activate prod profile
 
 after_success:
-  - mvn verify jacoco:report coveralls:report -Dgotz.datastore.configFile=jdoconfig-mysql.properties -Dgotz.metrics.server.enable=false -P -ng-build
+  - mvn verify jacoco:report coveralls:report -Dgotz.datastore.configFile=jdoconfig-mysql.properties -Dgotz.metrics.server.enable=false -P production 
 
 jdk:
   - openjdk8
