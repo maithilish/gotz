@@ -5,6 +5,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.validator.routines.UrlValidator;
+
+import com.google.common.net.UrlEscapers;
+
 /**
  * <p>
  * Helper for URLConnection. It is not possible to mock URL for tests so
@@ -63,6 +68,32 @@ public class URLConnectionHelper {
         } catch (MalformedURLException e) {
             return "resource";
         }
+    }
+
+    /**
+     * Get content from the URLConnection as byte[]
+     * @param uc
+     *            URLConnection
+     * @return content byte[]
+     * @throws IOException
+     *             on error
+     */
+    public byte[] getContent(final URLConnection uc) throws IOException {
+        return IOUtils.toByteArray(uc);
+    }
+
+    /**
+     * Escape URL string - space escaped as %20
+     * @param urlSpec
+     *            URL string
+     * @return escaped URL string
+     */
+    public String escapeUrl(final String urlSpec) {
+        String urlSpecEscaped = urlSpec;
+        if (!UrlValidator.getInstance().isValid(urlSpec)) {
+            urlSpecEscaped = UrlEscapers.urlFragmentEscaper().escape(urlSpec);
+        }
+        return urlSpecEscaped;
     }
 
 }

@@ -1,8 +1,9 @@
 test database
 
  - bringup db with
-      $ docker-compose up db
- - connect to create db and user
+      $ docker-compose up 
+ - schema.sql creates user and prevs. In case not created then connect 
+   with mysql client and create db and user
       $ mysql -u root -proot -h 127.0.0.1 -P3301
 	create database gotztest;
 	CREATE USER 'foo'@'localhost' IDENTIFIED BY 'bar';

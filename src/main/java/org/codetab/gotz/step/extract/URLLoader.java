@@ -7,7 +7,6 @@ import java.net.URL;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.validator.routines.UrlValidator;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.URLConnectionHelper;
 import org.codetab.gotz.messages.Messages;
@@ -16,8 +15,6 @@ import org.codetab.gotz.step.base.BaseLoader;
 import org.codetab.gotz.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.net.UrlEscapers;
 
 /**
  * <p>
@@ -105,18 +102,12 @@ public final class URLLoader extends BaseLoader {
         }
 
         if (protocol.equals("http") || protocol.equals("https")) {
-            String urlSpecEscaped = null;
-            if (UrlValidator.getInstance().isValid(urlSpec)) {
-                urlSpecEscaped = urlSpec;
-            } else {
-                urlSpecEscaped =
-                        UrlEscapers.urlFragmentEscaper().escape(urlSpec);
-            }
 
+            String urlSpecEscaped = ucHelper.escapeUrl(urlSpec);
             LOGGER.info(Messages.getString("URLLoader.0"), urlSpecEscaped); //$NON-NLS-1$
+
             HttpURLConnection uc = (HttpURLConnection) ucHelper
                     .getURLConnection(urlSpecEscaped);
-
             int timeout = getTimeout();
             uc.setConnectTimeout(timeout);
             uc.setReadTimeout(timeout);
@@ -129,10 +120,9 @@ public final class URLLoader extends BaseLoader {
                         "HTTP response : " + respCode + ", URL : ", urlSpec));
             }
 
-            bytes = IOUtils.toByteArray(uc);
+            bytes = ucHelper.getContent(uc);
             LOGGER.debug(Messages.getString("URLLoader.2"), urlSpecEscaped, //$NON-NLS-1$
                     bytes.length);
-
             return bytes;
         }
 

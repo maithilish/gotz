@@ -134,7 +134,7 @@ public class PoolsTest {
         // no other way to assert that it is a FixedPoolExecutor
         assertThat(executor.getCorePoolSize()).isEqualTo(4);
         assertThat(executor.getMaximumPoolSize()).isEqualTo(4);
-        verify(metricsHelper).registerPoolGuage(any(PoolStat.class), eq(pools),
+        verify(metricsHelper).registerGuage(any(PoolStat.class), eq(pools),
                 eq("pool"), eq("x"));
     }
 

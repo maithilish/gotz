@@ -1,6 +1,7 @@
 package org.codetab.gotz;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
@@ -9,7 +10,9 @@ import static org.mockito.Mockito.when;
 
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.metrics.MetricsServer;
+import org.codetab.gotz.metrics.SystemStat;
 import org.codetab.gotz.misc.ShutdownHook;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.shared.BeanService;
@@ -48,6 +51,8 @@ public class GSystemTest {
     @Mock
     private MetricsServer metricsServer;
     @Mock
+    private MetricsHelper metricsHelper;
+    @Mock
     private Runtime runTime;
 
     @InjectMocks
@@ -80,9 +85,11 @@ public class GSystemTest {
         String defaultsFile = "gotz-default.xml";
 
         InOrder inOrder = inOrder(beanService, dataDefService, configService,
-                metricsServer);
+                metricsServer, metricsHelper);
         inOrder.verify(configService).init(userProvidedFile, defaultsFile);
         inOrder.verify(metricsServer).start();
+        inOrder.verify(metricsHelper).registerGuage(any(SystemStat.class),
+                eq(gSystem), eq("system"), eq("stats"));
 
         inOrder.verify(configService).isTestMode();
         inOrder.verify(configService).isDevMode();

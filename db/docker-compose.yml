@@ -1,6 +1,6 @@
 version: "3"
 services:
-  gotztestdb:
+  db:
       image: mariadb:latest
       command: 
           --log_warnings=1
@@ -15,11 +15,3 @@ services:
       volumes:
           - ./data:/var/lib/mysql
           - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
-
-  gotztestjetty:
-      image: jetty:alpine
-      ports:
-          - "80:8080"
-          - "443:8443"
-      volumes:
-          - ../target:/var/lib/jetty/webapps

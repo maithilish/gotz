@@ -175,9 +175,21 @@ In debugger, you will get line number error, even when line number generation is
 
 to debug XML objects such as Fields in Locator see https://goo.gl/JEukUP
 
+#### Exclude web dir from errors
+
+Project > Properties > Resource > Resource Filters > Add...
+Filter type = Exclude all.
+Applies to = File and Folders (check all children recursive)
+File and Folder Attributes: Project Relative Path matches src/main/web/gotzw
+
 ## DB setup
 
-Hsqldb is used for dev and tests. In Fedora, install hsqldb with
+Now Mariadb is used for dev and tests
+
+# cd db
+# docker-compose up 
+
+Earlier Hsqldb is used for dev and tests. In Fedora, install hsqldb with
 
     dnf install hsqldb
     dnf install java-1.8.0-openjdk   // for java headless error
@@ -207,6 +219,21 @@ for hsqldb client run
 For desktop shortcut, in Gnome we can create and add this to hsqldb.desktop to ~/.local/share/applications/hsqldb.desktop for easy access.
 
 - maven hsqldb dependency and server version should be same else Gotz may throw JDBC error.
+
+## Gotz Metric
+
+Jetty server starts at port 9010 
+Angular app source is located at src/main/web/gotzw dir. During dev, in memory
+datastore is used and in prod build, it fetches data from localhost:9010/api/metrics
+
+mvn package, builds the angular app with 
+ 
+ ng build --prod --build-optimizer 
+          --output-path=${project.build.directory}/classes/webapp
+          --delete-output-path=false
+          
+in POM the ng build is in separate profile ng-build which is disabled
+for travis ci build in .travis.yml             
 
 ## Model Generation
 

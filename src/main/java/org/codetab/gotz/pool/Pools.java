@@ -187,7 +187,7 @@ public abstract class Pools {
                     poolSize);
             executorsMap.put(poolName, executor);
             PoolStat poolStat = new PoolStat((ThreadPoolExecutor) executor);
-            metricsHelper.registerPoolGuage(poolStat, this, "pool", poolName);
+            metricsHelper.registerGuage(poolStat, this, "pool", poolName);
         }
 
         return executor;

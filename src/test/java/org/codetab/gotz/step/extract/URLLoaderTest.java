@@ -2,12 +2,13 @@ package org.codetab.gotz.step.extract;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,8 +19,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 /**
@@ -61,140 +64,200 @@ public class URLLoaderTest {
     @Test
     public void testFetchDocumentObjectFromWeb()
             throws IOException, ConfigNotFoundException {
-        URL url = new URL(urlStr);
-        URLConnection uc = url.openConnection();
+        int timeout = 1000;
+        String userAgent = "IE";
+        HttpURLConnection uc = Mockito.mock(HttpURLConnection.class);
+        byte[] contents = "test".getBytes();
 
+        given(ucHelper.escapeUrl(urlStr)).willReturn(urlStr);
         given(ucHelper.getProtocol(urlStr)).willReturn("http");
-        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
-        given(configService.getConfig("gotz.webClient.timeout"))
-                .willReturn("1000");
         given(configService.getConfig("gotz.webClient.userAgent"))
-                .willReturn("x");
+                .willReturn(userAgent);
+        given(configService.getConfig("gotz.webClient.timeout"))
+                .willReturn(String.valueOf(timeout));
+        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
+        given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
+        given(ucHelper.getContent(uc)).willReturn(contents);
 
         // when
-        byte[] actual = urlLoader.fetchDocumentObject(urlStr);
+        byte[] result = urlLoader.fetchDocumentObject(urlStr);
 
-        byte[] expected =
-                IOUtils.toByteArray(new URL(new URL("file:"), filePath));
+        assertThat(result).isSameAs(contents);
 
-        assertThat(actual).isEqualTo(expected);
-
-        assertThat(uc.getConnectTimeout()).isEqualTo(1000);
-        assertThat(uc.getReadTimeout()).isEqualTo(1000);
-        verify(ucHelper).setRequestProperty(uc, "User-Agent", "x");
+        InOrder inOrder = inOrder(uc, ucHelper);
+        inOrder.verify(ucHelper).escapeUrl(urlStr);
+        inOrder.verify(uc).setConnectTimeout(timeout);
+        inOrder.verify(uc).setReadTimeout(timeout);
+        inOrder.verify(ucHelper).setRequestProperty(uc, "User-Agent",
+                userAgent);
+        inOrder.verify(uc).connect();
     }
 
     @Test
     public void testFetchDocumentObjectFromWebHttps()
             throws IOException, ConfigNotFoundException {
-        URL url = new URL(urlStr);
-        URLConnection uc = url.openConnection();
+        int timeout = 1000;
+        String userAgent = "IE";
+        HttpURLConnection uc = Mockito.mock(HttpURLConnection.class);
+        byte[] contents = "test".getBytes();
 
+        given(ucHelper.escapeUrl(urlStr)).willReturn(urlStr);
         given(ucHelper.getProtocol(urlStr)).willReturn("https");
-        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
-        given(configService.getConfig("gotz.webClient.timeout"))
-                .willReturn("1000");
         given(configService.getConfig("gotz.webClient.userAgent"))
-                .willReturn("x");
+                .willReturn(userAgent);
+        given(configService.getConfig("gotz.webClient.timeout"))
+                .willReturn(String.valueOf(timeout));
+        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
+        given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
+        given(ucHelper.getContent(uc)).willReturn(contents);
 
         // when
-        byte[] actual = urlLoader.fetchDocumentObject(urlStr);
+        byte[] result = urlLoader.fetchDocumentObject(urlStr);
 
-        byte[] expected =
-                IOUtils.toByteArray(new URL(new URL("file:"), filePath));
+        assertThat(result).isSameAs(contents);
 
-        assertThat(actual).isEqualTo(expected);
-
-        assertThat(uc.getConnectTimeout()).isEqualTo(1000);
-        assertThat(uc.getReadTimeout()).isEqualTo(1000);
-        verify(ucHelper).setRequestProperty(uc, "User-Agent", "x");
+        InOrder inOrder = inOrder(uc, ucHelper);
+        inOrder.verify(ucHelper).escapeUrl(urlStr);
+        inOrder.verify(uc).setConnectTimeout(timeout);
+        inOrder.verify(uc).setReadTimeout(timeout);
+        inOrder.verify(ucHelper).setRequestProperty(uc, "User-Agent",
+                userAgent);
+        inOrder.verify(uc).connect();
     }
 
-    // @Test
-    // public void testFetchDocumentObjectFromWebUrlWithSpace()
-    // throws IOException, ConfigNotFoundException {
-    // String url = "http://localhost/with space";
-    // String urlEscaped = "http://localhost/with%20space";
-    // String standinLocalUrl = "test-classes/testdefs/urlloader/example.html";
-    //
-    // URL localUrl = new URL(new URL(url), standinLocalUrl);
-    // URLConnection localUc = localUrl.openConnection();
-    //
-    // given(ucHelper.getProtocol(url)).willReturn("http");
-    // given(ucHelper.getURLConnection(urlEscaped)).willReturn(localUc);
-    // given(configService.getConfig("gotz.webClient.timeout"))
-    // .willReturn("1000");
-    // given(configService.getConfig("gotz.webClient.userAgent"))
-    // .willReturn("x");
-    //
-    // // when
-    // byte[] actual = urlLoader.fetchDocumentObject(url);
-    //
-    // byte[] expected = IOUtils.toByteArray(
-    // new URL(new URL("file:"), "target/" + standinLocalUrl));
-    //
-    // assertThat(actual).isEqualTo(expected);
-    //
-    // assertThat(localUc.getConnectTimeout()).isEqualTo(1000);
-    // assertThat(localUc.getReadTimeout()).isEqualTo(1000);
-    // verify(ucHelper).setRequestProperty(localUc, "User-Agent", "x");
-    // }
+    @Test
+    public void testFetchDocumentObjectFromWebUrlWithSpace()
+            throws IOException, ConfigNotFoundException {
+
+        urlStr = "http://example.org/with space/";
+        String escapedUrlStr = "http://example.org/with%20space/";
+        int timeout = 1000;
+        String userAgent = "IE";
+        HttpURLConnection uc = Mockito.mock(HttpURLConnection.class);
+        byte[] contents = "test".getBytes();
+
+        given(ucHelper.getProtocol(urlStr)).willReturn("http");
+        given(ucHelper.escapeUrl(urlStr)).willReturn(escapedUrlStr);
+        given(configService.getConfig("gotz.webClient.userAgent"))
+                .willReturn(userAgent);
+        given(configService.getConfig("gotz.webClient.timeout"))
+                .willReturn(String.valueOf(timeout));
+        given(ucHelper.getURLConnection(escapedUrlStr)).willReturn(uc);
+        given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
+        given(ucHelper.getContent(uc)).willReturn(contents);
+
+        // when
+        byte[] result = urlLoader.fetchDocumentObject(urlStr);
+
+        assertThat(result).isSameAs(contents);
+
+        InOrder inOrder = inOrder(uc, ucHelper);
+        inOrder.verify(ucHelper).escapeUrl(urlStr);
+        inOrder.verify(uc).setConnectTimeout(timeout);
+        inOrder.verify(uc).setReadTimeout(timeout);
+        inOrder.verify(ucHelper).setRequestProperty(uc, "User-Agent",
+                userAgent);
+        inOrder.verify(uc).connect();
+    }
 
     @Test
     public void testFetchDocumentObjectFromWebDefaultConfigs()
             throws IOException, ConfigNotFoundException {
-        URL url = new URL(urlStr);
-        URLConnection localUc = url.openConnection();
 
+        int timeout = 120000;
+        String userAgent =
+                "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0";
+        HttpURLConnection uc = Mockito.mock(HttpURLConnection.class);
+        byte[] contents = "test".getBytes();
+
+        given(ucHelper.escapeUrl(urlStr)).willReturn(urlStr);
         given(ucHelper.getProtocol(urlStr)).willReturn("http");
-        given(ucHelper.getURLConnection(urlStr)).willReturn(localUc);
         given(configService.getConfig("gotz.webClient.userAgent"))
                 .willThrow(ConfigNotFoundException.class);
         given(configService.getConfig("gotz.webClient.timeout"))
                 .willThrow(ConfigNotFoundException.class);
+        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
+        given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
+        given(ucHelper.getContent(uc)).willReturn(contents);
 
         // when
-        urlLoader.fetchDocumentObject(urlStr);
+        byte[] result = urlLoader.fetchDocumentObject(urlStr);
 
-        String defaultUserAgent =
-                "Mozilla/5.0 (X11; Linux x86_64; rv:50.0) Gecko/20100101 Firefox/50.0";
-        int defaultTimeout = 120000;
+        assertThat(result).isSameAs(contents);
 
-        assertThat(localUc.getConnectTimeout()).isEqualTo(defaultTimeout);
-        assertThat(localUc.getReadTimeout()).isEqualTo(defaultTimeout);
-
-        verify(ucHelper).setRequestProperty(localUc, "User-Agent",
-                defaultUserAgent);
+        InOrder inOrder = inOrder(uc, ucHelper);
+        inOrder.verify(ucHelper).escapeUrl(urlStr);
+        inOrder.verify(uc).setConnectTimeout(timeout);
+        inOrder.verify(uc).setReadTimeout(timeout);
+        inOrder.verify(ucHelper).setRequestProperty(uc, "User-Agent",
+                userAgent);
+        inOrder.verify(uc).connect();
     }
 
     @Test
     public void testFetchDocumentObjectFromWebInvalidConfig()
             throws IOException, ConfigNotFoundException {
-        URL url = new URL(urlStr);
-        URLConnection uc = url.openConnection();
 
-        given(ucHelper.getProtocol(urlStr)).willReturn("http");
-        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
+        int timeout = 120000;
+        String userAgent = "IE";
+        HttpURLConnection uc = Mockito.mock(HttpURLConnection.class);
+        byte[] contents = "test".getBytes();
+
+        given(ucHelper.escapeUrl(urlStr)).willReturn(urlStr);
+        given(ucHelper.getProtocol(urlStr)).willReturn("https");
+        given(configService.getConfig("gotz.webClient.userAgent"))
+                .willReturn(userAgent);
         given(configService.getConfig("gotz.webClient.timeout"))
                 .willReturn("x");
+        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
+        given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
+        given(ucHelper.getContent(uc)).willReturn(contents);
 
         // when
         urlLoader.fetchDocumentObject(urlStr);
 
-        int defaultTimeout = 120000;
-
-        assertThat(uc.getConnectTimeout()).isEqualTo(defaultTimeout);
-        assertThat(uc.getReadTimeout()).isEqualTo(defaultTimeout);
+        verify(uc).setConnectTimeout(timeout);
+        verify(uc).setReadTimeout(timeout);
     }
 
     @Test
     public void testFetchDocumentObjectFromWebExpectExcetpion()
-            throws IOException {
-        URL url = new URL(urlStr + "x");
-        URLConnection uc = url.openConnection();
+            throws IOException, ConfigNotFoundException {
+        int timeout = 1000;
+        String userAgent = "IE";
+        HttpURLConnection uc = Mockito.mock(HttpURLConnection.class);
 
+        given(ucHelper.escapeUrl(urlStr)).willReturn(urlStr);
         given(ucHelper.getProtocol(urlStr)).willReturn("http");
+        given(configService.getConfig("gotz.webClient.userAgent"))
+                .willReturn(userAgent);
+        given(configService.getConfig("gotz.webClient.timeout"))
+                .willReturn(String.valueOf(timeout));
         given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
+        given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
+        given(ucHelper.getContent(uc)).willThrow(IOException.class);
+
+        // when
+        testRule.expect(IOException.class);
+        urlLoader.fetchDocumentObject(urlStr);
+    }
+
+    @Test
+    public void testFetchDocumentObjectFromBadRequest()
+            throws IOException, ConfigNotFoundException {
+        int timeout = 1000;
+        String userAgent = "IE";
+        HttpURLConnection uc = Mockito.mock(HttpURLConnection.class);
+
+        given(ucHelper.escapeUrl(urlStr)).willReturn(urlStr);
+        given(ucHelper.getProtocol(urlStr)).willReturn("http");
+        given(configService.getConfig("gotz.webClient.userAgent"))
+                .willReturn(userAgent);
+        given(configService.getConfig("gotz.webClient.timeout"))
+                .willReturn(String.valueOf(timeout));
+        given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
+        given(uc.getResponseCode())
+                .willReturn(HttpURLConnection.HTTP_BAD_REQUEST);
 
         // when
         testRule.expect(IOException.class);

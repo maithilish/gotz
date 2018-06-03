@@ -10,7 +10,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>metrics</servlet-name>
-        <url-pattern>/metrics/*</url-pattern>
+        <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
     <listener>
         <listener-class>org.codetab.gotz.metrics.MetricsServletListener</listener-class>
@@ -19,5 +19,24 @@
         <listener-class>org.codetab.gotz.metrics.HealthCheckServletListener</listener-class>
     </listener>
 
-
+    <filter>
+        <filter-name>cross-origin</filter-name>
+        <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+        <init-param>
+            <param-name>allowedOrigins</param-name>
+            <param-value>http://localhost:4200</param-value>
+        </init-param>
+        <init-param>
+            <param-name>allowedMethods</param-name>
+            <param-value>GET,POST,HEAD</param-value>
+        </init-param>
+        <init-param>
+            <param-name>allowedHeaders</param-name>
+            <param-value>origin, content-type, accept</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>cross-origin</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 </web-app>

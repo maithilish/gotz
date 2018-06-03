@@ -2,8 +2,6 @@ package org.codetab.gotz.metrics;
 
 import static com.codahale.metrics.MetricRegistry.name;
 
-import org.codetab.gotz.pool.PoolStat;
-
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Meter;
@@ -30,12 +28,12 @@ public class MetricsHelper {
         return METRICS.counter(getName(clz, names));
     }
 
-    public void registerPoolGuage(final PoolStat ps, final Object clz,
+    public <T> void registerGuage(final T value, final Object clz,
             final String... names) {
-        METRICS.register(getName(clz, names), new Gauge<PoolStat>() {
+        METRICS.register(getName(clz, names), new Gauge<T>() {
             @Override
-            public PoolStat getValue() {
-                return ps;
+            public T getValue() {
+                return value;
             }
         });
     }

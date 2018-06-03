@@ -8,7 +8,9 @@ import javax.inject.Inject;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.metrics.MetricsServer;
+import org.codetab.gotz.metrics.SystemStat;
 import org.codetab.gotz.misc.ShutdownHook;
 import org.codetab.gotz.model.helper.LocatorFieldsHelper;
 import org.codetab.gotz.shared.BeanService;
@@ -37,6 +39,8 @@ public class GSystem {
     private LocatorFieldsHelper locatorFieldsHelper;
     @Inject
     private MetricsServer metricsServer;
+    @Inject
+    private MetricsHelper metricsHelper;
 
     @Inject
     private ShutdownHook shutdownHook;
@@ -172,6 +176,8 @@ public class GSystem {
 
     public void startMetricsServer() {
         metricsServer.start();
+        SystemStat systemStat = new SystemStat();
+        metricsHelper.registerGuage(systemStat, this, "system", "stats");
     }
 
     public void stopMetricsServer() {
