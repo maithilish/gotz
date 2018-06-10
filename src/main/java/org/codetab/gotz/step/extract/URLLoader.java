@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.URLConnectionHelper;
 import org.codetab.gotz.messages.Messages;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseLoader;
 import org.codetab.gotz.util.Util;
@@ -42,6 +43,8 @@ public final class URLLoader extends BaseLoader {
      */
     @Inject
     private URLConnectionHelper ucHelper;
+    @Inject
+    private MetricsHelper metricsHelper;
 
     /**
      * Get instance of this class.
@@ -80,6 +83,7 @@ public final class URLLoader extends BaseLoader {
             try {
                 URL fileURL = URLLoader.class.getResource(urlSpec);
                 bytes = IOUtils.toByteArray(fileURL);
+                metricsHelper.getCounter(this, "fetch", "resource").inc();
                 LOGGER.debug(Messages.getString("URLLoader.10"), urlSpec); //$NON-NLS-1$
                 return bytes;
             } catch (IOException | NullPointerException e1) {
@@ -93,6 +97,7 @@ public final class URLLoader extends BaseLoader {
             try {
                 URL fileURL = new URL(urlSpec); // $NON-NLS-1$
                 bytes = IOUtils.toByteArray(fileURL);
+                metricsHelper.getCounter(this, "fetch", "file").inc();
                 LOGGER.debug(Messages.getString("URLLoader.5"), urlSpec); //$NON-NLS-1$
                 return bytes;
             } catch (IOException | NullPointerException e) {
@@ -121,6 +126,7 @@ public final class URLLoader extends BaseLoader {
             }
 
             bytes = ucHelper.getContent(uc);
+            metricsHelper.getCounter(this, "fetch", "web").inc();
             LOGGER.debug(Messages.getString("URLLoader.2"), urlSpecEscaped, //$NON-NLS-1$
                     bytes.length);
             return bytes;

@@ -321,6 +321,16 @@ to run gotz.bat, get into window command prompt and run bat file
      wine cmd
      C:\gotz-0.9.0-beta>gotz.bat
 
+# Github
+
+remove latest commit
+     git reset --hard <commit>
+     git push --force
+
+travis maven and build steps 
+     - https://docs.travis-ci.com/user/languages/java/#Projects-Using-Maven
+     - https://docs.travis-ci.com/user/customizing-the-build/#Customizing-the-Build-Step
+
 # Design and coding notes
 
 Apart from model classes, as far as possible, try to use primitives as validation of method param is not required for primitives.

@@ -22,6 +22,7 @@ import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.FieldsException;
 import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.helper.URLConnectionHelper;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.model.Activity.Type;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Fields;
@@ -46,6 +47,8 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import com.codahale.metrics.Counter;
 
 /**
  * <p>
@@ -74,6 +77,8 @@ public class BaseLoaderTest {
     private ConfigService configService;
     @Mock
     private FieldsHelper fieldsHelper;
+    @Mock
+    private MetricsHelper metricsHelper;
 
     private Locator locator;
     private String resourceUrl;
@@ -226,6 +231,8 @@ public class BaseLoaderTest {
                 .willReturn(toDate);
         given(documentHelper.createDocument(document.getName(),
                 document.getUrl(), fromDate, toDate)).willReturn(document);
+        given(metricsHelper.getCounter(loader, "fetch", "resource"))
+                .willReturn(new Counter());
 
         // when
         boolean actual = loader.process();
@@ -300,6 +307,8 @@ public class BaseLoaderTest {
         createdDocument.setFromDate(fromDate);
         createdDocument.setToDate(toDate);
 
+        given(metricsHelper.getCounter(loader, "fetch", "resource"))
+                .willReturn(new Counter());
         given(ucHelper.getProtocol(url)).willReturn("resource");
         byte[] docObject = loader.fetchDocumentObject(resourceUrl);
 
@@ -362,6 +371,8 @@ public class BaseLoaderTest {
         createdDocument.setFromDate(fromDate);
         createdDocument.setToDate(toDate);
 
+        given(metricsHelper.getCounter(loader, "fetch", "resource"))
+                .willReturn(new Counter());
         given(ucHelper.getProtocol(resourceUrl)).willReturn("resource");
         byte[] docObject = loader.fetchDocumentObject(resourceUrl);
 

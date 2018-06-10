@@ -1,6 +1,7 @@
 package org.codetab.gotz.step.extract;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -11,6 +12,7 @@ import java.util.zip.DataFormatException;
 import javax.script.ScriptException;
 
 import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
 import org.codetab.gotz.model.DataDef;
@@ -60,8 +62,33 @@ public class JSoupHtmlParserTest {
     }
 
     @Test
-    public void testPostInitialize() {
+    public void testPostInitialize() throws IOException {
+        String html = "<div id='test' ><p>x</div></p>";
+
+        DocumentHelper dh = dInjector.instance(DocumentHelper.class);
+        Document document = new Document();
+        document.setUrl("/home/x");
+        dh.setDocumentObject(document, html.getBytes());
+        parser.setInput(document);
+
+        parser.postInitialize();
+
         assertThat(parser.postInitialize()).isTrue();
+    }
+
+    @Test
+    public void testPostInitializeDocumentNotLoaded() throws IOException {
+
+        // document without documentObject
+        Document document = new Document();
+        parser.setInput(document);
+
+        try {
+            parser.postInitialize();
+            fail("should throw exception");
+        } catch (StepRunException e) {
+            assertThat(e.getCause()).isInstanceOf(IllegalStateException.class);
+        }
     }
 
     @Test
@@ -79,6 +106,7 @@ public class JSoupHtmlParserTest {
         DataDef dataDef = createTestDataDef();
         Member member = createTestMember();
 
+        parser.postInitialize();
         parser.setValue(dataDef, member);
 
         assertThat(member.getAxis(AxisName.COL).getValue()).isEqualTo("x");
@@ -101,6 +129,7 @@ public class JSoupHtmlParserTest {
         Member member = createTestMember();
         member.getAxis(AxisName.COL).setIndex(null);
 
+        parser.postInitialize();
         parser.setValue(dataDef, member);
 
         assertThat(member.getAxis(AxisName.COL).getValue()).isEqualTo("x");
@@ -115,24 +144,6 @@ public class JSoupHtmlParserTest {
         assertThat(member.getAxis(AxisName.COL).getValue()).isEqualTo("x");
         assertThat(member.getAxis(AxisName.COL).getIndex()).isEqualTo(1);
 
-    }
-
-    @Test
-    public void testSetValueDocumentNotLoaded()
-            throws NumberFormatException, IllegalAccessException,
-            InvocationTargetException, NoSuchMethodException, ScriptException,
-            DataFormatException, IOException {
-
-        // document without documentObject
-        Document document = new Document();
-        parser.setInput(document);
-
-        DataDef dataDef = createTestDataDef();
-        Member member = createTestMember();
-
-        parser.setValue(dataDef, member);
-
-        assertThat(member.getAxis(AxisName.COL).getValue()).isNull();
     }
 
     @Test

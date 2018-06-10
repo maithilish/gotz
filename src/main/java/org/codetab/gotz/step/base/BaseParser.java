@@ -2,7 +2,6 @@ package org.codetab.gotz.step.base;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -12,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
 import javax.script.ScriptEngine;
@@ -20,6 +18,7 @@ import javax.script.ScriptException;
 
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.Range;
+import org.codetab.gotz.cache.ParserCache;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
 import org.codetab.gotz.exception.FieldsException;
@@ -70,6 +69,8 @@ public abstract class BaseParser extends Step {
     private DataDefHelper dataDefHelper;
     @Inject
     private MetricsHelper metricsHelper;
+    @Inject
+    private ParserCache parserCache;
 
     @Override
     public boolean initialize() {
@@ -126,7 +127,6 @@ public abstract class BaseParser extends Step {
         if (data == null) {
             LOGGER.info(Messages.getString("BaseParser.5"), getLabel()); //$NON-NLS-1$
             try {
-
                 data = dataHelper.getDataTemplate(dataDefName, document.getId(),
                         getLabel());
                 LOGGER.trace(getMarker(), Messages.getString("BaseParser.45"), //$NON-NLS-1$
@@ -139,7 +139,7 @@ public abstract class BaseParser extends Step {
                     | IOException | NumberFormatException
                     | IllegalAccessException | InvocationTargetException
                     | NoSuchMethodException | ScriptException
-                    | DataFormatException | FieldsException e) {
+                    | FieldsException e) {
                 String message = Messages.getString("BaseParser.6"); //$NON-NLS-1$
                 throw new StepRunException(message, e);
             }
@@ -191,8 +191,7 @@ public abstract class BaseParser extends Step {
     protected abstract void setValue(DataDef dataDef, Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, MalformedURLException, IOException,
-            DataFormatException;
+            NoSuchMethodException;
 
     protected abstract String queryByQuery(Object page,
             Map<String, String> queries);
@@ -258,8 +257,14 @@ public abstract class BaseParser extends Step {
                     getLabeled(Messages.getString("BaseParser.30")), //$NON-NLS-1$
                     getBlockBegin(), sb.toString(), getBlockEnd());
 
-            value = queryByScript(scripts);
+            // value = queryByScript(scripts);
 
+            int key = parserCache.getKey(scripts);
+            value = parserCache.get(key);
+            if (value == null) {
+                value = queryByScript(scripts);
+                parserCache.put(key, value);
+            }
         } catch (FieldsNotFoundException e) {
         }
 
@@ -287,8 +292,14 @@ public abstract class BaseParser extends Step {
                     getLabeled(Messages.getString("BaseParser.42")), //$NON-NLS-1$
                     getBlockBegin(), sb.toString(), getBlockEnd());
 
-            value = queryByQuery(page, queries);
+            // value = queryByQuery(page, queries);
 
+            int key = parserCache.getKey(queries);
+            value = parserCache.get(key);
+            if (value == null) {
+                value = queryByQuery(page, queries);
+                parserCache.put(key, value);
+            }
         } catch (FieldsNotFoundException e) {
         }
 
@@ -309,9 +320,9 @@ public abstract class BaseParser extends Step {
     }
 
     public void parse() throws DataDefNotFoundException, ScriptException,
-            ClassNotFoundException, IOException, NumberFormatException,
+            ClassNotFoundException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, DataFormatException, FieldsException {
+            NoSuchMethodException, FieldsException {
         DataDef dataDef = dataDefService.getDataDef(dataDefName);
         Deque<Member> mStack = new ArrayDeque<>();
         for (Member member : data.getMembers()) {
@@ -332,7 +343,7 @@ public abstract class BaseParser extends Step {
     }
 
     private void pushNewMember(final Deque<Member> mStack, final Member member)
-            throws IOException, ClassNotFoundException, NumberFormatException,
+            throws ClassNotFoundException, NumberFormatException,
             FieldsException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;

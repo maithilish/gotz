@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.codetab.gotz.exception.ConfigNotFoundException;
 import org.codetab.gotz.helper.URLConnectionHelper;
+import org.codetab.gotz.metrics.MetricsHelper;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.Before;
 import org.junit.Rule;
@@ -24,6 +25,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import com.codahale.metrics.Counter;
 
 /**
  * <p>
@@ -37,6 +40,8 @@ public class URLLoaderTest {
     private URLConnectionHelper ucHelper;
     @Mock
     private ConfigService configService;
+    @Mock
+    private MetricsHelper metricsHelper;
 
     @InjectMocks
     private URLLoader urlLoader;
@@ -45,12 +50,14 @@ public class URLLoaderTest {
     public ExpectedException testRule = ExpectedException.none();
     private String urlStr;
     private String filePath;
+    private Counter counter;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         urlStr = "http://example.org";
         filePath = "target/test-classes/testdefs/urlloader/example.html";
+        counter = new Counter();
     }
 
     @Test
@@ -78,11 +85,14 @@ public class URLLoaderTest {
         given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
         given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
         given(ucHelper.getContent(uc)).willReturn(contents);
+        given(metricsHelper.getCounter(urlLoader, "fetch", "web"))
+                .willReturn(counter);
 
         // when
         byte[] result = urlLoader.fetchDocumentObject(urlStr);
 
         assertThat(result).isSameAs(contents);
+        assertThat(counter.getCount()).isEqualTo(1);
 
         InOrder inOrder = inOrder(uc, ucHelper);
         inOrder.verify(ucHelper).escapeUrl(urlStr);
@@ -110,11 +120,14 @@ public class URLLoaderTest {
         given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
         given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
         given(ucHelper.getContent(uc)).willReturn(contents);
+        given(metricsHelper.getCounter(urlLoader, "fetch", "web"))
+                .willReturn(counter);
 
         // when
         byte[] result = urlLoader.fetchDocumentObject(urlStr);
 
         assertThat(result).isSameAs(contents);
+        assertThat(counter.getCount()).isEqualTo(1);
 
         InOrder inOrder = inOrder(uc, ucHelper);
         inOrder.verify(ucHelper).escapeUrl(urlStr);
@@ -145,11 +158,14 @@ public class URLLoaderTest {
         given(ucHelper.getURLConnection(escapedUrlStr)).willReturn(uc);
         given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
         given(ucHelper.getContent(uc)).willReturn(contents);
+        given(metricsHelper.getCounter(urlLoader, "fetch", "web"))
+                .willReturn(counter);
 
         // when
         byte[] result = urlLoader.fetchDocumentObject(urlStr);
 
         assertThat(result).isSameAs(contents);
+        assertThat(counter.getCount()).isEqualTo(1);
 
         InOrder inOrder = inOrder(uc, ucHelper);
         inOrder.verify(ucHelper).escapeUrl(urlStr);
@@ -179,11 +195,14 @@ public class URLLoaderTest {
         given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
         given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
         given(ucHelper.getContent(uc)).willReturn(contents);
+        given(metricsHelper.getCounter(urlLoader, "fetch", "web"))
+                .willReturn(counter);
 
         // when
         byte[] result = urlLoader.fetchDocumentObject(urlStr);
 
         assertThat(result).isSameAs(contents);
+        assertThat(counter.getCount()).isEqualTo(1);
 
         InOrder inOrder = inOrder(uc, ucHelper);
         inOrder.verify(ucHelper).escapeUrl(urlStr);
@@ -212,9 +231,13 @@ public class URLLoaderTest {
         given(ucHelper.getURLConnection(urlStr)).willReturn(uc);
         given(uc.getResponseCode()).willReturn(HttpURLConnection.HTTP_OK);
         given(ucHelper.getContent(uc)).willReturn(contents);
+        given(metricsHelper.getCounter(urlLoader, "fetch", "web"))
+                .willReturn(counter);
 
         // when
         urlLoader.fetchDocumentObject(urlStr);
+
+        assertThat(counter.getCount()).isEqualTo(1);
 
         verify(uc).setConnectTimeout(timeout);
         verify(uc).setReadTimeout(timeout);
@@ -274,11 +297,14 @@ public class URLLoaderTest {
         String url = "file:///tmp/x.txt";
 
         given(ucHelper.getProtocol(url)).willReturn("file");
+        given(metricsHelper.getCounter(urlLoader, "fetch", "file"))
+                .willReturn(counter);
 
         // when
         byte[] actual = urlLoader.fetchDocumentObject(url);
 
         assertThat(actual).isEqualTo(expected.getBytes());
+        assertThat(counter.getCount()).isEqualTo(1);
     }
 
     @Test
@@ -298,9 +324,12 @@ public class URLLoaderTest {
             throws IOException, ConfigNotFoundException {
         String resPath = "/testdefs/urlloader/example.html";
         given(ucHelper.getProtocol(resPath)).willReturn("resource");
+        given(metricsHelper.getCounter(urlLoader, "fetch", "resource"))
+                .willReturn(counter);
 
         // when
         byte[] actual = urlLoader.fetchDocumentObject(resPath);
+        assertThat(counter.getCount()).isEqualTo(1);
 
         URL fileURL = URLLoader.class.getResource(resPath);
         byte[] expected = IOUtils.toByteArray(fileURL);

@@ -101,7 +101,7 @@ public class HtmlParser extends BaseParser {
     protected void setValue(final DataDef dataDef, final Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, IOException {
+            NoSuchMethodException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;
             try {
@@ -259,5 +259,4 @@ public class HtmlParser extends BaseParser {
 
         return value;
     }
-
 }

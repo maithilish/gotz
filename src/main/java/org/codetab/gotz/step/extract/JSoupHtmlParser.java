@@ -1,6 +1,8 @@
 package org.codetab.gotz.step.extract;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +13,9 @@ import javax.inject.Inject;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Validate;
 import org.codetab.gotz.exception.FieldsNotFoundException;
+import org.codetab.gotz.exception.StepRunException;
 import org.codetab.gotz.messages.Messages;
 import org.codetab.gotz.model.Axis;
 import org.codetab.gotz.model.AxisName;
@@ -22,7 +26,6 @@ import org.codetab.gotz.step.IStep;
 import org.codetab.gotz.step.base.BaseParser;
 import org.codetab.gotz.util.Util;
 import org.jsoup.Jsoup;
-import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -38,6 +41,8 @@ public class JSoupHtmlParser extends BaseParser {
     @Inject
     private DocumentHelper documentHelper;
 
+    private Document doc;
+
     // TODO add marker to all trace calls. entire project
 
     public JSoupHtmlParser() {
@@ -51,7 +56,18 @@ public class JSoupHtmlParser extends BaseParser {
 
     @Override
     protected boolean postInitialize() {
-        return true;
+        try {
+            if (!isDocumentLoaded()) {
+                throw new IllegalStateException(
+                        Messages.getString("JSoupHtmlParser.16")); //$NON-NLS-1$
+            }
+            InputStream html = getDocumentHTML();
+            doc = Jsoup.parse(html, null, "");
+            return true;
+        } catch (DataFormatException | IOException | IllegalStateException e) {
+            String message = Messages.getString("JSoupHtmlParser.17"); //$NON-NLS-1$
+            throw new StepRunException(message, e);
+        }
     }
 
     /*
@@ -65,7 +81,7 @@ public class JSoupHtmlParser extends BaseParser {
     protected void setValue(final DataDef dataDef, final Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, DataFormatException, IOException {
+            NoSuchMethodException {
         for (AxisName axisName : AxisName.values()) {
             Axis axis = null;
             try {
@@ -82,10 +98,7 @@ public class JSoupHtmlParser extends BaseParser {
                 }
                 axis.setIndex(startIndex);
             }
-            if (isDocumentLoaded() && axis.getValue() == null) {
-                byte[] bytes = documentHelper.getDocumentObject(getDocument());
-                String html = new String(bytes);
-                Document doc = Jsoup.parse(html);
+            if (axis.getValue() == null) {
                 String value = getValue(doc, dataDef, member, axis);
                 axis.setValue(value);
             }
@@ -192,4 +205,10 @@ public class JSoupHtmlParser extends BaseParser {
         return value;
     }
 
+    private InputStream getDocumentHTML()
+            throws DataFormatException, IOException {
+        byte[] bytes = documentHelper.getDocumentObject(getDocument());
+        ByteArrayInputStream html = new ByteArrayInputStream(bytes);
+        return html;
+    }
 }

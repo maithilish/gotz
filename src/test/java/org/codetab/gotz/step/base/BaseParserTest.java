@@ -4,15 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import javax.script.ScriptException;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.codetab.gotz.cache.ParserCache;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.exception.CriticalException;
 import org.codetab.gotz.exception.DataDefNotFoundException;
@@ -93,6 +95,8 @@ public class BaseParserTest {
     private ConfigService configService;
     @Mock
     private FieldsHelper fieldsHelper;
+    @Mock
+    private ParserCache parserCache;
 
     @InjectMocks
     private TestParser parser;
@@ -413,14 +417,13 @@ public class BaseParserTest {
             throws NumberFormatException, ClassNotFoundException,
             IllegalAccessException, InvocationTargetException,
             NoSuchMethodException, DataDefNotFoundException, ScriptException,
-            IOException, DataFormatException, FieldsException {
+            FieldsException, IOException {
 
         Class[] clzs = {NumberFormatException.class,
                 ClassNotFoundException.class, IllegalAccessException.class,
                 InvocationTargetException.class, NoSuchMethodException.class,
                 DataDefNotFoundException.class, ScriptException.class,
-                IOException.class, DataFormatException.class,
-                FieldsException.class};
+                IOException.class, FieldsException.class};
 
         FieldUtils.writeField(parser, "dataDefName", dataDefName, true);
 
@@ -429,8 +432,7 @@ public class BaseParserTest {
                         .willThrow(clzs[1]).willThrow(clzs[2])
                         .willThrow(clzs[3]).willThrow(clzs[4])
                         .willThrow(clzs[5]).willThrow(clzs[6])
-                        .willThrow(clzs[7]).willThrow(clzs[8])
-                        .willThrow(clzs[9]);
+                        .willThrow(clzs[7]).willThrow(clzs[8]);
 
         for (Class clz : clzs) {
             try {
@@ -659,10 +661,50 @@ public class BaseParserTest {
                 .willThrow(FieldsNotFoundException.class);
         given(fieldsHelper.getValues("/xf:prefix", false, fields))
                 .willThrow(FieldsNotFoundException.class);
+        given(parserCache.getKey(anyMap())).willReturn(123);
+        given(parserCache.get(123)).willReturn(null);
 
         String actual = parser.getValue("Test page", dataDef, member, axis);
 
         assertThat(actual).isEqualTo("2");
+        verify(parserCache).put(123, "2");
+    }
+
+    @Test
+    public void testGetValueQueryByScriptFromCache()
+            throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException, ScriptException, FieldsNotFoundException {
+
+        Fields fields = TestUtil.createEmptyFields();
+
+        DAxis dAxis = new DAxis();
+        dAxis.setName("col");
+        dAxis.setFields(fields);
+
+        ScriptEngine scriptEngine =
+                new ScriptEngineManager().getEngineByName("JavaScript");
+
+        Data data = createTestData();
+        Member member = data.getMembers().get(0);
+        Axis axis = member.getAxis(AxisName.COL);
+
+        given(dataDefHelper.getAxis(dataDef, axis.getName())).willReturn(dAxis);
+        given(dataHelper.getScriptEngine()).willReturn(scriptEngine);
+        given(fieldsHelper.getLastValue("/xf:script/@script", fields))
+                .willReturn("document.getId()");
+
+        given(fieldsHelper.getLastValue("/xf:query/@region", fields))
+                .willThrow(FieldsNotFoundException.class);
+        given(fieldsHelper.getValues("/xf:prefix", false, fields))
+                .willThrow(FieldsNotFoundException.class);
+        given(parserCache.getKey(anyMap())).willReturn(123);
+        given(parserCache.get(123)).willReturn("test");
+
+        String actual = parser.getValue("Test page", dataDef, member, axis);
+
+        assertThat(actual).isEqualTo("test");
+
+        verify(parserCache, never()).put(123, "test");
     }
 
     @Test
@@ -698,21 +740,100 @@ public class BaseParserTest {
                 .willThrow(FieldsNotFoundException.class);
         given(fieldsHelper.getValues("/xf:prefix", false, fields))
                 .willThrow(FieldsNotFoundException.class);
+        given(parserCache.getKey(anyMap())).willReturn(123);
+        given(parserCache.get(123)).willReturn(null);
 
         String actual = parser.getValue("Test page", dataDef, member, axis);
 
         assertThat(actual).isEqualTo("test value");
         verify(fieldsHelper).replaceVariables(queries, member.getAxisMap());
+        verify(parserCache).put(123, "test value");
+    }
 
-        // no attribute test
+    @Test
+    public void testGetValueQueryByQueryNoAttribute()
+            throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException, ScriptException, FieldsNotFoundException {
+
+        Fields fields = TestUtil.createEmptyFields();
+
+        DAxis dAxis = new DAxis();
+        dAxis.setName("col");
+        dAxis.setFields(fields);
+
+        Data data = createTestData();
+        Member member = data.getMembers().get(0);
+        Axis axis = member.getAxis(AxisName.COL);
+
+        Map<String, String> queries = new HashMap<>();
+        queries.put("region", "qr");
+        queries.put("field", "qf");
         queries.put("attribute", "");
+
+        given(dataDefHelper.getAxis(dataDef, axis.getName())).willReturn(dAxis);
+
+        given(fieldsHelper.getLastValue("/xf:query/@region", fields))
+                .willReturn(queries.get("region"));
+        given(fieldsHelper.getLastValue("/xf:query/@field", fields))
+                .willReturn(queries.get("field"));
         given(fieldsHelper.getLastValue("/xf:query/@attribute", fields))
                 .willThrow(FieldsNotFoundException.class);
 
-        actual = parser.getValue("Test page", dataDef, member, axis);
+        given(fieldsHelper.getLastValue("/xf:script/@script", fields))
+                .willThrow(FieldsNotFoundException.class);
+        given(fieldsHelper.getValues("/xf:prefix", false, fields))
+                .willThrow(FieldsNotFoundException.class);
+        given(parserCache.getKey(anyMap())).willReturn(123);
+        given(parserCache.get(123)).willReturn(null);
+
+        String actual = parser.getValue("Test page", dataDef, member, axis);
 
         assertThat(actual).isEqualTo("test value");
         verify(fieldsHelper).replaceVariables(queries, member.getAxisMap());
+        verify(parserCache).put(123, "test value");
+    }
+
+    @Test
+    public void testGetValueQueryByQueryFromCache()
+            throws IllegalAccessException, InvocationTargetException,
+            NoSuchMethodException, ScriptException, FieldsNotFoundException {
+
+        Fields fields = TestUtil.createEmptyFields();
+
+        DAxis dAxis = new DAxis();
+        dAxis.setName("col");
+        dAxis.setFields(fields);
+
+        Data data = createTestData();
+        Member member = data.getMembers().get(0);
+        Axis axis = member.getAxis(AxisName.COL);
+
+        Map<String, String> queries = new HashMap<>();
+        queries.put("region", "qr");
+        queries.put("field", "qf");
+        queries.put("attribute", "qa");
+
+        given(dataDefHelper.getAxis(dataDef, axis.getName())).willReturn(dAxis);
+
+        given(fieldsHelper.getLastValue("/xf:query/@region", fields))
+                .willReturn(queries.get("region"));
+        given(fieldsHelper.getLastValue("/xf:query/@field", fields))
+                .willReturn(queries.get("field"));
+        given(fieldsHelper.getLastValue("/xf:query/@attribute", fields))
+                .willReturn(queries.get("attribute"));
+
+        given(fieldsHelper.getLastValue("/xf:script/@script", fields))
+                .willThrow(FieldsNotFoundException.class);
+        given(fieldsHelper.getValues("/xf:prefix", false, fields))
+                .willThrow(FieldsNotFoundException.class);
+        given(parserCache.getKey(anyMap())).willReturn(123);
+        given(parserCache.get(123)).willReturn("test cache");
+
+        String actual = parser.getValue("Test page", dataDef, member, axis);
+
+        assertThat(actual).isEqualTo("test cache");
+        verify(fieldsHelper).replaceVariables(queries, member.getAxisMap());
+        verify(parserCache, never()).put(eq(123), any(String.class));
     }
 
     @Test
@@ -972,8 +1093,7 @@ class TestParser extends BaseParser {
     protected void setValue(final DataDef dataDef, final Member member)
             throws ScriptException, NumberFormatException,
             IllegalAccessException, InvocationTargetException,
-            NoSuchMethodException, MalformedURLException, IOException,
-            DataFormatException {
+            NoSuchMethodException {
     }
 
     @Override
