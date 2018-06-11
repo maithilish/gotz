@@ -26,7 +26,7 @@ export class SysStatPanelComponent implements OnChanges {
     });
 
     this.errors = this.metrics.filter(metric => {
-      if (metric.type === 'counter' && metric.cat === 'error') {
+      if (metric.type === 'counter' && metric.cat === 'system') {
         return metric;
       }
     });

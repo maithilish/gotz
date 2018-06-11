@@ -62,9 +62,18 @@ export class InMemoryDataService implements InMemoryDbService {
                 'JSoupHtmlParser.data.reuse': {
                     'count': 430
                 },
-                'Task.error': {
+                'Task.system.error': {
                     'count': 2
-                }
+                },
+                'URLLoader.fetch.web': {
+                    'count': 30
+                },
+                'ParserCache.parser.cache.hit': {
+                    'count': 100000
+                },
+                'ParserCache.parser.cache.miss': {
+                    'count': 90010
+                },
             },
             'histograms': {},
             'meters': {
@@ -94,7 +103,7 @@ export class InMemoryDataService implements InMemoryDbService {
                 }
             },
             'timers': {
-                'DataAppender.task': {
+                'DataAppender.task.time': {
                     'count': 153,
                     'max': 0.5480012860000001,
                     'mean': 0.1429107209071955,
@@ -113,7 +122,7 @@ export class InMemoryDataService implements InMemoryDbService {
                     'duration_units': 'seconds',
                     'rate_units': 'calls/second'
                 },
-                'DataConverter.task': {
+                'DataConverter.task.time': {
                     'count': 153,
                     'max': 31.018041070000002,
                     'mean': 3.9971781017301646,
@@ -132,7 +141,7 @@ export class InMemoryDataService implements InMemoryDbService {
                     'duration_units': 'seconds',
                     'rate_units': 'calls/second'
                 },
-                'DataFilter.task': {
+                'DataFilter.task.time': {
                     'count': 235,
                     'max': 68.603909645,
                     'mean': 4.465407281237694,
@@ -151,7 +160,7 @@ export class InMemoryDataService implements InMemoryDbService {
                     'duration_units': 'seconds',
                     'rate_units': 'calls/second'
                 },
-                'JSoupHtmlParser.task': {
+                'JSoupHtmlParser.task.time': {
                     'count': 428,
                     'max': 18.344952221,
                     'mean': 1.4485385707357452,
@@ -170,7 +179,7 @@ export class InMemoryDataService implements InMemoryDbService {
                     'duration_units': 'seconds',
                     'rate_units': 'calls/second'
                 },
-                'LocatorCreator.task': {
+                'LocatorCreator.task.time': {
                     'count': 161,
                     'max': 8.562054143000001,
                     'mean': 3.6045532665498694,
@@ -189,7 +198,7 @@ export class InMemoryDataService implements InMemoryDbService {
                     'duration_units': 'seconds',
                     'rate_units': 'calls/second'
                 },
-                'LocatorSeeder.task': {
+                'LocatorSeeder.task.time': {
                     'count': 384,
                     'max': 99.066459311,
                     'mean': 1.4588415715024081,
@@ -208,7 +217,7 @@ export class InMemoryDataService implements InMemoryDbService {
                     'duration_units': 'seconds',
                     'rate_units': 'calls/second'
                 },
-                'URLLoader.task': {
+                'URLLoader.task.time': {
                     'count': 474,
                     'max': 2.5054812920000002,
                     'mean': 0.7541652511767615,

@@ -176,6 +176,7 @@ public class GSystem {
 
     public void startMetricsServer() {
         metricsServer.start();
+        metricsHelper.initMetrics();
         SystemStat systemStat = new SystemStat();
         metricsHelper.registerGuage(systemStat, this, "system", "stats");
     }

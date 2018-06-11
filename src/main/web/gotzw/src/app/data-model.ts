@@ -3,24 +3,28 @@ import { isUndefined } from 'util';
 export class Metric {
     name: string;
     type: string;
+    clz: string;
     cat: string;
     label: string;
     // additional dynamic properties
 }
 
 export const nameLabelMap = [
-    { name: 'JSoupHtmlParser.data.parse', label: 'Parse document' },
-    { name: 'JSoupHtmlParser.data.reuse', label: 'Reuse document data' },
-    { name: 'LocatorSeeder.locator.parsed', label: 'Parsed from links' },
+    { name: 'JSoupHtmlParser.data.parse', label: 'Parse' },
+    { name: 'JSoupHtmlParser.data.reuse', label: 'Reuse data' },
+    { name: 'ParserCache.parser.cache.hit', label: 'Parse cache hit' },
+    { name: 'ParserCache.parser.cache.miss', label: 'Parse cache miss' },
+    { name: 'URLLoader.fetch.web', label: 'Web fetch ' },
     { name: 'LocatorSeeder.locator.provided', label: 'Provided by user' },
+    { name: 'LocatorSeeder.locator.parsed', label: 'Parsed from pages' },
     { name: 'LocatorSeeder.locator.seeded', label: 'Pushed to queue' },
-    { name: 'DataAppender.task', label: 'Data appender' },
-    { name: 'DataConverter.task', label: 'Data converter' },
-    { name: 'DataFilter.task', label: 'Data filter' },
-    { name: 'JSoupHtmlParser.task', label: 'Parser' },
-    { name: 'LocatorCreator.task', label: 'Locator creator' },
-    { name: 'LocatorSeeder.task', label: 'Locator seeder' },
-    { name: 'URLLoader.task', label: 'Document fetch and load' },
+    { name: 'DataAppender.task.time', label: 'Data appender' },
+    { name: 'DataConverter.task.time', label: 'Data converter' },
+    { name: 'DataFilter.task.time', label: 'Data filter' },
+    { name: 'JSoupHtmlParser.task.time', label: 'Parser' },
+    { name: 'LocatorCreator.task.time', label: 'Locator creator' },
+    { name: 'LocatorSeeder.task.time', label: 'Locator seeder' },
+    { name: 'URLLoader.task.time', label: 'Document fetch and load' },
     { name: 'uptime', label: 'up time' },
     { name: 'systemLoad', label: 'Load average' },
     { name: 'totalMemory', label: 'Total memory' },
@@ -52,11 +56,14 @@ export class MetricDataConverter {
         const metrics = Array<Metric>();
         Object.entries(inMetrics).forEach(inMetric => {
             const metricName = inMetric[0];
-            const [clz, metricCat, ...others] = metricName.split('.');
+            const [clz, ...others] = metricName.split('.');
+            const last = others.pop();
+            const metricCat = others.join('.');
             // create metric
             const metric: Metric = {
                 name: metricName,
                 type: type,
+                clz: clz,
                 cat: metricCat,
                 label: this.getLabel(metricName),
             };
@@ -76,13 +83,16 @@ export class MetricDataConverter {
 
         Object.entries(inMetrics).forEach(inMetric => {
             const metricName = inMetric[0];
-            const [clz, metricCat, ...others] = metricName.split('.');
+            const [clz, ...others] = metricName.split('.');
+            const last = others.pop();
+            const metricCat = others.join('.');
             Object.entries(inMetric[1]).forEach(value => {
                 const items = value[1];
                 // create metric
                 const metric: Metric = {
                     name: metricName,
                     type: 'gauge',
+                    clz: clz,
                     cat: metricCat,
                     label: this.getLabel(metricName),
                 };

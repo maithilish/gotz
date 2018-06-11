@@ -17,14 +17,14 @@
     <div class="row">
         <div class="col-sm-4">
             <div class="col-sm">
-                <app-meter-panel [metrics]="metrics" [cat]="'locator'" [heading]="'Locator Stats'"></app-meter-panel>
+                <app-meter-panel [heading]="'Locator Stats'" [cat]="'locator'" [metrics]="metrics"></app-meter-panel>
             </div>
             <div class="col-sm">
-                <app-counter-panel [metrics]="metrics" [cat]="'data'" [heading]="'Document Parse'"></app-counter-panel>
+                <app-counter-panel [heading]="'Page Stats'" [cat]="['data','fetch','parser.cache']" [metrics]="metrics"></app-counter-panel>
             </div>
         </div>
         <div class="col-sm-8">
-            <app-timer-panel [metrics]="metrics" [cat]="'task'" [heading]="'Task Execution Time'"></app-timer-panel>
+            <app-timer-panel [heading]="'Task Execution Time'" [cat]="'task'" [metrics]="metrics"></app-timer-panel>
         </div>
     </div>
 </div>

@@ -48,4 +48,10 @@ public class MetricsHelper {
         return name(clz.getClass().getSimpleName(), names);
     }
 
+    public void initMetrics() {
+        METRICS.counter("ParserCache.parser.cache.hit");
+        METRICS.counter("ParserCache.parser.cache.miss");
+        METRICS.counter("URLLoader.fetch.web");
+        METRICS.counter("Task.system.error");
+    }
 }

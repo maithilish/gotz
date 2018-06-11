@@ -35,7 +35,7 @@ public class Task implements Runnable {
     @Override
     public void run() {
         try {
-            Context taskTimer = metricsHelper.getTimer(step, "task");
+            Context taskTimer = metricsHelper.getTimer(step, "task", "time");
             Marker marker = step.getMarker();
             String label = getLabel();
             String stepType = step.getStepType();
@@ -85,7 +85,7 @@ public class Task implements Runnable {
     }
 
     private void countError() {
-        Counter counter = metricsHelper.getCounter(this, "error");
+        Counter counter = metricsHelper.getCounter(this, "system", "error");
         counter.inc();
     }
 }

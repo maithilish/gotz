@@ -46,8 +46,9 @@ public class TaskTest {
     public void testRun() {
         Counter counter = new Counter();
         Context timer = Mockito.mock(Context.class);
-        given(metricsHelper.getTimer(step, "task")).willReturn(timer);
-        given(metricsHelper.getCounter(task, "error")).willReturn(counter);
+        given(metricsHelper.getTimer(step, "task", "time")).willReturn(timer);
+        given(metricsHelper.getCounter(task, "system", "error"))
+                .willReturn(counter);
 
         task.run();
 
@@ -71,7 +72,8 @@ public class TaskTest {
         Counter counter = new Counter();
         Context timer = new Timer().time();
         given(metricsHelper.getTimer(step, "task")).willReturn(timer);
-        given(metricsHelper.getCounter(task, "error")).willReturn(counter);
+        given(metricsHelper.getCounter(task, "system", "error"))
+                .willReturn(counter);
 
         given(step.getLabels()).willReturn(new Labels("n", "g"));
         given(step.initialize()).willThrow(StepRunException.class)
