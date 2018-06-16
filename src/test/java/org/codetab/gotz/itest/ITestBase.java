@@ -17,8 +17,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.text.StrSubstitutor;
 import org.codetab.gotz.GotzEngine;
-import org.codetab.gotz.dao.DaoUtilFactory;
-import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
 import org.codetab.gotz.dao.jdo.LocatorDao;
 import org.codetab.gotz.di.DInjector;

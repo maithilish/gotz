@@ -22,9 +22,13 @@
     <!-- disable modules for specific files  -->
     <suppress files="messages.properties" checks="RegexpSingleline" />
     <suppress files=".*Test.java" checks="MagicNumber" />
+    <suppress files=".*TestIT.java" checks="MagicNumber" />
     <suppress files=".*Test.java" checks="JavadocMethod" />
+    <suppress files=".*TestIT.java" checks="JavadocMethod" />
     <suppress files=".*Test.java" checks="JavadocVariable" />
+    <suppress files=".*TestIT.java" checks="JavadocVariable" />
     <suppress files=".*Test.java" checks="JavadocPackage" />
+    <suppress files=".*TestIT.java" checks="JavadocPackage" />
 
 
 </suppressions>

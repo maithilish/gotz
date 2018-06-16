@@ -1,4 +1,4 @@
-package org.codetab.gotz.dao.jdo;
+package org.codetab.gotz.itest.jdo;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,6 +9,11 @@ import org.codetab.gotz.dao.IDataDao;
 import org.codetab.gotz.dao.IDataDefDao;
 import org.codetab.gotz.dao.IDocumentDao;
 import org.codetab.gotz.dao.ILocatorDao;
+import org.codetab.gotz.dao.jdo.DataDao;
+import org.codetab.gotz.dao.jdo.DataDefDao;
+import org.codetab.gotz.dao.jdo.DocumentDao;
+import org.codetab.gotz.dao.jdo.JdoDaoFactory;
+import org.codetab.gotz.dao.jdo.LocatorDao;
 import org.codetab.gotz.di.DInjector;
 import org.codetab.gotz.shared.ConfigService;
 import org.junit.BeforeClass;
@@ -20,7 +25,7 @@ import org.junit.Test;
  * @author Maithilish
  *
  */
-public class DaoFactoryTest {
+public class DaoFactoryTestIT {
 
     private static JdoDaoFactory daoFactory;
 

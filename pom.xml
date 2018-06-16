@@ -375,9 +375,10 @@
                 </plugins>
             </build>
         </profile>
-        <!-- in travis-ci disable ng-build profile -->
+
+        <!-- disable local-build profile in travis-ci -->
         <profile>
-            <id>ng-build</id>
+            <id>local-build</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
@@ -412,6 +413,7 @@
             </build>
         </profile>
     </profiles>
+
     <inceptionYear>2017</inceptionYear>
     <name>Gotz</name>
     <version>0.9.2-beta</version>

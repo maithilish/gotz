@@ -1,4 +1,4 @@
-package org.codetab.gotz.dao.jdo;
+package org.codetab.gotz.itest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +17,7 @@ import javax.jdo.Query;
 import javax.jdo.datastore.DataStoreCache;
 import javax.jdo.datastore.JDOConnection;
 
-import org.codetab.gotz.dao.IDaoUtil;
+import org.codetab.gotz.dao.jdo.PMF;
 import org.datanucleus.PersistenceNucleusContext;
 import org.datanucleus.api.jdo.JDOPersistenceManagerFactory;
 import org.datanucleus.store.schema.SchemaAwareStoreManager;

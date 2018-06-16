@@ -1,4 +1,4 @@
-package org.codetab.gotz.dao.jdo;
+package org.codetab.gotz.itest.jdo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -11,9 +11,11 @@ import javax.jdo.JDOObjectNotFoundException;
 import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.dao.DaoUtilFactory;
-import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
+import org.codetab.gotz.dao.jdo.DocumentDao;
+import org.codetab.gotz.dao.jdo.LocatorDao;
+import org.codetab.gotz.itest.DaoUtilFactory;
+import org.codetab.gotz.itest.IDaoUtil;
 import org.codetab.gotz.model.Document;
 import org.codetab.gotz.model.Locator;
 import org.junit.After;
@@ -29,7 +31,7 @@ import org.junit.rules.ExpectedException;
  * @author Maithilish
  *
  */
-public class DocumentDaoTest {
+public class DocumentDaoTestIT {
 
     private static IDaoUtil daoUtil;
     private static PersistenceManagerFactory pmf;

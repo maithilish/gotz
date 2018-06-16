@@ -1,11 +1,12 @@
-package org.codetab.gotz.dao.jdo;
+package org.codetab.gotz.itest.jdo;
 
 import javax.jdo.PersistenceManagerFactory;
 
-import org.codetab.gotz.dao.DaoUtil;
-import org.codetab.gotz.dao.DaoUtilFactory;
-import org.codetab.gotz.dao.IDaoUtil;
+import org.codetab.gotz.dao.jdo.PMF;
 import org.codetab.gotz.di.DInjector;
+import org.codetab.gotz.itest.DaoUtil;
+import org.codetab.gotz.itest.DaoUtilFactory;
+import org.codetab.gotz.itest.IDaoUtil;
 import org.codetab.gotz.shared.ConfigService;
 
 /**

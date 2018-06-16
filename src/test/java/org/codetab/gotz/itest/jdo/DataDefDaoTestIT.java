@@ -1,4 +1,4 @@
-package org.codetab.gotz.dao.jdo;
+package org.codetab.gotz.itest.jdo;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -13,9 +13,10 @@ import java.util.List;
 import javax.jdo.PersistenceManagerFactory;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.codetab.gotz.dao.DaoUtilFactory;
-import org.codetab.gotz.dao.IDaoUtil;
 import org.codetab.gotz.dao.ORM;
+import org.codetab.gotz.dao.jdo.DataDefDao;
+import org.codetab.gotz.itest.DaoUtilFactory;
+import org.codetab.gotz.itest.IDaoUtil;
 import org.codetab.gotz.model.DAxis;
 import org.codetab.gotz.model.DataDef;
 import org.codetab.gotz.model.Fields;
@@ -33,7 +34,7 @@ import org.junit.rules.ExpectedException;
  * @author Maithilish
  *
  */
-public class DataDefDaoTest {
+public class DataDefDaoTestIT {
 
     private static IDaoUtil daoUtil;
     private static PersistenceManagerFactory pmf;
