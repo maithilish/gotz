@@ -409,6 +409,29 @@
                             </arguments>
                         </configuration>
                     </plugin>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.23.0</version>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>maithilish/gotz</name>
+                                    <build>
+                                        <dockerFileDir>${project.basedir}/src/docker</dockerFileDir>
+                                        <assembly>
+                                            <name>gotz</name>
+                                            <descriptor>${project.basedir}/src/assembly/production.xml</descriptor>
+                                        </assembly>
+                                        <tags>
+                                            <tag>latest</tag>
+                                            <tag>${project.version}</tag>
+                                        </tags>
+                                    </build>
+                                </image>
+                            </images>
+                        </configuration>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -416,5 +439,5 @@
 
     <inceptionYear>2017</inceptionYear>
     <name>Gotz</name>
-    <version>0.9.2-beta</version>
+    <version>0.9.3-beta</version>
 </project>

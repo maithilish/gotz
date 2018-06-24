@@ -330,6 +330,17 @@ remove latest commit
 travis maven and build steps 
      - https://docs.travis-ci.com/user/languages/java/#Projects-Using-Maven
      - https://docs.travis-ci.com/user/customizing-the-build/#Customizing-the-Build-Step
+     
+release
+     change version in pom.xml and commit     
+     git tag <version>          // add local tag
+     git push origin --tags
+     
+     create new release in github and attach zip
+     
+docker hub
+     mvn clean verify docker:build
+     mvn docker:push           
 
 # Design and coding notes
 
