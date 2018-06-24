@@ -44,13 +44,23 @@
         </fileSet>
         <!-- copy scripts -->
         <fileSet>
-            <directory>${project.build.scriptSourceDirectory}</directory>
+            <directory>${project.build.scriptSourceDirectory}
+            </directory>
             <outputDirectory>${file.separator}</outputDirectory>
             <includes>
                 <include>gotz.sh</include>
                 <include>gotz.bat</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/docker</directory>
+            <outputDirectory>docker</outputDirectory>
+            <includes>
+                <include>schema.sql</include>
+                <include>docker-compose.yml</include>
+            </includes>
+        </fileSet>
+
         <!-- copy examples -->
         <fileSet>
             <directory>${project.build.directory}/classes</directory>
