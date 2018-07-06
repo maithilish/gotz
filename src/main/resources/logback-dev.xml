@@ -85,7 +85,7 @@
     </appender>
 
     <logger name="DataNucleus.JDO" level="OFF" />
-    <logger name="org.eclipse.jetty" level="INFO" />
+    <logger name="org.eclipse.jetty" level="WARN" />
 
     <root level="debug">
         <appender-ref ref="console" />

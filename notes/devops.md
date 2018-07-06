@@ -1,29 +1,27 @@
 ## Maven build
 
-to switch from default config files :
+to switch default conf files :
 
-- for mysqldb use -Dgotz.datastore.configFile=jdoconfig-mysql.properties, default jdoconfig.properties    
-- for gotz-dev.properties use -Dgotz.mode=dev, default gotz.properties
+- for dev, use -Dgotz.mode=dev 
+     - uses gotz-dev.properties instead of default gotz.properties
+     - to use dev db, in gotz-dev.properties, gotz.datastore.configFile is set to jdoconfig-dev.properties 
+
 - for logback-dev.xml use -Dlogback.configurationFile=src/main/resources/logback-dev.xml, default logback.xml
 
-Various build and run commands are given here :
+### Maven commands
 
 to add new run configuration, go to Run As -> Maven Build and enter
 
      Main -> Base directory - ${project_loc:gotz}
      Goals -> process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dlogback.configurationFile=src/main/resources/logback-dev.xml -Dgotz.mode=dev
 
-dev run
+maven dev run
 
      mvn process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dlogback.configurationFile=src/main/resources/logback-dev.xml -Dgotz.mode=dev
 
-prod run
+for profile memory and cpu
 
-    mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz"
-
-to profile memory and cpu
-
-      mvn exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dgotz.waitForHeapDump=true
+      mvn process-classes exec:java -Dexec.mainClass="org.codetab.gotz.Gotz" -Dexec.cleanupDaemonThreads=false -Dlogback.configurationFile=src/main/resources/logback-dev.xml -Dgotz.mode=dev -Dgotz.waitForHeapDump=true
 
 compile, enhance JDO classes and run tests
 
@@ -64,7 +62,32 @@ to know dependency updates
 download JavaDoc and source
 
     mvn dependency:resolve -Dclassifier=JavaDoc
-    mvn dependency:sources   
+    mvn dependency:sources
+    
+## DB setup
+
+Mariadb is used for dev and integration tests
+
+for integration test 
+
+    # cd src/test/db
+    # docker-compose up db 
+
+- data is not persisted
+
+for dev 
+
+    # cofi/stage
+    # docker-compose up db
+
+- data is not persisted in data directory
+    
+one time setup for dev
+
+    # mysql -proot -u root -h 127.0.0.1 -P 3306
+    > create database gotzdev;
+    > GRANT ALL PRIVILEGES ON gotzdev.* TO 'foo'@'localhost';
+    > GRANT ALL PRIVILEGES ON gotzdev.* TO 'foo'@'%'; 
 
 ## Eclipse setup
 
@@ -77,8 +100,9 @@ import preferences only after cs and emma are installed**
 
 for context help, install JavaDoc and sources.
 
-    dnf install java-1.8.0-openjdk-JavaDoc
-    dnf install java-1.8.0-openjdk-src
+    dnf list java-1.8.0-openjdk*
+    dnf install java-1.8.0-openjdk-<JavaDoc>
+    dnf install java-1.8.0-openjdk-<src>
 
 - in Fedora, source src.zip is installed under /usr/lib/jvm/jdk<xxx>/  
 
@@ -181,44 +205,6 @@ Project > Properties > Resource > Resource Filters > Add...
 Filter type = Exclude all.
 Applies to = File and Folders (check all children recursive)
 File and Folder Attributes: Project Relative Path matches src/main/web/gotzw
-
-## DB setup
-
-Now Mariadb is used for dev and tests
-
-# cd db
-# docker-compose up 
-
-Earlier Hsqldb is used for dev and tests. In Fedora, install hsqldb with
-
-    dnf install hsqldb
-    dnf install java-1.8.0-openjdk   // for java headless error
-
-installation location /var/lib/hsqldb
-- data files : /var/lib/hsqldb/data
-- config files : /var/lib/hsqldb/server.properties and /etc/sysconfig/hsqldb
-
-to create gotz DB instances, edit _/var/lib/hsqldb/server.properties_
-add following lines (don't change db0 config)
-
-server.database.1   file:data/db1
-server.dbname.1     gotz-dev
-server.database.2   file:data/db2
-server.dbname.2     gotz-test
-
-to start hsqldb
-
-    systemctl daemon-reload    ## if new installation
-    systemctl start hsqldb.service
-    systemctl enable hsqldb.service
-
-for hsqldb client run
-
-     java -jar /var/lib/hsqldb/lib/hsqldb.jar
-
-For desktop shortcut, in Gnome we can create and add this to hsqldb.desktop to ~/.local/share/applications/hsqldb.desktop for easy access.
-
-- maven hsqldb dependency and server version should be same else Gotz may throw JDBC error.
 
 ## Gotz Metric
 
