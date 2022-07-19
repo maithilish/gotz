@@ -8,7 +8,7 @@ Gotz ETL is replaced with much faster and easy to use **Scoopi Web Scraper**
  
 The XML definiton files of Gotz is complex and Scoopi replaces it with much simpler YAML configuration
 
-- compare [Gotz XML def](https://github.com/maithilish/gotz/blob/master/src/main/resources/defs/examples/jsoup/ex-1/job.xml) with [Scoopi YAML def](https://github.com/maithilish/scoopi/blob/master/src/main/resources/defs/examples/jsoup/ex-1/job.yml)
+- compare [Gotz XML def](https://github.com/maithilish/gotz/blob/master/src/main/resources/defs/examples/jsoup/ex-1/job.xml) with [Scoopi YAML def](https://github.com/maithilish/scoopi-scraper/blob/master/engine/src/main/resources/defs/examples/fin/jsoup/ex-1/job.yml)
 
 Scoopi is 5x faster than Gotz. 
 
